@@ -97,7 +97,7 @@ for i, number in enumerate(fchk.molecule.numbers):
     orbitals = []
     for j in xrange(num_orbitals):
         cube_fn_bin = os.path.join(workdir, "atom%05iorb%05i.cube.bin" % (i,j))
-        orbitals.append(numpy.fromfile(cube_fn_bin))
+        orbitals.append(numpy.fromfile(cube_fn_bin, float))
     matrix = numpy.zeros((num_orbitals,num_orbitals), float)
     for j1 in xrange(num_orbitals):
         for j2 in xrange(j1+1):

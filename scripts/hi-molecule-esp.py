@@ -133,13 +133,13 @@ if not os.path.isfile(hipart_esp_out_fn):
         old_charges = charges
 
     # To visualize the most relevant part of the grid ...
-    mask = (my_weights > my_weights.max()*0.01)
-    f = file(os.path.join(workdir, "molecule_relevant.xyz"), "w")
-    print >> f, sum(mask)
-    print >> f, "No interesting title today"
-    for cor in mol_esp_cost.grid_points[mask]/angstrom:
-        print >> f, "X %s %s %s" % tuple(cor)
-    f.close()
+    #mask = (my_weights > my_weights.max()*0.01)
+    #f = file(os.path.join(workdir, "molecule_relevant.xyz"), "w")
+    #print >> f, sum(mask)
+    #print >> f, "No interesting title today"
+    #for cor in mol_esp_cost.grid_points[mask]/angstrom:
+    #    print >> f, "X %s %s %s" % tuple(cor)
+    #f.close()
 
     # Write output file
     f = file(hipart_esp_out_fn, "w")

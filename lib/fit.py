@@ -32,7 +32,7 @@ import os, numpy
 __all__ = ["compute_mol_esp", "ChargeLSCostFunction", "ESPCostFunction"]
 
 
-def compute_mol_esp(fchk, atom_table, workdir, esp_out_fn, num_lebedev, density_type, clonedir=None, scale_min=2.0, scale_max=15.0, scale_steps=40):
+def compute_mol_esp(fchk, atom_table, workdir, esp_out_fn, num_lebedev, density_type, clonedir=None, scale_min=1.5, scale_max=30.0, scale_steps=40):
     """Wrapper function that computes grid and constructs ESP cost function"""
     grid_points, grid_weights, densities, potentials = _compute_mol_grid(
         fchk, atom_table, workdir, num_lebedev, density_type, clonedir,
@@ -54,10 +54,11 @@ def compute_mol_esp(fchk, atom_table, workdir, esp_out_fn, num_lebedev, density_
     return mol_esp_cost
 
 
-def _compute_mol_grid(fchk, atom_table, workdir, num_lebedev, density_type, clonedir=None, scale_min=1.5, scale_max=30.0, scale_steps=60):
+def _compute_mol_grid(fchk, atom_table, workdir, num_lebedev, density_type, clonedir=None, scale_min=1.5, scale_max=30.0, scale_steps=40):
     """Central function that computes grid and constructs ESP cost function"""
     lebedev_xyz, lebedev_weights = get_grid(num_lebedev)
-    if not os.path.isfile(os.path.join(workdir, "molecule.points")):
+    if not (os.path.isfile(os.path.join(workdir, "molecule_densities.cube.bin"))
+       and os.path.isfile(os.path.join(workdir, "molecule_potentials.cube.bin"))):
         if clonedir is None:
             # we have to generate a new grid. The grid is constructed taking
             # into account the following considerations:
@@ -100,52 +101,53 @@ def _compute_mol_grid(fchk, atom_table, workdir, num_lebedev, density_type, clon
             grid_weights = numpy.array(grid_weights)
 
             # write the grid data to file
-            f = file(os.path.join(workdir, "molecule.points"), "w")
-            for cor in grid_points/angstrom:
-                print >> f, "%s %s %s" % tuple(cor)
-            f.close()
-            f = file(os.path.join(workdir, "molecule.xyz"), "w")
-            print >> f, len(grid_points)
-            print >> f, "No interesting title today"
-            for cor in grid_points/angstrom:
-                print >> f, "X %s %s %s" % tuple(cor)
-            f.close()
-            grid_weights.tofile(os.path.join(workdir, "molecule.weights"), " ")
-            del grid_points
+            grid_points.tofile(os.path.join(workdir, "molecule_points.bin"))
+            grid_weights.tofile(os.path.join(workdir, "molecule_weights.bin"))
             del grid_weights
         else:
             # Refer to another grid. Remove existing files first.
             print "Linking grid points"
             abs_clonedir = os.path.abspath(os.path.realpath(clonedir))
-            for filename in ["molecule.points","molecule.weights","molecule.xyz"]:
+            for filename in ["molecule_.points","molecule_weights"]:
                 src = os.path.join(abs_clonedir, filename)
                 dest = os.path.join(workdir, filename)
                 if os.path.exists(dest):
                     os.path.remove(dest)
                 os.symlink(src, dest)
+            grid_points = numpy.fromfile(os.path.join(workdir, "molecule_points.bin")).reshape((-1,3))
 
-    if not os.path.isfile(os.path.join(workdir, "molecule_density.cube")):
+        # convert the points to text format
+        f = file(os.path.join(workdir, "molecule_points.txt"), "w")
+        for cor in grid_points/angstrom:
+            print >> f, "%s %s %s" % tuple(cor)
+        f.close()
+
         print "Computing density molecule"
         os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
             density_type, fchk.filename,
-            os.path.join(workdir, "molecule_density.cube"),
-            os.path.join(workdir, "molecule.points"),
+            os.path.join(workdir, "molecule_densities.cube"),
+            os.path.join(workdir, "molecule_points.txt"),
         ))
+        densities = load_cube(os.path.join(workdir, "molecule_densities.cube"), values_only=True)
+        densities.tofile(os.path.join(workdir, "molecule_densities.cube.bin"))
+        os.remove(os.path.join(workdir, "molecule_densities.cube"))
         print "Computing potential molecule"
         os.system(". ~/g03.profile; cubegen 0 potential=%s %s %s -5 < %s" % (
             density_type, fchk.filename,
-            os.path.join(workdir, "molecule_potential.cube"),
-            os.path.join(workdir, "molecule.points"),
+            os.path.join(workdir, "molecule_potentials.cube"),
+            os.path.join(workdir, "molecule_points.txt"),
         ))
-
+        potentials = load_cube(os.path.join(workdir, "molecule_potentials.cube"), values_only=True)
+        potentials.tofile(os.path.join(workdir, "molecule_potentials.cube.bin"))
+        os.remove(os.path.join(workdir, "molecule_potentials.cube"))
+        os.remove(os.path.join(workdir, "molecule_points.txt"))
+    else:
+        grid_points = numpy.fromfile(os.path.join(workdir, "molecule_points.bin")).reshape((-1,3))
 
     print "Loading data"
-    grid_weights = numpy.fromfile(os.path.join(workdir, "molecule.weights"), float, sep=" ")
-    tmp = load_cube(os.path.join(workdir, "molecule_density.cube"))
-    densities = tmp[:,-1]
-    grid_points = tmp[:,:-1]
-    potentials = load_cube(os.path.join(workdir, "molecule_potential.cube"), values_only=True)
-
+    grid_weights = numpy.fromfile(os.path.join(workdir, "molecule_weights.bin"), float)
+    densities = numpy.fromfile(os.path.join(workdir, "molecule_densities.cube.bin"), float)
+    potentials = numpy.fromfile(os.path.join(workdir, "molecule_potentials.cube.bin"), float)
     return grid_points, grid_weights, densities, potentials
 
 

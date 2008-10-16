@@ -26,7 +26,7 @@ from molmod.units import angstrom
 
 from hipart.core import *
 from hipart.lebedev_laikov import get_grid, grid_fns
-from hipart.tools import load_cube, guess_density
+from hipart.tools import load_cube, guess_density, write_atom_grid
 from hipart.fit import compute_mol_esp
 
 from optparse import OptionParser
@@ -92,21 +92,20 @@ lebedev_xyz, lebedev_weights = get_grid(num_lebedev)
 pb = ProgressBar("Density on atomic grids", fchk.molecule.size)
 for i, number in enumerate(fchk.molecule.numbers):
     pb()
-    if os.path.isfile(os.path.join(workdir, "atom%05idens.cube" % i)):
-        continue
-    center = fchk.molecule.coordinates[i]
-    grid_filename = os.path.join(workdir, "grid.txt")
-    f = file(grid_filename, "w")
-    for r in at.records[number].rs:
-        for point in lebedev_xyz:
-            print >> f, "%10.5f %10.5f %10.5f" % tuple((r*point+center)/angstrom)
-    f.close()
-    os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
-        options.density, fchk_filename,
-        os.path.join(workdir, "atom%05idens.cube" % i),
-        os.path.join(workdir, "grid.txt"),
-    ))
-    os.remove(grid_filename)
+    den_fn = os.path.join(workdir, "atom%05idens.cube" % i)
+    den_fn_bin = "%s.bin" % den_fn
+    if not os.path.isfile(den_fn_bin):
+        center = fchk.molecule.coordinates[i]
+        grid_fn = os.path.join(workdir, "grid.txt")
+        write_atom_grid(grid_fn, lebedev_xyz, center, at.records[number].rs)
+        os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
+            options.density, fchk_filename, den_fn,
+            os.path.join(workdir, "grid.txt"),
+        ))
+        tmp = load_cube(den_fn)
+        tmp.tofile(den_fn_bin)
+        os.remove(grid_fn)
+        os.remove(den_fn)
 pb()
 
 
@@ -115,8 +114,8 @@ distances = {}
 densities = []
 pb = ProgressBar("Precomputing distances", fchk.molecule.size**2)
 for i, number_i in enumerate(fchk.molecule.numbers):
-    den_filename = os.path.join(workdir, "atom%05idens.cube" % i)
-    tmp = load_cube(den_filename)
+    den_fn_bin = os.path.join(workdir, "atom%05idens.cube.bin" % i)
+    tmp = numpy.fromfile(den_fn_bin, float).reshape((-1,4))
     grid_points = tmp[:,:-1]
     densities.append(tmp[:,-1])
 
