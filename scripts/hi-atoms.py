@@ -21,7 +21,7 @@
 
 
 from hipart.core import *
-from hipart.tools import guess_density, load_cube
+from hipart.tools import ProgressBar, guess_density, load_cube, write_atom_grid
 from hipart.lebedev_laikov import get_grid, grid_fns
 
 from molmod.data.periodic import periodic
@@ -180,7 +180,7 @@ def select_ground_states(energy_field, max_ion):
     f_ev.close()
 
 
-def make_density_profile(density, num_lebedev, r_low, r_high, steps, atom_numbers, max_ion):
+def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_numbers, max_ion):
     # generate lebedev grid
     lebedev_xyz, lebedev_weights = get_grid(num_lebedev)
 
@@ -201,27 +201,31 @@ def make_density_profile(density, num_lebedev, r_low, r_high, steps, atom_number
         for charge in xrange(-max_ion, max_ion+1):
             charge_label = get_charge_label(charge)
             pb()
-            dirname = os.path.join("%03i%s" % (number, symbol), charge_label, "gs")
-            if not os.path.isdir(dirname): continue
-            points_filename = os.path.join(dirname, "grid_points.txt")
-            if not os.path.isfile(points_filename):
-                # write points
-                f = file(points_filename, "w")
-                for r in rs:
-                    for lp in lebedev_xyz:
-                        x, y, z = r*lp/angstrom
-                        print >> f, "% 10.5f % 10.5f % 10.5f" % (x, y, z)
-                f.close()
-                os.system("cd %s; . ~/g03.profile; cubegen 0 fdensity=%s gaussian.fchk grid_density.cube -5 > /dev/null 2> /dev/null < grid_points.txt" % (dirname, density))
-            # load densities
-            den_filename = os.path.join(dirname, "grid_density.cube")
-            if os.path.isfile(den_filename):
-                rhos = load_cube(den_filename, values_only=True)
-                rhos = 4*numpy.pi*(rhos.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1)
-                print >> f_pro, "Densities %3i %2s %+2i [a.u.]" % (number, symbol, charge), " ".join("%12.7e" % rho for rho in rhos)
-                charges.append((number, symbol, charge, integrate(rs, rs**2*rhos)))
+            workdir = os.path.join("%03i%s" % (number, symbol), charge_label, "gs")
+            if not os.path.isdir(workdir): continue
+            den_fn = os.path.join(workdir, "densities.cube")
+            den_bin = os.path.join(workdir, "densities.bin")
+            if os.path.isfile(den_bin):
+                radrhos = numpy.fromfile(den_bin, float)
             else:
-                print "Skipping %s" % den_filename
+                grid_prefix = os.path.join(workdir, "grid")
+                write_atom_grid(grid_prefix, lebedev_xyz, numpy.zeros(3,float), rs)
+                fchk_fn = os.path.join(workdir, "gaussian.fchk")
+                os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 > /dev/null 2> /dev/null < %s.txt" % (density_type, fchk_fn, den_fn, grid_prefix))
+                os.remove("%s.bin" % grid_prefix)
+                os.remove("%s.txt" % grid_prefix)
+                # load densities
+                if os.path.isfile(den_fn):
+                    rhos = load_cube(den_fn, values_only=True)
+                    radrhos = 4*numpy.pi*(rhos.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1)
+                    radrhos.tofile(den_bin)
+                else:
+                    print "Skipping %s" % den_fn
+                    continue
+            print >> f_pro, "Densities %3i %2s %+2i [a.u.]" % (number, symbol, charge),
+            print >> f_pro, " ".join("%12.7e" % rho for rho in radrhos)
+            charges.append((number, symbol, charge, integrate(rs, rs*rs*radrhos)))
+
 
     pb()
     f_pro.close()
@@ -248,7 +252,7 @@ parser.add_option(
     "theory."
 )
 parser.add_option(
-    "-l", "--lebedev", default=110, type='int',
+    "-l", "--lebedev", default=350, type='int',
     help="The number of grid points for the spherical averaging. "
     "[default=%default]. Select from: " + (", ".join(str(i) for i in sorted(grid_fns)))
 )

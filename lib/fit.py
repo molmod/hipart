@@ -20,8 +20,7 @@
 
 
 from hipart.lebedev_laikov import get_grid
-from hipart.core import ProgressBar
-from hipart.tools import load_cube
+from hipart.tools import load_cube, ProgressBar
 
 from molmod.transformations import random_rotation
 from molmod.units import angstrom

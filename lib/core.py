@@ -20,6 +20,7 @@
 
 
 from hipart.spline import CubicSpline
+from hipart.tools import write_cube_in, write_atom_grid
 
 from molmod.data.periodic import periodic
 
@@ -27,7 +28,7 @@ import numpy, sys, os, shutil, pylab
 
 
 __all__ = [
-    "Error", "ProgressBar",
+    "Error",
     "integrate_equi", "integrate", "cumul_integrate_equi", "cumul_integrate",
     "AtomFn", "AtomProfile", "AtomTable",
 ]
@@ -35,25 +36,6 @@ __all__ = [
 
 class Error(Exception):
     pass
-
-
-class ProgressBar(object):
-    def __init__(self, label, n, f=sys.stdout):
-        self.i = 0
-        self.n = n
-        self.f = f
-        self.f.write("%s: " % label)
-        self.f.flush()
-
-    def __call__(self):
-        if self.i % 10 == 0 or self.i == self.n:
-            self.f.write(" %i%% " % ((100*self.i)/self.n))
-        else:
-            self.f.write(".")
-        if self.i == self.n:
-            self.f.write("\n")
-        self.f.flush()
-        self.i += 1
 
 
 noble_numbers = numpy.array([0,2,10,18,36,54,86,118])
@@ -177,5 +159,19 @@ class AtomTable(object):
     def init_cusp_cutoffs(self):
         for ad in self.records.itervalues():
             ad.init_cusp_cutoff()
+
+    def yield_grids(self, molecule, workdir, lebedev_xyz):
+        for i, number in enumerate(molecule.numbers):
+            grid_prefix = os.path.join(workdir, "atom%05igrid" % i)
+            grid_fn_bin = "%s.bin" % grid_prefix
+            grid_fn_txt = "%s.txt" % grid_prefix
+            if os.path.isfile(grid_fn_bin):
+                grid_points = numpy.fromfile(grid_fn_bin).reshape((-1,3))
+                write_cube_in(grid_fn_txt, grid_points)
+            else:
+                center = molecule.coordinates[i]
+                write_atom_grid(grid_prefix, lebedev_xyz, center, self.records[number].rs)
+            yield i, grid_fn_txt
+            os.remove(grid_fn_txt)
 
 
