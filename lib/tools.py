@@ -58,13 +58,17 @@ def guess_density(lot):
         return "scf"
 
 
-def write_atom_grid(filename, lebedev_xyz, center, radii):
-    f = file(filename, "w")
+def write_atom_grid(prefix, lebedev_xyz, center, radii):
+    f = file("%s.txt" % prefix, "w")
+    grid_points = numpy.zeros((len(lebedev_xyz)*len(radii),3), float)
+    counter = 0
     for r in radii:
         rot = random_rotation()
-        for point in lebedev_xyz:
-            print >> f, "%10.5f %10.5f %10.5f" % tuple(
-                (r*numpy.dot(rot.r,point)+center)/angstrom
-            )
+        for xyz in lebedev_xyz:
+            point = r*numpy.dot(rot.r,xyz)+center
+            grid_points[counter] = point
+            print >> f, "%10.5f %10.5f %10.5f" % tuple(point/angstrom)
+            counter += 1
     f.close()
+    grid_points.tofile("%s.bin" % prefix)
 

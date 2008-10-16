@@ -96,15 +96,14 @@ for i, number in enumerate(fchk.molecule.numbers):
     den_fn_bin = "%s.bin" % den_fn
     if not os.path.isfile(den_fn_bin):
         center = fchk.molecule.coordinates[i]
-        grid_fn = os.path.join(workdir, "grid.txt")
-        write_atom_grid(grid_fn, lebedev_xyz, center, at.records[number].rs)
+        grid_prefix = os.path.join(workdir, "atom%05igrid" % i)
+        write_atom_grid(grid_prefix, lebedev_xyz, center, at.records[number].rs)
         os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
-            options.density, fchk_filename, den_fn,
-            os.path.join(workdir, "grid.txt"),
+            options.density, fchk_filename, den_fn, "%s.txt" % grid_prefix
         ))
-        tmp = load_cube(den_fn)
+        tmp = load_cube(den_fn, values_only=True)
         tmp.tofile(den_fn_bin)
-        os.remove(grid_fn)
+        os.remove("%s.txt" % grid_prefix)
         os.remove(den_fn)
 pb()
 
@@ -115,9 +114,9 @@ densities = []
 pb = ProgressBar("Precomputing distances", fchk.molecule.size**2)
 for i, number_i in enumerate(fchk.molecule.numbers):
     den_fn_bin = os.path.join(workdir, "atom%05idens.cube.bin" % i)
-    tmp = numpy.fromfile(den_fn_bin, float).reshape((-1,4))
-    grid_points = tmp[:,:-1]
-    densities.append(tmp[:,-1])
+    densities.append(numpy.fromfile(den_fn_bin, float))
+    grid_fn_bin = os.path.join(workdir, "atom%05igrid.bin" % i)
+    grid_points = numpy.fromfile(grid_fn_bin, float).reshape((-1,3))
 
     for j, number_j in enumerate(fchk.molecule.numbers):
         pb()
