@@ -232,7 +232,15 @@ def make_density_profile(density, num_lebedev, r_low, r_high, steps, atom_number
         counter += 1
 
 
-parser = OptionParser("%prog [options] lot")
+parser = OptionParser("""%prog [options] lot atoms
+
+%prog computs a database of pro-atom densities.
+
+The follozing arguments are mandatory:
+  * lot  --  The level of theory to be used in gaussian input notation.
+  * atoms  -- The atoms to be computed. One can specify ranges, e.g 1,2-5'
+              (avoid whitespace)
+""")
 parser.add_option(
     "--density",
     help="The density field to use from the gaussian fchk file (scf, mp2, mp3, "
@@ -246,19 +254,19 @@ parser.add_option(
 )
 parser.add_option(
     "--rlow", default=2e-5, type='float',
-    help="The smallest radius for the density profile (in angstroms)."
+    help="The smallest radius for the density profile (in angstroms). [default=%default]"
 )
 parser.add_option(
     "--rhigh", default=20.0, type='float',
-    help="The largest radius for the density profile (in angstroms)."
+    help="The largest radius for the density profile (in angstroms). [default=%default]"
 )
 parser.add_option(
     "--num-steps", default=100, type='int',
-    help="The number of steps in density profile."
+    help="The number of steps in density profile. [default=%default]"
 )
 parser.add_option(
     "--max-ion", default=2, type='int',
-    help="The maximum ionization to consider."
+    help="The maximum ionization to consider. [default=%default]"
 )
 (options, args) = parser.parse_args()
 lot, atom_str = args
