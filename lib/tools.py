@@ -67,7 +67,7 @@ def write_atom_grid(prefix, lebedev_xyz, center, radii):
         for xyz in lebedev_xyz:
             point = r*numpy.dot(rot.r,xyz)+center
             grid_points[counter] = point
-            print >> f, "%10.5f %10.5f %10.5f" % tuple(point/angstrom)
+            print >> f, "%15.10e %15.10e %15.10e" % tuple(point/angstrom)
             counter += 1
     f.close()
     grid_points.tofile("%s.bin" % prefix)
