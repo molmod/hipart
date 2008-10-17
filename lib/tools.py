@@ -26,10 +26,14 @@ import numpy, sys, os
 
 
 __all__ = [
-    "ProgressBar",
-    "load_cube", "guess_density", "write_cube_in", "write_atom_grid",
-    "load_atom_grid_distances", "compute_hirshfeld_weights"
+    "Error", "ProgressBar",
+    "load_cube", "guess_density_type", "write_cube_in", "get_atom_grid",
+    "compute_hirshfeld_weights"
 ]
+
+class Error(Exception):
+    pass
+
 
 class ProgressBar(object):
     def __init__(self, label, n, f=sys.stdout):
@@ -50,26 +54,16 @@ class ProgressBar(object):
         self.i += 1
 
 
-def load_cube(filename, values_only=False):
+def load_cube(filename):
     f = file(filename)
-    if values_only:
-        tmp = numpy.array([float(line.split()[3]) for line in f])
-        if len(tmp) == 0:
-            raise Error("Could not load cube file. File is empty.")
-    else:
-        tmp = [
-            [float(word) for word in line.split()]
-            for line in f
-        ]
-        tmp = numpy.array([row for row in tmp if len(row) == 4])
-        if len(tmp) == 0:
-            raise Error("Could not load cube file. File is empty.")
-        tmp[:,:3] *= angstrom
+    data = numpy.array([float(line.split()[3]) for line in f])
+    if len(data) == 0:
+        raise Error("Could not load cube file. File is empty.")
     f.close()
-    return tmp
+    return data
 
 
-def guess_density(lot):
+def guess_density_type(lot):
     if "mp2" in lot.lower():
         return "mp2"
     elif "mp3" in lot.lower():
@@ -87,32 +81,15 @@ def write_cube_in(filename, grid_points):
     f.close()
 
 
-def write_atom_grid(prefix, lebedev_xyz, center, radii):
-    grid_points = numpy.zeros((len(lebedev_xyz)*len(radii),3), float)
+def get_atom_grid(lebedev_xyz, center, radii):
+    num_lebedev = len(lebedev_xyz)
+    grid_points = numpy.zeros((num_lebedev*len(radii),3), float)
     counter = 0
     for r in radii:
         rot = random_rotation()
-        for xyz in lebedev_xyz:
-            point = r*numpy.dot(rot.r,xyz)+center
-            grid_points[counter] = point
-            counter += 1
-    grid_points.tofile("%s.bin" % prefix)
-    write_cube_in("%s.txt" % prefix, grid_points)
-
-
-def load_atom_grid_distances(molecule, workdir):
-    distances = {}
-    pb = ProgressBar("Precomputing distances", molecule.size**2)
-    for i, number_i in enumerate(molecule.numbers):
-        grid_fn_bin = os.path.join(workdir, "atom%05igrid.bin" % i)
-        grid_points = numpy.fromfile(grid_fn_bin, float).reshape((-1,3))
-
-        for j, number_j in enumerate(molecule.numbers):
-            pb()
-            if i!=j:
-                distances[(i,j)] = numpy.sqrt(((grid_points - molecule.coordinates[j])**2).sum(axis=1))
-    pb()
-    return distances
+        grid_points[counter:counter+num_lebedev] = r*numpy.dot(lebedev_xyz,rot.r)+center
+        counter += num_lebedev
+    return grid_points
 
 
 def compute_hirshfeld_weights(i, atom_fns, num_lebedev, distances):
@@ -131,4 +108,5 @@ def compute_hirshfeld_weights(i, atom_fns, num_lebedev, distances):
     pro_mol[pro_mol < 1e-40] = 1e-40
     # multiply the density on the grid by the weight function
     return pro_atom/pro_mol
+
 

@@ -26,11 +26,10 @@ from hipart.opts import add_hirshi_options
 from optparse import OptionParser
 import os, numpy
 
-
 # parse arguments ...
 parser = OptionParser("""%prog [options] atoms.txt gaussian.fchk
 
-%prog partitions the density matrices with iterative hirshfeld weights.
+%prog computes the iterative hirshfeld charges.
 """)
 add_hirshi_options(parser)
 (options, args) = parser.parse_args()
@@ -41,6 +40,7 @@ atom_fn, fchk_fn = args
 # Do the work. Where possible, the intermediate results from scripts that ran
 # previously, are recycled.
 context = Context(atom_fn, fchk_fn, options)
-context.cache.do_atom_matrices()
+context.cache.do_iterative_hirshfeld()
 context.clean()
+
 

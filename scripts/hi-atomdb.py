@@ -20,8 +20,8 @@
 # --
 
 
-from hipart.core import *
-from hipart.tools import ProgressBar, guess_density, load_cube, write_atom_grid
+from hipart.integrate import integrate_log
+from hipart.tools import ProgressBar, guess_density_type, load_cube, write_cube_in, get_atom_grid
 from hipart.lebedev_laikov import get_grid, grid_fns
 
 from molmod.data.periodic import periodic
@@ -204,19 +204,19 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
             workdir = os.path.join("%03i%s" % (number, symbol), charge_label, "gs")
             if not os.path.isdir(workdir): continue
             den_fn = os.path.join(workdir, "densities.cube")
-            den_bin = os.path.join(workdir, "densities.bin")
+            den_bin = os.path.join(workdir, "densities.cube.bin")
             if os.path.isfile(den_bin):
                 radrhos = numpy.fromfile(den_bin, float)
             else:
-                grid_prefix = os.path.join(workdir, "grid")
-                write_atom_grid(grid_prefix, lebedev_xyz, numpy.zeros(3,float), rs)
+                grid_fn = os.path.join(workdir, "grid.txt")
+                atom_grid = get_atom_grid(lebedev_xyz, numpy.zeros(3,float), rs)
+                write_cube_in(grid_fn, atom_grid)
                 fchk_fn = os.path.join(workdir, "gaussian.fchk")
-                os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 > /dev/null 2> /dev/null < %s.txt" % (density_type, fchk_fn, den_fn, grid_prefix))
-                os.remove("%s.bin" % grid_prefix)
-                os.remove("%s.txt" % grid_prefix)
+                os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 > /dev/null 2> /dev/null < %s" % (density_type, fchk_fn, den_fn, grid_fn))
+                os.remove(grid_fn)
                 # load densities
                 if os.path.isfile(den_fn):
-                    rhos = load_cube(den_fn, values_only=True)
+                    rhos = load_cube(den_fn)
                     radrhos = 4*numpy.pi*(rhos.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1)
                     radrhos.tofile(den_bin)
                 else:
@@ -224,7 +224,7 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
                     continue
             print >> f_pro, "Densities %3i %2s %+2i [a.u.]" % (number, symbol, charge),
             print >> f_pro, " ".join("%12.7e" % rho for rho in radrhos)
-            charges.append((number, symbol, charge, integrate(rs, rs*rs*radrhos)))
+            charges.append((number, symbol, charge, integrate_log(rs, rs*rs*radrhos)))
 
 
     pb()
@@ -240,10 +240,14 @@ parser = OptionParser("""%prog [options] lot atoms
 
 %prog computs a database of pro-atom densities.
 
-The follozing arguments are mandatory:
+The following arguments are mandatory:
   * lot  --  The level of theory to be used in gaussian input notation.
   * atoms  -- The atoms to be computed. One can specify ranges, e.g 1,2-5'
               (avoid whitespace)
+
+It is wise to run this script in a directory that is initially empty and that
+will contain nothing but the generated atom database. This script will generate
+quite a few files and subdirectories.
 """)
 parser.add_option(
     "--density",
@@ -276,7 +280,7 @@ parser.add_option(
 lot, atom_str = args
 
 if options.density is None:
-    options.density = guess_density(lot)
+    options.density = guess_density_type(lot)
 atom_numbers = parse_numbers(atom_str)
 
 make_inputs(lot, atom_numbers, options.max_ion)

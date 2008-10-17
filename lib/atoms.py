@@ -20,17 +20,15 @@
 
 
 from hipart.spline import CubicSpline
-from hipart.tools import write_cube_in, write_atom_grid
+from hipart.integrate import cumul_integrate_log
 
 from molmod.data.periodic import periodic
 
-import numpy, sys, os, shutil, pylab
+import numpy, os
 
 
 __all__ = [
-    "Error",
-    "integrate_equi", "integrate", "cumul_integrate_equi", "cumul_integrate",
-    "AtomFn", "AtomProfile", "AtomTable",
+    "Error", "AtomFn", "AtomProfile", "AtomTable",
 ]
 
 
@@ -42,25 +40,6 @@ noble_numbers = numpy.array([0,2,10,18,36,54,86,118])
 core_sizes = dict((number, noble_numbers[noble_numbers<=number].max()) for number in periodic.yield_numbers())
 
 
-def integrate_equi(u, g):
-    s = CubicSpline(u, g)
-    return s.integrate()
-
-def integrate(r, f):
-    u = numpy.log(r)
-    g = f*r
-    return integrate_equi(u,g)
-
-def cumul_integrate_equi(u,g):
-    s = CubicSpline(u, g)
-    return s.cumul_integrate()
-
-def cumul_integrate(r, f):
-    u = numpy.log(r)
-    g = f*r
-    return cumul_integrate_equi(u,g)
-
-
 class AtomFn(object):
     def __init__(self, rs, rhos, number, charge):
         self.number = number
@@ -69,13 +48,13 @@ class AtomFn(object):
 
         self.density = CubicSpline(rs, rhos)
 
-        qs = -cumul_integrate(rs, rhos*rs**2*4*numpy.pi)
+        qs = -cumul_integrate_log(rs, rhos*rs**2*4*numpy.pi)
         #self.rhos_cumul = cumul_integrate(rs, rhos)
         #print number, self.rhos_cumul[-1], self.num_elec
         qs *= self.num_elec/qs[-1]
         self.charge = CubicSpline(rs, qs)
 
-        vs = -cumul_integrate(1/rs[::-1], qs[::-1])[::-1]
+        vs = -cumul_integrate_log(1/rs[::-1], qs[::-1])[::-1]
         self._potential = CubicSpline(rs, vs)
 
     def potential(self, rs):
@@ -132,7 +111,7 @@ class AtomProfile(object):
         if hasattr(self, "cusp_cutoff"):
             return
         rhos = self.records[0]
-        qs = cumul_integrate(self.rs, rhos*self.rs**2*numpy.pi*4)
+        qs = cumul_integrate_log(self.rs, rhos*self.rs**2*numpy.pi*4)
         i = qs.searchsorted([core_sizes[self.number]])[0]
         self.cusp_cutoff = self.rs[i]
         #print self.number, core_sizes[self.number], self.cusp_cutoff
@@ -159,19 +138,4 @@ class AtomTable(object):
     def init_cusp_cutoffs(self):
         for ad in self.records.itervalues():
             ad.init_cusp_cutoff()
-
-    def yield_grids(self, molecule, workdir, lebedev_xyz):
-        for i, number in enumerate(molecule.numbers):
-            grid_prefix = os.path.join(workdir, "atom%05igrid" % i)
-            grid_fn_bin = "%s.bin" % grid_prefix
-            grid_fn_txt = "%s.txt" % grid_prefix
-            if os.path.isfile(grid_fn_bin):
-                grid_points = numpy.fromfile(grid_fn_bin).reshape((-1,3))
-                write_cube_in(grid_fn_txt, grid_points)
-            else:
-                center = molecule.coordinates[i]
-                write_atom_grid(grid_prefix, lebedev_xyz, center, self.records[number].rs)
-            yield i, grid_fn_txt
-            os.remove(grid_fn_txt)
-
 
