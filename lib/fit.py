@@ -22,11 +22,12 @@
 import numpy
 
 
-__all__ = ["ChargeLSCostFunction", "ESPCostFunction", "ESPCrossCostFunction"]
+__all__ = ["ChargeDipoleCostFunction", "ESPCostFunction"]
 
 
-class ChargeLSCostFunction(object):
-    def __init__(self, design_matrix, expected_values, weights, total_charge):
+class ChargeDipoleCostFunction(object):
+    def __init__(self, N, design_matrix, expected_values, weights, total_charge):
+        self.N = N # number of atoms
         self.design_matrix = design_matrix*weights.reshape((-1,1))
         self.expected_values = expected_values*weights
         self.weights = weights
@@ -49,15 +50,25 @@ class ChargeLSCostFunction(object):
         A_evals = numpy.linalg.eigvalsh(self.A)
         self.condition_number = A_evals[-1]/A_evals[0]
 
-    def rmsd(self, charges):
-        return numpy.sqrt((numpy.dot(charges, numpy.dot(self.A, charges) - 2*self.B) + self.C)/self.weights_sqsum)
+    def full_vector(self, charges, dipoles=None):
+        result = numpy.zeros(4*self.N, float)
+        if charges is not None:
+            result[:self.N] = charges
+        if dipoles is not None:
+            result[self.N:] = dipoles.ravel()
+        return result
 
-    def write_matrices_to_file(self, filename, other_expected_values=None):
+    def rmsd(self, charges, dipoles=None):
+        full = self.full_vector(charges, dipoles)
+        return numpy.sqrt((numpy.dot(full, numpy.dot(self.A, full) - 2*self.B) + self.C)/self.weights_sqsum)
+
+    def model_rms(self, charges, dipoles=None):
+        full = self.full_vector(charges, dipoles)
+        fields = numpy.dot(self.design_matrix, full)
+        return numpy.sqrt(numpy.dot(full, numpy.dot(self.A, full))/self.weights_sqsum)
+
+    def write_to_file(self, filename):
         f = file(filename, "w")
-        self.dump_matrices_to_file(f, other_expected_values)
-        f.close()
-
-    def dump_matrices_to_file(self, f, other_expected_values=None):
         print >> f, "A: Quadratic part of the ESP Cost function"
         for row in self.A:
             print >> f, " ".join("% 15.10e" % value for value in row)
@@ -70,30 +81,27 @@ class ChargeLSCostFunction(object):
 
         print >> f, "W: Sum of the squared weights"
         print >> f, "% 15.10e" % self.weights_sqsum
-
-        print >> f, "Ccross: Cross term from the reference ESP Cost function"
-        if other_expected_values is None:
-            Ccross = 0
-        else:
-            Ccross = numpy.dot(self.expected_values.transpose(), other_expected_values*self.weights)
-        print >> f, "% 15.10e" % Ccross
+        f.close()
 
 
-class ESPCostFunction(ChargeLSCostFunction):
+class ESPCostFunction(ChargeDipoleCostFunction):
     def __init__(self, coordinates, grid_points, grid_weights, densities, potentials, total_charge):
         self.grid_points = grid_points
         self.grid_weights = grid_weights
         self.densities = densities
         self.potentials = potentials
 
+        N = len(coordinates)
         expected_values = potentials.copy()
-        design_matrix = numpy.zeros((len(expected_values), len(coordinates)), float)
+        design_matrix = numpy.zeros((len(expected_values), 4*N), float)
         self.distances = {}
-        for i in xrange(len(coordinates)):
-            distances = numpy.sqrt(((grid_points - coordinates[i])**2).sum(axis=1))
+        for i in xrange(N):
+            deltas = grid_points - coordinates[i]
+            distances = numpy.sqrt((deltas**2).sum(axis=1))
             self.distances[i] = distances
             design_matrix[:,i] = 1/distances
+            design_matrix[:,N+3*i:N+3*i+3] = deltas/distances.reshape((-1,1))**3
         weights = grid_weights * numpy.exp(-densities/1e-5)
-        ChargeLSCostFunction.__init__(self, design_matrix, expected_values, weights, total_charge)
+        ChargeDipoleCostFunction.__init__(self, N, design_matrix, expected_values, weights, total_charge)
 
 

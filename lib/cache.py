@@ -41,13 +41,14 @@ class Cache(object):
         self.context = context
 
     def do_atom_grids(self):
-        if hasattr(self, "atom_grid_distances"):
+        if hasattr(self, "atom_grid_distances") and hasattr(self, "atom_grid_points"):
             return
 
         molecule = self.context.fchk.molecule
         workdir = self.context.workdir
 
         self.atom_grid_distances = {}
+        self.atom_grid_points = []
         pb = ProgressBar("Atomic grids (and distances)", molecule.size**2)
         for i, number_i in enumerate(molecule.numbers):
             grid_prefix = os.path.join(workdir, "atom%05igrid" % i)
@@ -62,6 +63,8 @@ class Cache(object):
                     self.context.atom_table.records[number_i].rs
                 )
                 grid_points.tofile(grid_fn_bin)
+
+            self.atom_grid_points.append(grid_points)
             if not os.path.isfile(grid_fn_txt):
                 write_cube_in(grid_fn_txt, grid_points)
 
@@ -202,7 +205,6 @@ class Cache(object):
         print >> f
         f.close()
 
-
     def do_esp_costfunction(self):
         clonedir = self.context.options.clone
         if clonedir is not None:
@@ -234,7 +236,7 @@ class Cache(object):
             )
 
         outfn = os.path.join(self.context.outdir, "mol_esp_cost.txt")
-        self.mol_esp_cost.write_matrices_to_file(outfn)
+        self.mol_esp_cost.write_to_file(outfn)
 
     def _do_molecular_grid(self):
         lebedev_xyz = self.context.lebedev_xyz
@@ -405,4 +407,75 @@ class Cache(object):
                 print >> f, " ".join("% 15.10e" % value for value in row)
         f.close()
 
+    def do_dipoles(self):
+        if hasattr(self, "hirshi_dipoles"):
+            return
+        self.do_atom_grids()
+        self.do_atom_densities()
+        self.do_iterative_hirshfeld()
+        molecule = self.context.fchk.molecule
+
+        pb = ProgressBar("Molecular dipoles with iterative hirshfeld weights", molecule.size)
+        self.hirshi_dipoles = numpy.zeros((molecule.size,3), float)
+        for i, number_i in enumerate(molecule.numbers):
+            pb()
+            hw = self.hirshi_weights[i]
+            grid_points = self.atom_grid_points[i]
+            densities = self.atom_densities[i]
+            center = molecule.coordinates[i]
+
+            for j in 0,1,2:
+                integrand = -(grid_points[:,j] - center[j])*densities*hw
+                radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+                rs = self.context.atom_table.records[number_i].rs
+                self.hirshi_dipoles[i,j] = integrate_log(rs, radfun*rs**2)
+        pb()
+
+        # now some nice output
+        f = file(os.path.join(self.context.outdir, "hirshi_dipoles.txt"), "w")
+        print >> f, "  i        Z     Dipole-X     Dipole-Y     Dipole-Z      Dipole"
+        print >> f, "------------------------------------------------------------------"
+        for i, number in enumerate(molecule.numbers):
+            print >> f, "% 3i  %2s  % 3i   % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+                i+1, periodic[number].symbol, number, self.hirshi_dipoles[i,0],
+                self.hirshi_dipoles[i,1], self.hirshi_dipoles[i,2],
+                numpy.linalg.norm(self.hirshi_dipoles[i]),
+            )
+        print >> f, "------------------------------------------------------------------"
+
+        dipole_q = (molecule.coordinates*self.hirshi_charges.reshape((-1,1))).sum(axis=0)
+        dipole_p = self.hirshi_dipoles.sum(axis=0)
+        dipole_qp = dipole_q + dipole_p
+        dipole_qm = self.context.fchk.fields.get("Dipole Moment")
+        print >> f, "Molecular dipoles due to ..."
+        print >> f, "charges (q)    % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+            dipole_q[0], dipole_q[1], dipole_q[2], numpy.linalg.norm(dipole_q),
+        )
+        print >> f, "dipoles (p)    % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+            dipole_p[0], dipole_p[1], dipole_p[2], numpy.linalg.norm(dipole_p),
+        )
+        print >> f, "q and p        % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+            dipole_qp[0], dipole_qp[1], dipole_qp[2], numpy.linalg.norm(dipole_qp),
+        )
+        print >> f, "total density  % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+            dipole_qm[0], dipole_qm[1], dipole_qm[2], numpy.linalg.norm(dipole_qm),
+        )
+        print >> f, "------------------------------------------------------------------"
+
+        print >> f, "Reproduction of the external molecular ESP ..."
+        print >> f, "                     RMSD             RMS"
+        print >> f, "charges (q)      % 10.5e    % 10.5e" % (
+            self.mol_esp_cost.rmsd(self.hirshi_charges),
+            self.mol_esp_cost.model_rms(self.hirshi_charges),
+        )
+        print >> f, "dipoles (p)      % 10.5e    % 10.5e" % (
+            self.mol_esp_cost.rmsd(None, self.hirshi_dipoles),
+            self.mol_esp_cost.model_rms(None, self.hirshi_dipoles),
+        )
+        print >> f, "q and p          % 10.5e    % 10.5e" % (
+            self.mol_esp_cost.rmsd(self.hirshi_charges, self.hirshi_dipoles),
+            self.mol_esp_cost.model_rms(self.hirshi_charges, self.hirshi_dipoles),
+        )
+        print >> f, "total densitty                   % 10.5e" % self.mol_esp_cost.rms
+        f.close()
 
