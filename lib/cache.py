@@ -410,26 +410,35 @@ class Cache(object):
     def do_dipoles(self):
         if hasattr(self, "hirshi_dipoles"):
             return
-        self.do_atom_grids()
-        self.do_atom_densities()
+
         self.do_iterative_hirshfeld()
+        hirshi_dipoles_fn_bin = os.path.join(self.context.workdir, "hirshi_dipoles.out.bin")
         molecule = self.context.fchk.molecule
 
-        pb = ProgressBar("Molecular dipoles with iterative hirshfeld weights", molecule.size)
-        self.hirshi_dipoles = numpy.zeros((molecule.size,3), float)
-        for i, number_i in enumerate(molecule.numbers):
-            pb()
-            hw = self.hirshi_weights[i]
-            grid_points = self.atom_grid_points[i]
-            densities = self.atom_densities[i]
-            center = molecule.coordinates[i]
+        if os.path.isfile(hirshi_dipoles_fn_bin):
+            print "Loading dipoles based in iterative hirshfeld partitioning."
+            self.hirshi_dipoles = numpy.fromfile(hirshi_dipoles_fn_bin, float).reshape((-1,3))
+        else:
+            self.do_atom_grids()
+            self.do_atom_densities()
 
-            for j in 0,1,2:
-                integrand = -(grid_points[:,j] - center[j])*densities*hw
-                radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                rs = self.context.atom_table.records[number_i].rs
-                self.hirshi_dipoles[i,j] = integrate_log(rs, radfun*rs**2)
-        pb()
+            print "Computing dipoles based in iterative hirshfeld partitioning."
+            pb = ProgressBar("Molecular dipoles with iterative hirshfeld weights", molecule.size)
+            self.hirshi_dipoles = numpy.zeros((molecule.size,3), float)
+            for i, number_i in enumerate(molecule.numbers):
+                pb()
+                hw = self.hirshi_weights[i]
+                grid_points = self.atom_grid_points[i]
+                densities = self.atom_densities[i]
+                center = molecule.coordinates[i]
+
+                for j in 0,1,2:
+                    integrand = -(grid_points[:,j] - center[j])*densities*hw
+                    radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+                    rs = self.context.atom_table.records[number_i].rs
+                    self.hirshi_dipoles[i,j] = integrate_log(rs, radfun*rs**2)
+            pb()
+            self.hirshi_dipoles.tofile(hirshi_dipoles_fn_bin)
 
         # now some nice output
         f = file(os.path.join(self.context.outdir, "hirshi_dipoles.txt"), "w")
