@@ -38,8 +38,9 @@ def add_hirshi_options(parser):
         "[default=%default]. Select from: " + (", ".join(str(i) for i in sorted(grid_fns)))
     )
     parser.add_option(
-        "--clone", default=None,
-        help="Link the molecular grid from the given directory."
+        "--reference", default=None,
+        help="Refer to the checkpoint af a reference state. The output will "
+        "relative changes instead absolute values."
     )
     parser.add_option(
         "--clean", default=1, type='int',
@@ -47,8 +48,7 @@ def add_hirshi_options(parser):
         "Files in the workdir can be reused by other scripts, which reduces the "
         "computational cost. This should be a number from 0 to 4. "
         "[default=%default] 0: No cleaning. 1: Remove text files. 2: Also remove "
-        "binary files created by hipart. 3: Also remove binary cube data. "
-        "4: Also remove binary output files. 5: Remove the entire workdir."
+        "binary files. 3: Remove the entire workdir."
     )
     parser.add_option(
         "-n", "--no-fix-total-charge", dest="fix_total_charge", default="True",

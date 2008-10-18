@@ -21,6 +21,7 @@
 
 
 from hipart.context import Context
+from hipart.atoms import AtomTable
 from hipart.opts import add_hirshi_options
 
 from optparse import OptionParser
@@ -40,7 +41,7 @@ atom_fn, fchk_fn = args
 
 # Do the work. Where possible, the intermediate results from scripts that ran
 # previously, are recycled.
-context = Context(atom_fn, fchk_fn, options)
+context = Context(AtomTable(atom_fn), fchk_fn, options)
 context.cache.do_atom_matrices()
 context.clean()
 

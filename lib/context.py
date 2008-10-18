@@ -46,8 +46,8 @@ class Context(object):
 
     version = 1
 
-    def __init__(self, atoms_fn, fchk_fn, options):
-        self.atom_table = AtomTable(atoms_fn)
+    def __init__(self, atom_table, fchk_fn, options):
+        self.atom_table = atom_table
         self.fchk = FCHKFile(fchk_fn, field_labels=[
             "Charge", "Number of basis functions", "Dipole Moment"
         ])
@@ -69,6 +69,12 @@ class Context(object):
         self.lebedev_xyz, self.lebedev_weights = get_grid(options.lebedev)
 
         self.check_context()
+        if (options.reference is None or os.path.samefile(options.reference, fchk_fn)):
+            self.reference = None
+        else:
+            self.reference = Context(atom_table, options.reference, options)
+            if self.tag != self.reference.tag:
+                raise ContectError("The reference state must have the same context tag.")
         self.cache = Cache(self)
 
     num_lebedev = property(lambda self: len(self.lebedev_weights))
@@ -76,7 +82,7 @@ class Context(object):
     def check_context(self):
         """Make sure our context is compatible with the data in the workdir."""
 
-        our_tag = "contextversion=%i density=%s lebedev=%i" % (
+        self.tag = "contextversion=%i density=%s lebedev=%i" % (
             self.version, self.options.density, self.num_lebedev
         )
 
@@ -85,27 +91,21 @@ class Context(object):
             f = file(context_fn)
             existing_tag = ("".join(f)).strip()
             f.close()
-            if existing_tag != our_tag:
+            if existing_tag != self.tag:
                 raise ContextError("The existing work directory contains incompatible data. Trash it!")
         else:
             f = file(context_fn, "w")
-            print >> f, our_tag
+            print >> f, self.tag
             f.close()
 
     def clean(self):
-        if self.options.clean >= 5:
+        if self.options.clean >= 3:
             print "Removing the entire work directory."
             shutil.rmtree(self.workdir)
             return
-        if self.options.clean >= 4:
-            os.system("rm -f %s" % os.path.join(self.workdir, "*.out.bin"))
-            print "Cleaning up binary output files in work directory."
-        if self.options.clean >= 3:
-            os.system("rm -f %s" % os.path.join(self.workdir, "*.cube.bin"))
-            print "Cleaning up gaussian binary files in work directory."
         if self.options.clean >= 2:
-            print "Cleaning up intermediate binary files in work directory."
-            os.system("rm -f %s" % os.path.join(self.workdir, "*.hipart.bin"))
+            print "Cleaning up binary files in work directory."
+            os.system("rm -f %s" % os.path.join(self.workdir, "*.bin"))
         if self.options.clean >= 1:
             print "Cleaning up text files in work directory."
             os.system("rm -f %s" % os.path.join(self.workdir, "*.txt"))
