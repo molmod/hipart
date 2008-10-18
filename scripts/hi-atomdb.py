@@ -248,6 +248,11 @@ The following arguments are mandatory:
 It is wise to run this script in a directory that is initially empty and that
 will contain nothing but the generated atom database. This script will generate
 quite a few files and subdirectories.
+
+Examples:
+
+%prog MP2/Aug-CC-pVDZ 1-10,17
+%prog HF/3-21G 1,6,7,8 -l 110
 """)
 parser.add_option(
     "--density",
