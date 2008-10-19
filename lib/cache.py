@@ -266,7 +266,7 @@ class Cache(object):
                 self.mol_potentials - self.reference.mol_potentials,
                 relative_total_charge
             )
-            outfn = os.path.join(self.context.outdir, "relative_mol_esp_cost.txt")
+            outfn = os.path.join(self.context.outdir, "mol_esp_cost_relative.txt")
             self.mol_esp_cost.write_to_file(outfn)
 
 
