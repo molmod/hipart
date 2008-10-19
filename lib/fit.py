@@ -69,6 +69,7 @@ class ChargeDipoleCostFunction(object):
 
     def write_to_file(self, filename):
         f = file(filename, "w")
+        print >> f, "number of atoms:", self.N
         print >> f, "A: Quadratic part of the ESP Cost function"
         for row in self.A:
             print >> f, " ".join("% 15.10e" % value for value in row)

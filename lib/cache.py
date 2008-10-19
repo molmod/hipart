@@ -222,6 +222,7 @@ class Cache(object):
         # now some nice output
         def output(filename, charges, esp_cost):
             f = file(os.path.join(self.context.outdir, filename), "w")
+            print >> f, "number of atoms:", molecule.size
             print >> f, "  i        Z      Charge"
             print >> f, "-----------------------------"
             for i, number in enumerate(molecule.numbers):
@@ -490,6 +491,7 @@ class Cache(object):
 
         def output(filename, charges, dipoles, esp_cost, dipole_qm):
             f = file(os.path.join(self.context.outdir, filename), "w")
+            print >> f, "number of atoms:", molecule.size
             print >> f, "  i        Z     Dipole-X     Dipole-Y     Dipole-Z      Dipole"
             print >> f, "------------------------------------------------------------------"
             for i, number in enumerate(molecule.numbers):
