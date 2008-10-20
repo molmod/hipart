@@ -23,6 +23,7 @@ from hipart.tools import ProgressBar, write_cube_in, load_cube, get_atom_grid, \
     compute_hirshfeld_weights
 from hipart.integrate import integrate_log, integrate_lebedev
 from hipart.fit import ESPCostFunction
+from hipart.lebedev_laikov import get_grid
 
 from molmod.transformations import random_rotation
 from molmod.data.periodic import periodic
@@ -276,8 +277,7 @@ class Cache(object):
            hasattr(self, "mol_densities") and hasattr(self, "mol_potentials"):
             return
 
-        lebedev_xyz = self.context.lebedev_xyz
-        lebedev_weights = self.context.lebedev_weights
+        lebedev_xyz, lebedev_weights = get_grid(self.context.options.mol_lebedev)
         molecule = self.context.fchk.molecule
         workdir = self.context.workdir
         atom_table = self.context.atom_table
@@ -504,7 +504,7 @@ class Cache(object):
             dipole_q = (molecule.coordinates*charges.reshape((-1,1))).sum(axis=0)
             dipole_p = dipoles.sum(axis=0)
             dipole_qp = dipole_q + dipole_p
-            print >> f, "Molecular dipoles due to ..."
+            print >> f, "Molecular dipole due to ..."
             print >> f, "charges (q)    % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
                 dipole_q[0], dipole_q[1], dipole_q[2], numpy.linalg.norm(dipole_q),
             )

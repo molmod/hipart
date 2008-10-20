@@ -34,16 +34,21 @@ def add_hirshi_options(parser):
     )
     parser.add_option(
         "-l", "--lebedev", default=110, type='int',
-        help="The number of grid points for the spherical averaging. "
+        help="The number of grid points for the atomic grids. "
         "[default=%default]. Select from: " + (", ".join(str(i) for i in sorted(grid_fns)))
     )
     parser.add_option(
-        "--reference", default=None,
+        "-m", "--mol-lebedev", default=50, type='int',
+        help="The number of grid points for the molecular grids. "
+        "[default=%default]. See --lebedev for the supported grid sizes."
+    )
+    parser.add_option(
+        "-r", "--reference", default=None,
         help="Refer to the checkpoint af a reference state. The output will "
         "relative changes instead absolute values."
     )
     parser.add_option(
-        "--clean", default=1, type='int',
+        "-c", "--clean", default=1, type='int',
         help="Degree of cleaning in the workdir after the computations are done. "
         "Files in the workdir can be reused by other scripts, which reduces the "
         "computational cost. This should be a number from 0 to 4. "

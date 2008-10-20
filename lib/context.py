@@ -82,8 +82,8 @@ class Context(object):
     def check_context(self):
         """Make sure our context is compatible with the data in the workdir."""
 
-        self.tag = "contextversion=%i density=%s lebedev=%i" % (
-            self.version, self.options.density, self.num_lebedev
+        self.tag = "contextversion=%i density=%s lebedev=%i mol_lebedev=%i" % (
+            self.version, self.options.density, self.num_lebedev, self.options.mol_lebedev
         )
 
         context_fn = os.path.join(self.workdir, "context")
