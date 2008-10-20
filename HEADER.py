@@ -1,4 +1,4 @@
-# HiPart is a tool to analyse molecular densities with the hirshfeld partitioning scheme
+# HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
 # Copyright (C) 2007 - 2008 Toon Verstraelen <Toon.Verstraelen@UGent.be>
 #
 # This file is part of HiPart.
