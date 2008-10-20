@@ -216,7 +216,7 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
                 os.remove(grid_fn)
                 # load densities
                 if os.path.isfile(den_fn):
-                    rhos = load_cube(den_fn)
+                    rhos = load_cube(den_fn, num_lebedev*len(rs))
                     radrhos = 4*numpy.pi*(rhos.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1)
                     radrhos.tofile(den_bin)
                 else:

@@ -54,13 +54,20 @@ class ProgressBar(object):
         self.i += 1
 
 
-def load_cube(filename):
+def load_cube(filename, N):
     f = file(filename)
-    data = numpy.array([float(line.split()[3]) for line in f])
+    data = numpy.zeros(N, float)
+    counter = 0
+    for line in f:
+        if counter == N:
+            raise Error("Cube file has wrong size. Expecting %i points. Got more." % (N, counter))
+        line = line.strip()
+        data[counter] = float(line[line.rfind(" "):])
+        counter += 1
+    if counter != N:
+        raise Error("Cube file has wrong size. Expecting %i points. Got %i." % (N, counter))
     if numpy.isnan(data[0]): # ugly workarond for stupid cubegen
         data[0] = data[1]
-    if len(data) == 0:
-        raise Error("Could not load cube file. File is empty.")
     f.close()
     return data
 
