@@ -295,7 +295,7 @@ class Cache(object):
                 relative_total_charge
             )
             outfn = os.path.join(self.context.outdir, "mol_esp_cost_relative.txt")
-            self.mol_esp_cost.write_to_file(outfn)
+            self.relative_mol_esp_cost.write_to_file(outfn)
 
 
     def _do_molecular_grid(self):
