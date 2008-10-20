@@ -122,6 +122,8 @@ class Cache(object):
                 densities = numpy.fromfile(den_fn_bin, float)
             else:
                 if not os.path.isfile(den_fn):
+                    if self.context.fchk.lot.startswith("RO"):
+                        raise Error("Can not cope with ROHF or ROKS. Cubegen can not compute the density properly for such calculations!")
                     grid_fn = os.path.join(workdir, "atom%05igrid.txt" % i)
                     os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
                         self.context.options.density,
@@ -351,6 +353,8 @@ class Cache(object):
 
             write_cube_in(points_fn, grid_points) # prepare for cubegen
             print "Molecular density on moleculer grid"
+            if self.context.fchk.lot.startswith("RO"):
+                raise Error("Can not cope with ROHF or ROKS. Cubegen can not compute the density properly for such calculations!")
             os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
                 self.context.options.density, self.context.fchk.filename,
                 dens_fn, points_fn,
@@ -443,7 +447,7 @@ class Cache(object):
                     matrix[j2,j1] = value
         pb()
 
-        f = file(os.path.join(self.context.outdir, "atom_matrices.txt"), "w")
+        f = file(os.path.join(self.context.outdir, "hirshi_weight_elements.txt"), "w")
         print >> f, "number of orbitas:", num_orbitals
         print >> f, "number of atoms: ", molecule.size
         for i, number_i in enumerate(molecule.numbers):
