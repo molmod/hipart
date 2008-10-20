@@ -105,6 +105,23 @@ class Cache(object):
                         self.atom_grid_distances[(i,j)] = distances
             pb()
 
+    def _cubegen_ugly_hack_density(self, grid_fn, den_fn):
+        num_elec = self.context.fchk.fields.get("Number of electrons")
+        densities = 0.0
+        for j in xrange((num_elec+1)/2):
+            cube_fn = den_fn.replace("dens", "orb%05i" % j)
+            cube_fn_bin = "%s.bin" % cube_fn
+            os.system(". ~/g03.profile; cubegen 0 MO=%s %s %s -5 < %s" % (
+                j+1, self.context.fchk.filename, cube_fn, grid_fn
+            ))
+            orb = load_cube(cube_fn)
+            orb.tofile(cube_fn_bin)
+            if 2*j+1==num_elec:
+                densities += orb**2
+            else:
+                densities += 2*orb**2
+        return densities
+
     def do_atom_densities(self):
         if hasattr(self, "atom_densities"):
             return
@@ -121,15 +138,21 @@ class Cache(object):
             if os.path.isfile(den_fn_bin):
                 densities = numpy.fromfile(den_fn_bin, float)
             else:
-                if not os.path.isfile(den_fn):
-                    if self.context.fchk.lot.startswith("RO"):
-                        raise Error("Can not cope with ROHF or ROKS. Cubegen can not compute the density properly for such calculations!")
+                if os.path.isfile(den_fn):
+                    densities = load_cube(den_fn)
+                else:
                     grid_fn = os.path.join(workdir, "atom%05igrid.txt" % i)
-                    os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
-                        self.context.options.density,
-                        self.context.fchk.filename, den_fn, grid_fn
-                    ))
-                densities = load_cube(den_fn)
+                    if self.context.fchk.lot.startswith("ROHF"):
+                        # ugly hack
+                        densities = self._cubegen_ugly_hack_density(grid_fn, den_fn)
+                    elif self.context.fchk.lot.startswith("RO"):
+                        raise ComputeError("Can not cope with RO calculation, except ROHF. Cubegen can not compute the density properly for RO calculations!")
+                    else:
+                        os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
+                            self.context.options.density,
+                            self.context.fchk.filename, den_fn, grid_fn
+                        ))
+                        densities = load_cube(den_fn)
                 densities.tofile(den_fn_bin)
             self.atom_densities.append(densities)
         pb()
@@ -353,13 +376,17 @@ class Cache(object):
 
             write_cube_in(points_fn, grid_points) # prepare for cubegen
             print "Molecular density on moleculer grid"
-            if self.context.fchk.lot.startswith("RO"):
-                raise Error("Can not cope with ROHF or ROKS. Cubegen can not compute the density properly for such calculations!")
-            os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
-                self.context.options.density, self.context.fchk.filename,
-                dens_fn, points_fn,
-            ))
-            densities = load_cube(dens_fn)
+            if self.context.fchk.lot.startswith("ROHF"):
+                # ugly hack
+                densities = self._cubegen_ugly_hack_density(points_fn, dens_fn)
+            elif self.context.fchk.lot.startswith("RO"):
+                raise ComputeError("Can not cope with RO calculation, except ROHF. Cubegen can not compute the density properly for RO calculations!")
+            else:
+                os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
+                    self.context.options.density, self.context.fchk.filename,
+                    dens_fn, points_fn,
+                ))
+                densities = load_cube(dens_fn)
             densities.tofile(dens_fn_bin)
             print "Molecular potential on moleculer grid"
             os.system(". ~/g03.profile; cubegen 0 potential=%s %s %s -5 < %s" % (

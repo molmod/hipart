@@ -57,6 +57,8 @@ class ProgressBar(object):
 def load_cube(filename):
     f = file(filename)
     data = numpy.array([float(line.split()[3]) for line in f])
+    if numpy.isnan(data[0]): # ugly workarond for stupid cubegen
+        data[0] = data[1]
     if len(data) == 0:
         raise Error("Could not load cube file. File is empty.")
     f.close()

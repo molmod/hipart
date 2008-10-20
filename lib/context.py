@@ -49,7 +49,8 @@ class Context(object):
     def __init__(self, atom_table, fchk_fn, options):
         self.atom_table = atom_table
         self.fchk = FCHKFile(fchk_fn, field_labels=[
-            "Charge", "Number of basis functions", "Dipole Moment"
+            "Charge", "Number of basis functions", "Dipole Moment",
+            "Number of electrons",
         ])
         self.options = options
 
