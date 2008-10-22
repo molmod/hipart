@@ -35,27 +35,22 @@ class Error(Exception):
 
 
 class AtomFn(object):
-    def __init__(self, rs, rhos, number, charge):
-        self.number = number
-        self.charge = charge
-        self.num_elec = (number - charge)
-
+    def __init__(self, rs, rhos, do_potential=False):
         self.density = CubicSpline(rs, rhos)
-
-        qs = -cumul_integrate_log(rs, rhos*rs**2*4*numpy.pi)
-        #self.rhos_cumul = cumul_integrate(rs, rhos)
-        #print number, self.rhos_cumul[-1], self.num_elec
-        qs *= self.num_elec/qs[-1]
-        self.charge = CubicSpline(rs, qs)
-
-        vs = -cumul_integrate_log(1/rs[::-1], qs[::-1])[::-1]
-        self._potential = CubicSpline(rs, vs)
+        if do_potential:
+            qs = -cumul_integrate_log(rs, rhos*rs**2*4*numpy.pi)
+            self.charge = CubicSpline(rs, qs)
+            vs = -cumul_integrate_log(1/rs[::-1], qs[::-1])[::-1]
+            self._potential = CubicSpline(rs, vs)
 
     def potential(self, rs):
-        vs = self._potential(rs)
-        mask = rs>0#self._potential.x[-2]
-        vs[mask] = -self.num_elec/rs[mask]
-        return vs
+        if hasattr(self, "_potential"):
+            vs = self._potential(rs)
+            mask = rs>0#self._potential.x[-2]
+            vs[mask] = -self.num_elec/rs[mask]
+            return vs
+        else:
+            raise NotImplementedError
 
 
 class AtomProfile(object):
@@ -97,7 +92,7 @@ class AtomProfile(object):
             high_ref = self.records[high_charge]
             rhos = high_ref + (low_ref - high_ref)*(high_charge - charge)
 
-        result = AtomFn(self.rs, rhos, self.number, charge)
+        result = AtomFn(self.rs, rhos)
         #print "##Check:", -integrate(result.rs, 4*numpy.pi*result.rhos*result.rs**2)+self.number-charge, "##"
         return result
 

@@ -24,7 +24,7 @@ from hipart.tools import ProgressBar, write_cube_in, get_atom_grid, \
 from hipart.integrate import cumul_integrate_log, integrate_log, integrate_lebedev
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid
-from hipart.atoms import AtomTable
+from hipart.atoms import AtomTable, AtomFn
 
 from molmod.transformations import random_rotation
 from molmod.data.periodic import periodic
@@ -314,32 +314,49 @@ class BaseCache(object):
         self.mol_potentials = potentials
 
     def do_partitions(self):
-        if hasattr(self, "partition_weights"):
+        if hasattr(self, "partition_weights") and hasattr(self, "pro_atom_fns"):
             return
         print "Iterative hirshfeld"
 
-        molecule = self.context.fchk.molecule
         weights_tpl_bin = os.path.join(self.context.workdir, "%s_weights%%05i.bin" % self.prefix)
+        pro_atoms_tpl_bin = os.path.join(self.context.workdir, "%s_proatom%%05i.bin" % self.prefix)
 
         # Try to read the data from the workdir
-        print "Try to read iterative hirsfeld results from workdir."
+        self._load_partitions(weights_tpl_bin, pro_atoms_tpl_bin)
+        if self.partition_weights is None or self.pro_atom_fns is None:
+            print "Could not load partitions from workdir. Computing them..."
+            self._compute_partitions()
+
+            print "Writing pro atoms to workdir"
+            for i, pafn in enumerate(self.pro_atom_fns):
+                pafn.density.y.tofile(pro_atoms_tpl_bin % i)
+            print "Writing partition weights to workdir"
+            for i, pw in enumerate(self.partition_weights):
+                pw.tofile(weights_tpl_bin % i)
+
+    def _load_partitions(self, weights_tpl_bin, pro_atoms_tpl_bin):
+        print "Try to load partition weights"
+        molecule = self.context.fchk.molecule
+
         self.partition_weights = []
         for i in xrange(molecule.size):
             if os.path.isfile(weights_tpl_bin % i):
                 pw = numpy.fromfile(weights_tpl_bin % i, float)
                 self.partition_weights.append(pw)
             else:
-                print "Could not find %s. Starting from scratch" % (weights_tpl_bin % i)
-                self.partition_weights = []
-                break
-        if len(self.partition_weights) != molecule.size:
-            self._do_partitions_sub(weights_tpl_bin)
+                self.partition_weights = None
+                return
+        self.pro_atom_fns = []
+        for i, number_i in enumerate(molecule.numbers):
+            if os.path.isfile(pro_atoms_tpl_bin % i):
+                rs = self.get_rs(number_i)
+                rhos = numpy.fromfile(pro_atoms_tpl_bin % i, float)
+                self.pro_atom_fns.append(AtomFn(rs, rhos))
+            else:
+                self.pro_atom_fns = None
+                return
 
-            print "Writing partition weights to workdir"
-            for i, pw in enumerate(self.partition_weights):
-                pw.tofile(weights_tpl_bin % i)
-
-    def _do_partitions_sub(self, weights_tpl_bin):
+    def _compute_partitions(self, weights_tpl_bin, pro_atoms_tpl_bin):
         raise NotImplementedError
 
     def do_charges(self):
@@ -584,6 +601,8 @@ class HirshfeldICache(BaseCache):
     def __init__(self, context, atom_table):
         BaseCache.__init__(self, context, "hirshi")
         self.atom_table = atom_table
+        # write the rs to the workdir for plotting purposes:
+        atom_table.rs.tofile(os.path.join(self.context.workdir, "%s_rs.bin" % self.prefix))
 
     def get_rs(self, number):
         return self.atom_table.records[number].rs
@@ -591,9 +610,8 @@ class HirshfeldICache(BaseCache):
     def clone(self, other_context):
         return HirshfeldICache(other_context, self.atom_table)
 
-    def _do_partitions_sub(self, weights_tpl_bin):
+    def _compute_partitions(self):
         molecule = self.context.fchk.molecule
-
         self.do_atom_densities()
 
         counter = 0
@@ -633,6 +651,7 @@ class HirshfeldICache(BaseCache):
             old_charges = charges
 
         self.partition_weights = hirshfeld_weights
+        self.pro_atom_fns = atom_fns
 
 
 cache_classes = {
