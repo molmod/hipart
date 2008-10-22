@@ -313,6 +313,35 @@ class BaseCache(object):
         self.mol_densities = densities
         self.mol_potentials = potentials
 
+    def do_partitions(self):
+        if hasattr(self, "partition_weights"):
+            return
+        print "Iterative hirshfeld"
+
+        molecule = self.context.fchk.molecule
+        weights_tpl_bin = os.path.join(self.context.workdir, "%s_weights%%05i.bin" % self.prefix)
+
+        # Try to read the data from the workdir
+        print "Try to read iterative hirsfeld results from workdir."
+        self.partition_weights = []
+        for i in xrange(molecule.size):
+            if os.path.isfile(weights_tpl_bin % i):
+                pw = numpy.fromfile(weights_tpl_bin % i, float)
+                self.partition_weights.append(pw)
+            else:
+                print "Could not find %s. Starting from scratch" % (weights_tpl_bin % i)
+                self.partition_weights = []
+                break
+        if len(self.partition_weights) != molecule.size:
+            self._do_partitions_sub(weights_tpl_bin)
+
+            print "Writing partition weights to workdir"
+            for i, pw in enumerate(self.partition_weights):
+                pw.tofile(weights_tpl_bin % i)
+
+    def _do_partitions_sub(self, weights_tpl_bin):
+        raise NotImplementedError
+
     def do_charges(self):
         if hasattr(self, "charges"):
             return
@@ -562,69 +591,48 @@ class HirshfeldICache(BaseCache):
     def clone(self, other_context):
         return HirshfeldICache(other_context, self.atom_table)
 
-    def do_partitions(self):
-        if hasattr(self, "partition_weights"):
-            return
-        print "Iterative hirshfeld"
-
+    def _do_partitions_sub(self, weights_tpl_bin):
         molecule = self.context.fchk.molecule
 
-        weights_tpl_bin = os.path.join(self.context.workdir, "%s_weights%%05i.bin" % self.prefix)
+        self.do_atom_densities()
 
-        # Try to read the data from the workdir
-        print "Try to read iterative hirsfeld results from workdir."
-        self.partition_weights = []
-        for i in xrange(molecule.size):
-            if os.path.isfile(weights_tpl_bin % i):
-                pw = numpy.fromfile(weights_tpl_bin % i, float)
-                self.partition_weights.append(pw)
-            else:
-                print "Could not find %s. Starting from scratch" % (weights_tpl_bin % i)
-                self.partition_weights = []
-                break
-        if len(self.partition_weights) != molecule.size:
-            self.do_atom_densities()
-            counter = 0
-            old_charges = numpy.zeros(molecule.size, float)
-            while True:
-                # construct the pro-atom density functions, using the densities
-                # from the previous iteration.
-                atom_fns = []
-                for i, number_i in enumerate(molecule.numbers):
-                    atom_fns.append(self.atom_table.records[number_i].get_atom_fn(old_charges[i]))
+        counter = 0
+        old_charges = numpy.zeros(molecule.size, float)
+        while True:
+            # construct the pro-atom density functions, using the densities
+            # from the previous iteration.
+            atom_fns = []
+            for i, number_i in enumerate(molecule.numbers):
+                atom_fns.append(self.atom_table.records[number_i].get_atom_fn(old_charges[i]))
 
-                # compute the hirshfeld charges
-                charges = []
-                hirshfeld_weights = []
-                for i, number_i in enumerate(molecule.numbers):
-                    hw = compute_hirshfeld_weights(
-                        i, atom_fns, self.context.num_lebedev,
-                        self.atom_grid_distances
-                    )
-                    fn = self.atom_densities[i]*hw
-                    radfun = integrate_lebedev(self.context.lebedev_weights, fn)
-                    rs = self.atom_table.records[number_i].rs
-                    num_electrons = integrate_log(rs, radfun*rs**2)
-
-                    charges.append(number_i - num_electrons)
-                    hirshfeld_weights.append(hw)
-
-                # ordinary blablabla ...
-                charges = numpy.array(charges)
-                max_change = abs(charges-old_charges).max()
-                print "Iteration %03i    max change = %10.5e    total charge = %10.5e" % (
-                    counter, max_change, charges.sum()
+            # compute the hirshfeld charges
+            charges = []
+            hirshfeld_weights = []
+            for i, number_i in enumerate(molecule.numbers):
+                hw = compute_hirshfeld_weights(
+                    i, atom_fns, self.context.num_lebedev,
+                    self.atom_grid_distances
                 )
-                if max_change < self.context.options.threshold:
-                    break
-                counter += 1
-                old_charges = charges
+                fn = self.atom_densities[i]*hw
+                radfun = integrate_lebedev(self.context.lebedev_weights, fn)
+                rs = self.atom_table.records[number_i].rs
+                num_electrons = integrate_log(rs, radfun*rs**2)
 
-            self.partition_weights = hirshfeld_weights
+                charges.append(number_i - num_electrons)
+                hirshfeld_weights.append(hw)
 
-            print "Writing iterative hirshfeld weights to workdir"
-            for i, pw in enumerate(self.partition_weights):
-                pw.tofile(weights_tpl_bin % i)
+            # ordinary blablabla ...
+            charges = numpy.array(charges)
+            max_change = abs(charges-old_charges).max()
+            print "Iteration %03i    max change = %10.5e    total charge = %10.5e" % (
+                counter, max_change, charges.sum()
+            )
+            if max_change < self.context.options.threshold:
+                break
+            counter += 1
+            old_charges = charges
+
+        self.partition_weights = hirshfeld_weights
 
 
 cache_classes = {
