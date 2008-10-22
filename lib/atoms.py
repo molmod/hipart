@@ -22,8 +22,6 @@
 from hipart.spline import CubicSpline
 from hipart.integrate import cumul_integrate_log
 
-from molmod.data.periodic import periodic
-
 import numpy, os
 
 
@@ -34,10 +32,6 @@ __all__ = [
 
 class Error(Exception):
     pass
-
-
-noble_numbers = numpy.array([0,2,10,18,36,54,86,118])
-core_sizes = dict((number, noble_numbers[noble_numbers<=number].max()) for number in periodic.yield_numbers())
 
 
 class AtomFn(object):
@@ -106,15 +100,6 @@ class AtomProfile(object):
         result = AtomFn(self.rs, rhos, self.number, charge)
         #print "##Check:", -integrate(result.rs, 4*numpy.pi*result.rhos*result.rs**2)+self.number-charge, "##"
         return result
-
-    def init_cusp_cutoff(self):
-        if hasattr(self, "cusp_cutoff"):
-            return
-        rhos = self.records[0]
-        qs = cumul_integrate_log(self.rs, rhos*self.rs**2*numpy.pi*4)
-        i = qs.searchsorted([core_sizes[self.number]])[0]
-        self.cusp_cutoff = self.rs[i]
-        #print self.number, core_sizes[self.number], self.cusp_cutoff
 
 
 class AtomTable(object):

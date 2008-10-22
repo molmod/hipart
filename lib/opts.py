@@ -20,12 +20,21 @@
 
 
 from hipart.lebedev_laikov import grid_fns
+from hipart.cache import cache_classes
+from hipart.context import Context
+
+from optparse import OptionParser
 
 
-__all__ = ["add_hirshi_options"]
+__all__ = ["parse_command_line"]
 
+usage_template = """%%prog [options] gaussian.fchk scheme [scheme parameters]
 
-def add_hirshi_options(parser):
+%s
+"""
+
+def parse_command_line(script_usage):
+    parser = OptionParser(usage_template % script_usage)
     parser.add_option(
         "--density",
         help="The density field to use from the gaussian fchk file (scf, mp2, mp3, "
@@ -64,4 +73,20 @@ def add_hirshi_options(parser):
         help="When the maximum change in the charges drops below this threshold "
         "value, the iteration stops. [default=%default]"
     )
+    options, args = parser.parse_args()
+    if len(args) < 2:
+        parser.error("Expecting at least two arguments.")
+    fchk_fn, scheme_name = args[:2]
+
+    context = Context(fchk_fn, options)
+
+    CacheClass = cache_classes.get(scheme_name)
+    if CacheClass is None:
+        parser.error("The scheme must be one of: %s" % (" ".join(cache_classes)))
+    if len(args)-2 != CacheClass.num_args:
+        parser.error("The selected scheme (%s) requires %i scheme arguments." % (scheme_name, CacheClass.num_args))
+    cache = CacheClass.new_from_args(context, args[2:])
+
+    return context, cache
+
 

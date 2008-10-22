@@ -20,28 +20,10 @@
 # --
 
 
-from hipart.context import Context
-from hipart.atoms import AtomTable
-from hipart.opts import add_hirshi_options
+from hipart.opts import parse_command_line
 
-from optparse import OptionParser
-import os, numpy
-
-# parse arguments ...
-parser = OptionParser("""%prog [options] atoms.txt gaussian.fchk
-
-%prog computes the iterative hirshfeld charges.
-""")
-add_hirshi_options(parser)
-(options, args) = parser.parse_args()
-if len(args) != 2:
-    parser.error("Expecting two arguments: atoms.txt gaussian.fchk")
-atom_fn, fchk_fn = args
-
-# Do the work. Where possible, the intermediate results from scripts that ran
-# previously, are recycled.
-context = Context(AtomTable(atom_fn), fchk_fn, options)
-context.cache.do_iterative_hirshfeld()
+usage = """%prog computes atomic charges."""
+context, cache = parse_command_line(usage)
+cache.do_charges()
 context.clean()
-
 

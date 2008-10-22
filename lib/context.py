@@ -20,7 +20,6 @@
 
 
 from hipart.atoms import AtomTable
-from hipart.cache import Cache
 from hipart.tools import guess_density_type
 from hipart.lebedev_laikov import get_grid
 
@@ -46,8 +45,7 @@ class Context(object):
 
     version = 1
 
-    def __init__(self, atom_table, fchk_fn, options):
-        self.atom_table = atom_table
+    def __init__(self, fchk_fn, options):
         self.fchk = FCHKFile(fchk_fn, field_labels=[
             "Charge", "Number of basis functions", "Dipole Moment",
             "Number of electrons",
@@ -73,10 +71,9 @@ class Context(object):
         if (options.reference is None or os.path.samefile(options.reference, fchk_fn)):
             self.reference = None
         else:
-            self.reference = Context(atom_table, options.reference, options)
+            self.reference = Context(options.reference, options)
             if self.tag != self.reference.tag:
                 raise ContectError("The reference state must have the same context tag.")
-        self.cache = Cache(self)
 
     num_lebedev = property(lambda self: len(self.lebedev_weights))
 
