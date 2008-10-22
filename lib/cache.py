@@ -19,8 +19,9 @@
 # --
 
 
-from hipart.tools import ProgressBar, write_cube_in, get_atom_grid, \
-    cubegen_density, cubegen_potential, cubegen_orbital, compute_hirshfeld_weights
+from hipart.log import log
+from hipart.tools import write_cube_in, cubegen_density, cubegen_potential, \
+    cubegen_orbital, get_atom_grid, compute_hirshfeld_weights
 from hipart.integrate import cumul_integrate_log, integrate_log, integrate_lebedev
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid
@@ -84,9 +85,10 @@ class BaseCache(object):
     def do_atom_grids(self):
         if hasattr(self, "atom_grid_distances") and hasattr(self, "atom_grid_points"):
             return
-
+        log.begin("Atomic grids")
         molecule = self.context.fchk.molecule
         if self.reference is not None:
+            log("Using atomic grids from reference context.")
             self.reference.do_atom_grids()
             self.atom_grid_distances = self.reference.atom_grid_distances
             self.atom_grid_points = self.reference.atom_grid_points
@@ -97,7 +99,7 @@ class BaseCache(object):
 
             self.atom_grid_distances = {}
             self.atom_grid_points = []
-            pb = ProgressBar("Atomic grids (and distances)", molecule.size**2)
+            pb = log.pb("Computing/Loading atomic grids (and distances)", molecule.size**2)
             for i, number_i in enumerate(molecule.numbers):
                 grid_prefix = os.path.join(workdir, "atom%05igrid" % i)
                 grid_fn_bin = "%s.bin" % grid_prefix
@@ -122,15 +124,17 @@ class BaseCache(object):
                         distances = numpy.sqrt(((grid_points - molecule.coordinates[j])**2).sum(axis=1))
                         self.atom_grid_distances[(i,j)] = distances
             pb()
+        log.end("Atom grids")
 
     def do_atom_densities(self):
         if hasattr(self, "atom_densities"):
             return
+        log.begin("Molecular densities on atomic grids")
         self.do_atom_grids()
         molecule = self.context.fchk.molecule
         workdir = self.context.workdir
 
-        pb = ProgressBar("Molecular density on atomic grids", molecule.size)
+        pb = log.pb("Computing/Loading densities", molecule.size)
         self.atom_densities = []
         for i, number_i in enumerate(molecule.numbers):
             pb()
@@ -151,6 +155,7 @@ class BaseCache(object):
                 densities.tofile(den_fn_bin)
             self.atom_densities.append(densities)
         pb()
+        log.end("Molecular densities on atomic grids")
 
     def do_cusp_radii(self):
         if hasattr(self, "cusp_radii"):
@@ -165,9 +170,11 @@ class BaseCache(object):
 
         cusp_radii_fn_bin = os.path.join(workdir, "cusp_radii.bin")
         if os.path.isfile(cusp_radii_fn_bin):
+            log("Loading cusp radii")
             self.cusp_radii = numpy.fromfile(cusp_radii_fn_bin, float)
         else:
             self.do_atom_densities()
+            log("Computing cusp radii")
             self.cusp_radii = numpy.zeros(molecule.size, float)
             for i, number_i in enumerate(molecule.numbers):
                 if number_i < 3:
@@ -184,7 +191,9 @@ class BaseCache(object):
     def do_esp_costfunction(self):
         if hasattr(self, "mol_esp_cost"):
             return
+        log.begin("ESP Cost function")
         if self.reference is not None:
+            log("Also construct reference ESP")
             self.reference.do_esp_costfunction()
 
         self._do_molecular_grid()
@@ -197,6 +206,7 @@ class BaseCache(object):
         )
         outfn = os.path.join(self.context.outdir, "mol_esp_cost.txt")
         self.mol_esp_cost.write_to_file(outfn)
+        log("Written %s" % outfn)
         if self.reference is not None:
             relative_total_charge = total_charge - self.reference.context.fchk.fields.get("Charge")
             self.relative_mol_esp_cost = ESPCostFunction(
@@ -207,12 +217,15 @@ class BaseCache(object):
             )
             outfn = os.path.join(self.context.outdir, "mol_esp_cost_relative.txt")
             self.relative_mol_esp_cost.write_to_file(outfn)
+            log("Written %s" % outfn)
+        log.end("ESP Cost function")
 
     def _do_molecular_grid(self):
         if hasattr(self, "mol_points") and hasattr(self, "mol_weights") and \
            hasattr(self, "mol_densities") and hasattr(self, "mol_potentials"):
             return
 
+        log.begin("Molecular grid + density and potential on this grid")
         lebedev_xyz, lebedev_weights = get_grid(self.context.options.mol_lebedev)
         molecule = self.context.fchk.molecule
         workdir = self.context.workdir
@@ -252,7 +265,7 @@ class BaseCache(object):
 
                     grid_points = []
                     grid_weights = []
-                    pb = ProgressBar("Molecular grid", scale_steps)
+                    pb = log.pb("Constructing molecular grid", scale_steps)
                     for scale in scales:
                         pb()
                         radii = scale*self.cusp_radii
@@ -276,7 +289,7 @@ class BaseCache(object):
                     grid_points = numpy.fromfile(points_fn_bin, float).reshape((-1,3))
                     grid_weights = numpy.fromfile(weights_fn_bin, float)
             else:
-                print "Linking grid from reference state"
+                log("Linking grid from reference state")
                 grid_points = self.reference.mol_points
                 grid_weights = self.reference.mol_weights
                 self.work_link("molecule_points.bin")
@@ -284,20 +297,20 @@ class BaseCache(object):
 
             write_cube_in(points_fn, grid_points) # prepare for cubegen
             grid_size = len(grid_weights)
-            print "Molecular density on moleculer grid."
+            log("Molecular density on moleculer grid.")
             densities = cubegen_density(
                 points_fn, den_fn, self.context.fchk,
                 self.context.options.density, grid_size
             )
             densities.tofile(den_fn_bin)
-            print "Molecular potential on moleculer grid."
+            log("Molecular potential on moleculer grid.")
             potentials = cubegen_potential(
                 points_fn, pot_fn, self.context.fchk,
                 self.context.options.density, grid_size
             )
             potentials.tofile(pot_fn_bin)
         else:
-            print "Loading molecular data from workdir"
+            log("Loading molecular data from workdir")
             densities = numpy.fromfile(den_fn_bin, float)
             potentials = numpy.fromfile(pot_fn_bin, float)
             if self.reference is None:
@@ -312,30 +325,32 @@ class BaseCache(object):
         self.mol_weights = grid_weights
         self.mol_densities = densities
         self.mol_potentials = potentials
+        log.end("Molecular grid + density and potential on this grid")
 
     def do_partitions(self):
         if hasattr(self, "partition_weights") and hasattr(self, "pro_atom_fns"):
             return
-        print "Iterative hirshfeld"
 
+        log.begin("Pro-atoms")
         weights_tpl_bin = os.path.join(self.context.workdir, "%s_weights%%05i.bin" % self.prefix)
         pro_atoms_tpl_bin = os.path.join(self.context.workdir, "%s_proatom%%05i.bin" % self.prefix)
 
         # Try to read the data from the workdir
         self._load_partitions(weights_tpl_bin, pro_atoms_tpl_bin)
         if self.partition_weights is None or self.pro_atom_fns is None:
-            print "Could not load partitions from workdir. Computing them..."
+            log("Could not load partitions from workdir. Computing them...")
             self._compute_partitions()
 
-            print "Writing pro atoms to workdir"
+            log("Writing pro atoms to workdir")
             for i, pafn in enumerate(self.pro_atom_fns):
                 pafn.density.y.tofile(pro_atoms_tpl_bin % i)
-            print "Writing partition weights to workdir"
+            log("Writing partition weights to workdir")
             for i, pw in enumerate(self.partition_weights):
                 pw.tofile(weights_tpl_bin % i)
+        log.end("Pro-atoms")
 
     def _load_partitions(self, weights_tpl_bin, pro_atoms_tpl_bin):
-        print "Try to load partition weights"
+        log("Try to load partition weights")
         molecule = self.context.fchk.molecule
 
         self.partition_weights = []
@@ -362,6 +377,8 @@ class BaseCache(object):
     def do_charges(self):
         if hasattr(self, "charges"):
             return
+        log.begin("Charges")
+
         if self.reference is not None:
             self.reference.do_charges()
 
@@ -371,13 +388,13 @@ class BaseCache(object):
         molecule = self.context.fchk.molecule
 
         if os.path.isfile(charges_fn_bin):
-            print "Loading charges."
+            log("Loading charges.")
             self.charges = numpy.fromfile(charges_fn_bin, float)
         else:
             self.do_atom_grids()
             self.do_atom_densities()
 
-            pb = ProgressBar("Computing charges", molecule.size)
+            pb = log.pb("Computing charges", molecule.size)
             self.charges = numpy.zeros(molecule.size, float)
             for i, number_i in enumerate(molecule.numbers):
                 pb()
@@ -392,13 +409,14 @@ class BaseCache(object):
                 self.charges[i] = number_i - integrate_log(rs, radfun*rs**2)
             pb()
             if self.context.options.fix_total_charge:
-                print "Ugly step: Adding constant to charges so that the total charge is zero."
+                log("Ugly step: Adding constant to charges so that the total charge is zero.")
                 self.charges -= (self.charges.sum() - self.context.fchk.fields.get("Charge"))/molecule.size
             self.charges.tofile(charges_fn_bin)
 
         # now some nice output
         def output(filename, charges, esp_cost):
-            f = file(os.path.join(self.context.outdir, filename), "w")
+            filename = os.path.join(self.context.outdir, filename)
+            f = file(filename, "w")
             print >> f, "number of atoms:", molecule.size
             print >> f, "  i        Z      Charge"
             print >> f, "-----------------------------"
@@ -413,6 +431,7 @@ class BaseCache(object):
             print >> f, "ESP RMSD         % 10.5e" % esp_cost.rmsd(charges)
             print >> f
             f.close()
+            log("Written %s" % filename)
 
         output("%s_charges.txt" % self.prefix, self.charges, self.mol_esp_cost)
 
@@ -422,6 +441,7 @@ class BaseCache(object):
                 "%s_charges_relative.txt" % self.prefix, relative_charges,
                 self.relative_mol_esp_cost
             )
+        log.end("Charges")
 
     def do_dipoles(self):
         if hasattr(self, "dipoles"):
@@ -429,6 +449,7 @@ class BaseCache(object):
         if self.reference is not None:
             self.reference.do_dipoles()
 
+        log.begin("Dipoles")
         self.do_partitions()
         self.do_esp_costfunction()
         self.do_charges()
@@ -436,13 +457,13 @@ class BaseCache(object):
         molecule = self.context.fchk.molecule
 
         if os.path.isfile(dipoles_fn_bin):
-            print "Loading dipoles."
+            log("Loading dipoles.")
             self.dipoles = numpy.fromfile(dipoles_fn_bin, float).reshape((-1,3))
         else:
             self.do_atom_grids()
             self.do_atom_densities()
 
-            pb = ProgressBar("Computing dipoles", molecule.size)
+            pb = log.pb("Computing dipoles", molecule.size)
             self.dipoles = numpy.zeros((molecule.size,3), float)
             for i, number_i in enumerate(molecule.numbers):
                 pb()
@@ -461,7 +482,8 @@ class BaseCache(object):
 
         # now some nice output
         def output(filename, charges, dipoles, esp_cost, dipole_qm):
-            f = file(os.path.join(self.context.outdir, filename), "w")
+            filename = os.path.join(self.context.outdir, filename)
+            f = file(filename, "w")
             print >> f, "number of atoms:", molecule.size
             print >> f, "  i        Z     Dipole-X     Dipole-Y     Dipole-Z      Dipole"
             print >> f, "------------------------------------------------------------------"
@@ -506,6 +528,7 @@ class BaseCache(object):
             )
             print >> f, "total density                    % 10.5e" % esp_cost.rms
             f.close()
+            log("Written %s" % filename)
 
         dipole_qm = self.context.fchk.fields.get("Dipole Moment")
         output(
@@ -520,19 +543,22 @@ class BaseCache(object):
                 self.dipoles - self.reference.dipoles,
                 self.relative_mol_esp_cost, relative_dipole_qm,
             )
+        log.end("Dipoles")
 
     def do_atom_orbitals(self):
         if hasattr(self, "atom_orbitals"):
             return
+
+        log.begin("Orbitals on atomic grids")
         if self.reference is not None:
-            print "Warning: The orbital analysis ignores the reference state."
+            log("Warning: The orbital analysis ignores the reference state.")
 
         self.do_atom_grids()
         molecule = self.context.fchk.molecule
         num_orbitals = self.context.fchk.fields.get("Number of basis functions")
         workdir = self.context.workdir
 
-        pb = ProgressBar("Molecular orbitals on atomic grids", molecule.size*num_orbitals)
+        pb = log.pb("Computing/Loading orbitals", molecule.size*num_orbitals)
         self.atom_orbitals = []
         for i, number_i in enumerate(molecule.numbers):
             orbitals = []
@@ -550,19 +576,21 @@ class BaseCache(object):
                     wavefn.tofile(cube_fn_bin)
                 orbitals.append(wavefn)
         pb()
+        log.end("Orbitals on atomic grids")
 
     def do_atom_matrices(self):
         if hasattr(self, "atom_matrices"):
             return
+        log.begin("Partinioning density matrix")
         if self.reference is not None:
-            print "Warning: The orbital analysis ignores the reference state."
+            log("Warning: The orbital analysis ignores the reference state.")
 
         self.do_atom_orbitals()
         self.do_partitions()
         num_orbitals = self.context.fchk.fields.get("Number of basis functions")
         molecule = self.context.fchk.molecule
 
-        pb = ProgressBar("Atom centered matrices", molecule.size)
+        pb = log.pb("Computing matrices", molecule.size)
         self.atom_matrices = []
         for i, number_i in enumerate(molecule.numbers):
             pb()
@@ -580,7 +608,8 @@ class BaseCache(object):
                     matrix[j2,j1] = value
         pb()
 
-        f = file(os.path.join(self.context.outdir, "%s_weight_elements.txt" % self.prefix), "w")
+        filename = os.path.join(self.context.outdir, "%s_weight_elements.txt" % self.prefix)
+        f = file(filename, "w")
         print >> f, "number of orbitas:", num_orbitals
         print >> f, "number of atoms: ", molecule.size
         for i, number_i in enumerate(molecule.numbers):
@@ -588,6 +617,8 @@ class BaseCache(object):
             for row in self.atom_matrices[i]:
                 print >> f, " ".join("% 15.10e" % value for value in row)
         f.close()
+        log("Written %s" % filename)
+        log.end("Partinioning density matrix")
 
 
 class HirshfeldICache(BaseCache):
@@ -611,6 +642,7 @@ class HirshfeldICache(BaseCache):
         return HirshfeldICache(other_context, self.atom_table)
 
     def _compute_partitions(self):
+        log.begin("Iterative Hirshfeld")
         molecule = self.context.fchk.molecule
         self.do_atom_densities()
 
@@ -642,9 +674,9 @@ class HirshfeldICache(BaseCache):
             # ordinary blablabla ...
             charges = numpy.array(charges)
             max_change = abs(charges-old_charges).max()
-            print "Iteration %03i    max change = %10.5e    total charge = %10.5e" % (
+            log("Iteration %03i    max change = %10.5e    total charge = %10.5e" % (
                 counter, max_change, charges.sum()
-            )
+            ))
             if max_change < self.context.options.threshold:
                 break
             counter += 1
@@ -652,6 +684,7 @@ class HirshfeldICache(BaseCache):
 
         self.partition_weights = hirshfeld_weights
         self.pro_atom_fns = atom_fns
+        log.end("Iterative Hirshfeld")
 
 
 cache_classes = {

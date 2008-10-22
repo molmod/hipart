@@ -26,33 +26,13 @@ import numpy, sys, os
 
 
 __all__ = [
-    "Error", "ProgressBar",
-    "load_cube", "guess_density_type", "write_cube_in",
+    "Error", "load_cube", "guess_density_type", "write_cube_in",
     "cubegen_density", "cubegen_potential", "cubegen_orbital",
     "get_atom_grid", "compute_hirshfeld_weights"
 ]
 
 class Error(Exception):
     pass
-
-
-class ProgressBar(object):
-    def __init__(self, label, n, f=sys.stdout):
-        self.i = 0
-        self.n = n
-        self.f = f
-        self.f.write("%s: " % label)
-        self.f.flush()
-
-    def __call__(self):
-        if self.i % 10 == 0 or self.i == self.n:
-            self.f.write(" %i%% " % ((100*self.i)/self.n))
-        else:
-            self.f.write(".")
-        if self.i == self.n:
-            self.f.write("\n")
-        self.f.flush()
-        self.i += 1
 
 
 def load_cube(filename, N):

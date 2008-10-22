@@ -19,6 +19,7 @@
 # --
 
 
+from hipart.log import log
 from hipart.spline import CubicSpline
 from hipart.integrate import cumul_integrate_log
 
@@ -75,12 +76,12 @@ class AtomProfile(object):
         min_charge = min(self.records)
         if charge >= max_charge:
             if self.number > 1 and charge < 1:
-                print "Warning: unsafe extrapolation (pos), number=%i, charge=%f" % (self.number, charge)
+                log("Warning: unsafe extrapolation (pos), number=%i, charge=%f" % (self.number, charge))
             num_elec = self.number - charge
             ref_elec = self.number - max_charge
             rhos = (self.records[max_charge]*num_elec)/ref_elec
         elif charge <= min_charge:
-            print "Warning: unsafe extrapolation (neg), number=%i, charge=%f" % (self.number, charge)
+            log("Warning: unsafe extrapolation (neg), number=%i, charge=%f" % (self.number, charge))
             rhos = self.records[min_charge] + \
                 (self.records[min_charge] - self.records[min_charge+1])*(min_charge-charge)
         else:

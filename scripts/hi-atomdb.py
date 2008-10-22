@@ -20,8 +20,9 @@
 # --
 
 
+from hipart.log import log
 from hipart.integrate import integrate_log
-from hipart.tools import ProgressBar, guess_density_type, write_cube_in, cubegen_density, get_atom_grid
+from hipart.tools import guess_density_type, write_cube_in, cubegen_density, get_atom_grid
 from hipart.lebedev_laikov import get_grid, grid_fns
 
 from molmod.data.periodic import periodic
@@ -69,7 +70,7 @@ def parse_numbers(atom_str):
 
 
 def make_inputs(lot, atom_numbers, max_ion):
-    pb = ProgressBar("Creating input files", len(atom_numbers)*(2*max_ion+1))
+    pb = log.pb("Creating input files", len(atom_numbers)*(2*max_ion+1))
     noble_numbers = [0] + [atom.number for atom in periodic.atoms_by_number.itervalues() if atom.col == 18]
     molecule = Molecule(numpy.zeros(1, int), numpy.zeros((1,3), float), "Computer says nooooo...")
 
@@ -116,7 +117,7 @@ def make_inputs(lot, atom_numbers, max_ion):
 def run_jobs():
     dirnames = glob("0*/*/*/")
     dirnames.sort()
-    pb = ProgressBar("Gaussian calculations", len(dirnames))
+    pb = log.pb("Gaussian calculations", len(dirnames))
     for dirname in dirnames:
         pb()
         if not os.path.isfile(os.path.join(dirname, "gaussian.fchk")):
@@ -195,7 +196,7 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
     charges = []
 
     # run over all directories, run cubegen, load cube data and plot
-    pb = ProgressBar("Density profiles", len(atom_numbers)*(2*max_ion+1))
+    pb = log.pb("Density profiles", len(atom_numbers)*(2*max_ion+1))
     for number in atom_numbers:
         atom = periodic[number]
         symbol = atom.symbol
@@ -230,7 +231,7 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
 
     counter = 0
     for number, symbol, charge, real_charge in charges:
-        print "Charge check %3i %2s %+2i    %10.5e" % (number, symbol, charge, -real_charge+number-charge)
+        log("Total charge error: %3i %2s %+2i    %10.5e" % (number, symbol, charge, -real_charge+number-charge))
         counter += 1
 
 
