@@ -621,7 +621,7 @@ class BaseCache(object):
         log.end("Partinioning density matrix")
 
 
-class HirshfeldICache(BaseCache):
+class TableBaseCache(BaseCache):
     num_args = 1
 
     @classmethod
@@ -629,8 +629,8 @@ class HirshfeldICache(BaseCache):
         atom_table = AtomTable(args[0])
         return cls(context, atom_table)
 
-    def __init__(self, context, atom_table):
-        BaseCache.__init__(self, context, "hirshi")
+    def __init__(self, context, atom_table, prefix):
+        BaseCache.__init__(self, context, prefix)
         self.atom_table = atom_table
         # write the rs to the workdir for plotting purposes:
         atom_table.rs.tofile(os.path.join(self.context.workdir, "%s_rs.bin" % self.prefix))
@@ -639,7 +639,36 @@ class HirshfeldICache(BaseCache):
         return self.atom_table.records[number].rs
 
     def clone(self, other_context):
-        return HirshfeldICache(other_context, self.atom_table)
+        return self.__class__(other_context, self.atom_table)
+
+
+class HirshfeldCache(TableBaseCache):
+    def __init__(self, context, atom_table):
+        TableBaseCache.__init__(self, context, atom_table, "hirsh")
+
+    def _compute_partitions(self):
+        log.begin("Normal Hirshfeld (with neutral pro-atoms)")
+        self.do_atom_grids()
+
+        molecule = self.context.fchk.molecule
+        self.pro_atom_fns = []
+        for i, number_i in enumerate(molecule.numbers):
+            self.pro_atom_fns.append(self.atom_table.records[number_i].get_atom_fn(0.0))
+
+        self.partition_weights = []
+        for i, number_i in enumerate(molecule.numbers):
+            hw = compute_hirshfeld_weights(
+                i, self.pro_atom_fns, self.context.num_lebedev,
+                self.atom_grid_distances
+            )
+            self.partition_weights.append(hw)
+
+        log.end("Normal Hirshfeld (with neutral pro-atoms)")
+
+
+class HirshfeldICache(TableBaseCache):
+    def __init__(self, context, atom_table):
+        TableBaseCache.__init__(self, context, atom_table, "hirshi")
 
     def _compute_partitions(self):
         log.begin("Iterative Hirshfeld")
@@ -688,5 +717,6 @@ class HirshfeldICache(BaseCache):
 
 
 cache_classes = {
+    "hirsh": HirshfeldCache,
     "hirshi": HirshfeldICache,
 }
