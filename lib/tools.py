@@ -27,8 +27,9 @@ import numpy, sys, os
 
 __all__ = [
     "Error", "ProgressBar",
-    "load_cube", "guess_density_type", "write_cube_in", "get_atom_grid",
-    "compute_hirshfeld_weights"
+    "load_cube", "guess_density_type", "write_cube_in",
+    "cubegen_density", "cubegen_potential", "cubegen_orbital",
+    "get_atom_grid", "compute_hirshfeld_weights"
 ]
 
 class Error(Exception):
@@ -88,6 +89,46 @@ def write_cube_in(filename, grid_points):
     for point in grid_points:
         print >> f, "%15.10e %15.10e %15.10e" % tuple(point/angstrom)
     f.close()
+
+def cubegen_density(grid_fn, den_fn, fchk, density_type, grid_size):
+    if fchk.lot.startswith("ROHF"):
+        # ugly hack: Workaround for stupid cubegen that does not work
+        # property on ROHF calculations. pfff...
+        densities = 0.0
+        num_elec = fchk.fields.get("Number of electrons")
+        for j in xrange((num_elec+1)/2):
+            orb_fn = den_fn.replace("dens", "orb%05i" % j)
+            orb_fn_bin = "%s.bin" % cube_fn
+            os.system(". ~/g03.profile; cubegen 0 MO=%s %s %s -5 < %s" % (
+                j+1, fchk.filename, orb_fn, grid_fn
+            ))
+            orb = load_cube(orb_fn, grid_size)
+            orb.tofile(orb_fn_bin)
+            if 2*j+1==num_elec:
+                densities += orb**2
+            else:
+                densities += 2*orb**2
+    elif fchk.lot.startswith("RO"):
+        raise ComputeError("Can not cope with RO calculation, except ROHF. Cubegen can not compute the density properly for RO calculations!")
+    else:
+        os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
+            density_type, fchk.filename, den_fn, grid_fn
+        ))
+        densities = load_cube(den_fn, grid_size)
+
+    return densities
+
+def cubegen_potential(grid_fn, pot_fn, fchk, density_type, grid_size):
+    os.system(". ~/g03.profile; cubegen 0 potential=%s %s %s -5 < %s" % (
+        density_type, fchk.filename, pot_fn, grid_fn,
+    ))
+    return load_cube(pot_fn, grid_size)
+
+def cubegen_orbital(grid_fn, orb_fn, fchk, orb_index, grid_size):
+    os.system(". ~/g03.profile; cubegen 0 MO=%i %s %s -5 < %s" % (
+        orb_index+1, fchk.filename, orb_fn, grid_fn,
+    ))
+    return load_cube(orb_fn, grid_size)
 
 
 def get_atom_grid(lebedev_xyz, center, radii):

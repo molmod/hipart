@@ -19,8 +19,8 @@
 # --
 
 
-from hipart.tools import ProgressBar, write_cube_in, load_cube, get_atom_grid, \
-    compute_hirshfeld_weights
+from hipart.tools import ProgressBar, write_cube_in, get_atom_grid, \
+    cubegen_density, cubegen_potential, cubegen_orbital, compute_hirshfeld_weights
 from hipart.integrate import cumul_integrate_log, integrate_log, integrate_lebedev
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid
@@ -123,23 +123,6 @@ class BaseCache(object):
                         self.atom_grid_distances[(i,j)] = distances
             pb()
 
-    def _cubegen_ugly_hack_density(self, grid_fn, den_fn, N):
-        num_elec = self.context.fchk.fields.get("Number of electrons")
-        densities = 0.0
-        for j in xrange((num_elec+1)/2):
-            cube_fn = den_fn.replace("dens", "orb%05i" % j)
-            cube_fn_bin = "%s.bin" % cube_fn
-            os.system(". ~/g03.profile; cubegen 0 MO=%s %s %s -5 < %s" % (
-                j+1, self.context.fchk.filename, cube_fn, grid_fn
-            ))
-            orb = load_cube(cube_fn, N)
-            orb.tofile(cube_fn_bin)
-            if 2*j+1==num_elec:
-                densities += orb**2
-            else:
-                densities += 2*orb**2
-        return densities
-
     def do_atom_densities(self):
         if hasattr(self, "atom_densities"):
             return
@@ -151,7 +134,7 @@ class BaseCache(object):
         self.atom_densities = []
         for i, number_i in enumerate(molecule.numbers):
             pb()
-            cube_size = self.context.num_lebedev*len(self.get_rs(number_i))
+            grid_size = self.context.num_lebedev*len(self.get_rs(number_i))
             den_fn = os.path.join(workdir, "atom%05idens.cube" % i)
             den_fn_bin = "%s.bin" % den_fn
             if os.path.isfile(den_fn_bin):
@@ -161,17 +144,10 @@ class BaseCache(object):
                     densities = load_cube(den_fn, cube_size)
                 else:
                     grid_fn = os.path.join(workdir, "atom%05igrid.txt" % i)
-                    if self.context.fchk.lot.startswith("ROHF"):
-                        # ugly hack
-                        densities = self._cubegen_ugly_hack_density(grid_fn, den_fn, cube_size)
-                    elif self.context.fchk.lot.startswith("RO"):
-                        raise ComputeError("Can not cope with RO calculation, except ROHF. Cubegen can not compute the density properly for RO calculations!")
-                    else:
-                        os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
-                            self.context.options.density,
-                            self.context.fchk.filename, den_fn, grid_fn
-                        ))
-                        densities = load_cube(den_fn, cube_size)
+                    densities = cubegen_density(
+                        grid_fn, den_fn, self.context.fchk,
+                        self.context.options.density, grid_size
+                    )
                 densities.tofile(den_fn_bin)
             self.atom_densities.append(densities)
         pb()
@@ -241,9 +217,9 @@ class BaseCache(object):
         molecule = self.context.fchk.molecule
         workdir = self.context.workdir
 
-        dens_fn = os.path.join(workdir, "molecule_dens.cube")
+        den_fn = os.path.join(workdir, "molecule_dens.cube")
         pot_fn = os.path.join(workdir, "molecule_pot.cube")
-        dens_fn_bin = "%s.bin" % dens_fn
+        den_fn_bin = "%s.bin" % den_fn
         pot_fn_bin = "%s.bin" % pot_fn
         points_fn = os.path.join(workdir, "molecule_points.txt")
         points_fn_bin = os.path.join(workdir, "molecule_points.bin")
@@ -251,7 +227,7 @@ class BaseCache(object):
 
         self.do_cusp_radii()
 
-        if not (os.path.isfile(dens_fn_bin) and os.path.isfile(pot_fn_bin)):
+        if not (os.path.isfile(den_fn_bin) and os.path.isfile(pot_fn_bin)):
             if self.reference is None:
                 if not (os.path.isfile(points_fn_bin) and os.path.isfile(weights_fn_bin)):
                     # we have to generate a new grid. The grid is constructed taking
@@ -307,29 +283,22 @@ class BaseCache(object):
                 self.work_link("molecule_weights.bin")
 
             write_cube_in(points_fn, grid_points) # prepare for cubegen
-            print "Molecular density on moleculer grid"
-            if self.context.fchk.lot.startswith("ROHF"):
-                # ugly hack
-                densities = self._cubegen_ugly_hack_density(points_fn, dens_fn, len(grid_weights))
-            elif self.context.fchk.lot.startswith("RO"):
-                raise ComputeError("Can not cope with RO calculation, except ROHF. Cubegen can not compute the density properly for RO calculations!")
-            else:
-                os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
-                    self.context.options.density, self.context.fchk.filename,
-                    dens_fn, points_fn,
-                ))
-                densities = load_cube(dens_fn, len(grid_weights))
-            densities.tofile(dens_fn_bin)
-            print "Molecular potential on moleculer grid"
-            os.system(". ~/g03.profile; cubegen 0 potential=%s %s %s -5 < %s" % (
-                self.context.options.density, self.context.fchk.filename,
-                pot_fn, points_fn,
-            ))
-            potentials = load_cube(pot_fn, len(grid_weights))
+            grid_size = len(grid_weights)
+            print "Molecular density on moleculer grid."
+            densities = cubegen_density(
+                points_fn, den_fn, self.context.fchk,
+                self.context.options.density, grid_size
+            )
+            densities.tofile(den_fn_bin)
+            print "Molecular potential on moleculer grid."
+            potentials = cubegen_potential(
+                points_fn, pot_fn, self.context.fchk,
+                self.context.options.density, grid_size
+            )
             potentials.tofile(pot_fn_bin)
         else:
             print "Loading molecular data from workdir"
-            densities = numpy.fromfile(dens_fn_bin, float)
+            densities = numpy.fromfile(den_fn_bin, float)
             potentials = numpy.fromfile(pot_fn_bin, float)
             if self.reference is None:
                 # REMARK: We assume that the grid files exist
@@ -522,7 +491,7 @@ class BaseCache(object):
         for i, number_i in enumerate(molecule.numbers):
             orbitals = []
             self.atom_orbitals.append(orbitals)
-            cube_size = self.context.num_lebedev*len(self.get_rs(number_i))
+            grid_size = self.context.num_lebedev*len(self.get_rs(number_i))
             grid_fn = os.path.join(workdir, "atom%05igrid.txt" % i)
             for j in xrange(num_orbitals):
                 pb()
@@ -531,11 +500,7 @@ class BaseCache(object):
                 if os.path.isfile(cube_fn_bin):
                     wavefn = numpy.fromfile(cube_fn_bin, float)
                 else:
-                    if not os.path.isfile(cube_fn):
-                        os.system(". ~/g03.profile; cubegen 0 MO=%i %s %s -5 < %s" % (
-                            j+1, self.context.fchk.filename, cube_fn, grid_fn,
-                        ))
-                    wavefn = load_cube(cube_fn, cube_size)
+                    wavefn = cubegen_orbital(grid_fn, cube_fn, self.context.fchk, j, grid_size)
                     wavefn.tofile(cube_fn_bin)
                 orbitals.append(wavefn)
         pb()

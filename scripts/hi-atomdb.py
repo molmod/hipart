@@ -21,11 +21,12 @@
 
 
 from hipart.integrate import integrate_log
-from hipart.tools import ProgressBar, guess_density_type, load_cube, write_cube_in, get_atom_grid
+from hipart.tools import ProgressBar, guess_density_type, write_cube_in, cubegen_density, get_atom_grid
 from hipart.lebedev_laikov import get_grid, grid_fns
 
 from molmod.data.periodic import periodic
 from molmod.io.gaussian03.mkinput import mkinput
+from molmod.io.gaussian03.fchk import FCHKFile
 from molmod.molecules import Molecule
 from molmod.units import angstrom, eV
 
@@ -212,16 +213,13 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
                 atom_grid = get_atom_grid(lebedev_xyz, numpy.zeros(3,float), rs)
                 write_cube_in(grid_fn, atom_grid)
                 fchk_fn = os.path.join(workdir, "gaussian.fchk")
-                os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 > /dev/null 2> /dev/null < %s" % (density_type, fchk_fn, den_fn, grid_fn))
-                os.remove(grid_fn)
-                # load densities
-                if os.path.isfile(den_fn):
-                    rhos = load_cube(den_fn, num_lebedev*len(rs))
-                    radrhos = 4*numpy.pi*(rhos.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1)
-                    radrhos.tofile(den_bin)
-                else:
-                    print "Skipping %s" % den_fn
-                    continue
+                fchk = FCHKFile(fchk_fn, field_labels=["Number of electrons"])
+                rhos = cubegen_density(grid_fn, den_fn, fchk, options.density, num_lebedev*len(rs))
+                radrhos = 4*numpy.pi*(rhos.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1)
+                radrhos.tofile(den_bin)
+                #else:
+                #    print "Skipping %s" % den_fn
+                #    continue
             print >> f_pro, "Densities %3i %2s %+2i [a.u.]" % (number, symbol, charge),
             print >> f_pro, " ".join("%12.7e" % rho for rho in radrhos)
             charges.append((number, symbol, charge, integrate_log(rs, rs*rs*radrhos)))
