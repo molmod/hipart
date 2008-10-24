@@ -20,7 +20,7 @@
 
 
 from hipart.lebedev_laikov import grid_fns
-from hipart.cache import cache_classes
+from hipart.cache import cache_classes, ParseError
 from hipart.context import Context
 
 from optparse import OptionParser
@@ -83,9 +83,10 @@ def parse_command_line(script_usage):
     CacheClass = cache_classes.get(scheme_name)
     if CacheClass is None:
         parser.error("The scheme must be one of: %s" % (" ".join(sorted(cache_classes))))
-    if len(args)-2 != CacheClass.num_args:
-        parser.error("The selected scheme (%s) requires %i scheme arguments." % (scheme_name, CacheClass.num_args))
-    cache = CacheClass.new_from_args(context, args[2:])
+    try:
+        cache = CacheClass.new_from_args(context, args[2:])
+    except ParseError, e:
+        parser.error(str(e))
 
     return context, cache
 

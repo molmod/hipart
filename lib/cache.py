@@ -44,6 +44,9 @@ core_sizes = dict((number, noble_numbers[noble_numbers<=number].max()) for numbe
 class ComputeError(Exception):
     pass
 
+class ParseError(Exception):
+    pass
+
 
 class BaseCache(object):
     num_args = None
@@ -628,11 +631,12 @@ class BaseCache(object):
 
 
 class TableBaseCache(BaseCache):
-    num_args = 1
-
     @classmethod
     def new_from_args(cls, context, args):
-        atom_table = AtomTable(args[0])
+        if len(args) == 1:
+            atom_table = AtomTable(args[0])
+        else:
+            raise ParseError("The Hirshfeld schemes require one scheme argument.")
         return cls(context, atom_table)
 
     def __init__(self, context, atom_table, prefix):
@@ -725,16 +729,24 @@ class HirshfeldICache(TableBaseCache):
 
 
 class ISACache(BaseCache):
-    num_args = 3
 
     @classmethod
     def new_from_args(cls, context, args):
-        r_low = float(args[0])*angstrom
-        r_high = float(args[1])*angstrom
-        steps = float(args[2])
-        ratio = (r_high/r_low)**(1.0/(steps-1))
-        alpha = numpy.log(ratio)
-        rs = r_low*numpy.exp(alpha*numpy.arange(0,steps))
+        if len(args) == 3:
+            r_low = float(args[0])*angstrom
+            r_high = float(args[1])*angstrom
+            steps = float(args[2])
+            ratio = (r_high/r_low)**(1.0/(steps-1))
+            alpha = numpy.log(ratio)
+            rs = r_low*numpy.exp(alpha*numpy.arange(0,steps))
+        elif len(args) == 0:
+            rs_fn_bin = os.path.join(context.workdir, "rs.bin")
+            if os.path.isfile(rs_fn_bin):
+                rs = numpy.fromfile(rs_fn_bin)
+            else:
+                raise ParseError("When no scheme arguments are given for the ISA scheme, the file rs.bin must exist in the workdir.")
+        else:
+            raise ParseError("The ISA scheme requires zero or three scheme arguments.")
         return cls(context, rs)
 
     def __init__(self, context, rs):
