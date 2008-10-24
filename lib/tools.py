@@ -28,7 +28,7 @@ import numpy, sys, os
 __all__ = [
     "Error", "load_cube", "guess_density_type", "write_cube_in",
     "cubegen_density", "cubegen_potential", "cubegen_orbital",
-    "get_atom_grid", "compute_hirshfeld_weights"
+    "get_atom_grid", "compute_stockholder_weights"
 ]
 
 class Error(Exception):
@@ -78,7 +78,7 @@ def cubegen_density(grid_fn, den_fn, fchk, density_type, grid_size):
         num_elec = fchk.fields.get("Number of electrons")
         for j in xrange((num_elec+1)/2):
             orb_fn = den_fn.replace("dens", "orb%05i" % j)
-            orb_fn_bin = "%s.bin" % cube_fn
+            orb_fn_bin = "%s.bin" % orb_fn
             os.system(". ~/g03.profile; cubegen 0 MO=%s %s %s -5 < %s" % (
                 j+1, fchk.filename, orb_fn, grid_fn
             ))
@@ -122,7 +122,7 @@ def get_atom_grid(lebedev_xyz, center, radii):
     return grid_points
 
 
-def compute_hirshfeld_weights(i, atom_fns, num_lebedev, distances):
+def compute_stockholder_weights(i, atom_fns, num_lebedev, distances):
     N = len(atom_fns)
     # construct the pro-atom and pro-molecule on this atomic grid
     pro_atom = numpy.array([atom_fns[i].density.y]*num_lebedev).transpose().ravel()

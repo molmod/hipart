@@ -21,7 +21,7 @@
 
 from hipart.log import log
 from hipart.tools import write_cube_in, cubegen_density, cubegen_potential, \
-    cubegen_orbital, get_atom_grid, compute_hirshfeld_weights
+    cubegen_orbital, get_atom_grid, compute_stockholder_weights
 from hipart.integrate import cumul_integrate_log, integrate_log, integrate_lebedev
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid
@@ -29,6 +29,7 @@ from hipart.atoms import AtomTable, AtomFn
 
 from molmod.transformations import random_rotation
 from molmod.data.periodic import periodic
+from molmod.units import angstrom
 
 import os, numpy
 
@@ -54,12 +55,15 @@ class BaseCache(object):
     def __init__(self, context, prefix):
         self.prefix = prefix
         self.context = context
+        self.context.check_tag(self.get_rs(0,0))
         if self.context.reference is not None:
             self.reference = self.clone(self.context.reference)
+            if self.context.tag != self.reference.context.tag:
+                raise ContectError("The reference state must have the same context tag.")
         else:
             self.reference = None
 
-    def get_rs(self, number):
+    def get_rs(self, i, number_i):
         raise NotImplementedError
 
     def clone(self, other_context):
@@ -88,7 +92,7 @@ class BaseCache(object):
         log.begin("Atomic grids")
         molecule = self.context.fchk.molecule
         if self.reference is not None:
-            log("Using atomic grids from reference context.")
+            log("Using atomic grids from reference state.")
             self.reference.do_atom_grids()
             self.atom_grid_distances = self.reference.atom_grid_distances
             self.atom_grid_points = self.reference.atom_grid_points
@@ -101,16 +105,18 @@ class BaseCache(object):
             self.atom_grid_points = []
             pb = log.pb("Computing/Loading atomic grids (and distances)", molecule.size**2)
             for i, number_i in enumerate(molecule.numbers):
+                grid_size = self.context.num_lebedev*len(self.get_rs(i, number_i))
                 grid_prefix = os.path.join(workdir, "atom%05igrid" % i)
                 grid_fn_bin = "%s.bin" % grid_prefix
                 grid_fn_txt = "%s.txt" % grid_prefix
                 if os.path.isfile(grid_fn_bin):
                     grid_points = numpy.fromfile(grid_fn_bin).reshape((-1,3))
+                    grid_points = grid_points[:grid_size]
                 else:
                     center = molecule.coordinates[i]
                     grid_points = get_atom_grid(
                         self.context.lebedev_xyz, center,
-                        self.get_rs(number_i),
+                        self.get_rs(i, number_i),
                     )
                     grid_points.tofile(grid_fn_bin)
 
@@ -138,14 +144,14 @@ class BaseCache(object):
         self.atom_densities = []
         for i, number_i in enumerate(molecule.numbers):
             pb()
-            grid_size = self.context.num_lebedev*len(self.get_rs(number_i))
+            grid_size = len(self.atom_grid_points[i])
             den_fn = os.path.join(workdir, "atom%05idens.cube" % i)
             den_fn_bin = "%s.bin" % den_fn
             if os.path.isfile(den_fn_bin):
-                densities = numpy.fromfile(den_fn_bin, float)
+                densities = numpy.fromfile(den_fn_bin, float)[:grid_size]
             else:
                 if os.path.isfile(den_fn):
-                    densities = load_cube(den_fn, cube_size)
+                    densities = load_cube(den_fn, cube_size)[:grid_size]
                 else:
                     grid_fn = os.path.join(workdir, "atom%05igrid.txt" % i)
                     densities = cubegen_density(
@@ -182,7 +188,7 @@ class BaseCache(object):
                 else:
                     densities = self.atom_densities[i]
                     radfun = integrate_lebedev(self.context.lebedev_weights, densities)
-                    rs = self.get_rs(number_i)
+                    rs = self.get_rs(i, number_i)
                     charge_int = cumul_integrate_log(rs, radfun*rs**2)
                     j = charge_int.searchsorted([core_sizes[number_i]])[0]
                     self.cusp_radii[i] = rs[j]
@@ -328,7 +334,7 @@ class BaseCache(object):
         log.end("Molecular grid + density and potential on this grid")
 
     def do_partitions(self):
-        if hasattr(self, "partition_weights") and hasattr(self, "pro_atom_fns"):
+        if hasattr(self, "stockholder_weights") and hasattr(self, "pro_atom_fns"):
             return
 
         log.begin("Pro-atoms")
@@ -337,35 +343,35 @@ class BaseCache(object):
 
         # Try to read the data from the workdir
         self._load_partitions(weights_tpl_bin, pro_atoms_tpl_bin)
-        if self.partition_weights is None or self.pro_atom_fns is None:
+        if self.stockholder_weights is None or self.pro_atom_fns is None:
             log("Could not load partitions from workdir. Computing them...")
             self._compute_partitions()
 
             log("Writing pro atoms to workdir")
             for i, pafn in enumerate(self.pro_atom_fns):
                 pafn.density.y.tofile(pro_atoms_tpl_bin % i)
-            log("Writing partition weights to workdir")
-            for i, pw in enumerate(self.partition_weights):
+            log("Writing stockholder weights to workdir")
+            for i, pw in enumerate(self.stockholder_weights):
                 pw.tofile(weights_tpl_bin % i)
         log.end("Pro-atoms")
 
     def _load_partitions(self, weights_tpl_bin, pro_atoms_tpl_bin):
-        log("Try to load partition weights")
+        log("Try to load partitions")
         molecule = self.context.fchk.molecule
 
-        self.partition_weights = []
+        self.stockholder_weights = []
         for i in xrange(molecule.size):
             if os.path.isfile(weights_tpl_bin % i):
                 pw = numpy.fromfile(weights_tpl_bin % i, float)
-                self.partition_weights.append(pw)
+                self.stockholder_weights.append(pw)
             else:
-                self.partition_weights = None
+                self.stockholder_weights = None
                 return
         self.pro_atom_fns = []
         for i, number_i in enumerate(molecule.numbers):
             if os.path.isfile(pro_atoms_tpl_bin % i):
-                rs = self.get_rs(number_i)
                 rhos = numpy.fromfile(pro_atoms_tpl_bin % i, float)
+                rs = self.get_rs(i, number_i)[:len(rhos)]
                 self.pro_atom_fns.append(AtomFn(rs, rhos))
             else:
                 self.pro_atom_fns = None
@@ -398,14 +404,14 @@ class BaseCache(object):
             self.charges = numpy.zeros(molecule.size, float)
             for i, number_i in enumerate(molecule.numbers):
                 pb()
-                pw = self.partition_weights[i]
+                pw = self.stockholder_weights[i]
                 grid_points = self.atom_grid_points[i]
                 densities = self.atom_densities[i]
                 center = molecule.coordinates[i]
 
                 integrand = densities*pw
                 radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                rs = self.get_rs(number_i)
+                rs = self.get_rs(i, number_i)
                 self.charges[i] = number_i - integrate_log(rs, radfun*rs**2)
             pb()
             if self.context.options.fix_total_charge:
@@ -467,7 +473,7 @@ class BaseCache(object):
             self.dipoles = numpy.zeros((molecule.size,3), float)
             for i, number_i in enumerate(molecule.numbers):
                 pb()
-                pw = self.partition_weights[i]
+                pw = self.stockholder_weights[i]
                 grid_points = self.atom_grid_points[i]
                 densities = self.atom_densities[i]
                 center = molecule.coordinates[i]
@@ -475,7 +481,7 @@ class BaseCache(object):
                 for j in 0,1,2:
                     integrand = -(grid_points[:,j] - center[j])*densities*pw
                     radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                    rs = self.get_rs(number_i)
+                    rs = self.get_rs(i, number_i)
                     self.dipoles[i,j] = integrate_log(rs, radfun*rs**2)
             pb()
             self.dipoles.tofile(dipoles_fn_bin)
@@ -563,7 +569,7 @@ class BaseCache(object):
         for i, number_i in enumerate(molecule.numbers):
             orbitals = []
             self.atom_orbitals.append(orbitals)
-            grid_size = self.context.num_lebedev*len(self.get_rs(number_i))
+            grid_size = self.context.num_lebedev*len(self.get_rs(i, number_i))
             grid_fn = os.path.join(workdir, "atom%05igrid.txt" % i)
             for j in xrange(num_orbitals):
                 pb()
@@ -595,14 +601,14 @@ class BaseCache(object):
         for i, number_i in enumerate(molecule.numbers):
             pb()
             orbitals = self.atom_orbitals[i]
-            pw = self.partition_weights[i]
+            pw = self.stockholder_weights[i]
             matrix = numpy.zeros((num_orbitals,num_orbitals), float)
             self.atom_matrices.append(matrix)
             for j1 in xrange(num_orbitals):
                 for j2 in xrange(j1+1):
                     integrand = orbitals[j1]*orbitals[j2]*pw
                     radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                    rs = self.get_rs(number_i)
+                    rs = self.get_rs(i, number_i)
                     value = integrate_log(rs, radfun*rs**2)
                     matrix[j1,j2] = value
                     matrix[j2,j1] = value
@@ -630,13 +636,16 @@ class TableBaseCache(BaseCache):
         return cls(context, atom_table)
 
     def __init__(self, context, atom_table, prefix):
-        BaseCache.__init__(self, context, prefix)
         self.atom_table = atom_table
+        BaseCache.__init__(self, context, prefix)
         # write the rs to the workdir for plotting purposes:
-        atom_table.rs.tofile(os.path.join(self.context.workdir, "%s_rs.bin" % self.prefix))
+        atom_table.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
 
-    def get_rs(self, number):
-        return self.atom_table.records[number].rs
+    def get_rs(self, i, number_i):
+        if number_i == 0:
+            return self.atom_table.rs
+        else:
+            return self.atom_table.records[number_i].rs
 
     def clone(self, other_context):
         return self.__class__(other_context, self.atom_table)
@@ -655,13 +664,13 @@ class HirshfeldCache(TableBaseCache):
         for i, number_i in enumerate(molecule.numbers):
             self.pro_atom_fns.append(self.atom_table.records[number_i].get_atom_fn(0.0))
 
-        self.partition_weights = []
+        self.stockholder_weights = []
         for i, number_i in enumerate(molecule.numbers):
-            hw = compute_hirshfeld_weights(
+            hw = compute_stockholder_weights(
                 i, self.pro_atom_fns, self.context.num_lebedev,
                 self.atom_grid_distances
             )
-            self.partition_weights.append(hw)
+            self.stockholder_weights.append(hw)
 
         log.end("Normal Hirshfeld (with neutral pro-atoms)")
 
@@ -684,21 +693,20 @@ class HirshfeldICache(TableBaseCache):
             for i, number_i in enumerate(molecule.numbers):
                 atom_fns.append(self.atom_table.records[number_i].get_atom_fn(old_charges[i]))
 
-            # compute the hirshfeld charges
             charges = []
-            hirshfeld_weights = []
+            stockholder_weights = []
             for i, number_i in enumerate(molecule.numbers):
-                hw = compute_hirshfeld_weights(
+                hw = compute_stockholder_weights(
                     i, atom_fns, self.context.num_lebedev,
                     self.atom_grid_distances
                 )
+                stockholder_weights.append(hw)
+
                 fn = self.atom_densities[i]*hw
                 radfun = integrate_lebedev(self.context.lebedev_weights, fn)
                 rs = self.atom_table.records[number_i].rs
                 num_electrons = integrate_log(rs, radfun*rs**2)
-
                 charges.append(number_i - num_electrons)
-                hirshfeld_weights.append(hw)
 
             # ordinary blablabla ...
             charges = numpy.array(charges)
@@ -711,12 +719,99 @@ class HirshfeldICache(TableBaseCache):
             counter += 1
             old_charges = charges
 
-        self.partition_weights = hirshfeld_weights
+        self.stockholder_weights = stockholder_weights
         self.pro_atom_fns = atom_fns
         log.end("Iterative Hirshfeld")
+
+
+class ISACache(BaseCache):
+    num_args = 3
+
+    @classmethod
+    def new_from_args(cls, context, args):
+        r_low = float(args[0])*angstrom
+        r_high = float(args[1])*angstrom
+        steps = float(args[2])
+        ratio = (r_high/r_low)**(1.0/(steps-1))
+        alpha = numpy.log(ratio)
+        rs = r_low*numpy.exp(alpha*numpy.arange(0,steps))
+        return cls(context, rs)
+
+    def __init__(self, context, rs):
+        self.rs = rs
+        BaseCache.__init__(self, context, "isa")
+        # write the rs to the workdir for plotting purposes:
+        self.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
+
+    def get_rs(self, i, number_i):
+        if number_i == 0:
+            return self.rs
+        elif hasattr(self, "pro_atom_fns") and len(self.pro_atom_fns) > i:
+            return self.pro_atom_fns[i].density.x
+        elif hasattr(self, "atom_densities") and len(self.atom_densities) > i:
+            num_shells = len(self.atom_densities[i])/self.context.num_lebedev
+            return self.rs[:num_shells]
+        else:
+            return self.rs
+
+    def clone(self, other_context):
+        return self.__class__(other_context, self.rs)
+
+    def _compute_partitions(self):
+        log.begin("Iterative Molecular Hirshfeld")
+        molecule = self.context.fchk.molecule
+        self.do_atom_densities()
+
+        log("Generating initial guess for the pro-atoms")
+        old_atom_fns = []
+        for i, number_i in enumerate(molecule.numbers):
+            densities = self.atom_densities[i]
+            profile = densities.reshape((-1,self.context.num_lebedev)).min(axis=1)
+            profile[profile < 1e-6] = 1e-6
+            rs = self.get_rs(i, number_i)
+            old_atom_fns.append(AtomFn(rs, profile))
+
+        counter = 0
+        old_charges = numpy.zeros(molecule.size, float)
+        while True:
+            atom_fns = []
+            stockholder_weights = []
+            max_changes = []
+            total_charge = 0.0
+            for i, number_i in enumerate(molecule.numbers):
+                hw = compute_stockholder_weights(
+                    i, old_atom_fns, self.context.num_lebedev,
+                    self.atom_grid_distances
+                )
+                stockholder_weights.append(hw)
+
+                fn = self.atom_densities[i]*hw
+                radfun = integrate_lebedev(self.context.lebedev_weights, fn)
+                rs = self.get_rs(i, number_i)
+                total_charge += number_i - integrate_log(rs, radfun*rs**2)
+
+                atom_fn = AtomFn(rs, radfun/4*numpy.pi)
+                atom_fns.append(atom_fn)
+                max_changes.append((atom_fn.density.y - old_atom_fns[i].density.y).max())
+
+            # ordinary blablabla ...
+            max_change = max(max_changes)
+            log("Iteration %03i    max change = %10.5e    total charge = %10.5e" % (
+                counter, max_change, total_charge
+            ))
+            if max_change < self.context.options.threshold*1e-1:
+                break
+            counter += 1
+            old_atom_fns = atom_fns
+
+        self.stockholder_weights = stockholder_weights
+        self.pro_atom_fns = atom_fns
+        log.end("Iterative Molecular Hirshfeld")
+
 
 
 cache_classes = {
     "hirsh": HirshfeldCache,
     "hirshi": HirshfeldICache,
+    "isa": ISACache,
 }

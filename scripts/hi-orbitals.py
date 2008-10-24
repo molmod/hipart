@@ -24,6 +24,6 @@ from hipart.opts import parse_command_line
 
 usage = """%prog partitions the density matrix."""
 context, cache = parse_command_line(usage)
-cache.do_atom_orbitals()
+cache.do_atom_matrices()
 context.clean()
 

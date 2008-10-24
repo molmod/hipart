@@ -67,21 +67,19 @@ class Context(object):
 
         self.lebedev_xyz, self.lebedev_weights = get_grid(options.lebedev)
 
-        self.check_context()
         if (options.reference is None or os.path.samefile(options.reference, fchk_fn)):
             self.reference = None
         else:
             self.reference = Context(options.reference, options)
-            if self.tag != self.reference.tag:
-                raise ContectError("The reference state must have the same context tag.")
 
     num_lebedev = property(lambda self: len(self.lebedev_weights))
 
-    def check_context(self):
+    def check_tag(self, rs):
         """Make sure our context is compatible with the data in the workdir."""
 
-        self.tag = "contextversion=%i density=%s lebedev=%i mol_lebedev=%i" % (
-            self.version, self.options.density, self.num_lebedev, self.options.mol_lebedev
+        self.tag = "contextversion=%i density=%s lebedev=%i mol_lebedev=%i r_low=%.2e r_high=%.2e r_steps=%i" % (
+            self.version, self.options.density, self.num_lebedev,
+            self.options.mol_lebedev, rs.min(), rs.max(), len(rs),
         )
 
         context_fn = os.path.join(self.workdir, "context")
