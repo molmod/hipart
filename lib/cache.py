@@ -721,6 +721,8 @@ class HirshfeldICache(TableBaseCache):
             if max_change < self.context.options.threshold:
                 break
             counter += 1
+            if counter > self.context.options.max_iter:
+                break
             old_charges = charges
 
         self.stockholder_weights = stockholder_weights
@@ -814,6 +816,8 @@ class ISACache(BaseCache):
             if max_change < self.context.options.threshold*1e-1:
                 break
             counter += 1
+            if counter > self.context.options.max_iter:
+                break
             old_atom_fns = atom_fns
 
         self.stockholder_weights = stockholder_weights

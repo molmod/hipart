@@ -73,6 +73,11 @@ def parse_command_line(script_usage):
         help="When the maximum change in the charges drops below this threshold "
         "value, the iteration stops. [default=%default]"
     )
+    parser.add_option(
+        "--max-iter", default=500, type='int',
+        help="Maximum number of iterations in self-consistent procedures. "
+        "[default=%default]"
+    )
     options, args = parser.parse_args()
     if len(args) < 2:
         parser.error("Expecting at least two arguments.")
