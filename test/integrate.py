@@ -19,7 +19,7 @@
 # --
 
 
-from hipart.core import *
+from hipart.integrate import *
 
 import unittest, numpy, pylab
 
@@ -43,13 +43,13 @@ class IntegrateTestCase(unittest.TestCase):
         beta = 0.5
         norm = (numpy.pi*beta**2)**(3.0/2.0)
         ys = numpy.exp(-(rs/beta)**2)/norm
-        self.assertAlmostEqual(integrate(rs, ys*rs**2*4*numpy.pi), 1.0, 3)
+        self.assertAlmostEqual(integrate_log(rs, ys*rs**2*4*numpy.pi), 1.0, 3)
         vs = erf(rs/beta)/rs
-        vs_numer1 = -cumul_integrate(rs, cumul_integrate(rs, ys*4*numpy.pi*rs**2)/rs**2)
+        vs_numer1 = -cumul_integrate_log(rs, cumul_integrate_log(rs, ys*4*numpy.pi*rs**2)/rs**2)
 
-        qs = cumul_integrate(rs, ys*4*numpy.pi*rs**2)
+        qs = cumul_integrate_log(rs, ys*4*numpy.pi*rs**2)
         rs_inv = 1/rs
-        vs_numer2 = cumul_integrate(rs_inv[::-1], qs[::-1])[::-1]
+        vs_numer2 = cumul_integrate_log(rs_inv[::-1], qs[::-1])[::-1]
 
         pylab.clf()
         pylab.plot(rs, vs, label="analytic")
