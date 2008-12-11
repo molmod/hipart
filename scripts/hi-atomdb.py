@@ -72,7 +72,6 @@ def parse_numbers(atom_str):
 def make_inputs(lot, atom_numbers, max_ion):
     pb = log.pb("Creating input files", len(atom_numbers)*(2*max_ion+1))
     noble_numbers = [0] + [atom.number for atom in periodic.atoms_by_number.itervalues() if atom.col == 18]
-    molecule = Molecule(numpy.zeros(1, int), numpy.zeros((1,3), float), "Computer says nooooo...")
 
     for i in atom_numbers:
         atom = periodic[i]
@@ -87,7 +86,7 @@ def make_inputs(lot, atom_numbers, max_ion):
             num_states = 3
         else:
             num_states = 4
-        molecule.numbers[0] = atom.number
+        molecule = Molecule(numpy.array([atom.number], int), numpy.zeros((1,3), float), "Computer says nooooo...")
         for charge in xrange(-max_ion, max_ion+1):
             charge_label = get_charge_label(charge)
             pb()
