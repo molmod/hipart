@@ -69,7 +69,7 @@ def parse_numbers(atom_str):
     return numbers
 
 
-def make_inputs(lot, atom_numbers, max_ion):
+def make_inputs(lot, atom_numbers, max_ion, use_qc):
     pb = log.pb("Creating input files", len(atom_numbers)*(2*max_ion+1))
     noble_numbers = [0] + [atom.number for atom in periodic.atoms_by_number.itervalues() if atom.col == 18]
 
@@ -103,7 +103,11 @@ def make_inputs(lot, atom_numbers, max_ion):
                 mults = list(2*i+2 for i in xrange(charge_num_states))
             for mult in mults:
                 dirname = os.path.join("%03i%s" % (atom.number, atom.symbol), charge_label, "mult%i" % mult)
-                command = "sp scf(fermi,tight) guess=core density=current"
+                command = "sp guess=indo density=current"
+                if use_qc:
+                    command += " scf(qc,tight)"
+                else:
+                    command += " scf(fermi,tight)"
                 if num_elec - last_noble > 1:
                     command += " polar"
                 mkinput(
@@ -117,11 +121,18 @@ def run_jobs():
     dirnames = glob("0*/*/*/")
     dirnames.sort()
     pb = log.pb("Gaussian calculations", len(dirnames))
+    failed = []
     for dirname in dirnames:
         pb()
         if not os.path.isfile(os.path.join(dirname, "gaussian.fchk")):
             os.system("(cd %s; . ~/g03.profile; g03 < gaussian.com > gaussian.log 2> /dev/null; formchk gaussian.chk gaussian.fchk > /dev/null 2> /dev/null; rm gaussian.chk)" % dirname)
+            if not os.path.isfile(os.path.join(dirname, "gaussian.fchk")):
+                failed.append(dirname)
     pb()
+    if len(failed) > 0:
+        print "Some jobs failed:"
+        for dirname in failed:
+            print "  %s" % dirname
 
 
 def select_ground_states(energy_field, max_ion):
@@ -156,7 +167,7 @@ def select_ground_states(energy_field, max_ion):
     print >> f_ev, "All values below are in electron volts."
     print >> f_ev, "             A         I          chi        eta     mult(neg,neut,pos)"
 
-    for number, atom_energies in all_energies.iteritems():
+    for number, atom_energies in sorted(all_energies.iteritems()):
         energies = {}
         mult = {}
         symbol = periodic[number].symbol
@@ -279,14 +290,20 @@ parser.add_option(
     "--max-ion", default=2, type='int',
     help="The maximum ionization to consider. [default=%default]"
 )
+parser.add_option(
+    "--qc", default=False, action="store_true",
+    help="Specify the qc convergence scheme in gaussian input. [default=%default]"
+)
 (options, args) = parser.parse_args()
+if len(args) != 2:
+    parser.error("Expecting two arguments: level of theory (+ basis set) and the atom specification.")
 lot, atom_str = args
 
 if options.density is None:
     options.density = guess_density_type(lot)
 atom_numbers = parse_numbers(atom_str)
 
-make_inputs(lot, atom_numbers, options.max_ion)
+make_inputs(lot, atom_numbers, options.max_ion, options.qc)
 run_jobs()
 select_ground_states('%s Energy' % options.density.upper(), options.max_ion)
 make_density_profile(
