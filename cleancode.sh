@@ -5,6 +5,4 @@ for file in `find lib scripts | egrep "(\.py$)|(\.f90$)|(^scripts/tr-)"`; do
   sed -i -e $'s/\t/    /' ${file}
   sed -i -e $'s/[ \t]\+$//' ${file}
 done
-for i in `find * | egrep "\.pyc$|\.py~$|\.pyc~$|\.bak$"` ; do rm -v ${i}; done
-
 
