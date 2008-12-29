@@ -20,6 +20,7 @@
 
 
 from hipart.integrate import *
+from hipart.atoms import AtomFn
 
 import unittest, numpy, pylab
 
@@ -42,19 +43,25 @@ class IntegrateTestCase(unittest.TestCase):
         rs = r_low*r_factor**numpy.arange(r_steps)
         beta = 0.5
         norm = (numpy.pi*beta**2)**(3.0/2.0)
-        ys = numpy.exp(-(rs/beta)**2)/norm
-        self.assertAlmostEqual(integrate_log(rs, ys*rs**2*4*numpy.pi), 1.0, 3)
-        vs = erf(rs/beta)/rs
-        vs_numer1 = -cumul_integrate_log(rs, cumul_integrate_log(rs, ys*4*numpy.pi*rs**2)/rs**2)
+        rhos = numpy.exp(-(rs/beta)**2)/norm
+        self.assertAlmostEqual(integrate_log(rs, rhos*rs**2*4*numpy.pi), 1.0, 3)
+        vs = -erf(rs/beta)/rs
+        vs_numer1 = -cumul_integrate_log(rs, cumul_integrate_log(rs, -rhos*4*numpy.pi*rs**2)/rs**2)
 
-        qs = cumul_integrate_log(rs, ys*4*numpy.pi*rs**2)
+        qs = -cumul_integrate_log(rs, rhos*4*numpy.pi*rs**2)
         rs_inv = 1/rs
         vs_numer2 = cumul_integrate_log(rs_inv[::-1], qs[::-1])[::-1]
 
+        atom_fn = AtomFn(rs, rhos, True)
+        vs_numer3 = atom_fn.potential(rs)
+        self.assert_(abs(vs-vs_numer3).max() < 1e-3)
+
         pylab.clf()
         pylab.plot(rs, vs, label="analytic")
+        pylab.plot(rs, rhos, label="e-density")
         pylab.plot(rs, vs_numer1, label="numerical 1")
         pylab.plot(rs, vs_numer2, label="numerical 2")
+        pylab.plot(rs, vs_numer3, label="numerical 3")
         pylab.legend(loc=0)
         pylab.savefig("output/gauss_potential.png")
 

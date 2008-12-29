@@ -226,14 +226,14 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
                 fchk_fn = os.path.join(workdir, "gaussian.fchk")
                 fchk = FCHKFile(fchk_fn, field_labels=["Number of electrons"])
                 rhos = cubegen_density(grid_fn, den_fn, fchk, options.density, num_lebedev*len(rs))
-                radrhos = 4*numpy.pi*(rhos.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1)
+                radrhos = (rhos.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1) # this is averaging, i.e. integral/(4*pi)
                 radrhos.tofile(den_bin)
                 #else:
                 #    print "Skipping %s" % den_fn
                 #    continue
             print >> f_pro, "Densities %3i %2s %+2i [a.u.]" % (number, symbol, charge),
             print >> f_pro, " ".join("%12.7e" % rho for rho in radrhos)
-            charges.append((number, symbol, charge, integrate_log(rs, rs*rs*radrhos)))
+            charges.append((number, symbol, charge, integrate_log(rs, 4*numpy.pi*rs*rs*radrhos)))
 
 
     pb()
