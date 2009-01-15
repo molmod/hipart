@@ -36,6 +36,7 @@ import unittest
 from integrate import *
 from grid import *
 from spline import *
+from tools import *
 unittest.main()
 
 

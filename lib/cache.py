@@ -131,6 +131,7 @@ class BaseCache(object):
                     pb()
                     if i!=j:
                         distances = numpy.sqrt(((grid_points - molecule.coordinates[j])**2).sum(axis=1))
+                        # distances from grid points of atom i to atom j.
                         self.atom_grid_distances[(i,j)] = distances
             pb()
         log.end("Atom grids")

@@ -122,16 +122,30 @@ def get_atom_grid(lebedev_xyz, center, radii):
     return grid_points
 
 
-def compute_stockholder_weights(i, atom_fns, num_lebedev, distances):
+def compute_stockholder_weights(i, atom_fns, num_lebedev, distances, k=None):
+    """ Evaulates the weights of atom i in the grid of atom k.
+
+    If k is not given, it defaults to i.
+    """
     N = len(atom_fns)
     # construct the pro-atom and pro-molecule on this atomic grid
-    pro_atom = numpy.array([atom_fns[i].density.y]*num_lebedev).transpose().ravel()
+    if k is None:
+        k = i
+
+    if k == i:
+        pro_atom = numpy.array([atom_fns[i].density.y]*num_lebedev).transpose().ravel()
+    else:
+        pro_atom = atom_fns[i].density(distances[(k,i)])
+
     pro_mol = numpy.zeros(len(pro_atom), float)
     for j in xrange(N):
         if i==j:
             pro_mol += pro_atom
         else:
-            pro_mol += atom_fns[j].density(distances[(i,j)])
+            if k==j:
+                pro_mol += numpy.array([atom_fns[j].density.y]*num_lebedev).transpose().ravel()
+            else:
+                pro_mol += atom_fns[j].density(distances[(k,j)])
 
     # avoid division by zero
     pro_atom[pro_mol < 1e-40] = 1e-40
