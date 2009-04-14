@@ -140,9 +140,8 @@ def select_ground_states(energy_field, max_ion):
 
     f = file("energies.txt")
 
-    all_energies = {
-        1: {1: {1: 0.0}}
-    }
+    # dictionary: all_energies[number][charge][mult] = energy
+    all_energies = {}
 
     for line in f:
         words = line.split()
@@ -157,6 +156,11 @@ def select_ground_states(energy_field, max_ion):
         charge_energies[mult] = energy
 
     f.close()
+
+    if 1 in all_energies:
+        # Computation on a proton (without electrons) does not work in gaussian.
+        # Fix manually.
+        all_energies[1][1] = {1: 0.0}
 
 
     f_au = file("chieta_au.txt", "w")
@@ -181,7 +185,6 @@ def select_ground_states(energy_field, max_ion):
             if os.path.isdir(os.path.dirname(newlink)):
                 if os.path.exists(newlink): os.remove(newlink)
                 os.symlink("mult%i" % mult[charge], newlink)
-
         chi = (energies[+1] - energies[-1])/2
         eta = (energies[+1] + energies[-1] - 2*energies[0])
         values = [energies[0] - energies[-1], energies[+1] - energies[0], chi, eta]
