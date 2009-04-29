@@ -1,6 +1,6 @@
 #!/bin/bash
 echo Cleaning python code in $PWD and subdirectories
-for file in `find lib scripts | egrep "(\.py$)|(\.f90$)|(^scripts/tr-)"`; do
+for file in $(find lib scripts ext | egrep "(\.py$)|(\.f90$)|(\.c$)|(\.h$)|(\.pyf$)|(^scripts/hi-)"); do
   echo Cleaning ${file}
   sed -i -e $'s/\t/    /' ${file}
   sed -i -e $'s/[ \t]\+$//' ${file}

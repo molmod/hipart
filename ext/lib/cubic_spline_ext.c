@@ -31,7 +31,7 @@ void spline_construct(double *x, double *y, double *d, int n) {
   double *diag_mid;
   double *diag_up;
   double *right;
-  
+
   diag_low = malloc((n-1)*sizeof(double));
   diag_mid = malloc(n*sizeof(double));
   diag_up = malloc((n-1)*sizeof(double));
@@ -50,7 +50,7 @@ void spline_construct(double *x, double *y, double *d, int n) {
   diag_low[n-2] = (x[n-1]-x[n-2]);
   diag_mid[n-1] = 2*(x[n-1]-x[n-2]);
   right[n-1] = 3*(y[n-1]-y[n-2]);
-  
+
   // B) Solve the tri-diagonal system
   diag_up[0] /= diag_mid[0];
   right[0] /= diag_mid[0];
@@ -81,7 +81,7 @@ void spline_eval(double *x, double *y, double *d, int n, double* new_x, double* 
           continue;
         } else if (x_cur >= x[n-1]) {
           new_y[i] = y[n-1];
-          continue;          
+          continue;
         } else {
           //printf("x_cur = %f\n", x_cur);
           // find the index of the interval in which new_x[i] lies.
@@ -110,8 +110,8 @@ void spline_eval(double *x, double *y, double *d, int n, double* new_x, double* 
           u = x_cur - x[j];
           h = x[j+1]-x[j];
           z = y[j+1]-y[j];
-          new_y[i] = y[j] + u*(d[j] + 
-            u/h*(3*z/h - 2*d[j] - d[j+1] + 
+          new_y[i] = y[j] + u*(d[j] +
+            u/h*(3*z/h - 2*d[j] - d[j+1] +
               u/h*(-2*z/h + d[j] + d[j+1])
             )
           );

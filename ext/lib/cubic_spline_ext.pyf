@@ -4,7 +4,7 @@ interface
   subroutine spline_construct(x,y,d,n)
     intent(c) spline_construct
     intent(c)
-    
+
     integer intent(hide), depend(x) :: n=len(x)
     double precision intent(in) :: x(n)
     double precision intent(in) :: y(n)
@@ -14,7 +14,7 @@ interface
   subroutine spline_eval(x,y,d,n,x_new,y_new,n_new)
     intent(c) spline_eval
     intent(c)
-    
+
     integer intent(hide), depend(x) :: n=len(x)
     double precision intent(in) :: x(n)
     double precision intent(in) :: y(n)
@@ -28,7 +28,7 @@ interface
   double precision function spline_int(x,y,d,n)
     intent(c) spline_int
     intent(c)
-    
+
     integer intent(hide), depend(x) :: n=len(x)
     double precision intent(in) :: x(n)
     double precision intent(in) :: y(n)
@@ -38,7 +38,7 @@ interface
   subroutine spline_cumul_int(x,y,d,yint,n)
     intent(c) spline_cumul_int
     intent(c)
-    
+
     integer intent(hide), depend(x) :: n=len(x)
     double precision intent(in) :: x(n)
     double precision intent(in) :: y(n)
