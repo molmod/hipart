@@ -250,7 +250,7 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
 
 parser = OptionParser("""%prog [options] lot atoms
 
-%prog computs a database of pro-atom densities.
+%prog computes a database of pro-atom densities.
 
 The following arguments are mandatory:
   * lot  --  The level of theory to be used in gaussian input notation.
