@@ -64,8 +64,12 @@ class ChargeDipoleCostFunction(object):
 
     def model_rms(self, charges, dipoles=None):
         full = self.full_vector(charges, dipoles)
-        fields = numpy.dot(self.design_matrix, full)
         return numpy.sqrt(numpy.dot(full, numpy.dot(self.A, full))/self.weights_sqsum)
+
+    def correlation(self, charges, dipoles=None):
+        # pearson's r
+        full = self.full_vector(charges, dipoles)
+        return numpy.dot(full, self.B)/numpy.sqrt(self.C*numpy.dot(full, numpy.dot(self.A, full)))
 
     def write_to_file(self, filename):
         f = file(filename, "w")

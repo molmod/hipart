@@ -523,18 +523,21 @@ class BaseCache(object):
             print >> f, "------------------------------------------------------------------"
 
             print >> f, "Reproduction of the external molecular ESP ..."
-            print >> f, "                     RMSD             RMS"
-            print >> f, "charges (q)      % 10.5e    % 10.5e" % (
+            print >> f, "                     RMSD             RMS       CORRELATION"
+            print >> f, "charges (q)      % 10.5e    % 10.5e      % 5.2f" % (
                 esp_cost.rmsd(charges),
                 esp_cost.model_rms(charges),
+                esp_cost.correlation(charges),
             )
-            print >> f, "dipoles (p)      % 10.5e    % 10.5e" % (
+            print >> f, "dipoles (p)      % 10.5e    % 10.5e      % 5.2f" % (
                 esp_cost.rmsd(None, dipoles),
                 esp_cost.model_rms(None, dipoles),
+                esp_cost.correlation(None, dipoles),
             )
-            print >> f, "q and p          % 10.5e    % 10.5e" % (
+            print >> f, "q and p          % 10.5e    % 10.5e      % 5.2f" % (
                 esp_cost.rmsd(charges, dipoles),
                 esp_cost.model_rms(charges, dipoles),
+                esp_cost.correlation(charges, dipoles),
             )
             print >> f, "total density                    % 10.5e" % esp_cost.rms
             f.close()
