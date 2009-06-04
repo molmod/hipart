@@ -307,13 +307,13 @@ class BaseCache(object):
 
             write_cube_in(points_fn, grid_points) # prepare for cubegen
             grid_size = len(grid_weights)
-            log("Molecular density on moleculer grid.")
+            log("Molecular density on molecular grid.")
             densities = cubegen_density(
                 points_fn, den_fn, self.context.fchk,
                 self.context.options.density, grid_size
             )
             densities.tofile(den_fn_bin)
-            log("Molecular potential on moleculer grid.")
+            log("Molecular potential on molecular grid.")
             potentials = cubegen_potential(
                 points_fn, pot_fn, self.context.fchk,
                 self.context.options.density, grid_size
