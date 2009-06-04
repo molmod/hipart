@@ -659,7 +659,22 @@ class TableBaseCache(BaseCache):
         return self.__class__(other_context, self.atom_table)
 
 
+hirshfeld_usage = """ * Hirshfeld Partitioning
+     scheme = hirsh
+     scheme parameters = densities.txt
+
+     The file densities.txt is generated with the script hi-atomdb.py. It
+     cotains spherically averaged densities of individual atoms. Make sure all
+     the atoms present in the molecule of interest are included in the file
+     densities.txt
+
+     Hirshfeld, F. L. Theor. Chim. Acta 1977, 44, 129-138.
+     http://dx.doi.org/10.1007/BF00549096
+"""
+
 class HirshfeldCache(TableBaseCache):
+    usage = hirshfeld_usage
+
     def __init__(self, context, atom_table):
         TableBaseCache.__init__(self, context, atom_table, "hirsh")
 
@@ -683,7 +698,23 @@ class HirshfeldCache(TableBaseCache):
         log.end("Normal Hirshfeld (with neutral pro-atoms)")
 
 
+hirshfeld_i_usage = """ * Hirshfeld-I Partitioning
+     scheme = hirshi
+     scheme parameters = densities.txt
+
+     The file densities.txt is generated with the script hi-atomdb.py. It
+     cotains spherically averaged densities of individual atoms. Make sure all
+     the atoms present in the molecule of interest are included in the file
+     densities.txt
+
+     Bultinck, P.;  Van Alsenoy, C.;  Ayers, P. W.;  Dorca, R. C. J. Chem. Phys.
+     2007, 126, 144111.
+     http://dx.doi.org/10.1063/1.2715563
+"""
+
 class HirshfeldICache(TableBaseCache):
+    usage = hirshfeld_i_usage
+
     def __init__(self, context, atom_table):
         TableBaseCache.__init__(self, context, atom_table, "hirshi")
 
@@ -734,7 +765,18 @@ class HirshfeldICache(TableBaseCache):
         log.end("Iterative Hirshfeld")
 
 
+isa_usage = """ * Iterative Stockholder Partitioning
+     scheme = isa
+     scheme parameters = (none)
+
+     This scheme has no parameters.
+
+     Lillestolen, T. C.;  Wheatley, R. J. Chem. Commun. 2008,  5909-5911.
+     http://dx.doi.org/10.1039/b812691g
+"""
+
 class ISACache(BaseCache):
+    usage = isa_usage
 
     @classmethod
     def new_from_args(cls, context, args):

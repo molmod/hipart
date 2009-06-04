@@ -31,10 +31,15 @@ __all__ = ["parse_command_line"]
 usage_template = """%%prog [options] gaussian.fchk scheme [scheme parameters]
 
 %s
+
+Partitioning schemes:
+
+%s
 """
 
 def parse_command_line(script_usage):
-    parser = OptionParser(usage_template % script_usage)
+    scheme_usage = "\n".join(cache.usage for name, cache in sorted(cache_classes.iteritems()))
+    parser = OptionParser(usage_template % (script_usage, scheme_usage))
     parser.add_option(
         "--density",
         help="The density field to use from the gaussian fchk file (scf, mp2, mp3, "

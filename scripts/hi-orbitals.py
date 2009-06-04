@@ -22,7 +22,11 @@
 
 from hipart.opts import parse_command_line
 
-usage = """%prog partitions the density matrix."""
+usage = """%prog partitions the orbitals in atomic contributions.
+
+This can be used for a partitioning of the density matrix in atomic
+contributions."""
+
 context, cache = parse_command_line(usage)
 cache.do_atom_matrices()
 context.clean()
