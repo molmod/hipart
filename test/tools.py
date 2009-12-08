@@ -21,7 +21,7 @@
 
 from hipart.cache import HirshfeldICache
 from hipart.context import Context
-from hipart.tools import compute_stockholder_weights
+from hipart.tools import compute_stockholder_weights, load_charges
 from molmod.units import angstrom
 
 import unittest
@@ -63,6 +63,10 @@ class ToolsTestCase(unittest.TestCase):
         #print cache.get_rs(0,0)[-1]/angstrom
         self.assertAlmostEqual(abs(h1+h0-1).max(), 0, 10)
         context.clean()
-        
 
-        
+    def test_load_charges(self):
+        charges = load_charges("input/hcl.hipart/hirshi_charges.txt")
+        self.assertAlmostEqual(charges[0], -0.19459)
+        self.assertAlmostEqual(charges[1], 0.19459)
+
+

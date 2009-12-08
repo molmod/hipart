@@ -28,7 +28,8 @@ import numpy, sys, os
 __all__ = [
     "Error", "load_cube", "guess_density_type", "write_cube_in",
     "cubegen_density", "cubegen_potential", "cubegen_orbital",
-    "get_atom_grid", "compute_stockholder_weights"
+    "get_atom_grid", "compute_stockholder_weights",
+    "load_charges",
 ]
 
 class Error(Exception):
@@ -152,5 +153,23 @@ def compute_stockholder_weights(i, atom_fns, num_lebedev, distances, k=None):
     pro_mol[pro_mol < 1e-40] = 1e-40
     # multiply the density on the grid by the weight function
     return pro_atom/pro_mol
+
+
+def load_charges(filename):
+    f = file(filename)
+    # read the number of atoms
+    line = f.next()
+    N = int(line[line.rfind(" "):])
+    # read the charges
+    charges = numpy.zeros(N, float)
+    f.next()
+    f.next()
+    for i in xrange(N):
+        line = f.next()
+        words = line.split()
+        charges[i] = float(words[3])
+    f.close()
+    return charges
+
 
 
