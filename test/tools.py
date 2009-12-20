@@ -21,7 +21,7 @@
 
 from hipart.cache import HirshfeldICache
 from hipart.context import Context
-from hipart.tools import compute_stockholder_weights, load_charges
+from hipart.tools import compute_stockholder_weights, load_charges, load_dipoles
 from molmod.units import angstrom
 
 import unittest
@@ -62,11 +62,17 @@ class ToolsTestCase(unittest.TestCase):
         #print h1+h0
         #print cache.get_rs(0,0)[-1]/angstrom
         self.assertAlmostEqual(abs(h1+h0-1).max(), 0, 10)
+        cache.do_charges()
+        cache.do_dipoles()
         context.clean()
 
     def test_load_charges(self):
         charges = load_charges("input/hcl.hipart/hirshi_charges.txt")
-        self.assertAlmostEqual(charges[0], -0.19459)
-        self.assertAlmostEqual(charges[1], 0.19459)
+        self.assertAlmostEqual(charges[0], -0.19470)
+        self.assertAlmostEqual(charges[1],  0.19470)
 
+    def test_load_dipoles(self):
+        dipoles = load_dipoles("input/hcl.hipart/hirshi_dipoles.txt")
+        self.assertAlmostEqual(dipoles[0,1], -0.00004)
+        self.assertAlmostEqual(dipoles[1,2], -0.03344)
 

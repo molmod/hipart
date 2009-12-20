@@ -172,4 +172,22 @@ def load_charges(filename):
     return charges
 
 
+def load_dipoles(filename):
+    f = file(filename)
+    # read the number of atoms
+    line = f.next()
+    N = int(line[line.rfind(" "):])
+    # read the dipoles
+    dipoles = numpy.zeros((N,3), float)
+    f.next()
+    f.next()
+    for i in xrange(N):
+        line = f.next()
+        words = line.split()
+        dipoles[i, 0] = float(words[3])
+        dipoles[i, 1] = float(words[4])
+        dipoles[i, 2] = float(words[5])
+    f.close()
+    return dipoles
+
 
