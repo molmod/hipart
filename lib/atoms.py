@@ -66,8 +66,6 @@ class AtomProfile(object):
             False
         )
         self.rs = rs[mask]
-        #from molmod.units import angstrom
-        #print number, self.rs[-1]/angstrom
         self.records = dict((charge, rhos[mask]) for charge, rhos in records.iteritems())
         self.do_potential = do_potential
 

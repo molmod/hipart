@@ -22,7 +22,7 @@
 from hipart.cache import HirshfeldICache
 from hipart.context import Context
 from hipart.tools import compute_stockholder_weights, load_charges, load_dipoles
-from molmod.units import angstrom
+from molmod import angstrom
 
 import unittest
 

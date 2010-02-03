@@ -19,8 +19,7 @@
 # --
 
 
-from molmod.units import angstrom
-from molmod.transformations import random_rotation
+from molmod import angstrom, Rotation
 
 import numpy, sys, os
 
@@ -31,6 +30,7 @@ __all__ = [
     "get_atom_grid", "compute_stockholder_weights",
     "load_charges",
 ]
+
 
 class Error(Exception):
     pass
@@ -117,7 +117,7 @@ def get_atom_grid(lebedev_xyz, center, radii):
     grid_points = numpy.zeros((num_lebedev*len(radii),3), float)
     counter = 0
     for r in radii:
-        rot = random_rotation()
+        rot = Rotation.random()
         grid_points[counter:counter+num_lebedev] = r*numpy.dot(lebedev_xyz,rot.r)+center
         counter += num_lebedev
     return grid_points

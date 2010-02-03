@@ -23,7 +23,7 @@ from hipart.atoms import AtomTable
 from hipart.tools import guess_density_type
 from hipart.lebedev_laikov import get_grid
 
-from molmod.io.gaussian03.fchk import FCHKFile
+from molmod.io import FCHKFile
 
 import os, shutil
 

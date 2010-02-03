@@ -27,9 +27,8 @@ from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid
 from hipart.atoms import AtomTable, AtomFn
 
-from molmod.transformations import random_rotation
-from molmod.data.periodic import periodic
-from molmod.units import angstrom
+from molmod import Rotation, angstrom
+from molmod.periodic import periodic
 
 import os, numpy
 
@@ -38,7 +37,7 @@ __all__ = ["ComputeError", "BaseCache", "HirshfeldICache", "cache_classes"]
 
 
 noble_numbers = numpy.array([0,2,10,18,36,54,86,118])
-core_sizes = dict((number, noble_numbers[noble_numbers<=number].max()) for number in periodic.yield_numbers())
+core_sizes = dict((number, noble_numbers[noble_numbers<=number].max()) for number in periodic.iter_numbers())
 
 
 class ComputeError(Exception):
@@ -280,7 +279,7 @@ class BaseCache(object):
                         pb()
                         radii = scale*self.cusp_radii
                         for i in xrange(molecule.size):
-                            rot = random_rotation()
+                            rot = Rotation.random()
                             for j in xrange(len(lebedev_xyz)):
                                 my_point = radii[i]*numpy.dot(rot.r, lebedev_xyz[j]) + molecule.coordinates[i]
                                 distances = numpy.sqrt(((molecule.coordinates - my_point)**2).sum(axis=1))
