@@ -21,7 +21,7 @@
 
 from hipart.log import log
 from hipart.tools import write_cube_in, cubegen_density, cubegen_potential, \
-    cubegen_orbital, get_atom_grid, compute_stockholder_weights
+    cubegen_orbital, get_atom_grid, compute_stockholder_weights, load_cube
 from hipart.integrate import cumul_integrate_log, integrate_log, integrate_lebedev
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid
