@@ -20,6 +20,7 @@
 
 
 from molmod import angstrom, Rotation
+from molmod.periodic import periodic
 
 import numpy, sys, os
 
@@ -28,7 +29,7 @@ __all__ = [
     "Error", "load_cube", "guess_density_type", "write_cube_in",
     "cubegen_density", "cubegen_potential", "cubegen_orbital",
     "get_atom_grid", "compute_stockholder_weights",
-    "load_charges",
+    "load_charges", "load_dipoles", "dump_charges"
 ]
 
 
@@ -189,5 +190,24 @@ def load_dipoles(filename):
         dipoles[i, 2] = float(words[5])
     f.close()
     return dipoles
+
+
+def dump_charges(filename, charges, numbers=None):
+    f = file(filename, "w")
+    print >> f, "number of atoms: %i" % len(charges)
+    print >> f, "  i        Z      Charge"
+    print >> f, "-----------------------------"
+    for i in xrange(len(charges)):
+        if numbers is None:
+            number = 0
+            symbol = "?"
+        else:
+            number = numbers[i]
+            symbol = periodic[number].symbol
+        print >> f, "% 3i  %2s  % 3i   % 10.5f" % (
+            i+1, symbol, number, charges[i]
+        )
+    print >> f, "-----------------------------"
+
 
 
