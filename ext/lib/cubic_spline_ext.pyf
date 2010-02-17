@@ -1,4 +1,4 @@
-python module cubic_spline_ext
+python module hipart_csext
 interface
 
   subroutine spline_construct(x,y,d,n)
@@ -47,5 +47,5 @@ interface
   end subroutine spline_cumul_int
 
 end interface
-end python module cubic_spline_ext
+end python module hipart_csext
 
