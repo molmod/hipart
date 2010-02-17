@@ -24,11 +24,9 @@ import sys, os, glob, shutil
 if os.path.isdir("../build"):
     shutil.rmtree("../build")
 os.system("cd ../; python setup.py build")
-libdir = glob.glob("../build/lib*")[0]
-sys.path.insert(0, libdir)
 os.system("cd ../ext/; python setup.py build")
-for filename in glob.glob("../ext/build/lib*/hipart/*"):
-    shutil.copy(filename, "%s/hipart" % libdir)
+sys.path.insert(0, glob.glob("../build/lib*")[0])
+sys.path.insert(0, glob.glob("../ext/build/lib*")[0])
 
 if not os.path.isdir("output"):
     os.mkdir("output")

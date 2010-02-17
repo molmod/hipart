@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
 # Copyright (C) 2007 - 2008 Toon Verstraelen <Toon.Verstraelen@UGent.be>
 #
@@ -31,11 +32,9 @@ setup(
     author_email='Toon.Verstraelen@UGent.be',
     url='http://molmod.ugent.be/code/',
     ext_modules=[
-        Extension("hipart.lebedev_laikov_ext", ["lib/Lebedev-Laikov.F"]),
-        Extension("hipart.cubic_spline_ext", ["lib/cubic_spline_ext.c","lib/cubic_spline_ext.pyf"]),
+        Extension("hipart_llext", ["lib/Lebedev-Laikov.F"]),
+        Extension("hipart_csext", ["lib/cubic_spline_ext.c","lib/cubic_spline_ext.pyf"]),
     ],
-    packages=['hipart'],
-    package_dir={'hipart': 'lib'},
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',

@@ -19,7 +19,7 @@
 # --
 
 
-import hipart.lebedev_laikov_ext
+import hipart_llext
 import numpy
 
 
@@ -31,9 +31,9 @@ class Error(Exception):
 
 
 grid_fns = {}
-for name in dir(hipart.lebedev_laikov_ext):
+for name in dir(hipart_llext):
     if name.startswith("ld"):
-        grid_fns[int(name[2:])] = hipart.lebedev_laikov_ext.__dict__[name]
+        grid_fns[int(name[2:])] = hipart_llext.__dict__[name]
 
 
 def get_grid(number):

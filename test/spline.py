@@ -19,7 +19,7 @@
 # --
 
 
-from hipart.cubic_spline_ext import *
+from hipart_csext import *
 
 import unittest, numpy, pylab
 
