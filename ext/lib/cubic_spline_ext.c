@@ -1,5 +1,5 @@
-// HiPart is a tool to analyse molecular densities with the hirshfeld partitioning scheme
-// Copyright (C) 2007 - 2008 Toon Verstraelen <Toon.Verstraelen@UGent.be>
+// HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
+// Copyright (C) 2007 - 2010 Toon Verstraelen <Toon.Verstraelen@UGent.be>
 //
 // This file is part of HiPart.
 //
@@ -17,6 +17,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>
 //
 // --
+
+
 
 
 
@@ -147,4 +149,5 @@ void spline_cumul_int(double *x, double *y, double *d, double* yint, int n) {
   }
   yint[n-1] = result;
 }
+
 

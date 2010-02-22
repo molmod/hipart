@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
-# Copyright (C) 2007 - 2008 Toon Verstraelen <Toon.Verstraelen@UGent.be>
+# Copyright (C) 2007 - 2010 Toon Verstraelen <Toon.Verstraelen@UGent.be>
 #
 # This file is part of HiPart.
 #
@@ -20,6 +20,10 @@
 # --
 
 
+
+
+
+
 from hipart.opts import parse_command_line
 
 usage = """%prog computes atomic charges.
@@ -31,4 +35,5 @@ atomic contribution to the density. The atomic densities are obtained from the
 context, cache = parse_command_line(usage)
 cache.do_charges()
 context.clean()
+
 

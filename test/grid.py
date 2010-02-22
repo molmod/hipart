@@ -1,5 +1,5 @@
 # HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
-# Copyright (C) 2007 - 2008 Toon Verstraelen <Toon.Verstraelen@UGent.be>
+# Copyright (C) 2007 - 2010 Toon Verstraelen <Toon.Verstraelen@UGent.be>
 #
 # This file is part of HiPart.
 #
@@ -19,6 +19,10 @@
 # --
 
 
+
+
+
+
 from hipart.lebedev_laikov import grid_fns, get_grid
 
 import unittest
@@ -31,3 +35,5 @@ class GridTestCase(unittest.TestCase):
     def test_grid(self):
         for number in grid_fns:
             get_grid(number)
+
+

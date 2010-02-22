@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
-# Copyright (C) 2007 - 2008 Toon Verstraelen <Toon.Verstraelen@UGent.be>
+# Copyright (C) 2007 - 2010 Toon Verstraelen <Toon.Verstraelen@UGent.be>
 #
 # This file is part of HiPart.
 #
@@ -20,6 +20,10 @@
 # --
 
 
+
+
+
+
 import sys, os, glob, shutil
 if os.path.isdir("../build"):
     shutil.rmtree("../build")
@@ -37,7 +41,5 @@ from grid import *
 from spline import *
 from tools import *
 unittest.main()
-
-
 
 

@@ -1,5 +1,5 @@
 # HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
-# Copyright (C) 2007 - 2008 Toon Verstraelen <Toon.Verstraelen@UGent.be>
+# Copyright (C) 2007 - 2010 Toon Verstraelen <Toon.Verstraelen@UGent.be>
 #
 # This file is part of HiPart.
 #
@@ -17,6 +17,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+
+
+
+
 
 
 from molmod import angstrom, Rotation
@@ -208,6 +212,5 @@ def dump_charges(filename, charges, numbers=None):
             i+1, symbol, number, charges[i]
         )
     print >> f, "-----------------------------"
-
 
 

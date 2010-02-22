@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
-# Copyright (C) 2007 - 2008 Toon Verstraelen <Toon.Verstraelen@UGent.be>
+# Copyright (C) 2007 - 2010 Toon Verstraelen <Toon.Verstraelen@UGent.be>
 #
 # This file is part of HiPart.
 #
@@ -18,6 +18,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
+
+
+
+
 
 
 from hipart.log import log
@@ -313,4 +317,5 @@ make_density_profile(
     options.density, options.lebedev, options.rlow*angstrom, options.rhigh*angstrom,
     options.num_steps, atom_numbers, options.max_ion
 )
+
 
