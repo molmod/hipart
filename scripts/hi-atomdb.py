@@ -29,11 +29,9 @@ from hipart.integrate import integrate_log
 from hipart.tools import guess_density_type, write_cube_in, cubegen_density, get_atom_grid
 from hipart.lebedev_laikov import get_grid, grid_fns
 
-from molmod.data.periodic import periodic
-from molmod.io.gaussian03.mkinput import mkinput
-from molmod.io.gaussian03.fchk import FCHKFile
-from molmod.molecules import Molecule
-from molmod.units import angstrom, eV
+from molmod.periodic import periodic
+from molmod.io import FCHKFile
+from molmod.units import angstrom, electronvolt
 
 from optparse import OptionParser
 from glob import glob
@@ -73,6 +71,24 @@ def parse_numbers(atom_str):
     return numbers
 
 
+def make_g03_input(dirname, number, charge, mult, lot, command):
+    if not os.path.isdir(dirname):
+        os.makedirs(dirname)
+    f = file("%s/gaussian.com" % dirname, "w")
+    print >> f, "%mem=500MB"
+    print >> f, "%chk=gaussian.chk"
+    print >> f, "%nproc=1"
+    print >> f, "#p %s %s" % (lot, command)
+    print >> f, ""
+    print >> f, "Foo"
+    print >> f, ""
+    print >> f, "%i %i" % (charge, mult)
+    symbol = periodic[number].symbol
+    print >> f, "%2s 0.0 0.0 0.0" % symbol
+    print >> f, ""
+    f.close()
+
+
 def make_inputs(lot, atom_numbers, max_ion, use_qc):
     pb = log.pb("Creating input files", len(atom_numbers)*(2*max_ion+1))
     noble_numbers = [0] + [atom.number for atom in periodic.atoms_by_number.itervalues() if atom.col == 18]
@@ -90,7 +106,6 @@ def make_inputs(lot, atom_numbers, max_ion, use_qc):
             num_states = 3
         else:
             num_states = 4
-        molecule = Molecule(numpy.array([atom.number], int), numpy.zeros((1,3), float), "Computer says nooooo...")
         for charge in xrange(-max_ion, max_ion+1):
             charge_label = get_charge_label(charge)
             pb()
@@ -114,10 +129,7 @@ def make_inputs(lot, atom_numbers, max_ion, use_qc):
                     command += " scf(fermi,tight)"
                 if num_elec - last_noble > 1:
                     command += " polar"
-                mkinput(
-                    molecule, charge, mult, lot, command, "", 1,
-                    "500MB", "10GB", os.path.join(dirname, "gaussian.com")
-                )
+                make_g03_input(dirname, atom.number, charge, mult, lot, command)
     pb()
 
 
@@ -193,7 +205,7 @@ def select_ground_states(energy_field, max_ion):
         eta = (energies[+1] + energies[-1] - 2*energies[0])
         values = [energies[0] - energies[-1], energies[+1] - energies[0], chi, eta]
         print >> f_au, "% 3s" % symbol, "%2i" % number, " ".join("% 10.5f" % v for v in values), "    ", mult[-1],mult[0],mult[1]
-        print >> f_ev, "% 3s" % symbol, "%2i" % number, " ".join("% 10.5f" % (v/eV) for v in values), "    ", mult[-1],mult[0],mult[1]
+        print >> f_ev, "% 3s" % symbol, "%2i" % number, " ".join("% 10.5f" % (v/electronvolt) for v in values), "    ", mult[-1],mult[0],mult[1]
 
     f_au.close()
     f_ev.close()
