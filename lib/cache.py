@@ -158,7 +158,7 @@ class BaseCache(object):
                 densities = numpy.fromfile(den_fn_bin, float)[:grid_size]
             else:
                 if os.path.isfile(den_fn):
-                    densities = load_cube(den_fn, cube_size)[:grid_size]
+                    densities = load_cube(den_fn, grid_size)[:grid_size]
                 else:
                     grid_fn = os.path.join(workdir, "atom%05igrid.txt" % i)
                     densities = cubegen_density(
