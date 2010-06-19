@@ -740,6 +740,58 @@ class BaseCache(object):
 
         log.end("Overlap populations")
 
+    def do_bond_orders(self):
+        if hasattr(self, "bond_orders") and hasattr(self, "valences"):
+            return
+        log.begin("Bond orders")
+        if self.reference is not None:
+            log("Warning: The bond order analysis ignores the reference state.")
+
+        self.do_charges()
+        self.do_atom_matrices()
+
+        molecule = self.context.fchk.molecule
+        self.bond_orders = numpy.zeros((molecule.size, molecule.size))
+        self.valences = numpy.zeros(molecule.size)
+        num_orbitals = self.context.fchk.fields["Number of basis functions"]
+        n_alpha = self.context.fchk.fields["Number of alpha electrons"]
+        n_beta = self.context.fchk.fields["Number of beta electrons"]
+        n_min = min(n_alpha, n_beta)
+        n_max = max(n_alpha, n_beta)
+
+        pb = log.pb("Computing bond orders", (molecule.size*(molecule.size+1))/2)
+        check = 0
+        for i in xrange(molecule.size):
+            for j in xrange(i+1):
+                tmp = self.atom_matrices[i][:n_max,:n_max]*self.atom_matrices[j][:n_max,:n_max]
+                check += tmp
+                tmp[:n_min,:] *= 2
+                tmp[:,:n_min] *= 2
+                bo = tmp.sum()
+                pb()
+                if i==j:
+                    # compute valence
+                    self.valences[i] = 2*self.populations[i] - bo
+                else:
+                    # compute bond order
+                    self.bond_orders[i,j] = bo
+                    self.bond_orders[j,i] = bo
+        pb()
+
+        filename = os.path.join(self.context.outdir, "%s_bond_orders.txt" % self.prefix)
+        f = file(filename, "w")
+        print >> f, "number of atoms: ", molecule.size
+        print >> f, "Bond orders"
+        for i in xrange(molecule.size):
+            print >> f, " ".join("%15.9f" % v for v in self.bond_orders[i,:i])
+        print >> f, "Valences, Free valences"
+        for i in xrange(molecule.size):
+            print >> f, "%15.9f" % self.valences[i], "%15.9f" % (self.valences[i] - self.bond_orders[i].sum())
+        f.close()
+        log("Written %s" % filename)
+
+        log.end("Bond orders")
+
 
 class TableBaseCache(BaseCache):
     @classmethod

@@ -52,7 +52,8 @@ class Context(object):
     def __init__(self, fchk_fn, options):
         self.fchk = FCHKFile(fchk_fn, field_labels=[
             "Charge", "Number of basis functions", "Dipole Moment",
-            "Number of electrons",
+            "Number of electrons", "Number of alpha electrons",
+            "Number of beta electrons"
         ])
         self.options = options
 
