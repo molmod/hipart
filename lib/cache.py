@@ -619,11 +619,11 @@ class BaseCache(object):
             pw = self.stockholder_weights[i]
             matrix = numpy.zeros((num_orbitals,num_orbitals), float)
             self.atom_matrices.append(matrix)
+            rs = self.get_rs(i, number_i)
             for j1 in xrange(num_orbitals):
                 for j2 in xrange(j1+1):
                     integrand = orbitals[j1]*orbitals[j2]*pw
                     radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                    rs = self.get_rs(i, number_i)
                     value = integrate_log(rs, radfun*rs**2)
                     matrix[j1,j2] = value
                     matrix[j2,j1] = value
