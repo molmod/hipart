@@ -730,6 +730,7 @@ class BaseCache(object):
             for i in xrange(molecule.size):
                 print >> f, " ".join("%15.9f" % v for v in overlap_populations[i])
             f.close()
+            log("Written %s" % filename)
 
         output("%s_overlap_populations.txt" % self.prefix, self.overlap_populations)
         if self.reference is not None:
@@ -783,7 +784,7 @@ class BaseCache(object):
         print >> f, "number of atoms: ", molecule.size
         print >> f, "Bond orders"
         for i in xrange(molecule.size):
-            print >> f, " ".join("%15.9f" % v for v in self.bond_orders[i,:i])
+            print >> f, " ".join("%15.9f" % v for v in self.bond_orders[i])
         print >> f, "Valences, Free valences"
         for i in xrange(molecule.size):
             print >> f, "%15.9f" % self.valences[i], "%15.9f" % (self.valences[i] - self.bond_orders[i].sum())
