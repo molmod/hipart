@@ -398,16 +398,19 @@ class BaseCache(object):
         self.do_partitions()
         self.do_esp_costfunction()
         charges_fn_bin = os.path.join(self.context.workdir, "%s_charges.bin" % self.prefix)
+        populations_fn_bin = os.path.join(self.context.workdir, "%s_populations.bin" % self.prefix)
         molecule = self.context.fchk.molecule
 
-        if os.path.isfile(charges_fn_bin):
+        if os.path.isfile(charges_fn_bin) and os.path.isfile(populations_fn_bin):
             log("Loading charges.")
             self.charges = numpy.fromfile(charges_fn_bin, float)
+            self.populations = numpy.fromfile(populations_fn_bin, float)
         else:
             self.do_atom_grids()
             self.do_atom_densities()
 
             pb = log.pb("Computing charges", molecule.size)
+            self.populations = numpy.zeros(molecule.size, float)
             self.charges = numpy.zeros(molecule.size, float)
             for i, number_i in enumerate(molecule.numbers):
                 pb()
@@ -419,8 +422,10 @@ class BaseCache(object):
                 integrand = densities*pw
                 radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
                 rs = self.get_rs(i, number_i)
-                self.charges[i] = number_i - integrate_log(rs, radfun*rs**2)
+                self.populations[i] = integrate_log(rs, radfun*rs**2)
+                self.charges[i] = number_i - self.populations[i]
             pb()
+            self.populations.tofile(populations_fn_bin)
             if self.context.options.fix_total_charge:
                 log("Ugly step: Adding constant to charges so that the total charge is zero.")
                 self.charges -= (self.charges.sum() - self.context.fchk.fields.get("Charge"))/molecule.size
@@ -635,6 +640,105 @@ class BaseCache(object):
         f.close()
         log("Written %s" % filename)
         log.end("Partinioning density matrix")
+
+    def do_od_stockholder_weights(self):
+        if hasattr(self, "od_stockholder_weights"):
+            return
+        log.begin("Off diagonal stockholder weights")
+        self.do_partitions()
+        molecule = self.context.fchk.molecule
+        self.do_atom_grids()
+        self.od_stockholder_weights = {}
+        pb = log.pb("Evaluation weights on off diagonal grids", molecule.size**2)
+        for i in xrange(molecule.size):
+            for j in xrange(molecule.size):
+                pb()
+                if i != j:
+                    w = compute_stockholder_weights(
+                        j, self.pro_atom_fns, self.context.num_lebedev,
+                        self.atom_grid_distances, i
+                    )
+                    self.od_stockholder_weights[(i,j)] = w
+        pb()
+        log.end("Off diagonal stockholder weights")
+
+    def do_overlap_populations(self):
+        if hasattr(self, "overlap_populations"):
+            return
+        log.begin("Overlap populations")
+        if self.reference is not None:
+            self.reference.do_overlap_populations()
+
+        overlap_populations_fn_bin = os.path.join(self.context.workdir, "%s_overlap_populations.bin" % self.prefix)
+        molecule = self.context.fchk.molecule
+
+        if os.path.isfile(overlap_populations_fn_bin):
+            log("Loading overlap populations.")
+            self.overlap_populations = numpy.fromfile(overlap_populations_fn_bin, float).reshape((molecule.size,molecule.size))
+        else:
+            self.do_atom_densities()
+            self.do_charges()
+            self.do_atom_grids()
+            self.do_od_stockholder_weights()
+            self.overlap_populations = numpy.zeros((molecule.size, molecule.size))
+            pb = log.pb("Integrating over products of stockholder weights", (molecule.size*(molecule.size+1))/2)
+            for i, number_i in enumerate(molecule.numbers):
+                for j, number_j in enumerate(molecule.numbers[:i+1]):
+                    pb()
+                    if i != j:
+                        # Use Becke's integration scheme to split the integral
+                        # over two grids.
+                        # 1) first part of the integral, using the grid on atom i
+                        rs = self.get_rs(i, number_i)
+                        delta = (self.atom_grid_distances[(i,j)].reshape((len(rs),-1)) - rs.reshape((-1,1))).ravel()
+                        switch = delta/molecule.distance_matrix[i,j]
+                        for k in xrange(3):
+                            switch = (3 - switch**2)*switch/2
+                        switch += 1
+                        switch /= 2
+                        integrand = switch*self.od_stockholder_weights[(i,j)]*self.stockholder_weights[i]*self.atom_densities[i]
+                        radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+                        part1 = integrate_log(rs, radfun*rs**2)
+                        # 2) second part of the integral
+                        rs = self.get_rs(j, number_j)
+                        delta = (self.atom_grid_distances[(j,i)].reshape((len(rs),-1)) - rs.reshape((-1,1))).ravel()
+                        switch = delta/molecule.distance_matrix[i,j]
+                        for k in xrange(3):
+                            switch = (3 - switch**2)*switch/2
+                        switch += 1
+                        switch /= 2
+                        integrand = switch*self.od_stockholder_weights[(j,i)]*self.stockholder_weights[j]*self.atom_densities[j]
+                        radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+                        part2 = integrate_log(rs, radfun*rs**2)
+                        # Add up and store
+                        #print i, j, part1, part2
+                        self.overlap_populations[i,j] = part1 + part2
+                        self.overlap_populations[j,i] = part1 + part2
+                    else:
+                        integrand = self.stockholder_weights[i]**2*self.atom_densities[i]
+                        radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+                        rs = self.get_rs(i, number_i)
+                        self.overlap_populations[i,i] = integrate_log(rs, radfun*rs**2)
+            pb()
+            self.overlap_populations.tofile(overlap_populations_fn_bin)
+
+        def output(filename, overlap_populations):
+            # print a file with the bond orders
+            filename = os.path.join(self.context.outdir, filename)
+            f = file(filename, "w")
+            print >> f, "number of atoms:", molecule.size
+            for i in xrange(molecule.size):
+                print >> f, " ".join("%15.9f" % v for v in overlap_populations[i])
+            f.close()
+
+        output("%s_overlap_populations.txt" % self.prefix, self.overlap_populations)
+        if self.reference is not None:
+            output(
+                "%s_overlap_populations.txt" % self.prefix,
+                self.overlap_populations - self.reference.overlap_populations,
+            )
+
+        log.end("Overlap populations")
 
 
 class TableBaseCache(BaseCache):
