@@ -73,8 +73,8 @@ class ToolsTestCase(unittest.TestCase):
 
     def test_load_charges(self):
         charges = load_charges("input/hcl.hipart/hirshi_charges.txt")
-        self.assertAlmostEqual(charges[0], -0.19470)
-        self.assertAlmostEqual(charges[1],  0.19470)
+        self.assertAlmostEqual(charges[0], -0.19438)
+        self.assertAlmostEqual(charges[1],  0.19438)
 
     def test_dump_charges(self):
         fn_txt = "output/foo_charges.txt"
@@ -93,7 +93,7 @@ class ToolsTestCase(unittest.TestCase):
 
     def test_load_dipoles(self):
         dipoles = load_dipoles("input/hcl.hipart/hirshi_dipoles.txt")
-        self.assertAlmostEqual(dipoles[0,1], -0.00004)
-        self.assertAlmostEqual(dipoles[1,2], -0.03344)
+        self.assertAlmostEqual(dipoles[0,1],  0.00002)
+        self.assertAlmostEqual(dipoles[1,2], -0.03385)
 
 
