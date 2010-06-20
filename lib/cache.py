@@ -573,6 +573,7 @@ class BaseCache(object):
         log.begin("Orbitals on atomic grids")
         if self.reference is not None:
             log("Warning: The orbital analysis ignores the reference state.")
+        log("Warning: Only using alpha orbitals. Assuming restricted orbitals.")
 
         self.do_atom_grids()
         molecule = self.context.fchk.molecule

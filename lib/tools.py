@@ -79,7 +79,7 @@ def write_cube_in(filename, grid_points):
 def cubegen_density(grid_fn, den_fn, fchk, density_type, grid_size):
     if fchk.lot.startswith("ROHF"):
         # ugly hack: Workaround for stupid cubegen that does not work
-        # property on ROHF calculations. pfff...
+        # properly on ROHF calculations. pfff...
         densities = 0.0
         num_elec = fchk.fields.get("Number of electrons")
         for j in xrange((num_elec+1)/2):
