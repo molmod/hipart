@@ -77,6 +77,9 @@ class Context(object):
         else:
             self.reference = Context(options.reference, options)
 
+        self.molecule = self.fchk.molecule
+        self.molecule.set_default_graph()
+
     num_lebedev = property(lambda self: len(self.lebedev_weights))
 
     def check_tag(self, rs):

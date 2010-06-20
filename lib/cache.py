@@ -96,7 +96,7 @@ class BaseCache(object):
         if hasattr(self, "atom_grid_distances") and hasattr(self, "atom_grid_points"):
             return
         log.begin("Atomic grids")
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         if self.reference is not None:
             log("Using atomic grids from reference state.")
             self.reference.do_atom_grids()
@@ -144,7 +144,7 @@ class BaseCache(object):
             return
         log.begin("Molecular densities on atomic grids")
         self.do_atom_grids()
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         workdir = self.context.workdir
 
         pb = log.pb("Computing/Loading densities", molecule.size)
@@ -178,7 +178,7 @@ class BaseCache(object):
             self.cusp_radii = self.reference.cusp_radii
             return
 
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         workdir = self.context.workdir
 
         cusp_radii_fn_bin = os.path.join(workdir, "cusp_radii.bin")
@@ -212,7 +212,7 @@ class BaseCache(object):
         self._do_molecular_grid()
 
         total_charge = self.context.fchk.fields.get("Charge")
-        coordinates = self.context.fchk.molecule.coordinates
+        coordinates = self.context.molecule.coordinates
         self.mol_esp_cost = ESPCostFunction(
             coordinates, self.mol_points, self.mol_weights,
             self.mol_densities, self.mol_potentials, total_charge,
@@ -240,7 +240,7 @@ class BaseCache(object):
 
         log.begin("Molecular grid + density and potential on this grid")
         lebedev_xyz, lebedev_weights = get_grid(self.context.options.mol_lebedev)
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         workdir = self.context.workdir
 
         den_fn = os.path.join(workdir, "molecule_dens.cube")
@@ -364,7 +364,7 @@ class BaseCache(object):
 
     def _load_partitions(self, weights_tpl_bin, pro_atoms_tpl_bin):
         log("Try to load partitions")
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
 
         self.stockholder_weights = []
         for i in xrange(molecule.size):
@@ -399,7 +399,7 @@ class BaseCache(object):
         self.do_esp_costfunction()
         charges_fn_bin = os.path.join(self.context.workdir, "%s_charges.bin" % self.prefix)
         populations_fn_bin = os.path.join(self.context.workdir, "%s_populations.bin" % self.prefix)
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
 
         if os.path.isfile(charges_fn_bin) and os.path.isfile(populations_fn_bin):
             log("Loading charges.")
@@ -472,7 +472,7 @@ class BaseCache(object):
         self.do_esp_costfunction()
         self.do_charges()
         dipoles_fn_bin = os.path.join(self.context.workdir, "%s_dipoles.bin" % self.prefix)
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
 
         if os.path.isfile(dipoles_fn_bin):
             log("Loading dipoles.")
@@ -576,7 +576,7 @@ class BaseCache(object):
         log("Warning: Only using alpha orbitals. Assuming restricted orbitals.")
 
         self.do_atom_grids()
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         num_orbitals = self.context.fchk.fields.get("Number of basis functions")
         workdir = self.context.workdir
 
@@ -610,7 +610,7 @@ class BaseCache(object):
         self.do_atom_orbitals()
         self.do_partitions()
         num_orbitals = self.context.fchk.fields.get("Number of basis functions")
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
 
         pb = log.pb("Computing matrices", molecule.size)
         self.atom_matrices = []
@@ -647,7 +647,7 @@ class BaseCache(object):
             return
         log.begin("Off diagonal stockholder weights")
         self.do_partitions()
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         self.do_atom_grids()
         self.od_stockholder_weights = {}
         pb = log.pb("Evaluation weights on off diagonal grids", molecule.size**2)
@@ -671,7 +671,7 @@ class BaseCache(object):
             self.reference.do_overlap_populations()
 
         overlap_populations_fn_bin = os.path.join(self.context.workdir, "%s_overlap_populations.bin" % self.prefix)
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
 
         if os.path.isfile(overlap_populations_fn_bin):
             log("Loading overlap populations.")
@@ -752,7 +752,7 @@ class BaseCache(object):
         self.do_charges()
         self.do_atom_matrices()
 
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         self.bond_orders = numpy.zeros((molecule.size, molecule.size))
         self.valences = numpy.zeros(molecule.size)
         num_orbitals = self.context.fchk.fields["Number of basis functions"]
@@ -843,7 +843,7 @@ class HirshfeldCache(TableBaseCache):
         log.begin("Normal Hirshfeld (with neutral pro-atoms)")
         self.do_atom_grids()
 
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         self.pro_atom_fns = []
         for i, number_i in enumerate(molecule.numbers):
             self.pro_atom_fns.append(self.atom_table.records[number_i].get_atom_fn(0.0))
@@ -881,7 +881,7 @@ class HirshfeldICache(TableBaseCache):
 
     def _compute_partitions(self):
         log.begin("Iterative Hirshfeld")
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         self.do_atom_densities()
 
         counter = 0
@@ -980,7 +980,7 @@ class ISACache(BaseCache):
 
     def _compute_partitions(self):
         log.begin("Iterative Molecular Hirshfeld")
-        molecule = self.context.fchk.molecule
+        molecule = self.context.molecule
         self.do_atom_densities()
 
         log("Generating initial guess for the pro-atoms")
