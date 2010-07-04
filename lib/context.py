@@ -19,15 +19,9 @@
 # --
 
 
-
-
-
-
 from hipart.atoms import AtomTable
-from hipart.tools import guess_density_type
 from hipart.lebedev_laikov import get_grid
-
-from molmod.io import FCHKFile
+from hipart.wavefn import load_wavefunction
 
 import os, shutil
 
@@ -42,52 +36,34 @@ class ContextError(Exception):
 class Context(object):
     """This class is an extension to the concept of global variables.
 
-    It ensures that an entire context of data structures, files and directories
-    is present and sane. One can pass around a context variable instead of the
-    individual variables.
+       It ensures that an entire context of data structures, files and
+       directories is present and sane. One can pass around a context variable
+       instead of the individual global variables.
     """
 
-    version = 1
+    version = 2
 
-    def __init__(self, fchk_fn, options):
-        self.fchk = FCHKFile(fchk_fn, field_labels=[
-            "Charge", "Number of basis functions", "Dipole Moment",
-            "Number of electrons", "Number of alpha electrons",
-            "Number of beta electrons"
-        ])
+    def __init__(self, filename, options):
+        self.wavefn = load_wavefunction(filename)
         self.options = options
 
-        prefix = fchk_fn.replace(".fchk", "")
-        self.outdir = "%s.hipart" % prefix
+        self.outdir = "%s.hipart" % self.wavefn.prefix
         if not os.path.isdir(self.outdir):
             os.mkdir(self.outdir)
         self.workdir = os.path.join(self.outdir, "work")
         if not os.path.isdir(self.workdir):
             os.mkdir(self.workdir)
 
-        if options.density is None:
-            options.density = guess_density_type(self.fchk.lot)
-        else:
-            options.density = options.density
-
         self.lebedev_xyz, self.lebedev_weights = get_grid(options.lebedev)
-
-        if (options.reference is None or os.path.samefile(options.reference, fchk_fn)):
-            self.reference = None
-        else:
-            self.reference = Context(options.reference, options)
-
-        self.molecule = self.fchk.molecule
-        self.molecule.set_default_graph()
 
     num_lebedev = property(lambda self: len(self.lebedev_weights))
 
     def check_tag(self, rs):
         """Make sure our context is compatible with the data in the workdir."""
 
-        self.tag = "contextversion=%i density=%s lebedev=%i mol_lebedev=%i r_low=%.2e r_high=%.2e r_steps=%i" % (
-            self.version, self.options.density, self.num_lebedev,
-            self.options.mol_lebedev, rs.min(), rs.max(), len(rs),
+        self.tag = "contextversion=%i lebedev=%i mol_lebedev=%i r_low=%.2e r_high=%.2e r_steps=%i filename=%s" % (
+            self.version, self.num_lebedev, self.options.mol_lebedev,
+            rs.min(), rs.max(), len(rs), os.path.basename(self.wavefn.filename),
         )
 
         context_fn = os.path.join(self.workdir, "context")
@@ -113,6 +89,5 @@ class Context(object):
         if self.options.clean >= 1:
             print "Cleaning up text files in work directory."
             os.system("rm -f %s" % os.path.join(self.workdir, "*.txt"))
-            os.system("rm -f %s" % os.path.join(self.workdir, "*.cube"))
 
 

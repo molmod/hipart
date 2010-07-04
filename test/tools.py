@@ -23,10 +23,9 @@
 
 
 
-from hipart.cache import HirshfeldICache
+from hipart.cache import HirshfeldCache
 from hipart.context import Context
-from hipart.tools import compute_stockholder_weights, load_charges, \
-    load_dipoles, dump_charges
+from hipart.tools import load_charges, load_dipoles, dump_charges
 from molmod import angstrom
 
 import unittest
@@ -36,9 +35,7 @@ __all__ = ["ToolsTestCase"]
 
 
 class FakeOptions(object):
-    def __init__(self, density, reference, lebedev, mol_lebedev, clean, threshold, max_iter, fix_total_charge):
-        self.density = density
-        self.reference = reference
+    def __init__(self, lebedev, mol_lebedev, clean, threshold, max_iter, fix_total_charge):
         self.lebedev = lebedev
         self.mol_lebedev = mol_lebedev
         self.clean = clean
@@ -49,17 +46,17 @@ class FakeOptions(object):
 
 class ToolsTestCase(unittest.TestCase):
     def test_compute_stockholder_weights(self):
-        options = FakeOptions("scf", None, 50, 50, 1, 1e-4, 500, True)
+        options = FakeOptions(110, 50, 1, 1e-4, 500, True)
         context = Context("input/hcl.fchk", options)
-        cache = HirshfeldICache.new_from_args(context, ["input/HF-STO-3G-densities.txt"])
-        cache.do_atom_grids()
-        cache.do_partitions()
-        h0 = compute_stockholder_weights(0, cache.pro_atom_fns, context.num_lebedev, cache.atom_grid_distances, k=1)
+        cache = HirshfeldCache.new_from_args(context, ["input/HF-STO-3G-densities.txt"])
+        cache.do_atgrids()
+        cache.do_proatomfns()
+        h0 = cache._compute_atweights(cache.atgrids[0], 0)
         #print h0[:50]
         #print h0[4000:4050]
         #print h0[-50:]
         #print h0.shape
-        h1 = compute_stockholder_weights(1, cache.pro_atom_fns, context.num_lebedev, cache.atom_grid_distances, k=1)
+        h1 = cache._compute_atweights(cache.atgrids[0], 1)
         #print h1[:50]
         #print h1[4000:4050]
         #print h1[-50:]
@@ -73,8 +70,8 @@ class ToolsTestCase(unittest.TestCase):
 
     def test_load_charges(self):
         charges = load_charges("input/hcl.hipart/hirshi_charges.txt")
-        self.assertAlmostEqual(charges[0], -0.19438)
-        self.assertAlmostEqual(charges[1],  0.19438)
+        self.assertAlmostEqual(charges[0], -0.19438, 3)
+        self.assertAlmostEqual(charges[1],  0.19438, 3)
 
     def test_dump_charges(self):
         fn_txt = "output/foo_charges.txt"
@@ -93,7 +90,7 @@ class ToolsTestCase(unittest.TestCase):
 
     def test_load_dipoles(self):
         dipoles = load_dipoles("input/hcl.hipart/hirshi_dipoles.txt")
-        self.assertAlmostEqual(dipoles[0,1],  0.00002)
-        self.assertAlmostEqual(dipoles[1,2], -0.03385)
+        self.assertAlmostEqual(dipoles[0,1],  0.00002, 3)
+        self.assertAlmostEqual(dipoles[1,2], -0.03385, 3)
 
 

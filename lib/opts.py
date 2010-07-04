@@ -45,12 +45,6 @@ def parse_command_line(script_usage):
     scheme_usage = "\n".join(cache.usage for name, cache in sorted(cache_classes.iteritems()))
     parser = OptionParser(usage_template % (script_usage, scheme_usage))
     parser.add_option(
-        "--density",
-        help="The density field to use from the gaussian fchk file (scf, mp2, mp3, "
-        "...). If not given, the program will guess it based on the level of "
-        "theory."
-    )
-    parser.add_option(
         "-l", "--lebedev", default=110, type='int',
         help="The number of grid points for the atomic grids. "
         "[default=%default]. Select from: " + (", ".join(str(i) for i in sorted(grid_fns)))
@@ -59,11 +53,6 @@ def parse_command_line(script_usage):
         "-m", "--mol-lebedev", default=50, type='int',
         help="The number of grid points for the molecular grids. "
         "[default=%default]. See --lebedev for the supported grid sizes."
-    )
-    parser.add_option(
-        "-r", "--reference", default=None,
-        help="Refer to the checkpoint af a reference state. The output will "
-        "relative changes instead absolute values."
     )
     parser.add_option(
         "-c", "--clean", default=1, type='int',

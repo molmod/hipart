@@ -26,8 +26,10 @@
 
 from hipart.log import log
 from hipart.integrate import integrate_log
-from hipart.tools import guess_density_type, write_cube_in, cubegen_density, get_atom_grid
 from hipart.lebedev_laikov import get_grid, grid_fns
+from hipart.grids import Grid
+from hipart.tools import get_atom_grid
+from hipart.wavefn import FCHKWaveFunction
 
 from molmod.periodic import periodic
 from molmod.io import FCHKFile
@@ -151,8 +153,8 @@ def run_jobs():
             print "  %s" % dirname
 
 
-def select_ground_states(energy_field, max_ion):
-    os.system("grep '%s' 0*/*/*/gaussian.fchk | grep -v gs > energies.txt" % (energy_field))
+def select_ground_states(max_ion):
+    os.system("grep 'Total Energy' 0*/*/*/gaussian.fchk | grep -v gs > energies.txt")
 
     f = file("energies.txt")
 
@@ -211,7 +213,7 @@ def select_ground_states(energy_field, max_ion):
     f_ev.close()
 
 
-def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_numbers, max_ion):
+def make_density_profile(num_lebedev, r_low, r_high, steps, atom_numbers, max_ion):
     # generate lebedev grid
     lebedev_xyz, lebedev_weights = get_grid(num_lebedev)
 
@@ -221,7 +223,7 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
     rs = r_low*numpy.exp(alpha*numpy.arange(0,steps))
 
     f_pro = file("densities.txt", "w")
-    print >> f_pro, "Radii [bohr]", " ".join("%12.7e" % r for r in rs)
+    print >> f_pro, "Radii [bohr]              ", " ".join("%12.7e" % r for r in rs)
     charges = []
 
     # run over all directories, run cubegen, load cube data and plot
@@ -234,22 +236,14 @@ def make_density_profile(density_type, num_lebedev, r_low, r_high, steps, atom_n
             pb()
             workdir = os.path.join("%03i%s" % (number, symbol), charge_label, "gs")
             if not os.path.isdir(workdir): continue
-            den_fn = os.path.join(workdir, "densities.cube")
-            den_bin = os.path.join(workdir, "densities.cube.bin")
-            if os.path.isfile(den_bin):
-                radrhos = numpy.fromfile(den_bin, float)
-            else:
-                grid_fn = os.path.join(workdir, "grid.txt")
-                atom_grid = get_atom_grid(lebedev_xyz, numpy.zeros(3,float), rs)
-                write_cube_in(grid_fn, atom_grid)
-                fchk_fn = os.path.join(workdir, "gaussian.fchk")
-                fchk = FCHKFile(fchk_fn, field_labels=["Number of electrons"])
-                rhos = cubegen_density(grid_fn, den_fn, fchk, options.density, num_lebedev*len(rs))
-                radrhos = (rhos.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1) # this is averaging, i.e. integral/(4*pi)
-                radrhos.tofile(den_bin)
-                #else:
-                #    print "Skipping %s" % den_fn
-                #    continue
+            prefix = "%s/grid" % workdir
+            grid = Grid.from_prefix(prefix)
+            if grid is None:
+                grid = Grid("%s/grid" % workdir, get_atom_grid(lebedev_xyz, numpy.zeros(3,float), rs))
+            fchk_fn = os.path.join(workdir, "gaussian.fchk")
+            wavefn = FCHKWaveFunction(fchk_fn)
+            wavefn.compute_density(grid)
+            radrhos = (grid.moldens.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1) # this is averaging, i.e. integral/(4*pi)
             print >> f_pro, "Densities %3i %2s %+2i [a.u.]" % (number, symbol, charge),
             print >> f_pro, " ".join("%12.7e" % rho for rho in radrhos)
             charges.append((number, symbol, charge, integrate_log(rs, 4*numpy.pi*rs*rs*radrhos)))
@@ -283,12 +277,6 @@ Examples:
 %prog HF/3-21G 1,6,7,8 -l 110
 """)
 parser.add_option(
-    "--density",
-    help="The density field to use from the gaussian fchk file (scf, mp2, mp3, "
-    "...). If not given, the program will guess it based on the level of "
-    "theory."
-)
-parser.add_option(
     "-l", "--lebedev", default=350, type='int',
     help="The number of grid points for the spherical averaging. "
     "[default=%default]. Select from: " + (", ".join(str(i) for i in sorted(grid_fns)))
@@ -318,15 +306,13 @@ if len(args) != 2:
     parser.error("Expecting two arguments: level of theory (+ basis set) and the atom specification.")
 lot, atom_str = args
 
-if options.density is None:
-    options.density = guess_density_type(lot)
 atom_numbers = parse_numbers(atom_str)
 
 make_inputs(lot, atom_numbers, options.max_ion, options.qc)
 run_jobs()
-select_ground_states('%s Energy' % options.density.upper(), options.max_ion)
+select_ground_states(options.max_ion)
 make_density_profile(
-    options.density, options.lebedev, options.rlow*angstrom, options.rhigh*angstrom,
+    options.lebedev, options.rlow*angstrom, options.rhigh*angstrom,
     options.num_steps, atom_numbers, options.max_ion
 )
 
