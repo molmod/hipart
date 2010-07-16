@@ -24,19 +24,24 @@
 
 
 
-import glob
-from distutils.core import setup
+import setuptools, glob
+from numpy.distutils.core import setup, Extension
 
 setup(
     name='HiPart',
     version='0.001',
-    description='HiPart is a tool to analyse molecular densities with the hirshfeld partitioning scheme',
+    description='HiPart is a tool to analyse molecular densities with the fuzzy atom partitioning',
     author='Toon Verstraelen',
     author_email='Toon.Verstraelen@UGent.be',
     url='http://molmod.ugent.be/code/',
     packages = ['hipart'],
     package_dir = {'hipart': 'lib'},
     scripts=glob.glob("scripts/hi-*.py"),
+    license = "GPLv3",
+    ext_modules=[
+        Extension("hipart.llext", ["lib/Lebedev-Laikov.F"]),
+        Extension("hipart.csext", ["lib/cubic_spline_ext.c","lib/cubic_spline_ext.pyf"]),
+    ],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',

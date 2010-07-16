@@ -19,21 +19,9 @@
 # --
 
 
-
-
-
-
-from hipart.lebedev_laikov import grid_fns, get_grid
-
-import unittest
-
-
-__all__ = ["GridTestCase"]
-
-
-class GridTestCase(unittest.TestCase):
-    def test_grid(self):
-        for number in grid_fns:
-            get_grid(number)
+def test_get_grid():
+    from hipart.lebedev_laikov import grid_fns, get_grid
+    for number in grid_fns:
+        get_grid(number)
 
 

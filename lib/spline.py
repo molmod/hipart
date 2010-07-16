@@ -23,7 +23,7 @@
 
 
 
-from hipart_csext import *
+from hipart.csext import *
 
 import numpy
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
 # Copyright (C) 2007 - 2010 Toon Verstraelen <Toon.Verstraelen@UGent.be>
 #
@@ -20,26 +19,34 @@
 # --
 
 
+from hipart.csext import *
+
+import numpy
 
 
+def test_blind():
+    # see whether we get segfaults or not.
+    x = numpy.arange(0,1,0.1)
+    y = numpy.random.normal(0,1,len(x))
+    d = numpy.zeros(len(x), float)
+    spline_construct(x,y,d)
+    x_new = numpy.random.uniform(-1, 2, 50)
+    y_new = numpy.zeros(len(x_new), float)
+    spline_eval(x,y,d,x_new,y_new)
+    yint = numpy.zeros(len(y), float)
+    spline_cumul_int(x,y,d,yint)
 
-
-import sys, os, glob, shutil
-if os.path.isdir("../build"):
-    shutil.rmtree("../build")
-os.system("cd ../; python setup.py build")
-os.system("cd ../ext/; python setup.py build")
-sys.path.insert(0, glob.glob("../build/lib*")[0])
-sys.path.insert(0, glob.glob("../ext/build/lib*")[0])
-
-if not os.path.isdir("output"):
-    os.mkdir("output")
-
-import unittest
-from integrate import *
-from grid import *
-from spline import *
-from tools import *
-unittest.main()
+def test_plot1():
+    x = numpy.arange(0, 1.005, 0.1)*numpy.pi*2
+    y = numpy.sin(x)
+    yint = -numpy.cos(x)
+    yint -= yint[0]
+    d = numpy.zeros(len(x), float)
+    spline_construct(x,y,d)
+    x_new = numpy.arange(0,1.0005, 0.01)*numpy.pi*2
+    y_new = numpy.zeros(len(x_new), float)
+    spline_eval(x,y,d,x_new,y_new)
+    yint_spline = numpy.zeros(len(y), float)
+    spline_cumul_int(x,y,d,yint_spline)
 
 

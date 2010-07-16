@@ -1,4 +1,4 @@
-python module hipart_csext
+python module csext
 interface
 
   subroutine spline_construct(x,y,d,n)
@@ -47,5 +47,5 @@ interface
   end subroutine spline_cumul_int
 
 end interface
-end python module hipart_csext
+end python module csext
 

@@ -23,7 +23,7 @@
 
 
 
-import hipart_llext
+import hipart.llext
 import numpy
 
 
@@ -35,9 +35,9 @@ class Error(Exception):
 
 
 grid_fns = {}
-for name in dir(hipart_llext):
+for name in dir(hipart.llext):
     if name.startswith("ld"):
-        grid_fns[int(name[2:])] = hipart_llext.__dict__[name]
+        grid_fns[int(name[2:])] = hipart.llext.__dict__[name]
 
 
 def get_grid(number):
