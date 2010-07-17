@@ -144,7 +144,7 @@ class FCHKWaveFunction(object):
 
                 if not os.path.isfile(orb_fn):
                     os.system(". ~/g03.profile; cubegen 0 MO=%i %s %s -5 < %s" % (
-                        orb_index+1, self.filename, orb_fn, points_fn,
+                        i+1, self.filename, orb_fn, points_fn,
                     ))
                 orb = self._load_cube(orb_fn, len(grid.points))
                 grid.dump(suffix, orb)

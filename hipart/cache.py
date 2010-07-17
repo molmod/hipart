@@ -125,7 +125,7 @@ class BaseCache(object):
         pb()
 
     @OnlyOnce("Molecular density on atomic grids")
-    def do_atgrid_moldens(self):
+    def do_atgrids_moldens(self):
         self.do_atgrids()
         molecule = self.context.wavefn.molecule
         pb = log.pb("Computing/Loading densities", molecule.size)
@@ -144,7 +144,7 @@ class BaseCache(object):
             log("Loading noble radii")
             self.noble_radii = numpy.fromfile(noble_radii_fn_bin, float)
         else:
-            self.do_atgrid_moldens()
+            self.do_atgrids_moldens()
             log("Computing noble radii")
             self.noble_radii = numpy.zeros(molecule.size, float)
             for i, number_i in enumerate(molecule.numbers):
@@ -254,7 +254,7 @@ class BaseCache(object):
         self.context.wavefn.compute_potential(self.molgrid)
 
     @OnlyOnce("Defining atomic weight functions (each on their own atomic grid)")
-    def do_atgrid_atweights(self):
+    def do_atgrids_atweights(self):
         log("Trying to load weight functions")
         success = self._load_atgrid_atweights()
         if not success:
@@ -299,8 +299,8 @@ class BaseCache(object):
             self.populations = numpy.fromfile(populations_fn_bin, float)
         else:
             self.do_atgrids()
-            self.do_atgrid_moldens()
-            self.do_atgrid_atweights()
+            self.do_atgrids_moldens()
+            self.do_atgrids_atweights()
 
             pb = log.pb("Computing charges", molecule.size)
             self.populations = numpy.zeros(molecule.size, float)
@@ -357,8 +357,8 @@ class BaseCache(object):
             self.dipoles = numpy.fromfile(dipoles_fn_bin, float).reshape((-1,3))
         else:
             self.do_atgrids()
-            self.do_atgrid_moldens()
-            self.do_atgrid_atweights()
+            self.do_atgrids_moldens()
+            self.do_atgrids_atweights()
 
             pb = log.pb("Computing dipoles", molecule.size)
             self.dipoles = numpy.zeros((molecule.size,3), float)
@@ -453,7 +453,7 @@ class BaseCache(object):
     @OnlyOnce("Partitioning the density matrix")
     def do_atgrids_atdm(self):
         self.do_atgrids_orbitals()
-        self.do_atgrid_atweights()
+        self.do_atgrids_atweights()
         num_orbitals = self.context.wavefn.num_orbitals
         molecule = self.context.wavefn.molecule
 
@@ -463,7 +463,6 @@ class BaseCache(object):
             orbitals = self.atgrids[i].orbitals
             w = self.atgrids[i].atweights
             matrix = numpy.zeros((num_orbitals,num_orbitals), float)
-            self.atom_matrices.append(matrix)
             rs = self.get_rs(i, number_i)
             for j1 in xrange(num_orbitals):
                 for j2 in xrange(j1+1):
@@ -489,7 +488,7 @@ class BaseCache(object):
     @OnlyOnce("Bond orders and atomic valences")
     def do_bond_orders(self):
         self.do_charges()
-        self.do_atgrid_atdm()
+        self.do_atgrids_atdm()
 
         molecule = self.context.wavefn.molecule
         self.bond_orders = numpy.zeros((molecule.size, molecule.size))
@@ -532,21 +531,22 @@ class BaseCache(object):
         log("Written %s" % filename)
 
     @OnlyOnce("Atomic weights on other atoms' grids.")
-    def do_atgrid_od_atweights(self):
+    def do_atgrids_od_atweights(self):
         # od stands for off-diagonal
-        self.do_atgrid_atweights()
+        self.do_atgrids_atweights()
 
         molecule = self.context.wavefn.molecule
         pb = log.pb("Computing weights", molecule.size**2)
         for i in xrange(molecule.size):
             atgrid = self.atgrids[i]
+            atgrid.od_atweights = []
             for j in xrange(molecule.size):
                 pb()
                 w = self._compute_atweights(atgrid, j)
                 atgrid.od_atweights.append(w)
         pb()
 
-    def _compute_other_atweights(grid, atom_index):
+    def _compute_atweights(grid, atom_index):
         raise NotImplementedError
 
     @OnlyOnce("Overlap populations")
@@ -559,7 +559,7 @@ class BaseCache(object):
             self.overlap_populations = numpy.fromfile(overlap_populations_fn_bin, float).reshape((molecule.size,molecule.size))
         else:
             self.do_atgrids()
-            self.do_atgrid_moldens()
+            self.do_atgrids_moldens()
             self.do_charges()
             self.do_atgrids_od_atweights()
             self.overlap_populations = numpy.zeros((molecule.size, molecule.size))
@@ -589,14 +589,14 @@ class BaseCache(object):
                             switch = (3 - switch**2)*switch/2
                         switch += 1
                         switch /= 2
-                        integrand = switch*self.atgrids[j].od_atweights[i]*self.atgrids[j].weights*self.atgrids[j].moldens
+                        integrand = switch*self.atgrids[j].od_atweights[i]*self.atgrids[j].atweights*self.atgrids[j].moldens
                         radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
                         part2 = integrate_log(rs, radfun*rs**2)
                         # Add up and store
                         self.overlap_populations[i,j] = part1 + part2
                         self.overlap_populations[j,i] = part1 + part2
                     else:
-                        integrand = self.atgrids[i].atweights**2*self.atgrids.mol_dens
+                        integrand = self.atgrids[i].atweights**2*self.atgrids[i].moldens
                         radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
                         rs = self.get_rs(i, number_i)
                         self.overlap_populations[i,i] = integrate_log(rs, radfun*rs**2)
@@ -716,7 +716,7 @@ class HirshfeldICache(TableBaseCache):
     @OnlyOnce("Iterative Hirshfeld")
     def do_proatomfns(self):
         molecule = self.context.wavefn.molecule
-        self.do_atgrid_moldens()
+        self.do_atgrids_moldens()
 
         counter = 0
         old_charges = numpy.zeros(molecule.size, float)
@@ -807,7 +807,7 @@ class ISACache(StockholderCache):
     @OnlyOnce("Iterative Stockholder Analysis")
     def do_proatomfns(self):
         molecule = self.context.wavefn.molecule
-        self.do_atgrid_moldens()
+        self.do_atgrids_moldens()
 
         log("Generating initial guess for the pro-atoms")
         self.proatomfns = []
