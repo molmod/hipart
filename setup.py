@@ -26,7 +26,7 @@ from numpy.distutils.core import setup, Extension
 
 setup(
     name='HiPart',
-    version='0.001',
+    version='0.004',
     description='HiPart is a tool to analyse molecular densities with the fuzzy atom partitioning',
     author='Toon Verstraelen',
     author_email='Toon.Verstraelen@UGent.be',
