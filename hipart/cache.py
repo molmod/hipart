@@ -546,7 +546,7 @@ class BaseCache(object):
                 atgrid.od_atweights.append(w)
         pb()
 
-    def _compute_atweights(grid, atom_index):
+    def _compute_atweights(self, grid, atom_index):
         raise NotImplementedError
 
     @OnlyOnce("Overlap populations")
