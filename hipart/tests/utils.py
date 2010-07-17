@@ -132,14 +132,18 @@ def iter_hf_sto3g_gaussian_caches():
     tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield cache_classes['hirsh'].new_from_args(context, [fn_densities])
+    yield cache_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield cache_classes['hirshi'].new_from_args(context, [fn_densities])
+    yield cache_classes['hirshi'].new_from_args(context, [fn_densities])
+    yield cache_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield cache_classes['isa'].new_from_args(context, ["2e-5", "20.0", "100"])
+    yield cache_classes['isa'].new_from_args(context, [])
     shutil.rmtree(tmpdir)

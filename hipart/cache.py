@@ -799,7 +799,7 @@ class ISACache(StockholderCache):
         elif hasattr(self, "proatomfns") and len(self.proatomfns) > i:
             return self.proatomfns[i].density.x
         elif hasattr(self, "atgrids") and len(self.atgrids) > i:
-            num_shells = len(self.atgrids[i].moldens)/self.context.num_lebedev
+            num_shells = len(self.atgrids[i].points)/self.context.num_lebedev
             return self.rs[:num_shells]
         else:
             return self.rs
