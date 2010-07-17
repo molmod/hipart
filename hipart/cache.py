@@ -79,7 +79,8 @@ class OnlyOnce(object):
 
 
 class BaseCache(object):
-    num_args = None
+    key = None
+    usage = None
 
     @classmethod
     def new_from_args(cls, context, args):
@@ -676,6 +677,7 @@ hirshfeld_usage = """ * Hirshfeld Partitioning
 """
 
 class HirshfeldCache(TableBaseCache):
+    key = "hirsh"
     usage = hirshfeld_usage
 
     def __init__(self, context, atom_table):
@@ -705,6 +707,7 @@ hirshfeld_i_usage = """ * Hirshfeld-I Partitioning
 """
 
 class HirshfeldICache(TableBaseCache):
+    key = "hirshi"
     usage = hirshfeld_i_usage
 
     def __init__(self, context, atom_table):
@@ -762,6 +765,7 @@ isa_usage = """ * Iterative Stockholder Partitioning
 """
 
 class ISACache(StockholderCache):
+    key = "isa"
     usage = isa_usage
 
     @classmethod
@@ -845,9 +849,8 @@ class ISACache(StockholderCache):
             self.proatomfns = new_proatomfns
 
 
-
-cache_classes = {
-    "hirsh": HirshfeldCache,
-    "hirshi": HirshfeldICache,
-    "isa": ISACache,
-}
+# find all usable Cache classes
+cache_classes = {}
+for x in globals().values():
+    if isinstance(x, type) and issubclass(x, BaseCache) and x.key is not None:
+        cache_classes[x.key] = x
