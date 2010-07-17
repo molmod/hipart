@@ -636,9 +636,6 @@ class StockholderCache(BaseCache):
         pro_mol = numpy.zeros(len(pro_atom), float)
         for j in xrange(molecule.size):
             pro_mol += self.proatomfns[j].density(grid.distances[j])
-        # avoid division by zero
-        pro_atom[pro_mol < 1e-40] = 1e-40
-        pro_mol[pro_mol < 1e-40] = 1e-40
         # multiply the density on the grid by the weight function
         return pro_atom/pro_mol
 
@@ -828,7 +825,8 @@ class ISACache(StockholderCache):
                 rs = self.get_rs(i, number_i)
                 num_electrons = integrate_log(rs, radfun*rs**2)
                 charges.append(number_i - num_electrons)
-
+                # add negligible tails to maintain a complete partitioning
+                radfun[radfun < 1e-40] = 1e-40
                 new_proatomfn = AtomFn(rs, radfun/4*numpy.pi)
                 new_proatomfns.append(new_proatomfn)
 

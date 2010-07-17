@@ -19,10 +19,16 @@
 # --
 
 
-import os, tempfile
+from hipart.cache import cache_classes
+from hipart.context import Context
+
+import os, tempfile, shutil
 
 
-__all__ = ["FakeOptions", "setup_hf_sto3g_gaussian"]
+__all__ = [
+    "FakeOptions",
+    "setup_hf_sto3g_gaussian", "iter_hf_sto3g_gaussian_caches"
+]
 
 
 class FakeOptions(object):
@@ -119,4 +125,22 @@ def setup_hf_sto3g_gaussian():
     f.close()
     return tmpdir, fn_fchk, fn_densities
 
+
+def iter_hf_sto3g_gaussian_caches():
+    options = FakeOptions(110, 50, 1, 1e-4, 500, True)
+
+    tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
+    context = Context(fn_fchk, options)
+    yield cache_classes['hirsh'].new_from_args(context, [fn_densities])
+    shutil.rmtree(tmpdir)
+
+    tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
+    context = Context(fn_fchk, options)
+    yield cache_classes['hirshi'].new_from_args(context, [fn_densities])
+    shutil.rmtree(tmpdir)
+
+    tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
+    context = Context(fn_fchk, options)
+    yield cache_classes['isa'].new_from_args(context, ["2e-4", "20.0", "100"])
+    shutil.rmtree(tmpdir)
 

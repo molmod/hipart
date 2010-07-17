@@ -19,24 +19,19 @@
 # --
 
 
-from utils import FakeOptions, setup_hf_sto3g_gaussian
-
-from hipart.cache import HirshfeldCache
-from hipart.context import Context
-
-import shutil
+from utils import iter_hf_sto3g_gaussian_caches
 
 
 def test_compute_stockholder_weights():
-    tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
-    options = FakeOptions(110, 50, 1, 1e-4, 500, True)
-    context = Context(fn_fchk, options)
-    cache = HirshfeldCache.new_from_args(context, [fn_densities])
+    for cache in iter_hf_sto3g_gaussian_caches():
+        yield check_compute_stockholder_weights, cache
+
+def check_compute_stockholder_weights(cache):
     cache.do_atgrids()
     cache.do_proatomfns()
     h0 = cache._compute_atweights(cache.atgrids[0], 0)
     h1 = cache._compute_atweights(cache.atgrids[0], 1)
-    assert(abs(h1+h0-1).max() < 1e-10)
+    error = abs(h1+h0-1).max()
+    assert(error < 1e-10)
     cache.do_charges()
     cache.do_dipoles()
-    shutil.rmtree(tmpdir)
