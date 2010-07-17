@@ -122,7 +122,3 @@ class AtomTable(object):
         self.records = {}
         for number, qmap in records.iteritems():
             self.records[number] = AtomProfile(number, self.rs, qmap, do_potential)
-
-    def init_cusp_cutoffs(self):
-        for ad in self.records.itervalues():
-            ad.init_cusp_cutoff()

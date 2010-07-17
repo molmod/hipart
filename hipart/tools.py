@@ -30,20 +30,9 @@ import numpy, sys, os
 
 
 __all__ = [
-    "relsymlink", "get_atom_grid",
+    "get_atom_grid",
     "load_charges", "load_dipoles", "dump_charges"
 ]
-
-
-def relsymlink(source, destination):
-    """Make a symbolic link from source to destination using a relative path"""
-    if not os.path.isfile(destination):
-        common = os.path.commonprefix([source, destination])
-        l = common.rfind("/")+1
-        source = source[l:]
-        destination = destination[l:]
-        relpath = os.path.normpath(os.path.join("/".join(".." for i in xrange(destination.count("/")+1)), source))
-        os.symlink(relpath, destination)
 
 
 def get_atom_grid(lebedev_xyz, center, radii):
