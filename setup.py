@@ -20,12 +20,9 @@
 # --
 
 
-
-
-
-
 import setuptools, glob
 from numpy.distutils.core import setup, Extension
+
 
 setup(
     name='HiPart',
@@ -35,12 +32,12 @@ setup(
     author_email='Toon.Verstraelen@UGent.be',
     url='http://molmod.ugent.be/code/',
     packages = ['hipart'],
-    package_dir = {'hipart': 'lib'},
+    package_dir = {'hipart': 'hipart'},
     scripts=glob.glob("scripts/hi-*.py"),
     license = "GPLv3",
     ext_modules=[
-        Extension("hipart.llext", ["lib/Lebedev-Laikov.F"]),
-        Extension("hipart.csext", ["lib/cubic_spline_ext.c","lib/cubic_spline_ext.pyf"]),
+        Extension("hipart.llext", ["hipart/Lebedev-Laikov.F"]),
+        Extension("hipart.csext", ["hipart/cubic_spline_ext.c","hipart/cubic_spline_ext.pyf"]),
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -51,6 +48,7 @@ setup(
         'Programming Language :: Python',
         'Topic :: Science/Engineering :: Molecular Science'
     ],
+    test_suite = 'nose.collector'
 )
 
 
