@@ -31,5 +31,3 @@ usage = """%prog computes overlap populations"""
 context, cache = parse_command_line(usage)
 cache.do_overlap_populations()
 context.clean()
-
-

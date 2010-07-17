@@ -851,5 +851,3 @@ cache_classes = {
     "hirshi": HirshfeldICache,
     "isa": ISACache,
 }
-
-

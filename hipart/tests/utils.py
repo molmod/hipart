@@ -143,4 +143,3 @@ def iter_hf_sto3g_gaussian_caches():
     context = Context(fn_fchk, options)
     yield cache_classes['isa'].new_from_args(context, ["2e-4", "20.0", "100"])
     shutil.rmtree(tmpdir)
-

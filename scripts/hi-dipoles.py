@@ -35,5 +35,3 @@ densities are obtained from the 'scheme' specified at the command line."""
 context, cache = parse_command_line(usage)
 cache.do_dipoles()
 context.clean()
-
-

@@ -149,5 +149,3 @@ void spline_cumul_int(double *x, double *y, double *d, double* yint, int n) {
   }
   yint[n-1] = result;
 }
-
-

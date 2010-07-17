@@ -85,5 +85,3 @@ def integrate_lebedev(weights, f):
     num_lebedev = len(weights)
     f = f.reshape((-1,num_lebedev))
     return (f*weights).sum(axis=1)*4*numpy.pi
-
-

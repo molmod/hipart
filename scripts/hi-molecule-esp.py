@@ -171,5 +171,3 @@ if not os.path.isfile(hipart_esp_out_fn):
     print >> f
     cost_fn.dump_matrices_to_file(f, mol_esp_cost.other_potentials)
     f.close()
-
-

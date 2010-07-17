@@ -52,5 +52,3 @@ def test_gauss_potential():
     atom_fn = AtomFn(rs, rhos, True)
     vs_numer3 = atom_fn.potential(rs)
     assert(abs(vs-vs_numer3).max() < 1e-3)
-
-

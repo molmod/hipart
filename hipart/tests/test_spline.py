@@ -48,5 +48,3 @@ def test_plot1():
     spline_eval(x,y,d,x_new,y_new)
     yint_spline = numpy.zeros(len(y), float)
     spline_cumul_int(x,y,d,yint_spline)
-
-

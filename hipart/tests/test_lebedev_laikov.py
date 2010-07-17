@@ -23,5 +23,3 @@ def test_get_grid():
     from hipart.lebedev_laikov import grid_fns, get_grid
     for number in grid_fns:
         get_grid(number)
-
-

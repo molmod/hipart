@@ -89,5 +89,3 @@ class Context(object):
         if self.options.clean >= 1:
             print "Cleaning up text files in work directory."
             os.system("rm -f %s" % os.path.join(self.workdir, "*.txt"))
-
-

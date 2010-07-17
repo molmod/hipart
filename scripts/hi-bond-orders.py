@@ -31,5 +31,3 @@ usage = """%prog computes bond orders"""
 context, cache = parse_command_line(usage)
 cache.do_bond_orders()
 context.clean()
-
-

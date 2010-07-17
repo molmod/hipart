@@ -315,5 +315,3 @@ make_density_profile(
     options.lebedev, options.rlow*angstrom, options.rhigh*angstrom,
     options.num_steps, atom_numbers, options.max_ion
 )
-
-

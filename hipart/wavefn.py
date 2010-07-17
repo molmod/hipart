@@ -150,6 +150,3 @@ class FCHKWaveFunction(object):
                 grid.dump(suffix, orb)
             orbitals.append(orb)
         grid.orbitals = orbitals
-
-
-

@@ -72,5 +72,3 @@ class CubicSpline(object):
         yint = numpy.zeros(len(self.x), float)
         spline_cumul_int(self.x,self.y,self.d,yint)
         return yint
-
-

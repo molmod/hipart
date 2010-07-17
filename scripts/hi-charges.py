@@ -35,5 +35,3 @@ atomic contribution to the density. The atomic densities are obtained from the
 context, cache = parse_command_line(usage)
 cache.do_charges()
 context.clean()
-
-

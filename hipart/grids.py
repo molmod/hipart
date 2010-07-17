@@ -62,5 +62,3 @@ class Grid(object):
             raise ValueError("The binary file is already present in the work directory.")
         else:
             return array.tofile(fn)
-
-

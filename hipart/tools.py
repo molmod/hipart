@@ -109,5 +109,3 @@ def dump_charges(filename, charges, numbers=None):
             i+1, symbol, number, charges[i]
         )
     print >> f, "-----------------------------"
-
-

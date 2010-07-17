@@ -34,5 +34,3 @@ contributions."""
 context, cache = parse_command_line(usage)
 cache.do_atom_matrices()
 context.clean()
-
-

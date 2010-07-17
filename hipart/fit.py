@@ -112,5 +112,3 @@ class ESPCostFunction(ChargeDipoleCostFunction):
             design_matrix[:,N+3*i:N+3*i+3] = deltas/distances.reshape((-1,1))**3
         weights = grid_weights * numpy.exp(-densities/1e-5)
         ChargeDipoleCostFunction.__init__(self, N, design_matrix, expected_values, weights, total_charge)
-
-

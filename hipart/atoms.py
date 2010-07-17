@@ -126,5 +126,3 @@ class AtomTable(object):
     def init_cusp_cutoffs(self):
         for ad in self.records.itervalues():
             ad.init_cusp_cutoff()
-
-

@@ -73,5 +73,3 @@ class Log(object):
 
 
 log = Log()
-
-

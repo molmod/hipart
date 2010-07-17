@@ -48,5 +48,3 @@ def get_grid(number):
     x,y,z = xyz
     grid_fns[number](x,y,z,w,0)
     return xyz.transpose(), w
-
-

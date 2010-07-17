@@ -92,5 +92,3 @@ def parse_command_line(script_usage):
         parser.error(str(e))
 
     return context, cache
-
-
