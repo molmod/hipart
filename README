@@ -1,4 +1,4 @@
-MD-Tracks 0.003 README
+HiPart 0.004 README
 ===================
 
 Contents of this README File:
@@ -14,30 +14,8 @@ Contents of this README File:
 Short description
 -----------------
 
-HiPart is a software toolkit to analyse molecular densities with the hirshfeld 
-partitioning scheme. Initially one has to create a database of pro-atom density
-profiles with hi-atomdb.py. From then on, the other scripts use this database
-to partition the molecular density with the Hirshfeld-I partitioning scheme.
-
-There are three scripts that analyze molecular densities:
-
-* hi-charges.py: just computes Hirshfeld-I chargesn, and tests how well these
-  charges reproduce the ESP outside the molecule.
-* hi-dipoles.py: also computes the atomic dipoles, based on the Hirshfeld-I
-  weight functions, and tests how well these dipoles help in reproducing the
-  ESP outside the molecule.
-* hi-orbitals.py: partitions the density matrix in the SCF basis.
-
-We assume the the calculations are done with Gaussian03 and that a working
-g03.profile is located in your home directory. The code can be easily extended
-with new features.
-
-See JCP vol. 126 article 144111 (2007) for the theoretical background on 
-(iterative) hirshfeld partitioning.
-
-More information about HiPart can be found on the CMM Code website:
-http://molmod.ugent.be/code/
-
+HiPart is a software toolkit to analyse molecular densities with the fuzzy atom 
+partitioning schemes. 
 
 License
 -------
@@ -46,7 +24,7 @@ HiPart is distributed as open source software under the conditions of the GPL
 license version 3.  Read the file COPYING for more details, or visit
 http://www.gnu.org/licenses/
 
-The file ext/lib/Lebedev-Laikov.F is not covered by the GPL license. 
+The file hipart/Lebedev-Laikov.F is not covered by the GPL license. 
 Lebedev-Laikov.F is public domain and can be downloaded from ccl.net:
 
 http://www.ccl.net/cca/software/SOURCES/FORTRAN/Lebedev-Laikov-Grids/index.shtml
@@ -61,7 +39,7 @@ The following software has to be installed on your system before you can use
 Tracks:
  1) Python (>=2.4, <3.0): see http://www.python.org/
  2) Numpy (>=1.0.1): see http://www.scipy.org/
- 3) MolMod (>= 0.003): see http://molmod.ugent.be/code/
+ 3) MolMod (>= 0.004): see http://molmod.ugent.be/code/
 
 
 How to install
