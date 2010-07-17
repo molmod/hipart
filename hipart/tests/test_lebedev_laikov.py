@@ -19,7 +19,18 @@
 # --
 
 
+from hipart.lebedev_laikov import grid_fns, get_grid
+
+import numpy
+
+
 def test_get_grid():
-    from hipart.lebedev_laikov import grid_fns, get_grid
     for number in grid_fns:
-        get_grid(number)
+        xyz, w = get_grid(number)
+        assert(len(xyz.shape)==2)
+        assert(len(w.shape)==1)
+        assert(len(xyz)==len(w))
+        assert(xyz.shape[1]==3)
+        assert(abs(numpy.dot(xyz[:,0], w)) < 1e-10)
+        assert(abs(numpy.dot(xyz[:,1], w)) < 1e-10)
+        assert(abs(numpy.dot(xyz[:,2], w)) < 1e-10)
