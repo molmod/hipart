@@ -19,8 +19,6 @@
 # --
 
 
-# TODO: tests for everything, use nosetests and work in /tmp/foo
-# TODO: load/dump atom matrices,overlap populations,bond orders to/from work
 # TODO: support for unrestricted HF/KS
 # TODO: Support for Gaussian/GAMESS wfn files.
 # TODO: Extend hi-atomdb.py to work with GAMESS
@@ -32,6 +30,9 @@
 # TODO: Compute condensed linear response properties
 # TODO: Support for fchk files without using cubegen
 # TODO: Support for CP2K and CPMD wavefunctions
+# TODO: Visualize Atomic devations from sphericallity (1D plots)
+# TODO: Visualization of atomic (pair) data with graphs
+# TODO: Cube files with atomic weights and densities
 
 
 from hipart.log import log
@@ -452,27 +453,41 @@ class BaseCache(object):
 
     @OnlyOnce("Partitioning the density matrix")
     def do_atgrids_atdm(self):
-        self.do_atgrids_orbitals()
-        self.do_atgrids_atweights()
-        num_orbitals = self.context.wavefn.num_orbitals
+        # first try to load the matrices
+        self.do_atgrids()
+        some_failed = False
         molecule = self.context.wavefn.molecule
-
-        pb = log.pb("Computing matrices", molecule.size)
-        for i, number_i in enumerate(molecule.numbers):
-            pb()
-            orbitals = self.atgrids[i].orbitals
-            w = self.atgrids[i].atweights
-            matrix = numpy.zeros((num_orbitals,num_orbitals), float)
-            rs = self.get_rs(i, number_i)
-            for j1 in xrange(num_orbitals):
-                for j2 in xrange(j1+1):
-                    integrand = orbitals[j1]*orbitals[j2]*w
-                    radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                    value = integrate_log(rs, radfun*rs**2)
-                    matrix[j1,j2] = value
-                    matrix[j2,j1] = value
+        num_orbitals = self.context.wavefn.num_orbitals
+        for i in xrange(molecule.size):
+            matrix = self.atgrids[i].load("%s_atdm" % self.prefix)
+            if matrix is None:
+                some_failed = True
+            else:
+                matrix = matrix.reshape((num_orbitals, num_orbitals))
             self.atgrids[i].atdm = matrix
-        pb()
+
+        if some_failed:
+            self.do_atgrids_orbitals()
+            self.do_atgrids_atweights()
+
+            pb = log.pb("Computing matrices", molecule.size)
+            for i, number_i in enumerate(molecule.numbers):
+                pb()
+                if self.atgrids[i].atdm is None:
+                    orbitals = self.atgrids[i].orbitals
+                    w = self.atgrids[i].atweights
+                    matrix = numpy.zeros((num_orbitals,num_orbitals), float)
+                    rs = self.get_rs(i, number_i)
+                    for j1 in xrange(num_orbitals):
+                        for j2 in xrange(j1+1):
+                            integrand = orbitals[j1]*orbitals[j2]*w
+                            radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+                            value = integrate_log(rs, radfun*rs**2)
+                            matrix[j1,j2] = value
+                            matrix[j2,j1] = value
+                    self.atgrids[i].atdm = matrix
+                    self.atgrids[i].dump("%s_atdm" % self.prefix, matrix)
+            pb()
 
         filename = os.path.join(self.context.outdir, "%s_atdm.txt" % self.prefix)
         f = file(filename, "w")
@@ -487,36 +502,45 @@ class BaseCache(object):
 
     @OnlyOnce("Bond orders and atomic valences")
     def do_bond_orders(self):
-        self.do_charges()
-        self.do_atgrids_atdm()
-
+        # first try to load the results from the work dir
+        bond_orders_fn_bin = os.path.join(self.context.workdir, "%s_bond_orders.bin" % self.prefix)
+        valences_fn_bin = os.path.join(self.context.workdir, "%s_valences.bin" % self.prefix)
         molecule = self.context.wavefn.molecule
-        self.bond_orders = numpy.zeros((molecule.size, molecule.size))
-        self.valences = numpy.zeros(molecule.size)
-        num_orbitals = self.context.wavefn.num_orbitals
-        n_alpha = self.context.wavefn.num_alpha
-        n_beta = self.context.wavefn.num_beta
-        n_min = min(n_alpha, n_beta)
-        n_max = max(n_alpha, n_beta)
+        if os.path.isfile(bond_orders_fn_bin) and os.path.isfile(valences_fn_bin):
+            self.bond_orders = numpy.fromfile(bond_orders_fn_bin).reshape((molecule.size, molecule.size))
+            self.valences = numpy.fromfile(valences_fn_bin)
+        else:
+            self.do_charges()
+            self.do_atgrids_atdm()
 
-        pb = log.pb("Computing bond orders", (molecule.size*(molecule.size+1))/2)
-        check = 0
-        for i in xrange(molecule.size):
-            for j in xrange(i+1):
-                tmp = self.atgrids[i].atdm[:n_max,:n_max]*self.atgrids[j].atdm[:n_max,:n_max]
-                check += tmp
-                tmp[:n_min,:] *= 2
-                tmp[:,:n_min] *= 2
-                bo = tmp.sum()
-                pb()
-                if i==j:
-                    # compute valence
-                    self.valences[i] = 2*self.populations[i] - bo
-                else:
-                    # compute bond order
-                    self.bond_orders[i,j] = bo
-                    self.bond_orders[j,i] = bo
-        pb()
+            self.bond_orders = numpy.zeros((molecule.size, molecule.size))
+            self.valences = numpy.zeros(molecule.size)
+            num_orbitals = self.context.wavefn.num_orbitals
+            n_alpha = self.context.wavefn.num_alpha
+            n_beta = self.context.wavefn.num_beta
+            n_min = min(n_alpha, n_beta)
+            n_max = max(n_alpha, n_beta)
+
+            pb = log.pb("Computing bond orders", (molecule.size*(molecule.size+1))/2)
+            check = 0
+            for i in xrange(molecule.size):
+                for j in xrange(i+1):
+                    tmp = self.atgrids[i].atdm[:n_max,:n_max]*self.atgrids[j].atdm[:n_max,:n_max]
+                    check += tmp
+                    tmp[:n_min,:] *= 2
+                    tmp[:,:n_min] *= 2
+                    bo = tmp.sum()
+                    pb()
+                    if i==j:
+                        # compute valence
+                        self.valences[i] = 2*self.populations[i] - bo
+                    else:
+                        # compute bond order
+                        self.bond_orders[i,j] = bo
+                        self.bond_orders[j,i] = bo
+            pb()
+            self.bond_orders.tofile(bond_orders_fn_bin)
+            self.valences.tofile(valences_fn_bin)
 
         filename = os.path.join(self.context.outdir, "%s_bond_orders.txt" % self.prefix)
         f = file(filename, "w")
