@@ -26,8 +26,8 @@
 
 from hipart.opts import parse_command_line
 
-usage = """%prog computes overlap populations"""
+usage = """%prog computes gross and net populations"""
 
 context, cache = parse_command_line(usage)
-cache.do_overlap_populations()
+cache.do_gross_net_populations()
 context.clean()

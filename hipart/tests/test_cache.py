@@ -111,15 +111,16 @@ def check_bond_orders(cache):
         "isa": numpy.array([[1.09685209, 1.09681649]]),
     }
     cache.do_bond_orders()
+    assert(abs(cache.bond_orders.sum(axis=0) - cache.valences).max() < 1e-2)
     assert(abs(cache.bond_orders - expected_bond_orders[cache.key]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.key]).max() < 1e-3)
 
 
-def test_overlap_populations():
+def test_gross_net_populations():
     for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_overlap_populations, cache
+        yield check_gross_net_populations, cache
 
-def check_overlap_populations(cache):
+def check_gross_net_populations(cache):
     expected = {
         "hirsh": numpy.array([
             [8.89564521, 0.24206497],
@@ -134,6 +135,5 @@ def check_overlap_populations(cache):
             [0.21955338, 0.57209327],
         ]),
     }
-    cache.do_overlap_populations()
-    print cache.overlap_populations
-    assert(abs(cache.overlap_populations - expected[cache.key]).max() < 1e-3)
+    cache.do_gross_net_populations()
+    assert(abs(cache.gross_net_populations - expected[cache.key]).max() < 1e-2)

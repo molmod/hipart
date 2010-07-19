@@ -41,7 +41,8 @@ class FCHKWaveFunction(object):
         fchk = FCHKFile(filename, field_labels=[
             "Charge", "Number of basis functions", "Dipole Moment",
             "Number of electrons", "Number of alpha electrons",
-            "Number of beta electrons"
+            "Number of beta electrons", "Alpha Orbital Energies",
+            "Beta Orbital Energies",
         ])
         # for usage by the rest of the program
         self.charge = fchk.fields["Charge"]
@@ -50,6 +51,7 @@ class FCHKWaveFunction(object):
         self.num_electrons = fchk.fields["Number of electrons"]
         self.num_alpha = fchk.fields["Number of alpha electrons"]
         self.num_beta = fchk.fields["Number of beta electrons"]
+        self.restricted = "Beta Orbital Energies" not in fchk.fields
         self.molecule = fchk.molecule
         # for internal usage
         self._hack_cubegen = fchk.lot.startswith("ROHF")
@@ -103,7 +105,7 @@ class FCHKWaveFunction(object):
                 self.compute_orbitals(grid)
                 moldens = 0.0
                 for j in xrange(max(self.num_alpha, self.num_beta)):
-                    orb = grid.orbitals[i]
+                    orb = grid.alpha_orbitals[i]
                     occup = (j < self.num_alpha) + (j < self.num_beta)
                     moldens += occup*orb**2
             else:
@@ -132,21 +134,43 @@ class FCHKWaveFunction(object):
         grid.molpot = molpot
 
     def compute_orbitals(self, grid):
-        orbitals = []
+        alpha_orbitals = []
+        beta_orbitals = []
         for i in xrange(self.num_orbitals):
-            suffix = "orb%05i" % i
-            orb = grid.load(suffix)
-            if orb is None:
+            alpha_suffix = "alpha_orb%05i" % i
+            alpha_orb = grid.load(alpha_suffix)
+            if alpha_orb is None:
                 points_fn = "%s.txt" % grid.prefix
-                orb_fn = "%s_%s.txt" % (grid.prefix, suffix)
+                alpha_orb_fn = "%s_%s.txt" % (grid.prefix, alpha_suffix)
 
                 self._write_cube_in(points_fn, grid.points)
 
-                if not os.path.isfile(orb_fn):
-                    os.system(". ~/g03.profile; cubegen 0 MO=%i %s %s -5 < %s" % (
-                        i+1, self.filename, orb_fn, points_fn,
+                if not os.path.isfile(alpha_orb_fn):
+                    os.system(". ~/g03.profile; cubegen 0 AMO=%i %s %s -5 < %s" % (
+                        i+1, self.filename, alpha_orb_fn, points_fn,
                     ))
-                orb = self._load_cube(orb_fn, len(grid.points))
-                grid.dump(suffix, orb)
-            orbitals.append(orb)
-        grid.orbitals = orbitals
+                alpha_orb = self._load_cube(alpha_orb_fn, len(grid.points))
+                grid.dump(alpha_suffix, alpha_orb)
+            alpha_orbitals.append(alpha_orb)
+            if self.restricted:
+                beta_orbitals.append(alpha_orb)
+            else:
+                beta_suffix = "beta_orb%05i" % i
+                beta_orb = grid.load(beta_suffix)
+                if beta_orb is None:
+                    points_fn = "%s.txt" % grid.prefix
+                    beta_orb_fn = "%s_%s.txt" % (grid.prefix, beta_suffix)
+
+                    self._write_cube_in(points_fn, grid.points)
+
+                    if not os.path.isfile(beta_orb_fn):
+                        os.system(". ~/g03.profile; cubegen 0 BMO=%i %s %s -5 < %s" % (
+                            i+1, self.filename, beta_orb_fn, points_fn,
+                        ))
+                    beta_orb = self._load_cube(beta_orb_fn, len(grid.points))
+                    grid.dump(beta_suffix, beta_orb)
+                beta_orbitals.append(beta_orb)
+
+
+        grid.alpha_orbitals = alpha_orbitals
+        grid.beta_orbitals = beta_orbitals

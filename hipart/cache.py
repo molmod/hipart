@@ -19,7 +19,10 @@
 # --
 
 
-# TODO: support for unrestricted HF/KS
+# TODO: Find better name for atdm
+# TODO: test presence of output files
+# TODO: tests for unrestricted
+# TODO: partitioned spin density
 # TODO: Support for Gaussian/GAMESS wfn files.
 # TODO: Extend hi-atomdb.py to work with GAMESS
 # TODO: arbitrary multipoles
@@ -451,54 +454,66 @@ class BaseCache(object):
             self.context.wavefn.compute_orbitals(self.atgrids[i])
         pb()
 
-    @OnlyOnce("Partitioning the density matrix")
+    @OnlyOnce("Atomic overlap matrix elements")
     def do_atgrids_atdm(self):
-        # first try to load the matrices
         self.do_atgrids()
-        some_failed = False
-        molecule = self.context.wavefn.molecule
-        num_orbitals = self.context.wavefn.num_orbitals
-        for i in xrange(molecule.size):
-            matrix = self.atgrids[i].load("%s_atdm" % self.prefix)
-            if matrix is None:
-                some_failed = True
-            else:
-                matrix = matrix.reshape((num_orbitals, num_orbitals))
-            self.atgrids[i].atdm = matrix
 
-        if some_failed:
-            self.do_atgrids_orbitals()
-            self.do_atgrids_atweights()
+        def do_one_spin(spin):
+            # first check for restricted
+            molecule = self.context.wavefn.molecule
+            if spin=="beta" and self.context.wavefn.restricted:
+                # sply make references to alpha data and return
+                for i in xrange(molecule.size):
+                    self.atgrids[i].beta_atdm = self.atgrids[i].alpha_atdm
+                return
+            # then try to load the matrices
+            some_failed = False
+            num_orbitals = self.context.wavefn.num_orbitals
+            for i in xrange(molecule.size):
+                matrix = self.atgrids[i].load("%s_%s_atdm" % (self.prefix, spin))
+                if matrix is None:
+                    some_failed = True
+                else:
+                    matrix = matrix.reshape((num_orbitals, num_orbitals))
+                setattr(self.atgrids[i], "%s_atdm" % spin, matrix)
 
-            pb = log.pb("Computing matrices", molecule.size)
-            for i, number_i in enumerate(molecule.numbers):
+            if some_failed:
+                self.do_atgrids_orbitals()
+                self.do_atgrids_atweights()
+
+                pb = log.pb("Computing atomic overlap matrices (%s)" % spin, molecule.size)
+                for i, number_i in enumerate(molecule.numbers):
+                    pb()
+                    if getattr(self.atgrids[i], "%s_atdm" % spin) is None:
+                        orbitals = getattr(self.atgrids[i], "%s_orbitals" % spin)
+                        w = self.atgrids[i].atweights
+                        matrix = numpy.zeros((num_orbitals,num_orbitals), float)
+                        rs = self.get_rs(i, number_i)
+                        for j1 in xrange(num_orbitals):
+                            for j2 in xrange(j1+1):
+                                integrand = orbitals[j1]*orbitals[j2]*w
+                                radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+                                value = integrate_log(rs, radfun*rs**2)
+                                matrix[j1,j2] = value
+                                matrix[j2,j1] = value
+                        setattr(self.atgrids[i], "%s_atdm" % spin, matrix)
+                        self.atgrids[i].dump("%s_%s_atdm" % (self.prefix, spin), matrix)
                 pb()
-                if self.atgrids[i].atdm is None:
-                    orbitals = self.atgrids[i].orbitals
-                    w = self.atgrids[i].atweights
-                    matrix = numpy.zeros((num_orbitals,num_orbitals), float)
-                    rs = self.get_rs(i, number_i)
-                    for j1 in xrange(num_orbitals):
-                        for j2 in xrange(j1+1):
-                            integrand = orbitals[j1]*orbitals[j2]*w
-                            radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                            value = integrate_log(rs, radfun*rs**2)
-                            matrix[j1,j2] = value
-                            matrix[j2,j1] = value
-                    self.atgrids[i].atdm = matrix
-                    self.atgrids[i].dump("%s_atdm" % self.prefix, matrix)
-            pb()
 
-        filename = os.path.join(self.context.outdir, "%s_atdm.txt" % self.prefix)
-        f = file(filename, "w")
-        print >> f, "number of orbitals:", num_orbitals
-        print >> f, "number of atoms: ", molecule.size
-        for i, number_i in enumerate(molecule.numbers):
-            print >> f, "Atom %i: %s" % (i, periodic[number_i].symbol)
-            for row in self.atgrids[i].atdm:
-                print >> f, " ".join("% 15.10e" % value for value in row)
-        f.close()
-        log("Written %s" % filename)
+            filename = os.path.join(self.context.outdir, "%s_%s_atdm.txt" % (self.prefix, spin))
+            f = file(filename, "w")
+            print >> f, "number of orbitals:", num_orbitals
+            print >> f, "number of atoms: ", molecule.size
+            for i, number_i in enumerate(molecule.numbers):
+                print >> f, "Atom %i: %s" % (i, periodic[number_i].symbol)
+                matrix = getattr(self.atgrids[i], "%s_atdm" % spin)
+                for row in matrix:
+                    print >> f, " ".join("% 15.10e" % value for value in row)
+            f.close()
+            log("Written %s" % filename)
+
+        do_one_spin("alpha")
+        do_one_spin("beta")
 
     @OnlyOnce("Bond orders and atomic valences")
     def do_bond_orders(self):
@@ -518,19 +533,17 @@ class BaseCache(object):
             num_orbitals = self.context.wavefn.num_orbitals
             n_alpha = self.context.wavefn.num_alpha
             n_beta = self.context.wavefn.num_beta
-            n_min = min(n_alpha, n_beta)
-            n_max = max(n_alpha, n_beta)
 
             pb = log.pb("Computing bond orders", (molecule.size*(molecule.size+1))/2)
-            check = 0
             for i in xrange(molecule.size):
                 for j in xrange(i+1):
-                    tmp = self.atgrids[i].atdm[:n_max,:n_max]*self.atgrids[j].atdm[:n_max,:n_max]
-                    check += tmp
-                    tmp[:n_min,:] *= 2
-                    tmp[:,:n_min] *= 2
-                    bo = tmp.sum()
                     pb()
+                    bo = 2*(
+                        (self.atgrids[i].alpha_atdm[:n_alpha,:n_alpha]*
+                         self.atgrids[j].alpha_atdm[:n_alpha,:n_alpha]).sum()+
+                        (self.atgrids[i].beta_atdm[:n_beta,:n_beta]*
+                         self.atgrids[j].beta_atdm[:n_beta,:n_beta]).sum()
+                    )
                     if i==j:
                         # compute valence
                         self.valences[i] = 2*self.populations[i] - bo
@@ -573,20 +586,20 @@ class BaseCache(object):
     def _compute_atweights(self, grid, atom_index):
         raise NotImplementedError
 
-    @OnlyOnce("Overlap populations")
-    def do_overlap_populations(self):
-        overlap_populations_fn_bin = os.path.join(self.context.workdir, "%s_overlap_populations.bin" % self.prefix)
+    @OnlyOnce("Gross & net populations")
+    def do_gross_net_populations(self):
+        gross_net_populations_fn_bin = os.path.join(self.context.workdir, "%s_gross_net_populations.bin" % self.prefix)
         molecule = self.context.wavefn.molecule
 
-        if os.path.isfile(overlap_populations_fn_bin):
-            log("Loading overlap populations.")
-            self.overlap_populations = numpy.fromfile(overlap_populations_fn_bin, float).reshape((molecule.size,molecule.size))
+        if os.path.isfile(gross_net_populations_fn_bin):
+            log("Loading gross & net populations.")
+            self.gross_net_populations = numpy.fromfile(gross_net_populations_fn_bin, float).reshape((molecule.size,molecule.size))
         else:
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_charges()
             self.do_atgrids_od_atweights()
-            self.overlap_populations = numpy.zeros((molecule.size, molecule.size))
+            self.gross_net_populations = numpy.zeros((molecule.size, molecule.size))
             pb = log.pb("Integrating over products of stockholder weights", (molecule.size*(molecule.size+1))/2)
             for i, number_i in enumerate(molecule.numbers):
                 for j, number_j in enumerate(molecule.numbers[:i+1]):
@@ -617,27 +630,27 @@ class BaseCache(object):
                         radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
                         part2 = integrate_log(rs, radfun*rs**2)
                         # Add up and store
-                        self.overlap_populations[i,j] = part1 + part2
-                        self.overlap_populations[j,i] = part1 + part2
+                        self.gross_net_populations[i,j] = part1 + part2
+                        self.gross_net_populations[j,i] = part1 + part2
                     else:
                         integrand = self.atgrids[i].atweights**2*self.atgrids[i].moldens
                         radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
                         rs = self.get_rs(i, number_i)
-                        self.overlap_populations[i,i] = integrate_log(rs, radfun*rs**2)
+                        self.gross_net_populations[i,i] = integrate_log(rs, radfun*rs**2)
             pb()
-            self.overlap_populations.tofile(overlap_populations_fn_bin)
+            self.gross_net_populations.tofile(gross_net_populations_fn_bin)
 
-        def output(filename, overlap_populations):
-            # print a file with the overlap populations
+        def output(filename, gross_net_populations):
+            # print a file with the gross and net populations
             filename = os.path.join(self.context.outdir, filename)
             f = file(filename, "w")
             print >> f, "number of atoms:", molecule.size
             for i in xrange(molecule.size):
-                print >> f, " ".join("%15.9f" % v for v in overlap_populations[i])
+                print >> f, " ".join("%15.9f" % v for v in gross_net_populations[i])
             f.close()
             log("Written %s" % filename)
 
-        output("%s_overlap_populations.txt" % self.prefix, self.overlap_populations)
+        output("%s_gross_net_populations.txt" % self.prefix, self.gross_net_populations)
 
 
 class StockholderCache(BaseCache):
