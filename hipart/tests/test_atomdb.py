@@ -20,5 +20,19 @@
 # --
 
 
-from hipart.atomdb import main
-main()
+from hipart.atomdb import charge_to_label, label_to_charge, parse_numbers
+
+def test_charge_to_label():
+    assert(charge_to_label(0) == "neut")
+    assert(charge_to_label(2) == "pos2")
+    assert(charge_to_label(-3) == "neg3")
+
+def test_label_to_charge():
+    assert(label_to_charge("neut") == 0)
+    assert(label_to_charge("pos1") == 1)
+    assert(label_to_charge("neg2") == -2)
+
+def test_parse_numbers():
+    assert(parse_numbers("1-3")==[1,2,3])
+    assert(parse_numbers("5,7,8")==[5,7,8])
+    assert(parse_numbers("1,6-9")==[1,6,7,8,9])
