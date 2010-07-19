@@ -19,7 +19,6 @@
 # --
 
 
-# TODO: Find better name for atdm
 # TODO: test presence of output files
 # TODO: tests for unrestricted
 # TODO: partitioned spin density
@@ -455,7 +454,7 @@ class BaseCache(object):
         pb()
 
     @OnlyOnce("Atomic overlap matrix elements")
-    def do_atgrids_atdm(self):
+    def do_atgrids_overlap(self):
         self.do_atgrids()
 
         def do_one_spin(spin):
@@ -464,18 +463,18 @@ class BaseCache(object):
             if spin=="beta" and self.context.wavefn.restricted:
                 # sply make references to alpha data and return
                 for i in xrange(molecule.size):
-                    self.atgrids[i].beta_atdm = self.atgrids[i].alpha_atdm
+                    self.atgrids[i].beta_overlap = self.atgrids[i].alpha_overlap
                 return
             # then try to load the matrices
             some_failed = False
             num_orbitals = self.context.wavefn.num_orbitals
             for i in xrange(molecule.size):
-                matrix = self.atgrids[i].load("%s_%s_atdm" % (self.prefix, spin))
+                matrix = self.atgrids[i].load("%s_%s_overlap" % (self.prefix, spin))
                 if matrix is None:
                     some_failed = True
                 else:
                     matrix = matrix.reshape((num_orbitals, num_orbitals))
-                setattr(self.atgrids[i], "%s_atdm" % spin, matrix)
+                setattr(self.atgrids[i], "%s_overlap" % spin, matrix)
 
             if some_failed:
                 self.do_atgrids_orbitals()
@@ -484,7 +483,7 @@ class BaseCache(object):
                 pb = log.pb("Computing atomic overlap matrices (%s)" % spin, molecule.size)
                 for i, number_i in enumerate(molecule.numbers):
                     pb()
-                    if getattr(self.atgrids[i], "%s_atdm" % spin) is None:
+                    if getattr(self.atgrids[i], "%s_overlap" % spin) is None:
                         orbitals = getattr(self.atgrids[i], "%s_orbitals" % spin)
                         w = self.atgrids[i].atweights
                         matrix = numpy.zeros((num_orbitals,num_orbitals), float)
@@ -496,17 +495,17 @@ class BaseCache(object):
                                 value = integrate_log(rs, radfun*rs**2)
                                 matrix[j1,j2] = value
                                 matrix[j2,j1] = value
-                        setattr(self.atgrids[i], "%s_atdm" % spin, matrix)
-                        self.atgrids[i].dump("%s_%s_atdm" % (self.prefix, spin), matrix)
+                        setattr(self.atgrids[i], "%s_overlap" % spin, matrix)
+                        self.atgrids[i].dump("%s_%s_overlap" % (self.prefix, spin), matrix)
                 pb()
 
-            filename = os.path.join(self.context.outdir, "%s_%s_atdm.txt" % (self.prefix, spin))
+            filename = os.path.join(self.context.outdir, "%s_%s_overlap.txt" % (self.prefix, spin))
             f = file(filename, "w")
             print >> f, "number of orbitals:", num_orbitals
             print >> f, "number of atoms: ", molecule.size
             for i, number_i in enumerate(molecule.numbers):
                 print >> f, "Atom %i: %s" % (i, periodic[number_i].symbol)
-                matrix = getattr(self.atgrids[i], "%s_atdm" % spin)
+                matrix = getattr(self.atgrids[i], "%s_overlap" % spin)
                 for row in matrix:
                     print >> f, " ".join("% 15.10e" % value for value in row)
             f.close()
@@ -526,7 +525,7 @@ class BaseCache(object):
             self.valences = numpy.fromfile(valences_fn_bin)
         else:
             self.do_charges()
-            self.do_atgrids_atdm()
+            self.do_atgrids_overlap()
 
             self.bond_orders = numpy.zeros((molecule.size, molecule.size))
             self.valences = numpy.zeros(molecule.size)
@@ -539,10 +538,10 @@ class BaseCache(object):
                 for j in xrange(i+1):
                     pb()
                     bo = 2*(
-                        (self.atgrids[i].alpha_atdm[:n_alpha,:n_alpha]*
-                         self.atgrids[j].alpha_atdm[:n_alpha,:n_alpha]).sum()+
-                        (self.atgrids[i].beta_atdm[:n_beta,:n_beta]*
-                         self.atgrids[j].beta_atdm[:n_beta,:n_beta]).sum()
+                        (self.atgrids[i].alpha_overlap[:n_alpha,:n_alpha]*
+                         self.atgrids[j].alpha_overlap[:n_alpha,:n_alpha]).sum()+
+                        (self.atgrids[i].beta_overlap[:n_beta,:n_beta]*
+                         self.atgrids[j].beta_overlap[:n_beta,:n_beta]).sum()
                     )
                     if i==j:
                         # compute valence
