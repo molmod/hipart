@@ -19,8 +19,9 @@
 # --
 
 
-# TODO: tests for unrestricted
-# TODO: partitioned spin density
+# TODO: fix free valence in non-closed-shell systems
+# TODO: isolate g03 specific code in hi-atomdb.py
+# TODO: Support for fchk files without using cubegen
 # TODO: Support for Gaussian/GAMESS wfn files.
 # TODO: Extend hi-atomdb.py to work with GAMESS
 # TODO: arbitrary multipoles
@@ -29,7 +30,6 @@
 # on grids of other atoms. This can be used to compute QM-level electrostatic
 # interaction energies. (See Becke's paper )
 # TODO: Compute condensed linear response properties
-# TODO: Support for fchk files without using cubegen
 # TODO: Support for CP2K and CPMD wavefunctions
 # TODO: Visualize Atomic devations from sphericallity (1D plots)
 # TODO: Visualization of atomic (pair) data with graphs
@@ -37,7 +37,7 @@
 
 
 from hipart.log import log
-from hipart.tools import get_atom_grid
+from hipart.tools import get_atom_grid, dump_charges
 from hipart.integrate import cumul_integrate_log, integrate_log, integrate_lebedev
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid
@@ -134,6 +134,16 @@ class BaseCache(object):
         for i, number_i in enumerate(molecule.numbers):
             pb()
             self.context.wavefn.compute_density(self.atgrids[i])
+        pb()
+
+    @OnlyOnce("Molecular spin density on atomic grids")
+    def do_atgrids_molspindens(self):
+        self.do_atgrids()
+        molecule = self.context.wavefn.molecule
+        pb = log.pb("Computing/Loading spin densities", molecule.size)
+        for i, number_i in enumerate(molecule.numbers):
+            pb()
+            self.context.wavefn.compute_spin_density(self.atgrids[i])
         pb()
 
     @OnlyOnce("Estimating noble gas core radii")
@@ -346,6 +356,37 @@ class BaseCache(object):
             log("Written %s" % filename)
 
         output("%s_charges.txt" % self.prefix, self.charges, self.mol_esp_cost)
+
+    @OnlyOnce("Spin charges")
+    def do_spin_charges(self):
+        spin_charges_fn_bin = os.path.join(self.context.workdir, "%s_spin_charges.bin" % self.prefix)
+        molecule = self.context.wavefn.molecule
+
+        if os.path.isfile(spin_charges_fn_bin):
+            log("Loading spin charges.")
+            self.spin_charges = numpy.fromfile(spin_charges_fn_bin, float)
+        else:
+            self.do_atgrids()
+            self.do_atgrids_molspindens()
+            self.do_atgrids_atweights()
+
+            pb = log.pb("Computing spin charges", molecule.size)
+            self.spin_charges = numpy.zeros(molecule.size, float)
+            for i, number_i in enumerate(molecule.numbers):
+                pb()
+                w = self.atgrids[i].atweights
+                d = self.atgrids[i].molspindens
+                center = molecule.coordinates[i]
+
+                integrand = d*w
+                radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+                rs = self.get_rs(i, number_i)
+                self.spin_charges[i] = integrate_log(rs, radfun*rs**2)
+            pb()
+            self.spin_charges.tofile(spin_charges_fn_bin)
+
+        spin_charges_fn = os.path.join(self.context.outdir, "%s_spin_charges.txt" % self.prefix)
+        dump_charges(spin_charges_fn, self.spin_charges, molecule.numbers)
 
     @OnlyOnce("Atomic dipoles")
     def do_dipoles(self):

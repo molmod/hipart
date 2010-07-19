@@ -54,9 +54,7 @@ class FCHKWaveFunction(object):
         self.restricted = "Beta Orbital Energies" not in fchk.fields
         self.molecule = fchk.molecule
         # for internal usage
-        self._hack_cubegen = fchk.lot.startswith("ROHF")
-        if not self._hack_cubegen and fchk.lot.startswith("RO"):
-            raise RuntimeError("Can not deal with restricted open calculations except for ROHF.")
+        self._hack_cubegen = self.restricted and (self.num_alpha != self.num_beta)
         if "mp2" in fchk.lot.lower():
             self._density_type = "mp2"
         elif "mp3" in fchk.lot.lower():
@@ -105,7 +103,7 @@ class FCHKWaveFunction(object):
                 self.compute_orbitals(grid)
                 moldens = 0.0
                 for j in xrange(max(self.num_alpha, self.num_beta)):
-                    orb = grid.alpha_orbitals[i]
+                    orb = grid.alpha_orbitals[j]
                     occup = (j < self.num_alpha) + (j < self.num_beta)
                     moldens += occup*orb**2
             else:
@@ -116,6 +114,33 @@ class FCHKWaveFunction(object):
                 moldens = self._load_cube(den_fn, len(grid.points))
             grid.dump("moldens", moldens)
         grid.moldens = moldens
+
+    def compute_spin_density(self, grid):
+        molspindens = grid.load("molspindens")
+        if molspindens is None:
+            points_fn = "%s.txt" % grid.prefix
+            sden_fn = "%s_molspindens.txt" % grid.prefix
+
+            self._write_cube_in(points_fn, grid.points)
+
+            if self._hack_cubegen:
+                # ugly hack: Workaround for stupid cubegen that does not work
+                # properly on ROHF calculations. pfff...
+                self.compute_orbitals(grid)
+                molspindens = 0.0
+                n_min = min(self.num_alpha, self.num_beta)
+                n_max = max(self.num_alpha, self.num_beta)
+                for j in xrange(n_min, n_max):
+                    orb = grid.alpha_orbitals[j]
+                    molspindens += orb**2
+            else:
+                if not os.path.isfile(sden_fn):
+                    os.system(". ~/g03.profile; cubegen 0 spin=%s %s %s -5 < %s" % (
+                        self._density_type, self.filename, sden_fn, points_fn
+                    ))
+                molspindens = self._load_cube(sden_fn, len(grid.points))
+            grid.dump("molspindens", molspindens)
+        grid.molspindens = molspindens
 
     def compute_potential(self, grid):
         molpot = grid.load("molpot")
@@ -170,7 +195,6 @@ class FCHKWaveFunction(object):
                     beta_orb = self._load_cube(beta_orb_fn, len(grid.points))
                     grid.dump(beta_suffix, beta_orb)
                 beta_orbitals.append(beta_orb)
-
 
         grid.alpha_orbitals = alpha_orbitals
         grid.beta_orbitals = beta_orbitals
