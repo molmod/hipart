@@ -21,7 +21,7 @@
 
 from utils import iter_hf_sto3g_gaussian_caches
 
-import numpy
+import numpy, os
 
 
 def test_compute_atgrid_atweights():
@@ -35,8 +35,6 @@ def check_compute_atgrid_atweights(cache):
     h1 = cache._compute_atweights(cache.atgrids[0], 1)
     error = abs(h1+h0-1).max()
     assert(error < 1e-10)
-    cache.do_charges()
-    cache.do_dipoles()
 
 
 def test_charges():
@@ -51,6 +49,7 @@ def check_charges(cache):
     }
     cache.do_charges()
     assert(abs(cache.charges - expected[cache.key]).max() < 1e-4)
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
 
 
 def test_dipoles():
@@ -74,6 +73,7 @@ def check_dipoles(cache):
     }
     cache.do_dipoles()
     assert(abs(cache.dipoles - expected[cache.key]).max() < 1e-3)
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_dipoles.txt" % cache.prefix)))
 
 
 def test_noble_radii():
@@ -111,6 +111,8 @@ def check_bond_orders(cache):
         "isa": numpy.array([[1.09685209, 1.09681649]]),
     }
     cache.do_bond_orders()
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
     assert(abs(cache.bond_orders.sum(axis=0) - cache.valences).max() < 1e-2)
     assert(abs(cache.bond_orders - expected_bond_orders[cache.key]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.key]).max() < 1e-3)
@@ -137,3 +139,4 @@ def check_gross_net_populations(cache):
     }
     cache.do_gross_net_populations()
     assert(abs(cache.gross_net_populations - expected[cache.key]).max() < 1e-2)
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_gross_net_populations.txt" % cache.prefix)))

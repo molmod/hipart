@@ -19,7 +19,6 @@
 # --
 
 
-# TODO: test presence of output files
 # TODO: tests for unrestricted
 # TODO: partitioned spin density
 # TODO: Support for Gaussian/GAMESS wfn files.
