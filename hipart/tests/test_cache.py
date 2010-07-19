@@ -19,7 +19,7 @@
 # --
 
 
-from utils import iter_hf_sto3g_gaussian_caches, \
+from hipart.tests.utils import iter_hf_sto3g_gaussian_caches, \
     iter_oh1_sto3g_gaussian_caches, iter_oh2_sto3g_gaussian_caches
 
 import numpy, os

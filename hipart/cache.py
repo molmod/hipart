@@ -20,7 +20,6 @@
 
 
 # TODO: fix free valence in non-closed-shell systems
-# TODO: isolate g03 specific code in hi-atomdb.py
 # TODO: Support for fchk files without using cubegen
 # TODO: Support for Gaussian/GAMESS wfn files.
 # TODO: Extend hi-atomdb.py to work with GAMESS

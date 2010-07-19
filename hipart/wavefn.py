@@ -23,6 +23,8 @@ from molmod.io import FCHKFile
 from molmod import angstrom
 import os, numpy
 
+from hipart.gint.basis import GaussianBasis
+
 
 __all__ = ["load_wavefunction", "FchkWaveFunction"]
 
@@ -198,3 +200,29 @@ class FCHKWaveFunction(object):
 
         grid.alpha_orbitals = alpha_orbitals
         grid.beta_orbitals = beta_orbitals
+
+
+class MyFCHKWaveFunction(FCHKWaveFunction):
+    def __init__(self, filename):
+        self.filename = filename
+        self.prefix = filename[:-5]
+        fchk = FCHKFile(filename)
+        # for use by the rest of the program
+        self.charge = fchk.fields["Charge"]
+        self.num_orbitals = fchk.fields["Number of basis functions"]
+        self.dipole = fchk.fields["Dipole Moment"]
+        self.num_electrons = fchk.fields["Number of electrons"]
+        self.num_alpha = fchk.fields["Number of alpha electrons"]
+        self.num_beta = fchk.fields["Number of beta electrons"]
+        self.restricted = "Beta Orbital Energies" not in fchk.fields
+        self.molecule = fchk.molecule
+        # for internal usage
+        self.basis = GaussianBasis.from_fchk(fchk)
+        self.alpha_orbital_energies = fchk.fields["Alpha Orbital Energies"]
+        self.beta_orbital_energies = fchk.fields.get(fchk.fields["Beta Orbital Energies"], self.alpha_orbital_energies)
+        self.alpha_orbitals = fchk.fields["Alpha MO coefficients"]
+        self.beta_orbitals = fchk.fields.get("Beta MO coefficients", self.alpha_orbitals)
+        self.density_matrices = {}
+        for key in fchk.fields:
+            if key.startswith("Total") and key.endswith("Density"):
+                self.density_matrices[key[6:-8].lower()] = fchk.fields[key]
