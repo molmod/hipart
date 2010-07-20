@@ -38,6 +38,7 @@ setup(
     ext_modules=[
         Extension("hipart.llext", ["hipart/Lebedev-Laikov.F"]),
         Extension("hipart.csext", ["hipart/cubic_spline_ext.c","hipart/cubic_spline_ext.pyf"]),
+        Extension("hipart.gint.gint1_fn", ["hipart/gint/gint1_fn.c", "hipart/gint/gint1_fn.pyf"]),
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

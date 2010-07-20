@@ -17,23 +17,3 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-
-from hipart.gint.tests.utils import setup_fchk, hf_fchk
-
-from hipart.gint.basis import GaussianBasis
-from hipart.gint.gint1_fn import gint1_fn_basis
-
-from molmod.io import FCHKFile
-
-import shutil, numpy
-
-
-def test_load_blind():
-    tmpdir, fn_fchk = setup_fchk(hf_fchk)
-    fchk = FCHKFile(fn_fchk)
-    basis = GaussianBasis.from_fchk(fchk)
-    weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
-    output = basis.call_gint1(gint1_fn_basis, weights, numpy.zeros(3,float))
-    print output
-    shutil.rmtree(tmpdir)
-    raise Exception

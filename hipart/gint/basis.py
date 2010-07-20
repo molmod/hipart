@@ -25,8 +25,17 @@ import numpy
 __all__ = ["GaussianBasis"]
 
 
+def get_shell_dof(shell_type):
+    if shell_type >= 0:
+        return 2*shell_type + 1
+    elif shell_type == -1:
+        return 8
+    else:
+        return (-shell_type+1)*(-shell_type+2)/2
+
+
 class GaussianBasis(object):
-    def __init__(self, molecule, shell_types, shell_map, num_primitives, contraction_coeffs, exponents):
+    def __init__(self, molecule, shell_types, shell_map, num_primitives, ccoeffs, exponents):
         """
            Arguments:
             | ``molecule``  --  a Molecule object with atomic numbers and coordinates.
@@ -35,7 +44,7 @@ class GaussianBasis(object):
                                    -2 = Cartesian D, -3 = Cartesian F, ...
             | ``shell_map``  --  An array with the atom index for each shell.
             | ``num_primitives``  --  The number of primitives in each shell.
-            | ``contraction_coeffs``  --  The contraction coefficients of the
+            | ``ccoeffs``  --  The contraction coefficients of the
                                           primitives. For SP shells the number
                                           of contraction coefficients is twice
                                           the number of primitives, first n for
@@ -100,8 +109,10 @@ class GaussianBasis(object):
         self.shell_types = shell_types
         self.shell_map = shell_map
         self.num_primitives = num_primitives
-        self.contraction_coeffs = contraction_coeffs
+        self.ccoeffs = ccoeffs
+        self.exponents = exponents
         # internal stuff
+        self.num_dof = sum(get_shell_dof(shell_type) for shell_type in self.shell_types)
         self._prim_c_map = []
         self._prim_e_map = []
         counter_c = 0
@@ -125,16 +136,26 @@ class GaussianBasis(object):
         shell_types = fchk.fields["Shell types"]
         shell_map = fchk.fields["Shell to atom map"] - 1
         num_primitives = fchk.fields["Number of primitives per shell"]
-        contr_coeffs_level1 = fchk.fields["Contraction coefficients"]
-        contr_coeffs_level2 = fchk.fields.get("P(S=P) Contraction coefficients")
+        ccoeffs_level1 = fchk.fields["Contraction coefficients"]
+        ccoeffs_level2 = fchk.fields.get("P(S=P) Contraction coefficients")
         exponents = fchk.fields["Primitive exponents"]
 
-        contraction_coeffs = []
+        ccoeffs = []
         counter = 0
         for i, n in enumerate(num_primitives):
-            contraction_coeffs.append(contr_coeffs_level1[counter:counter+n])
+            ccoeffs.append(ccoeffs_level1[counter:counter+n])
             if shell_types[i] == -1:
-                contraction_coeffs.append(contr_coeffs_level2[counter:counter+n])
-        contraction_coeffs = numpy.concatenate(contraction_coeffs)
+                ccoeffs.append(ccoeffs_level2[counter:counter+n])
+        ccoeffs = numpy.concatenate(ccoeffs)
 
-        return cls(fchk.molecule, shell_types, shell_map, num_primitives, contraction_coeffs, exponents)
+        return cls(fchk.molecule, shell_types, shell_map, num_primitives, ccoeffs, exponents)
+
+    def call_gint1(self, gint1_fn, weights, point):
+        output = numpy.zeros(1, float)
+        retcode = gint1_fn(
+            weights, output, point, self.molecule.coordinates, self.shell_types,
+            self.shell_map, self.num_primitives, self.ccoeffs, self.exponents
+        )
+        if retcode != 0:
+            raise RunTimeError("Something went wrong when calling %s. Got retcode=%i." % (gint1_fn, retcode))
+        return output[0]
