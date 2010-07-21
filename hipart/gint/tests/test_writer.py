@@ -30,13 +30,8 @@ def test_cartesian_powers():
 def test_norms():
     alpha = Symbol("alpha")
     a = simplify(mypowsimp(get_cartesian_wfn_norm(alpha, 0, 0, 0)))
-    b = simplify(mypowsimp(get_pure_wfn_norm(alpha, 0)))
-    print a
-    print b
+    b = simplify(mypowsimp(get_pure_wfn_norm(alpha, 0)))*sqrt(4*pi)
     assert(a==b)
     a = simplify(mypowsimp(get_cartesian_wfn_norm(alpha, 1, 0, 0)))
-    b = simplify(mypowsimp(get_pure_wfn_norm(alpha, 1)))
-    print a
-    print b
-    print b/a
+    b = simplify(mypowsimp(get_pure_wfn_norm(alpha, 1)))*sqrt(4*pi/3)
     assert(a==b)
