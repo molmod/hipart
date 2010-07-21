@@ -110,7 +110,7 @@ class FCHKWaveFunction(object):
                     moldens += occup*orb**2
             else:
                 if not os.path.isfile(den_fn):
-                    os.system(". ~/g03.profile; cubegen 0 fdensity=%s %s %s -5 < %s" % (
+                    os.system("cubegen 0 fdensity=%s %s %s -5 < %s" % (
                         self._density_type, self.filename, den_fn, points_fn
                     ))
                 moldens = self._load_cube(den_fn, len(grid.points))
@@ -137,7 +137,7 @@ class FCHKWaveFunction(object):
                     molspindens += orb**2
             else:
                 if not os.path.isfile(sden_fn):
-                    os.system(". ~/g03.profile; cubegen 0 spin=%s %s %s -5 < %s" % (
+                    os.system("cubegen 0 spin=%s %s %s -5 < %s" % (
                         self._density_type, self.filename, sden_fn, points_fn
                     ))
                 molspindens = self._load_cube(sden_fn, len(grid.points))
@@ -153,7 +153,7 @@ class FCHKWaveFunction(object):
             self._write_cube_in(points_fn, grid.points)
 
             if not os.path.isfile(pot_fn):
-                os.system(". ~/g03.profile; cubegen 0 potential=%s %s %s -5 < %s" % (
+                os.system("cubegen 0 potential=%s %s %s -5 < %s" % (
                     self._density_type, self.filename, pot_fn, points_fn,
                 ))
             molpot = self._load_cube(pot_fn, len(grid.points))
@@ -173,7 +173,7 @@ class FCHKWaveFunction(object):
                 self._write_cube_in(points_fn, grid.points)
 
                 if not os.path.isfile(alpha_orb_fn):
-                    os.system(". ~/g03.profile; cubegen 0 AMO=%i %s %s -5 < %s" % (
+                    os.system("cubegen 0 AMO=%i %s %s -5 < %s" % (
                         i+1, self.filename, alpha_orb_fn, points_fn,
                     ))
                 alpha_orb = self._load_cube(alpha_orb_fn, len(grid.points))
@@ -191,7 +191,7 @@ class FCHKWaveFunction(object):
                     self._write_cube_in(points_fn, grid.points)
 
                     if not os.path.isfile(beta_orb_fn):
-                        os.system(". ~/g03.profile; cubegen 0 BMO=%i %s %s -5 < %s" % (
+                        os.system("cubegen 0 BMO=%i %s %s -5 < %s" % (
                             i+1, self.filename, beta_orb_fn, points_fn,
                         ))
                     beta_orb = self._load_cube(beta_orb_fn, len(grid.points))

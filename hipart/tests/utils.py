@@ -44,7 +44,7 @@ class FakeOptions(object):
 
 
 hf_fchk="""\
-hcl
+hf
 SP        RHF                                                         STO-3G
 Number of atoms                            I                2
 Charge                                     I                0

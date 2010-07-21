@@ -1,12 +1,12 @@
 python module gint1_fn
 interface
 
-  integer function gint1_fn_basis(weights,fn,point,centers,shell_types,shell_map,num_primitives,ccoeffs,exponents,num_shells,num_weights,num_centers,num_ccoeffs,num_exponents)
+  integer function gint1_fn_basis(weights, fns, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_weights, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
     intent(c) gint1_fn_basis
     intent(c)
     double precision intent(in) :: weights(num_weights)
-    double precision intent(inout) :: fn(1)
-    double precision intent(in) :: point(3)
+    double precision intent(inout) :: fns(num_points)
+    double precision intent(in) :: points(num_points,3)
     double precision intent(in)  :: centers(num_centers,3)
     integer intent(int) :: shell_types(num_shells)
     integer intent(int) :: shell_map(num_shells)
@@ -14,6 +14,7 @@ interface
     double precision intent(in) :: ccoeffs(num_ccoeffs)
     double precision intent(in) :: exponents(num_exponents)
     integer intent(hide), depend(weights) :: num_weights=len(weights)
+    integer intent(hide), depend(points) :: num_points=len(points)
     integer intent(hide), depend(centers) :: num_centers=len(centers)
     integer intent(hide), depend(shell_types) :: num_shells=len(shell_types)
     integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)

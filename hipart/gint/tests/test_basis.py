@@ -18,9 +18,10 @@
 #
 # --
 
-from hipart.gint.tests.utils import setup_fchk, hf_fchk
+from hipart.gint.tests.utils import setup_fchk, h_sto3g_fchk, hf_sto3g_fchk, \
+    o2_cc_pvtz_pure_fchk, o2_cc_pvtz_cart_fchk
 
-from hipart.gint.basis import GaussianBasis
+from hipart.gint.basis import GaussianBasis, get_shell_dof
 from hipart.gint.gint1_fn import gint1_fn_basis
 
 from molmod.io import FCHKFile
@@ -28,12 +29,45 @@ from molmod.io import FCHKFile
 import shutil, numpy
 
 
-def test_load_blind():
-    tmpdir, fn_fchk = setup_fchk(hf_fchk)
+def test_hf_sto3g_num():
+    tmpdir, fn_fchk = setup_fchk(hf_sto3g_fchk)
     fchk = FCHKFile(fn_fchk)
     basis = GaussianBasis.from_fchk(fchk)
-    weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
-    output = basis.call_gint1(gint1_fn_basis, weights, numpy.zeros(3,float))
-    print output
-    shutil.rmtree(tmpdir)
-    raise Exception
+    assert(basis.num_shells==3)
+    assert(basis.num_dof==6)
+
+
+def test_h_sto3g_num():
+    tmpdir, fn_fchk = setup_fchk(h_sto3g_fchk)
+    fchk = FCHKFile(fn_fchk)
+    basis = GaussianBasis.from_fchk(fchk)
+    assert(basis.num_shells==1)
+    assert(basis.num_dof==1)
+
+
+def test_o2_cc_pvtz_pure_num():
+    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_pure_fchk)
+    fchk = FCHKFile(fn_fchk)
+    basis = GaussianBasis.from_fchk(fchk)
+    assert(basis.num_shells==20)
+    print basis.num_dof
+    assert(basis.num_dof==60)
+
+
+def test_o2_cc_pvtz_cart_num():
+    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_cart_fchk)
+    fchk = FCHKFile(fn_fchk)
+    basis = GaussianBasis.from_fchk(fchk)
+    assert(basis.num_shells==20)
+    print basis.num_dof
+    assert(basis.num_dof==70)
+
+
+def test_shell_dof():
+    assert(get_shell_dof(-3)==7)
+    assert(get_shell_dof(-2)==5)
+    assert(get_shell_dof(-1)==4)
+    assert(get_shell_dof( 0)==1)
+    assert(get_shell_dof( 1)==3)
+    assert(get_shell_dof( 2)==6)
+    assert(get_shell_dof( 3)==10)

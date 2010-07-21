@@ -31,7 +31,7 @@ setup(
     author='Toon Verstraelen',
     author_email='Toon.Verstraelen@UGent.be',
     url='http://molmod.ugent.be/code/',
-    packages = ['hipart'],
+    packages = ['hipart', 'hipart.gint'],
     package_dir = {'hipart': 'hipart'},
     scripts=glob.glob("scripts/hi-*.py"),
     license = "GPLv3",

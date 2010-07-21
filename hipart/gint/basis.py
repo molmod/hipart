@@ -22,16 +22,16 @@
 import numpy
 
 
-__all__ = ["GaussianBasis"]
+__all__ = ["get_shell_dof", "GaussianBasis"]
 
 
 def get_shell_dof(shell_type):
-    if shell_type >= 0:
-        return 2*shell_type + 1
+    if shell_type > 0:
+        return (shell_type+1)*(shell_type+2)/2
     elif shell_type == -1:
-        return 8
+        return 4
     else:
-        return (-shell_type+1)*(-shell_type+2)/2
+        return -2*shell_type+1
 
 
 class GaussianBasis(object):
@@ -40,8 +40,8 @@ class GaussianBasis(object):
            Arguments:
             | ``molecule``  --  a Molecule object with atomic numbers and coordinates.
             | ``shell_types``  --  An array with shell types: 0 = S, 1 = P,
-                                   2 = pure D, 3 = pure F, ..., -1 = SP,
-                                   -2 = Cartesian D, -3 = Cartesian F, ...
+                                   2 = Cartesian D, 3 = Cartesian F, ...,
+                                   -1 = SP, -2 = pure D, -3 = pure F, ...
             | ``shell_map``  --  An array with the atom index for each shell.
             | ``num_primitives``  --  The number of primitives in each shell.
             | ``ccoeffs``  --  The contraction coefficients of the
@@ -67,33 +67,14 @@ class GaussianBasis(object):
              0 -> x
              1 -> y
              2 -> z
-           shell_type=2, pure D:
-             0 -> xy
-             1 -> xx-yy
-             2 -> xz
-             3 -> yz
-             4 -> zz
-           shell_type=3, pure F:
-             0 -> xxx-3xyy
-             1 -> 3xxy-yyy
-             2 -> xyz
-             3 -> xxz-yyz
-             4 -> xzz
-             5 -> yzz
-             6 -> zzz
-           shell_type=-1, SP:
-             0 -> 1
-             1 -> x
-             2 -> y
-             3 -> z
-           shell_type=-2, Cartesian D:
+           shell_type=2, Cartesian D:
              0 -> xx
              1 -> xy
              2 -> xz
              3 -> yy
              4 -> yz
              5 -> zz
-           shell_type=-3, Cartesian F:
+           shell_type=3, Cartesian F:
              0 -> xxx
              1 -> xxy
              2 -> xxz
@@ -104,6 +85,25 @@ class GaussianBasis(object):
              7 -> yyz
              8 -> yzz
              9 -> zzz
+           shell_type=-1, SP:
+             0 -> 1
+             1 -> x
+             2 -> y
+             3 -> z
+           shell_type=-2, pure D:
+             0 -> zz
+             1 -> yz
+             2 -> xz
+             3 -> xx-yy
+             4 -> xy
+           shell_type=-3, pure F:
+             6 -> zzz
+             5 -> yzz
+             4 -> xzz
+             3 -> xxz-yyz
+             2 -> xyz
+             1 -> 3xxy-yyy
+             0 -> xxx-3xyy
         """
         self.molecule = molecule
         self.shell_types = shell_types
@@ -113,21 +113,6 @@ class GaussianBasis(object):
         self.exponents = exponents
         # internal stuff
         self.num_dof = sum(get_shell_dof(shell_type) for shell_type in self.shell_types)
-        self._prim_c_map = []
-        self._prim_e_map = []
-        counter_c = 0
-        counter_e = 0
-        for i in xrange(self.num_shells):
-            if self.shell_types[i] == -1:
-                size_c = 2*num_primitives[i]
-                size_e = num_primitives[i]
-            else:
-                size_c = num_primitives[i]
-                size_e = num_primitives[i]
-            self._prim_c_map.append([counter_c, size_c])
-            self._prim_e_map.append([counter_e, size_e])
-            counter_c += size_c
-            counter_e += size_e
 
     num_shells = property(lambda self: len(self.shell_types))
 
@@ -143,19 +128,44 @@ class GaussianBasis(object):
         ccoeffs = []
         counter = 0
         for i, n in enumerate(num_primitives):
-            ccoeffs.append(ccoeffs_level1[counter:counter+n])
             if shell_types[i] == -1:
-                ccoeffs.append(ccoeffs_level2[counter:counter+n])
+                tmp = numpy.array([
+                    ccoeffs_level1[counter:counter+n],
+                    ccoeffs_level2[counter:counter+n]
+                ])
+                ccoeffs.append(tmp.transpose().ravel())
+            else:
+                ccoeffs.append(ccoeffs_level1[counter:counter+n])
+            counter += n
         ccoeffs = numpy.concatenate(ccoeffs)
 
-        return cls(fchk.molecule, shell_types, shell_map, num_primitives, ccoeffs, exponents)
 
-    def call_gint1(self, gint1_fn, weights, point):
-        output = numpy.zeros(1, float)
+        result = cls(fchk.molecule, shell_types, shell_map, num_primitives, ccoeffs, exponents)
+
+        # permutation of the basis functions (weights)
+        g03_reordering = {
+          -3: numpy.array([0, 1, 2, 3, 4, 5, 6]),
+          -2: numpy.array([0, 1, 2, 3, 4]),
+          -1: numpy.array([0, 1, 2, 3]),
+           0: numpy.array([0]),
+           1: numpy.array([0, 1, 2]),
+           2: numpy.array([0, 3, 4, 1, 5, 2]),
+           3: numpy.array([0, 4, 5, 3, 9, 6, 1, 8, 7, 2]),
+        }
+        offset = 0
+        permutation = []
+        for shell_type in shell_types:
+            permutation.extend(g03_reordering[shell_type]+len(permutation))
+        result.g03_permutation = numpy.array(permutation, dtype=int)
+
+        return result
+
+    def call_gint1(self, gint1_fn, weights, points):
+        fns = numpy.zeros(len(points), float)
         retcode = gint1_fn(
-            weights, output, point, self.molecule.coordinates, self.shell_types,
+            weights, fns, points, self.molecule.coordinates, self.shell_types,
             self.shell_map, self.num_primitives, self.ccoeffs, self.exponents
         )
         if retcode != 0:
             raise RunTimeError("Something went wrong when calling %s. Got retcode=%i." % (gint1_fn, retcode))
-        return output[0]
+        return fns
