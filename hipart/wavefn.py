@@ -24,6 +24,7 @@ from molmod import angstrom
 import os, numpy
 
 from hipart.gint.basis import GaussianBasis
+from hipart.gint.gint1_fn import gint1_fn_basis
 
 
 __all__ = ["load_wavefunction", "FchkWaveFunction"]
@@ -31,7 +32,7 @@ __all__ = ["load_wavefunction", "FchkWaveFunction"]
 
 def load_wavefunction(filename):
     if filename.endswith(".fchk"):
-        return FCHKWaveFunction(filename)
+        return MyFCHKWaveFunction(filename)
     else:
         raise ValueError("File extension of %s not recognized" % filename)
 
@@ -219,10 +220,51 @@ class MyFCHKWaveFunction(FCHKWaveFunction):
         # for internal usage
         self.basis = GaussianBasis.from_fchk(fchk)
         self.alpha_orbital_energies = fchk.fields["Alpha Orbital Energies"]
-        self.beta_orbital_energies = fchk.fields.get(fchk.fields["Beta Orbital Energies"], self.alpha_orbital_energies)
-        self.alpha_orbitals = fchk.fields["Alpha MO coefficients"]
-        self.beta_orbitals = fchk.fields.get("Beta MO coefficients", self.alpha_orbitals)
+        self.beta_orbital_energies = fchk.fields.get("Beta Orbital Energies", self.alpha_orbital_energies)
+        self.alpha_orbitals = fchk.fields["Alpha MO coefficients"].reshape((-1,self.basis.num_dof))
+        self.alpha_orbitals = self.alpha_orbitals[:,self.basis.g03_permutation]
+        self.beta_orbitals = fchk.fields.get("Beta MO coefficients")
+        if self.beta_orbitals is None:
+            self.beta_orbitals = self.alpha_orbitals
+        else:
+            self.beta_orbitals = self.beta_orbitals.reshape((-1,self.basis.num_dof))[:,self.basis.g03_permutation]
         self.density_matrices = {}
         for key in fchk.fields:
             if key.startswith("Total") and key.endswith("Density"):
                 self.density_matrices[key[6:-8].lower()] = fchk.fields[key]
+        # for compatibility
+        self._hack_cubegen = self.restricted and (self.num_alpha != self.num_beta)
+        if "mp2" in fchk.lot.lower():
+            self._density_type = "mp2"
+        elif "mp3" in fchk.lot.lower():
+            self._density_type = "mp3"
+        elif "mp4" in fchk.lot.lower():
+            self._density_type = "mp4"
+        else:
+            self._density_type = "scf"
+
+    def compute_orbitals(self, grid):
+        alpha_orbitals = []
+        beta_orbitals = []
+        for i in xrange(self.num_orbitals):
+            alpha_suffix = "alpha_orb%05i" % i
+            alpha_orb = grid.load(alpha_suffix)
+            if alpha_orb is None:
+                weights = self.alpha_orbitals[i]
+                alpha_orb = self.basis.call_gint1(gint1_fn_basis, weights, grid.points)
+                grid.dump(alpha_suffix, alpha_orb)
+            alpha_orbitals.append(alpha_orb)
+            if self.restricted:
+                beta_orbitals.append(alpha_orb)
+            else:
+                beta_suffix = "beta_orb%05i" % i
+                beta_orb = grid.load(beta_suffix)
+                if beta_orb is None:
+                    weights = self.beta_orbitals[i]
+                    beta_orb = self.basis.call_gint1(gint1_fn_basis, weights, grid.points)
+                    grid.dump(beta_suffix, beta_orb)
+                    grid.dump(beta_suffix, beta_orb)
+                beta_orbitals.append(beta_orb)
+
+        grid.alpha_orbitals = alpha_orbitals
+        grid.beta_orbitals = beta_orbitals
