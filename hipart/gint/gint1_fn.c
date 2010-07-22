@@ -28,134 +28,131 @@
 
 static void fn_pF(double* a, double a_a, double* p, double* out)
 {
-  double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10, tmp11;
-  tmp0 = p[2] - a[2];
-  tmp1 = pow(a_a,2.25);
-  tmp2 = p[1] - a[1];
-  tmp3 = tmp2*tmp2;
-  tmp4 = p[0] - a[0];
-  tmp5 = tmp4*tmp4;
-  tmp6 = tmp0*tmp0;
-  tmp7 = tmp3 + tmp5 + tmp6;
-  tmp8 = -a_a*tmp7;
-  tmp9 = exp(tmp8);
-  tmp10 = pow(tmp5,(3.0/2.0));
-  tmp11 = pow(tmp3,(3.0/2.0));
-  out[0] = tmp9*(1.47215808929909*tmp0*tmp1*tmp6 - 2.20823713394864*tmp0*tmp1*tmp3 - 2.20823713394864*tmp0*tmp1*tmp5);
-  out[1] = tmp9*(3.60603613949341*tmp1*tmp4*tmp6 - 0.901509034873353*tmp1*tmp3*tmp4 - 0.901509034873353*tmp1*tmp4*tmp5);
-  out[2] = tmp9*(3.60603613949341*tmp1*tmp2*tmp6 - 0.901509034873353*tmp1*tmp2*tmp3 - 0.901509034873353*tmp1*tmp2*tmp5);
-  out[3] = tmp9*(2.85082188141996*tmp0*tmp1*tmp5 - 2.85082188141996*tmp0*tmp1*tmp3);
-  out[4] = 5.70164376283992*tmp0*tmp1*tmp2*tmp4*tmp9;
-  out[5] = tmp9*(1.16384315950667*tmp1*tmp4*tmp5 - 3.49152947852002*tmp1*tmp3*tmp4);
-  out[6] = tmp9*(3.49152947852002*tmp1*tmp2*tmp5 - 1.16384315950667*tmp1*tmp2*tmp3);
+  double fix0, fix1, fix2, tmp0, tmp1, tmp10, tmp11, tmp12, tmp13, tmp5, tmp6, tmp9;
+  fix0 = p[0] - a[0]; // oblige
+  fix1 = p[1] - a[1]; // oblige
+  fix2 = p[2] - a[2]; // oblige
+  tmp11 = fix2*fix2; // auto
+  tmp12 = fix1*fix1; // auto
+  tmp13 = fix0*fix0; // auto
+  tmp0 = exp(-a_a*(tmp11 + tmp12 + tmp13)); // auto
+  tmp1 = pow(a_a,2.25); // auto
+  tmp12 = tmp1*tmp12; // auto+recycle
+  tmp13 = tmp1*tmp13; // auto+recycle
+  tmp11 = tmp1*tmp11; // auto+recycle
+  tmp5 = fix2*tmp13; // auto
+  tmp6 = fix2*tmp12; // auto
+  out[0] = tmp0*(-2.20823713394864*tmp5 - 2.20823713394864*tmp6 + 1.47215808929909*fix2*tmp11); // final
+  tmp9 = fix0*tmp13; // auto
+  tmp10 = fix0*tmp12; // auto
+  out[1] = tmp0*(-0.901509034873353*tmp10 - 0.901509034873353*tmp9 + 3.60603613949341*fix0*tmp11); // final
+  tmp13 = fix1*tmp13; // auto+recycle
+  tmp12 = fix1*tmp12; // auto+recycle
+  out[2] = tmp0*(-0.901509034873353*tmp12 - 0.901509034873353*tmp13 + 3.60603613949341*fix1*tmp11); // final
+  out[3] = tmp0*(2.85082188141996*tmp5 - 2.85082188141996*tmp6); // final
+  out[4] = 5.70164376283992*fix0*fix1*fix2*tmp0*tmp1; // final
+  out[5] = tmp0*(1.16384315950667*tmp9 - 3.49152947852002*tmp10); // final
+  out[6] = tmp0*(3.49152947852002*tmp13 - 1.16384315950667*tmp12); // final
 }
 
 static void fn_pD(double* a, double a_a, double* p, double* out)
 {
-  double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9;
-  tmp0 = p[2] - a[2];
-  tmp1 = tmp0*tmp0;
-  tmp2 = pow(a_a,1.75);
-  tmp3 = p[1] - a[1];
-  tmp4 = tmp3*tmp3;
-  tmp5 = p[0] - a[0];
-  tmp6 = tmp5*tmp5;
-  tmp7 = tmp1 + tmp4 + tmp6;
-  tmp8 = -a_a*tmp7;
-  tmp9 = exp(tmp8);
-  out[0] = tmp9*(1.64592278064949*tmp1*tmp2 - 0.822961390324745*tmp2*tmp4 - 0.822961390324745*tmp2*tmp6);
-  out[1] = 2.85082188141996*tmp0*tmp2*tmp5*tmp9;
-  out[2] = 2.85082188141996*tmp0*tmp2*tmp3*tmp9;
-  out[3] = tmp9*(1.42541094070998*tmp2*tmp6 - 1.42541094070998*tmp2*tmp4);
-  out[4] = 2.85082188141996*tmp2*tmp3*tmp5*tmp9;
+  double fix0, fix1, fix2, tmp0, tmp1, tmp6, tmp7, tmp8;
+  fix0 = p[0] - a[0]; // oblige
+  fix1 = p[1] - a[1]; // oblige
+  fix2 = p[2] - a[2]; // oblige
+  tmp6 = fix2*fix2; // auto
+  tmp7 = fix1*fix1; // auto
+  tmp8 = fix0*fix0; // auto
+  tmp0 = exp(-a_a*(tmp6 + tmp7 + tmp8)); // auto
+  tmp1 = pow(a_a,1.75); // auto
+  tmp7 = tmp1*tmp7; // auto+recycle
+  tmp8 = tmp1*tmp8; // auto+recycle
+  out[0] = tmp0*(-0.822961390324745*tmp7 - 0.822961390324745*tmp8 + 1.64592278064949*tmp1*tmp6); // final
+  tmp1 = tmp0*tmp1; // auto+recycle
+  tmp6 = fix2*tmp1; // auto+recycle
+  out[1] = 2.85082188141996*fix0*tmp6; // final
+  out[2] = 2.85082188141996*fix1*tmp6; // final
+  out[3] = tmp0*(1.42541094070998*tmp8 - 1.42541094070998*tmp7); // final
+  out[4] = 2.85082188141996*fix0*fix1*tmp1; // final
 }
 
 static void fn_SP(double* a, double a_a, double* p, double* out)
 {
-  double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9;
-  tmp0 = p[0] - a[0];
-  tmp1 = p[1] - a[1];
-  tmp2 = tmp1*tmp1;
-  tmp3 = tmp0*tmp0;
-  tmp4 = p[2] - a[2];
-  tmp5 = tmp4*tmp4;
-  tmp6 = tmp2 + tmp3 + tmp5;
-  tmp7 = -a_a*tmp6;
-  tmp8 = exp(tmp7);
-  tmp9 = pow(a_a,1.25);
-  out[0] = 0.71270547035499*tmp8*pow(tmp9,0.6);
-  out[1] = 1.42541094070998*tmp0*tmp8*tmp9;
-  out[2] = 1.42541094070998*tmp1*tmp8*tmp9;
-  out[3] = 1.42541094070998*tmp4*tmp8*tmp9;
+  double fix0, fix1, fix2, tmp0;
+  fix0 = p[0] - a[0]; // oblige
+  fix1 = p[1] - a[1]; // oblige
+  fix2 = p[2] - a[2]; // oblige
+  tmp0 = exp(-a_a*(fix0*fix0 + fix1*fix1 + fix2*fix2)); // auto
+  out[0] = 0.71270547035499*tmp0*pow(a_a,0.75); // final
+  tmp0 = tmp0*pow(a_a,1.25); // auto+recycle
+  out[1] = 1.42541094070998*fix0*tmp0; // final
+  out[2] = 1.42541094070998*fix1*tmp0; // final
+  out[3] = 1.42541094070998*fix2*tmp0; // final
 }
 
 static void fn_S(double* a, double a_a, double* p, double* out)
 {
-  out[0] = 0.71270547035499*pow(a_a,0.75)*exp(-a_a*(pow((p[0] - a[0]),2) + pow((p[1] - a[1]),2) + pow((p[2] - a[2]),2)));
+  double fix0, fix1, fix2;
+  fix0 = p[0] - a[0]; // oblige
+  fix1 = p[1] - a[1]; // oblige
+  fix2 = p[2] - a[2]; // oblige
+  out[0] = 0.71270547035499*pow(a_a,0.75)*exp(-a_a*(fix0*fix0 + fix1*fix1 + fix2*fix2)); // final
 }
 
 static void fn_P(double* a, double a_a, double* p, double* out)
 {
-  double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9;
-  tmp0 = p[0] - a[0];
-  tmp1 = pow(a_a,1.25);
-  tmp2 = p[1] - a[1];
-  tmp3 = tmp2*tmp2;
-  tmp4 = tmp0*tmp0;
-  tmp5 = p[2] - a[2];
-  tmp6 = tmp5*tmp5;
-  tmp7 = tmp3 + tmp4 + tmp6;
-  tmp8 = -a_a*tmp7;
-  tmp9 = exp(tmp8);
-  out[0] = 1.42541094070998*tmp0*tmp1*tmp9;
-  out[1] = 1.42541094070998*tmp1*tmp2*tmp9;
-  out[2] = 1.42541094070998*tmp1*tmp5*tmp9;
+  double fix0, fix1, fix2, tmp0;
+  fix0 = p[0] - a[0]; // oblige
+  fix1 = p[1] - a[1]; // oblige
+  fix2 = p[2] - a[2]; // oblige
+  tmp0 = pow(a_a,1.25)*exp(-a_a*(fix0*fix0 + fix1*fix1 + fix2*fix2)); // auto
+  out[0] = 1.42541094070998*fix0*tmp0; // final
+  out[1] = 1.42541094070998*fix1*tmp0; // final
+  out[2] = 1.42541094070998*fix2*tmp0; // final
 }
 
 static void fn_cD(double* a, double a_a, double* p, double* out)
 {
-  double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9;
-  tmp0 = p[0] - a[0];
-  tmp1 = tmp0*tmp0;
-  tmp2 = pow(a_a,1.75);
-  tmp3 = p[1] - a[1];
-  tmp4 = tmp3*tmp3;
-  tmp5 = p[2] - a[2];
-  tmp6 = tmp5*tmp5;
-  tmp7 = tmp1 + tmp4 + tmp6;
-  tmp8 = -a_a*tmp7;
-  tmp9 = exp(tmp8);
-  out[0] = 1.64592278064949*tmp1*tmp2*tmp9;
-  out[1] = 2.85082188141996*tmp0*tmp2*tmp3*tmp9;
-  out[2] = 2.85082188141996*tmp0*tmp2*tmp5*tmp9;
-  out[3] = 1.64592278064949*tmp2*tmp4*tmp9;
-  out[4] = 2.85082188141996*tmp2*tmp3*tmp5*tmp9;
-  out[5] = 1.64592278064949*tmp2*tmp6*tmp9;
+  double fix0, fix1, fix2, tmp0, tmp2, tmp3;
+  fix0 = p[0] - a[0]; // oblige
+  fix1 = p[1] - a[1]; // oblige
+  fix2 = p[2] - a[2]; // oblige
+  tmp2 = fix1*fix1; // auto
+  tmp3 = fix0*fix0; // auto
+  tmp0 = pow(a_a,1.75)*exp(-a_a*(tmp2 + tmp3 + fix2*fix2)); // auto
+  out[0] = 1.64592278064949*tmp0*tmp3; // final
+  out[1] = 2.85082188141996*fix0*fix1*tmp0; // final
+  tmp3 = fix2*tmp0; // auto+recycle
+  out[2] = 2.85082188141996*fix0*tmp3; // final
+  out[3] = 1.64592278064949*tmp0*tmp2; // final
+  out[4] = 2.85082188141996*fix1*tmp3; // final
+  out[5] = 1.64592278064949*fix2*tmp3; // final
 }
 
 static void fn_cF(double* a, double a_a, double* p, double* out)
 {
-  double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9;
-  tmp0 = p[0] - a[0];
-  tmp1 = pow(a_a,2.25);
-  tmp2 = p[1] - a[1];
-  tmp3 = tmp0*tmp0;
-  tmp4 = tmp2*tmp2;
-  tmp5 = p[2] - a[2];
-  tmp6 = tmp5*tmp5;
-  tmp7 = tmp3 + tmp4 + tmp6;
-  tmp8 = -a_a*tmp7;
-  tmp9 = exp(tmp8);
-  out[0] = 1.47215808929909*tmp1*tmp9*pow(tmp3,(3.0/2.0));
-  out[1] = 3.29184556129898*tmp1*tmp2*tmp3*tmp9;
-  out[2] = 3.29184556129898*tmp1*tmp3*tmp5*tmp9;
-  out[3] = 3.29184556129898*tmp0*tmp1*tmp4*tmp9;
-  out[4] = 5.70164376283992*tmp0*tmp1*tmp2*tmp5*tmp9;
-  out[5] = 3.29184556129898*tmp0*tmp1*tmp6*tmp9;
-  out[6] = 1.47215808929909*tmp1*tmp9*pow(tmp4,(3.0/2.0));
-  out[7] = 3.29184556129898*tmp1*tmp4*tmp5*tmp9;
-  out[8] = 3.29184556129898*tmp1*tmp2*tmp6*tmp9;
-  out[9] = 1.47215808929909*tmp1*tmp5*tmp6*tmp9;
+  double fix0, fix1, fix2, tmp0, tmp4, tmp5, tmp6;
+  fix0 = p[0] - a[0]; // oblige
+  fix1 = p[1] - a[1]; // oblige
+  fix2 = p[2] - a[2]; // oblige
+  tmp4 = fix2*fix2; // auto
+  tmp5 = fix1*fix1; // auto
+  tmp6 = fix0*fix0; // auto
+  tmp0 = pow(a_a,2.25)*exp(-a_a*(tmp4 + tmp5 + tmp6)); // auto
+  tmp6 = tmp0*tmp6; // auto+recycle
+  out[0] = 1.47215808929909*fix0*tmp6; // final
+  out[1] = 3.29184556129898*fix1*tmp6; // final
+  out[2] = 3.29184556129898*fix2*tmp6; // final
+  tmp5 = tmp0*tmp5; // auto+recycle
+  out[3] = 3.29184556129898*fix0*tmp5; // final
+  out[4] = 5.70164376283992*fix0*fix1*fix2*tmp0; // final
+  tmp4 = tmp0*tmp4; // auto+recycle
+  out[5] = 3.29184556129898*fix0*tmp4; // final
+  out[6] = 1.47215808929909*fix1*tmp5; // final
+  out[7] = 3.29184556129898*fix2*tmp5; // final
+  out[8] = 3.29184556129898*fix1*tmp4; // final
+  out[9] = 1.47215808929909*fix2*tmp4; // final
 }
 
 typedef void (*fntype)(double*, double, double*, double*);

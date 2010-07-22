@@ -20,12 +20,14 @@
 
 
 
-from sympy import simplify, Symbol, sqrt, cos, sin, exp, Ylm, I, Mul, cse, pi, Rational, pprint
+from sympy import simplify, Symbol, sqrt, cos, sin, exp, Ylm, I, Mul, pi, C, S
 from sympy.printing.ccode import CCodePrinter
+from sympy.printing.tree import print_tree
 from sympy.utilities.iterables import numbered_symbols
 from sympy.printing.precedence import precedence
 from sympy.core.basic import S
 from sympy.mpmath import fac2
+from sympy.utilities.iterables import postorder_traversal
 
 from hipart.gint.basis import get_shell_dof
 
@@ -35,6 +37,146 @@ x = Symbol("x", real=True)
 y = Symbol("y", real=True)
 z = Symbol("z", real=True)
 r = Symbol("r", real=True)
+
+
+class Record(object):
+    def __init__(self, symbol, expr, tag):
+        self.symbol = symbol
+        self.expr = expr
+        self.tag = tag
+
+    def __str__(self):
+        return "%s = %s   {%s}" % (self.symbol, self.expr, self.tag)
+
+    def copy(self):
+        return Record(self.symbol, self.expr, self.tag)
+
+
+def iter_subsets(l):
+    from itertools import combinations
+    for size in xrange(2,len(l)):
+        for comb in combinations(l, size):
+            yield comb
+
+
+class Commands(object):
+    def __init__(self, records):
+        self.records = records
+        self.get_symbol = numbered_symbols("tmp")
+
+    def _iter_subs(self, old_expr, sub, symbol):
+        yield old_expr.subs(sub, symbol)
+        if isinstance(sub, C.Pow):
+            for power in old_expr.atoms(C.Pow):
+                if power.base == sub.base:
+                    if power.exp - sub.exp == 1 and power.exp > 1:
+                        yield old_expr.subs(power, sub.base*symbol)
+                    elif power.exp == 2*sub.exp:
+                        yield old_expr.subs(power, sub*sub)
+
+    def substitute(self, record, force=False):
+        # Make substitutions
+        first = None
+        for p in xrange(len(self.records)):
+            old_expr = self.records[p].expr
+            for new_expr in self._iter_subs(old_expr, record.expr, record.symbol):
+                if old_expr == new_expr:
+                    continue
+                if self.weigh(old_expr) > self.weigh(new_expr) or force:
+                    self.records[p].expr = new_expr
+                    if first is None:
+                        first = p
+                    break
+        if first is None:
+            raise ValueError("Failed to substitute.")
+        # insert new expression in records
+        self.records.insert(first, record)
+
+    def autosub(self):
+        def iter_parts(expr):
+            yield expr
+            if isinstance(expr, C.Add) or isinstance(expr, C.Mul):
+                for new_args in iter_subsets(expr.args):
+                    good = True
+                    for arg in new_args:
+                        if isinstance(arg, C.Real):
+                            good = False
+                            break
+                    if good:
+                        yield expr.__class__(*new_args)
+
+        all_parts = {}
+        for record in self.records:
+            for subtree in postorder_traversal(record.expr):
+                #print "---   ", subtree
+                for part in iter_parts(subtree):
+                    if part == record.expr:
+                        continue
+                    weight = self.weigh(part)
+                    if weight > 0:
+                        #print "------   ", part, weight
+                        all_parts[part] = all_parts.get(part, 0)+1
+        all_parts = [
+            (count*self.weigh(part), part)
+            for (part, count)
+            in all_parts.iteritems()
+            if count > 1
+        ]
+        all_parts.sort(reverse=True)
+        symbol = self.get_symbol.next()
+        for score, part in all_parts:
+            try:
+                self.substitute(Record(symbol, part, "auto"))
+                return True
+            except ValueError:
+                pass
+        return False
+
+    def full(self):
+        # substitute as much as possible
+        while self.autosub():
+            pass
+
+    def get_recycle_records(self):
+        result = [record.copy() for record in self.records]
+        inuse = set([])
+        for i, record in enumerate(result):
+            if record.tag == "final":
+                continue
+            # Determine which symbols are no longer used after this record.
+            avail = inuse.copy()
+            for later_record in result[i+1:]:
+                for symbol in list(avail):
+                    if symbol in later_record.expr:
+                        avail.discard(symbol)
+            # If there are some, use it and substitute in later records
+            if len(avail) > 0:
+                symbol = avail.pop()
+                for later_record in result[i+1:]:
+                    later_record.expr = later_record.expr.subs(record.symbol, symbol)
+                record.symbol = symbol
+                record.tag += "+recycle"
+            inuse.add(record.symbol)
+        return result
+
+    def weigh(self, expr):
+        ops = expr.count_ops()
+        weight = 0
+        if ops == 0:
+            return weight
+        if isinstance(ops, C.Add):
+            ops = ops.args
+        else:
+            ops = [ops]
+        for op in ops:
+            if isinstance(op, C.Mul):
+                weight += op.args[0]
+            else:
+                weight += 1
+        #for power in expr.atoms(C.Pow):
+        #    if power.exp != 2:
+        #        weight += 2
+        return weight
 
 
 class MyCCodePrinter(CCodePrinter):
@@ -65,7 +207,6 @@ def ccode(expr, **settings):
     return MyCCodePrinter(settings).doprint(expr)
 
 def mypowsimp(expr):
-    from sympy.utilities.iterables import postorder_traversal
     from sympy import Pow
     def find_double_pow(expr):
         for sub in postorder_traversal(expr):
@@ -76,6 +217,12 @@ def mypowsimp(expr):
         if sub is None:
             break
         expr = expr.subs(sub, Pow(sub.base.base, sub.exp*sub.base.exp))
+    return expr
+
+def mycollectsimp(expr):
+    from sympy import collect
+    for atom in expr.atoms(Symbol):
+        expr = collect(expr, atom)
     return expr
 
 # Representation of Gaussian integral algorithm
@@ -232,15 +379,11 @@ def get_polys(shell_type, alpha):
                 sym = sym.subs(r**2,x**2+y**2+z**2)
                 sym = sym.subs(cos(theta)**2,1-sin(theta)**2)
                 sym = simplify(sym)
-                print "sym", m
-                pprint(sym)
                 asym = simplify(((-1)**m*part_plus-part_min)/I/sqrt(2))
                 asym = asym.subs(r*cos(theta),z)
                 asym = asym.subs(r**2,x**2+y**2+z**2)
                 asym = asym.subs(cos(theta)**2,1-sin(theta)**2)
                 asym = simplify(asym)
-                print "asym", m
-                pprint(asym)
                 result.append((sym, wfn_norm))
                 result.append((asym, wfn_norm))
             else:
@@ -370,17 +513,15 @@ class Gint1Fn(GaussianIntegral):
     def get_expressions(self, st_row):
         results = []
         st = st_row[0]
-        print st
         for poly, wfn_norm in get_polys(st, self.a_a):
             rsq = x*x + y*y + z*z
-            #print simplify(poly/wfn_norm)
-            expr = (mypowsimp(simplify(poly/wfn_norm))).evalf()*exp(-self.a_a*rsq)
+            expr = (mypowsimp(simplify(poly/wfn_norm)).evalf())*exp(-self.a_a*rsq)
             expr = expr.subs(x, self.p_x - self.a_x)
             expr = expr.subs(y, self.p_y - self.a_y)
             expr = expr.subs(z, self.p_z - self.a_z)
             results.append(expr)
         key = get_shell_label(st)
-        return key, results
+        return key, results, [self.p_x - self.a_x, self.p_y - self.a_y, self.p_z - self.a_z]
 
 
 def write(gint, max_shell=3):
@@ -398,22 +539,38 @@ def write(gint, max_shell=3):
     print >> f, "#define MAX_SHELL_DOF %i" % (((max_shell+1)*(max_shell+2))/2)
     print >> f
     for st_row in gint.iter_shell_types(max_shell):
-        key, results = gint.get_expressions(st_row)
+        key, results, obliges = gint.get_expressions(st_row)
+        print key
         fn_name = "fn_%s" % key
         fn_names.append(fn_name)
         print >> f, "static void %s(%s, double* out)" % (fn_name, gint.get_c_args())
         print >> f, "{"
-        # some cse comments
-        temporaries, final_results = cse(results, numbered_symbols("tmp"))
-        if len(temporaries) > 0:
-            print >> f, "  double %s;" % (", ".join(var.name for var, expr in temporaries))
-            for var, expr in temporaries:
-                print >> f, "  %s = %s;" % (var.name, ccode(expr, lookup=gint.lookup))
-        for i, expr in enumerate(final_results):
-            print >> f, "  out[%i] = %s;" % (i, ccode(expr, lookup=gint.lookup))
-        ## actual code
-        #for i, expr in enumerate(results):
-        #    print >> f, "  out[%i] = %s;" % (i, ccode(expr, lookup=gint.lookup))
+        # use commands thing to do cse
+        records = []
+        lookup = gint.lookup.copy()
+        for i, result in enumerate(results):
+            symbol = Symbol("out%i" % i)
+            lookup[symbol.name] = "out[%i]" % i
+            records.append(Record(symbol, result, "final"))
+        commands = Commands(records)
+        for i, oblige in enumerate(obliges):
+            commands.substitute(Record(Symbol("fix%i" % i), oblige, "oblige"))
+        commands.full()
+        records = commands.get_recycle_records()
+        # variables
+        variables = set([
+            record.symbol.name for record in records
+            if not record.symbol.name.startswith("out")
+        ])
+        if len(variables) > 0:
+            print >> f, "  double %s;" % (", ".join(sorted(variables)))
+        # code lines
+        for record in records:
+            print >> f, "  %s = %s; // %s" % (
+                lookup.get(record.symbol.name, record.symbol.name),
+                ccode(record.expr, lookup=lookup),
+                record.tag
+            )
         print >> f, "}"
         print >> f
     # add some sugar

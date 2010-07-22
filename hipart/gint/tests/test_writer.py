@@ -35,3 +35,34 @@ def test_norms():
     a = simplify(mypowsimp(get_cartesian_wfn_norm(alpha, 1, 0, 0)))
     b = simplify(mypowsimp(get_pure_wfn_norm(alpha, 1)))*sqrt(4*pi/3)
     assert(a==b)
+
+def test_commands1():
+    c = Commands([
+        Record(Symbol("out"), x*x+y*y+z*z, "final"),
+    ])
+    c.substitute(Record(Symbol("tmp1"), x*x, "locked"))
+    c.substitute(Record(Symbol("tmp2"), y*y, "locked"))
+    assert(len(c.records)==3)
+    assert(c.records[0].symbol == Symbol("tmp1"))
+    assert(c.records[1].symbol == Symbol("tmp2"))
+    assert(c.records[2].symbol == Symbol("out"))
+    assert(c.records[0].expr == x*x)
+    assert(c.records[1].expr == y*y)
+    assert(c.records[2].expr == Symbol("tmp1")+Symbol("tmp2")+z*z)
+    assert(c.records[0].tag == "locked")
+    assert(c.records[1].tag == "locked")
+    assert(c.records[2].tag == "final")
+
+def test_commands2():
+    c = Commands([
+        Record(Symbol("out"), x*x+y*y+z*z, "final"),
+    ])
+    c.full()
+    assert(len(c.records)==1)
+
+def test_commands3():
+    c = Commands([
+        Record(Symbol("out"), x*x+sin(x*x), "final"),
+    ])
+    c.full()
+    assert(len(c.records)==2)
