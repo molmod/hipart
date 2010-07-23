@@ -23,7 +23,7 @@ from hipart.gint.tests.utils import setup_fchk, h_sto3g_fchk, hf_sto3g_fchk, \
     o2_cc_pvtz_cart_fchk, o2_cc_pvtz_pure_fchk
 
 from hipart.gint.basis import GaussianBasis
-from hipart.gint.gint1_fn import gint1_fn_basis
+from hipart.gint.gint1_fn import gint1_fn_basis, gint1_fn_dmat
 
 from molmod.io import FCHKFile
 from molmod import angstrom
@@ -58,12 +58,12 @@ ref_data_h_sto3g_orb0 = numpy.array([
 def test_orb0_h_sto3g():
     tmpdir, fn_fchk = setup_fchk(h_sto3g_fchk)
     fchk = FCHKFile(fn_fchk)
+    shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
     points = ref_data_h_sto3g_orb0[:,:3]
     fns = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
     assert(abs(fns-ref_data_h_sto3g_orb0[:,3]).max() < 1e-10)
-    shutil.rmtree(tmpdir)
 
 
 ref_data_hf_sto3g_orb0 = numpy.array([
@@ -92,12 +92,12 @@ ref_data_hf_sto3g_orb0 = numpy.array([
 def test_orb0_hf_sto3g():
     tmpdir, fn_fchk = setup_fchk(hf_sto3g_fchk)
     fchk = FCHKFile(fn_fchk)
+    shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
     points = ref_data_hf_sto3g_orb0[:,:3]
     fns = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
     assert(abs(fns-ref_data_hf_sto3g_orb0[:,3]).max() < 1e-10)
-    shutil.rmtree(tmpdir)
 
 
 ref_data_o2_cc_pvtz_cart_orb0 = numpy.array([
@@ -126,13 +126,13 @@ ref_data_o2_cc_pvtz_cart_orb0 = numpy.array([
 def test_orb0_o2_cc_pvtz_cart():
     tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_cart_fchk)
     fchk = FCHKFile(fn_fchk)
+    shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
     weights = weights[basis.g03_permutation]
     points = ref_data_o2_cc_pvtz_cart_orb0[:,:3]
     fns = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
     assert(abs(fns-ref_data_o2_cc_pvtz_cart_orb0[:,3]).max() < 1e-10)
-    shutil.rmtree(tmpdir)
 
 
 ref_data_o2_cc_pvtz_pure_orb0 = numpy.array([
@@ -161,10 +161,99 @@ ref_data_o2_cc_pvtz_pure_orb0 = numpy.array([
 def test_orb0_o2_cc_pvtz_pure():
     tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_pure_fchk)
     fchk = FCHKFile(fn_fchk)
+    shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
     weights = weights[basis.g03_permutation]
     points = ref_data_o2_cc_pvtz_pure_orb0[:,:3]
     fns = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
     assert(abs(fns-ref_data_o2_cc_pvtz_pure_orb0[:,3]).max() < 1e-10)
+
+
+def test_dens_h_sto3g():
+    tmpdir, fn_fchk = setup_fchk(h_sto3g_fchk)
+    fchk = FCHKFile(fn_fchk)
     shutil.rmtree(tmpdir)
+    basis = GaussianBasis.from_fchk(fchk)
+    weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
+    points = ref_data_h_sto3g_orb0[:,:3]
+    orb0 = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+    num_dmat = (basis.num_dof*(basis.num_dof+1))/2
+    dmat = fchk.fields["Total SCF Density"][:num_dmat]
+    density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
+    assert(abs(orb0**2-density).max() < 1e-10)
+
+
+def test_dens_hf_sto3g():
+    tmpdir, fn_fchk = setup_fchk(hf_sto3g_fchk)
+    fchk = FCHKFile(fn_fchk)
+    shutil.rmtree(tmpdir)
+    basis = GaussianBasis.from_fchk(fchk)
+    num_dmat = (basis.num_dof*(basis.num_dof+1))/2
+
+    points = ref_data_hf_sto3g_orb0[:,:3]
+
+    dmat = fchk.fields["Total SCF Density"][:num_dmat]
+    density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
+
+    num_alpha = fchk.fields["Number of alpha electrons"]
+    expected_density = 0.0
+    start = 0
+    for i in xrange(num_alpha):
+        end = start + basis.num_dof
+        weights = fchk.fields["Alpha MO coefficients"][start:end]
+        start = end
+        orb = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+        expected_density += 2*(orb**2)
+
+    assert(abs(density-expected_density).max() < 1e-6)
+
+
+def test_dens_o2_cc_pvtz_cart():
+    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_cart_fchk)
+    fchk = FCHKFile(fn_fchk)
+    shutil.rmtree(tmpdir)
+    basis = GaussianBasis.from_fchk(fchk)
+    num_dmat = (basis.num_dof*(basis.num_dof+1))/2
+
+    points = ref_data_o2_cc_pvtz_cart_orb0[:,:3]
+
+    dmat = fchk.fields["Total SCF Density"][:num_dmat]
+    density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
+
+    num_alpha = fchk.fields["Number of alpha electrons"]
+    expected_density = 0.0
+    start = 0
+    for i in xrange(num_alpha):
+        end = start + basis.num_dof
+        weights = fchk.fields["Alpha MO coefficients"][start:end]
+        start = end
+        orb = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+        expected_density += 2*(orb**2)
+
+    assert(abs(density-expected_density).max() < 1e-6)
+
+
+def test_dens_o2_cc_pvtz_pure():
+    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_pure_fchk)
+    fchk = FCHKFile(fn_fchk)
+    shutil.rmtree(tmpdir)
+    basis = GaussianBasis.from_fchk(fchk)
+    num_dmat = (basis.num_dof*(basis.num_dof+1))/2
+
+    points = ref_data_o2_cc_pvtz_pure_orb0[:,:3]
+
+    dmat = fchk.fields["Total SCF Density"][:num_dmat]
+    density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
+
+    num_alpha = fchk.fields["Number of alpha electrons"]
+    expected_density = 0.0
+    start = 0
+    for i in xrange(num_alpha):
+        end = start + basis.num_dof
+        weights = fchk.fields["Alpha MO coefficients"][start:end]
+        start = end
+        orb = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+        expected_density += 2*(orb**2)
+
+    assert(abs(density-expected_density).max() < 1e-6)

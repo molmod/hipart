@@ -24,7 +24,7 @@ from molmod import angstrom
 import os, numpy
 
 from hipart.gint.basis import GaussianBasis
-from hipart.gint.gint1_fn import gint1_fn_basis
+from hipart.gint.gint1_fn import gint1_fn_basis, gint1_fn_dmat
 from hipart.gint.ctools import reorder_density_matrix
 
 
@@ -58,7 +58,7 @@ class FCHKWaveFunction(object):
         self.restricted = "Beta Orbital Energies" not in fchk.fields
         self.molecule = fchk.molecule
         # for internal usage
-        self._hack_cubegen = self.restricted and (self.num_alpha != self.num_beta)
+        self._hack_fchk = self.restricted and (self.num_alpha != self.num_beta)
         if "mp2" in fchk.lot.lower():
             self._density_type = "mp2"
         elif "mp3" in fchk.lot.lower():
@@ -101,9 +101,9 @@ class FCHKWaveFunction(object):
 
             self._write_cube_in(points_fn, grid.points)
 
-            if self._hack_cubegen:
-                # ugly hack: Workaround for stupid cubegen that does not work
-                # properly on ROHF calculations. pfff...
+            if self._hack_fchk:
+                # ugly hack: Workaround for stupid fchk file that contains the
+                # incorrect density matrix in case of RO calculations. pfff...
                 self.compute_orbitals(grid)
                 moldens = 0.0
                 for j in xrange(max(self.num_alpha, self.num_beta)):
@@ -127,9 +127,9 @@ class FCHKWaveFunction(object):
 
             self._write_cube_in(points_fn, grid.points)
 
-            if self._hack_cubegen:
-                # ugly hack: Workaround for stupid cubegen that does not work
-                # properly on ROHF calculations. pfff...
+            if self._hack_fchk:
+                # ugly hack: Workaround for stupid fchk file that contains the
+                # incorrect density matrix in case of RO calculations. pfff...
                 self.compute_orbitals(grid)
                 molspindens = 0.0
                 n_min = min(self.num_alpha, self.num_beta)
@@ -230,13 +230,18 @@ class MyFCHKWaveFunction(FCHKWaveFunction):
         else:
             self.beta_orbitals = self.beta_orbitals.reshape((-1,self.basis.num_dof))[:,self.basis.g03_permutation]
         self.density_matrices = {}
+        self.spin_density_matrices = {}
         for key in fchk.fields:
             if key.startswith("Total") and key.endswith("Density"):
                 dmat = fchk.fields[key]
                 reorder_density_matrix(dmat, self.basis.g03_permutation)
                 self.density_matrices[key[6:-8].lower()] = dmat
+            if key.startswith("Spin") and key.endswith("Density"):
+                dmat = fchk.fields[key]
+                reorder_density_matrix(dmat, self.basis.g03_permutation)
+                self.spin_density_matrices[key[5:-8].lower()] = dmat
         # for compatibility
-        self._hack_cubegen = self.restricted and (self.num_alpha != self.num_beta)
+        self._hack_fchk = self.restricted and (self.num_alpha != self.num_beta)
         if "mp2" in fchk.lot.lower():
             self._density_type = "mp2"
         elif "mp3" in fchk.lot.lower():
@@ -245,6 +250,46 @@ class MyFCHKWaveFunction(FCHKWaveFunction):
             self._density_type = "mp4"
         else:
             self._density_type = "scf"
+
+    def compute_density(self, grid):
+        moldens = grid.load("moldens")
+        if moldens is None:
+            if self._hack_fchk:
+                self.compute_orbitals(grid)
+                moldens = 0.0
+                for j in xrange(max(self.num_alpha, self.num_beta)):
+                    # ugly hack: Workaround for stupid fchk file that contains the
+                    # incorrect density matrix in case of RO calculations. pfff...
+                    orb = grid.alpha_orbitals[j]
+                    occup = (j < self.num_alpha) + (j < self.num_beta)
+                    moldens += occup*orb**2
+            else:
+                dmat = self.density_matrices[self._density_type]
+                moldens = self.basis.call_gint1(gint1_fn_dmat, dmat, grid.points)
+                grid.dump("moldens", moldens)
+        grid.moldens = moldens
+
+    def compute_spin_density(self, grid):
+        molspindens = grid.load("molspindens")
+        if molspindens is None:
+            if self._hack_fchk:
+                # ugly hack: Workaround for stupid fchk file that contains the
+                # incorrect density matrix in case of RO calculations. pfff...
+                self.compute_orbitals(grid)
+                molspindens = 0.0
+                n_min = min(self.num_alpha, self.num_beta)
+                n_max = max(self.num_alpha, self.num_beta)
+                for j in xrange(n_min, n_max):
+                    orb = grid.alpha_orbitals[j]
+                    molspindens += orb**2
+            else:
+                dmat = self.spin_density_matrices.get(self._density_type)
+                if dmat is None:
+                    molspindens = numpy.zeros(len(grid.points), float)
+                else:
+                    molspindens = self.basis.call_gint1(gint1_fn_dmat, dmat, grid.points)
+            grid.dump("molspindens", molspindens)
+        grid.molspindens = molspindens
 
     def compute_orbitals(self, grid):
         alpha_orbitals = []

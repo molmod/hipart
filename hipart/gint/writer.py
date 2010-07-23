@@ -402,7 +402,7 @@ def get_polys(shell_type, alpha):
 
 # Simple example
 
-template_shell1_point_sum_c = """\
+template_gint1_basis_fn_c = """\
 int %(gint_name)s_basis(double* weights, double* fns, double* points,
   double* centers, int* shell_types, int* shell_map,  int* num_primitives,
   double* ccoeffs, double* exponents, int num_weights, int num_points,
@@ -412,6 +412,7 @@ int %(gint_name)s_basis(double* weights, double* fns, double* points,
   double *work, *out, *center, *ccoeff, *exponent, *weight, *shell_weights;
 
   result = 0;
+
   work = malloc(MAX_SHELL_DOF*sizeof(double));
   if (work==NULL) {result = -1; goto EXIT;}
 
@@ -469,7 +470,7 @@ EXIT:
 }"""
 
 
-template_shell1_point_sum_pyf = """\
+template_gint1_basis_fn_pyf = """\
   integer function %(gint_name)s_basis(weights, fns, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_weights, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
     intent(c) %(gint_name)s_basis
     intent(c)
@@ -492,6 +493,123 @@ template_shell1_point_sum_pyf = """\
 """
 
 
+template_gint1_basis_dmat_c = """\
+int %(gint_name)s_dmat(double* dmat, double* density, double* points,
+  double* centers, int* shell_types, int* shell_map,  int* num_primitives,
+  double* ccoeffs, double* exponents, int num_dmat, int num_points,
+  int num_centers, int num_shells, int num_ccoeffs, int num_exponents)
+{
+  int shell, shell_type, primitive, dof1, dof2, num_dof, num_shell_dof, result, i_point;
+  double *work, *out, *center, *ccoeff, *exponent, *basis_fns, *shell_fns, *fn, *dmat_element;
+
+  result = 0;
+
+  work = malloc(MAX_SHELL_DOF*sizeof(double));
+  if (work==NULL) {result = -1; goto EXIT;}
+  num_dof = ((int)(sqrt(1.0+8.0*num_dmat)-1.0))/2;
+  basis_fns = malloc(num_dof*sizeof(double));
+  if (basis_fns==NULL) {result = -1; goto EXIT;}
+
+  for (i_point=0; i_point<num_points; i_point++) {
+    // A) clear the basis functions.
+    fn = basis_fns;
+    for (dof1=0; dof1<num_dof; dof1++) {
+      *fn = 0.0;
+      fn++;
+    }
+    // B) evaluate the basis functions in the current point.
+    ccoeff = ccoeffs;
+    exponent = exponents;
+    shell_fns = basis_fns;
+    for (shell=0; shell<num_shells; shell++) {
+      center = centers + (3*shell_map[shell]);
+      shell_type = shell_types[shell];
+      for (primitive=0; primitive<num_primitives[shell]; primitive++) {
+        gint1_fn(shell_type, center, *exponent, points, work);
+        //printf("shell_type=%%d  primitive=%%d  exponent=%%f\\n", shell_type, primitive, *exponent);
+        out = work;
+        exponent++;
+        fn = shell_fns;
+        if (shell_type==-1) {
+          *fn += (*out)*(*ccoeff);
+          //printf("out=%%f  ccoeff=%%f  fn=%%f\\n", *out, *ccoeff, (*out)*(*ccoeff));
+          fn++;
+          out++;
+          ccoeff++;
+          num_shell_dof = 3;
+        } else if (shell_type > 0) {
+          num_shell_dof = ((shell_type+1)*(shell_type+2))/2;
+        } else {
+          num_shell_dof = -2*shell_type+1;
+        }
+        for (dof1=0; dof1<num_shell_dof; dof1++) {
+          *fn += (*out)*(*ccoeff);
+          //printf("out=%%f  ccoeff=%%f  fn=%%f\\n", *out, *ccoeff, (*out)*(*ccoeff));
+          fn++;
+          out++;
+        }
+        ccoeff++;
+      }
+      if (shell_type==-1) {
+        num_shell_dof = 4;
+      } else if (shell_type > 0) {
+        num_shell_dof = ((shell_type+1)*(shell_type+2))/2;
+      } else {
+        num_shell_dof = -2*shell_type+1;
+      }
+      shell_fns += num_shell_dof;
+    }
+    //printf("\\n");
+    // C) Make dot product of basis functions with density matrix.
+    *density = 0.0;
+    dmat_element = dmat;
+    for (dof1=0; dof1<num_dof; dof1++) {
+      for (dof2=0; dof2<=dof1; dof2++) {
+        if (dof1==dof2) {
+          *density += basis_fns[dof1]*basis_fns[dof2]*(*dmat_element);
+        } else {
+          *density += 2*basis_fns[dof1]*basis_fns[dof2]*(*dmat_element);
+        }
+        //printf("dof1=%%d  dof2=%%d  basis1=%%f  basis2=%%f  dmat_element=%%f  density=%%f\\n", dof1, dof2, basis_fns[dof1], basis_fns[dof2], *dmat_element, *density);
+        dmat_element++;
+      }
+    }
+    // D) Prepare for next iteration
+    density++;
+    points += 3;
+    //printf("\\n");
+  }
+
+EXIT:
+  free(work);
+  free(basis_fns);
+  return result;
+}"""
+
+
+template_gint1_basis_dmat_pyf = """\
+  integer function %(gint_name)s_dmat(dmat, density, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_dmat, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
+    intent(c) %(gint_name)s_dmat
+    intent(c)
+    double precision intent(in) :: dmat(num_dmat)
+    double precision intent(inout) :: density(num_points)
+    double precision intent(in) :: points(num_points,3)
+    double precision intent(in)  :: centers(num_centers,3)
+    integer intent(int) :: shell_types(num_shells)
+    integer intent(int) :: shell_map(num_shells)
+    integer intent(int) :: num_primitives(num_shells)
+    double precision intent(in) :: ccoeffs(num_ccoeffs)
+    double precision intent(in) :: exponents(num_exponents)
+    integer intent(hide), depend(dmat) :: num_dmat=len(dmat)
+    integer intent(hide), depend(points) :: num_points=len(points)
+    integer intent(hide), depend(centers) :: num_centers=len(centers)
+    integer intent(hide), depend(shell_types) :: num_shells=len(shell_types)
+    integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)
+    integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
+  end function %(gint_name)s_dmat
+"""
+
+
 class Gint1Fn(GaussianIntegral):
     def __init__(self):
         a = ShellArgGroup("a")
@@ -505,8 +623,11 @@ class Gint1Fn(GaussianIntegral):
         self.p_z = p.args[0].symbols[2]
         name = "gint1_fn"
         interface_fns = [(
-            template_shell1_point_sum_c % {"gint_name": name},
-            template_shell1_point_sum_pyf % {"gint_name": name},
+            template_gint1_basis_fn_c % {"gint_name": name},
+            template_gint1_basis_fn_pyf % {"gint_name": name},
+        ), (
+            template_gint1_basis_dmat_c % {"gint_name": name},
+            template_gint1_basis_dmat_pyf % {"gint_name": name},
         )]
         GaussianIntegral.__init__(self, name, [a, p], interface_fns)
 
@@ -604,8 +725,8 @@ def write(gint, max_shell=3):
         factor *= 2*max_shell + 1
     print >> f, "  fns[%s](%s, out);" % ("+".join(offsets), ", ".join(c_arg_names))
     print >> f, "}"
-    print >> f
     for interface_fn in gint.interface_fns:
+        f.write("\n")
         f.write(interface_fn[0])
         f.write("\n")
     f.close()
