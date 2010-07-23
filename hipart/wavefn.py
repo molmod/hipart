@@ -25,6 +25,7 @@ import os, numpy
 
 from hipart.gint.basis import GaussianBasis
 from hipart.gint.gint1_fn import gint1_fn_basis
+from hipart.gint.ctools import reorder_density_matrix
 
 
 __all__ = ["load_wavefunction", "FchkWaveFunction"]
@@ -231,7 +232,9 @@ class MyFCHKWaveFunction(FCHKWaveFunction):
         self.density_matrices = {}
         for key in fchk.fields:
             if key.startswith("Total") and key.endswith("Density"):
-                self.density_matrices[key[6:-8].lower()] = fchk.fields[key]
+                dmat = fchk.fields[key]
+                reorder_density_matrix(dmat, self.basis.g03_permutation)
+                self.density_matrices[key[6:-8].lower()] = dmat
         # for compatibility
         self._hack_cubegen = self.restricted and (self.num_alpha != self.num_beta)
         if "mp2" in fchk.lot.lower():
