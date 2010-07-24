@@ -1,0 +1,12 @@
+python module gaux
+interface
+
+  double precision function gaux(T, n)
+    intent(c) gaux
+    intent(c)
+    double precision intent(in) :: T
+    integer intent(int) :: n
+  end function gaux
+
+end interface
+end python module gaux

@@ -24,6 +24,7 @@ from hipart.gint.tests.utils import setup_fchk, h_sto3g_fchk, hf_sto3g_fchk, \
 
 from hipart.gint.basis import GaussianBasis
 from hipart.gint.gint1_fn import gint1_fn_basis, gint1_fn_dmat
+from hipart.gint.ctools import reorder_density_matrix
 
 from molmod.io import FCHKFile
 from molmod import angstrom
@@ -194,6 +195,7 @@ def test_dens_hf_sto3g():
     points = ref_data_hf_sto3g_orb0[:,:3]
 
     dmat = fchk.fields["Total SCF Density"][:num_dmat]
+    reorder_density_matrix(dmat, basis.g03_permutation)
     density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
 
     num_alpha = fchk.fields["Number of alpha electrons"]
@@ -219,6 +221,7 @@ def test_dens_o2_cc_pvtz_cart():
     points = ref_data_o2_cc_pvtz_cart_orb0[:,:3]
 
     dmat = fchk.fields["Total SCF Density"][:num_dmat]
+    reorder_density_matrix(dmat, basis.g03_permutation)
     density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
 
     num_alpha = fchk.fields["Number of alpha electrons"]
@@ -244,6 +247,7 @@ def test_dens_o2_cc_pvtz_pure():
     points = ref_data_o2_cc_pvtz_pure_orb0[:,:3]
 
     dmat = fchk.fields["Total SCF Density"][:num_dmat]
+    reorder_density_matrix(dmat, basis.g03_permutation)
     density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
 
     num_alpha = fchk.fields["Number of alpha electrons"]

@@ -39,6 +39,9 @@ setup(
         Extension("hipart.llext", ["hipart/Lebedev-Laikov.F"]),
         Extension("hipart.csext", ["hipart/cubic_spline_ext.c","hipart/cubic_spline_ext.pyf"]),
         Extension("hipart.gint.gint1_fn", ["hipart/gint/gint1_fn.c", "hipart/gint/gint1_fn.pyf"]),
+        Extension("hipart.gint.gint2_nai", ["hipart/gint/gint2_nai.c", "hipart/gint/gaux.c", "hipart/gint/gint2_nai.pyf"]),
+        Extension("hipart.gint.ctools", ["hipart/gint/ctools.c", "hipart/gint/ctools.pyf"]),
+        Extension("hipart.gint.gaux", ["hipart/gint/gaux.c", "hipart/gint/gaux.pyf"]),
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

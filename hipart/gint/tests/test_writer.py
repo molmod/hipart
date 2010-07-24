@@ -23,9 +23,9 @@ from hipart.gint.writer import *
 
 
 def test_cartesian_powers():
-    assert(list(get_cartesian_powers(0))==[(0,0,0)])
-    assert(list(get_cartesian_powers(1))==[(1,0,0), (0,1,0), (0,0,1)])
-    assert(list(get_cartesian_powers(2))==[(2,0,0), (1,1,0), (1,0,1), (0,2,0), (0,1,1), (0,0,2)])
+    assert(list(iter_cartesian_powers(0))==[(0,0,0)])
+    assert(list(iter_cartesian_powers(1))==[(1,0,0), (0,1,0), (0,0,1)])
+    assert(list(iter_cartesian_powers(2))==[(2,0,0), (1,1,0), (1,0,1), (0,2,0), (0,1,1), (0,0,2)])
 
 def test_norms():
     alpha = Symbol("alpha")

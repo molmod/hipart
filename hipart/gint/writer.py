@@ -88,7 +88,7 @@ class Commands(object):
                         first = p
                     break
         if first is None:
-            raise ValueError("Failed to substitute.")
+            raise ValueError("Failed to substitute: %s" % record)
         # insert new expression in records
         self.records.insert(first, record)
 
@@ -304,10 +304,11 @@ class ShellArgGroup(PointArgGroup):
 
 
 class GaussianIntegral():
-    def __init__(self, name, arg_groups, interface_fns):
+    def __init__(self, name, arg_groups, interface_fns, includes):
         self.name = name
         self.arg_groups = arg_groups
         self.interface_fns = interface_fns
+        self.includes = includes
         self.lookup = {}
         for ag in self.arg_groups:
             for arg in ag.args:
@@ -355,10 +356,16 @@ def get_pure_wfn_norm(alpha, l):
     return sqrt(int(fac2(2*l+1))*sqrt(pi/alpha/2)**3/(4*alpha)**l/(4*pi))
 
 
-def get_cartesian_powers(order):
-    for l in xrange(order,-1,-1):
-        for m in xrange(order-l,-1,-1):
-            yield l, m, order-l-m
+def iter_cartesian_powers(order):
+    if order == -1:
+        yield (0,0,0)
+        yield (1,0,0)
+        yield (0,1,0)
+        yield (0,0,1)
+    else:
+        for l in xrange(order,-1,-1):
+            for m in xrange(order-l,-1,-1):
+                yield l, m, order-l-m
 
 
 def get_polys(shell_type, alpha):
@@ -395,15 +402,15 @@ def get_polys(shell_type, alpha):
     elif shell_type == -1:
         return get_polys(0, alpha) + get_polys(1, alpha)
     else:
-        for l, m, n in get_cartesian_powers(shell_type):
+        for l, m, n in iter_cartesian_powers(shell_type):
             result.append((x**l*y**m*z**n, get_cartesian_wfn_norm(alpha, l, m, n)))
     return result
 
 
 # Simple example
 
-template_gint1_basis_fn_c = """\
-int %(gint_name)s_basis(double* weights, double* fns, double* points,
+code_gint1_fn_basis_c = """\
+int gint1_fn_basis(double* weights, double* fns, double* points,
   double* centers, int* shell_types, int* shell_map,  int* num_primitives,
   double* ccoeffs, double* exponents, int num_weights, int num_points,
   int num_centers, int num_shells, int num_ccoeffs, int num_exponents)
@@ -425,14 +432,14 @@ int %(gint_name)s_basis(double* weights, double* fns, double* points,
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
-        %(gint_name)s(shell_type, center, *exponent, points, work);
-        //printf("shell_type=%%d  primitive=%%d  exponent=%%f\\n", shell_type, primitive, *exponent);
+        gint_fn_dispatch(shell_type, center, *exponent, points, work);
+        //printf("shell_type=%d  primitive=%d  exponent=%f\\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
         weight = shell_weights;
         if (shell_type==-1) {
           *fns += (*weight)*(*out)*(*ccoeff);
-          //printf("weight=%%f  out=%%f  ccoeff=%%f  contrib=%%f  fn=%%f\\n", *weight, *out, *ccoeff, (*weight)*(*out)*(*ccoeff), *fns);
+          //printf("weight=%f  out=%f  ccoeff=%f  contrib=%f  fn=%f\\n", *weight, *out, *ccoeff, (*weight)*(*out)*(*ccoeff), *fns);
           weight++;
           out++;
           ccoeff++;
@@ -444,7 +451,7 @@ int %(gint_name)s_basis(double* weights, double* fns, double* points,
         }
         for (dof=0; dof<num_dof; dof++) {
           *fns += (*weight)*(*out)*(*ccoeff);
-          //printf("weight=%%f  out=%%f  ccoeff=%%f  contrib=%%f  fn=%%f\\n", *weight, *out, *ccoeff, (*weight)*(*out)*(*ccoeff), *fns);
+          //printf("weight=%f  out=%f  ccoeff=%f  contrib=%f  fn=%f\\n", *weight, *out, *ccoeff, (*weight)*(*out)*(*ccoeff), *fns);
           weight++;
           out++;
         }
@@ -470,9 +477,9 @@ EXIT:
 }"""
 
 
-template_gint1_basis_fn_pyf = """\
-  integer function %(gint_name)s_basis(weights, fns, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_weights, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
-    intent(c) %(gint_name)s_basis
+code_gint1_fn_basis_pyf = """\
+  integer function gint1_fn_basis(weights, fns, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_weights, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
+    intent(c) gint1_fn_basis
     intent(c)
     double precision intent(in) :: weights(num_weights)
     double precision intent(inout) :: fns(num_points)
@@ -489,12 +496,12 @@ template_gint1_basis_fn_pyf = """\
     integer intent(hide), depend(shell_types) :: num_shells=len(shell_types)
     integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)
     integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
-  end function %(gint_name)s_basis
+  end function gint1_fn_basis
 """
 
 
-template_gint1_basis_dmat_c = """\
-int %(gint_name)s_dmat(double* dmat, double* density, double* points,
+code_gint1_fn_dmat_c = """\
+int gint1_fn_dmat(double* dmat, double* density, double* points,
   double* centers, int* shell_types, int* shell_map,  int* num_primitives,
   double* ccoeffs, double* exponents, int num_dmat, int num_points,
   int num_centers, int num_shells, int num_ccoeffs, int num_exponents)
@@ -526,13 +533,13 @@ int %(gint_name)s_dmat(double* dmat, double* density, double* points,
       shell_type = shell_types[shell];
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
         gint1_fn(shell_type, center, *exponent, points, work);
-        //printf("shell_type=%%d  primitive=%%d  exponent=%%f\\n", shell_type, primitive, *exponent);
+        //printf("shell_type=%d  primitive=%d  exponent=%f\\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
         fn = shell_fns;
         if (shell_type==-1) {
           *fn += (*out)*(*ccoeff);
-          //printf("out=%%f  ccoeff=%%f  fn=%%f\\n", *out, *ccoeff, (*out)*(*ccoeff));
+          //printf("out=%f  ccoeff=%f  fn=%f\\n", *out, *ccoeff, (*out)*(*ccoeff));
           fn++;
           out++;
           ccoeff++;
@@ -544,7 +551,7 @@ int %(gint_name)s_dmat(double* dmat, double* density, double* points,
         }
         for (dof1=0; dof1<num_shell_dof; dof1++) {
           *fn += (*out)*(*ccoeff);
-          //printf("out=%%f  ccoeff=%%f  fn=%%f\\n", *out, *ccoeff, (*out)*(*ccoeff));
+          //printf("out=%f  ccoeff=%f  fn=%f\\n", *out, *ccoeff, (*out)*(*ccoeff));
           fn++;
           out++;
         }
@@ -570,7 +577,7 @@ int %(gint_name)s_dmat(double* dmat, double* density, double* points,
         } else {
           *density += 2*basis_fns[dof1]*basis_fns[dof2]*(*dmat_element);
         }
-        //printf("dof1=%%d  dof2=%%d  basis1=%%f  basis2=%%f  dmat_element=%%f  density=%%f\\n", dof1, dof2, basis_fns[dof1], basis_fns[dof2], *dmat_element, *density);
+        //printf("dof1=%d  dof2=%d  basis1=%f  basis2=%f  dmat_element=%f  density=%f\\n", dof1, dof2, basis_fns[dof1], basis_fns[dof2], *dmat_element, *density);
         dmat_element++;
       }
     }
@@ -587,9 +594,9 @@ EXIT:
 }"""
 
 
-template_gint1_basis_dmat_pyf = """\
-  integer function %(gint_name)s_dmat(dmat, density, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_dmat, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
-    intent(c) %(gint_name)s_dmat
+code_gint1_fn_dmat_pyf = """\
+  integer function gint1_fn_dmat(dmat, density, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_dmat, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
+    intent(c) gint1_fn_dmat
     intent(c)
     double precision intent(in) :: dmat(num_dmat)
     double precision intent(inout) :: density(num_points)
@@ -606,7 +613,7 @@ template_gint1_basis_dmat_pyf = """\
     integer intent(hide), depend(shell_types) :: num_shells=len(shell_types)
     integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)
     integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
-  end function %(gint_name)s_dmat
+  end function gint1_fn_dmat
 """
 
 
@@ -622,13 +629,10 @@ class Gint1Fn(GaussianIntegral):
         self.p_y = p.args[0].symbols[1]
         self.p_z = p.args[0].symbols[2]
         name = "gint1_fn"
-        interface_fns = [(
-            template_gint1_basis_fn_c % {"gint_name": name},
-            template_gint1_basis_fn_pyf % {"gint_name": name},
-        ), (
-            template_gint1_basis_dmat_c % {"gint_name": name},
-            template_gint1_basis_dmat_pyf % {"gint_name": name},
-        )]
+        interface_fns = [
+            (code_gint1_basis_fn_c, code_gint1_basis_fn_pyf),
+            (code_gint1_basis_dmat_c, code_gint1_basis_dmat_pyf),
+        ]
         GaussianIntegral.__init__(self, name, [a, p], interface_fns)
 
     def get_expressions(self, st_row):
@@ -636,7 +640,7 @@ class Gint1Fn(GaussianIntegral):
         st = st_row[0]
         for poly, wfn_norm in get_polys(st, self.a_a):
             rsq = x*x + y*y + z*z
-            expr = (mypowsimp(simplify(poly/wfn_norm)).evalf())*exp(-self.a_a*rsq)
+            expr = mypowsimp(simplify(poly/wfn_norm))*C.Function("exp")(-self.a_a*rsq)
             expr = expr.subs(x, self.p_x - self.a_x)
             expr = expr.subs(y, self.p_y - self.a_y)
             expr = expr.subs(z, self.p_z - self.a_z)
@@ -655,14 +659,16 @@ def write(gint, max_shell=3):
     print >> f
     print >> f, "#include <math.h>"
     print >> f, "#include <stdlib.h>"
+    for include in gint.includes:
+        print >> f, "#include \"%s\"" % include
     print >> f, "#define MAX_SHELL %i" % max_shell
     print >> f, "#define NUM_SHELL_TYPES %i" % (2*max_shell+1)
-    print >> f, "#define MAX_SHELL_DOF %i" % (((max_shell+1)*(max_shell+2))/2)
+    print >> f, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
     print >> f
     for st_row in gint.iter_shell_types(max_shell):
         key, results, obliges = gint.get_expressions(st_row)
         print key
-        fn_name = "fn_%s" % key
+        fn_name = "%s_%s" % (gint.name, key)
         fn_names.append(fn_name)
         print >> f, "static void %s(%s, double* out)" % (fn_name, gint.get_c_args())
         print >> f, "{"
@@ -672,10 +678,20 @@ def write(gint, max_shell=3):
         for i, result in enumerate(results):
             symbol = Symbol("out%i" % i)
             lookup[symbol.name] = "out[%i]" % i
-            records.append(Record(symbol, result, "final"))
+            record = Record(symbol, result, "final")
+            print record
+            records.append(record)
         commands = Commands(records)
         for i, oblige in enumerate(obliges):
-            commands.substitute(Record(Symbol("fix%i" % i), oblige, "oblige"))
+            symbol = Symbol("fix%i" % i)
+            try:
+                record = Record(symbol, oblige, "oblige")
+                commands.substitute(record)
+                print record
+                for j in xrange(i+1,len(obliges)):
+                    obliges[j] = obliges[j].subs(oblige, symbol)
+            except ValueError:
+                continue
         commands.full()
         records = commands.get_recycle_records()
         # variables
@@ -713,7 +729,7 @@ def write(gint, max_shell=3):
         for arg in ag.args:
             c_arg_names.append(arg.name)
         all_args.append(ag.get_c_args())
-    print >> f, "void gint1_fn(%s, double* out)" % (", ".join(all_args))
+    print >> f, "void %s_dispatch(%s, double* out)" % (gint.name, ", ".join(all_args))
     print >> f, "{"
     factor = 1
     offsets = []
@@ -733,13 +749,13 @@ def write(gint, max_shell=3):
 
     # F2PY Interface
     f = open("%s.pyf" % gint.name, "w")
-    print >> f, "python module gint1_fn"
+    print >> f, "python module %s" % gint.name
     print >> f, "interface"
     print >> f
     for interface_fn in gint.interface_fns:
         print >> f, interface_fn[1]
     print >> f, "end interface"
-    print >> f, "end python module gint1_fn"
+    print >> f, "end python module %s" % gint.name
     f.close()
 
 
