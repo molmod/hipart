@@ -2,8 +2,11 @@
 
 
 from writer import *
+from sympy import powsimp
 
-# TODO: take into account normalization constants
+# TODO: adapt gint1 to work with new writer
+# TODO: pure gaussian basis functions
+# TODO: use symmetry to reduce the number of generated functions
 # TODO: reorder in density tests
 
 code_gint2_nai_dmat_c = """\
@@ -170,10 +173,14 @@ class Gint2NAI(GaussianIntegral):
         includes = ["gaux.h"]
         GaussianIntegral.__init__(self, name, [a, b, c], interface_fns, includes)
 
-    def get_SS_integral(self, ab_a, ab_overlap, u2, m):
-        return 2*sqrt(ab_a/pi)*ab_overlap*C.Function("gaux")(u2, m)
+    def get_SS_integral(self, commands, ab_a, ab_overlap, usq, m):
+        result = 2*sqrt(ab_a/pi)*ab_overlap*C.Function("gaux")(usq, m)
+        symbol = Symbol("nai_000_000_%i" % m)
+        commands.add(Record(symbol, result, "local"))
+        return symbol
 
-    def get_integral(self, a_n, b_n, u, v, w, ab_a, ab_overlap, u2, m):
+    def get_integral(self, commands, a_n, b_n, u, v, w, ab_a, ab_overlap, usq, m):
+        #print "get_integral: %s %s" % (a_n, b_n)
         # This the recurrence relation from the paper of Obara and Saika
         # (see http://dx.doi.org/10.1063/1.450106)
         if (a_n[0] < 0) or (a_n[1] < 0) or (a_n[2] < 0) or (b_n[0] < 0) or (b_n[1] < 0) or (b_n[2] < 0):
@@ -181,13 +188,24 @@ class Gint2NAI(GaussianIntegral):
             return 0
         elif (a_n[0] == 0) and (a_n[1] == 0) and (a_n[2] == 0) and (b_n[0] == 0) and (b_n[1] == 0) and (b_n[2] == 0):
             # This is where the recurrence relations leads to the SS term
-            return self.get_SS_integral(ab_a, ab_overlap, u2, m)
+            return self.get_SS_integral(commands, ab_a, ab_overlap, usq, m)
         else:
             # apply the recurrence relation
             # Note: we must decide which of the six possible paths we take.
             # Current strategy: get rid of the largest power first
-            if max(a_n) > max(b_n):
-                index = [i for i, n in enumerate(a_n) if n==max(a_n)][0]
+            nonzero_a = [n for n in a_n if n > 0]
+            if len(nonzero_a) == 0:
+                low_a = 0
+            else:
+                low_a = min(nonzero_a)
+            nonzero_b = [n for n in b_n if n > 0]
+            if len(nonzero_b) == 0:
+                low_b = 0
+            else:
+                low_b = min(nonzero_b)
+            if (low_a < low_b and low_a > 0) or low_b == 0:
+                assert low_a > 0
+                index = [i for i, n in enumerate(a_n) if n==low_a][0]
                 a_n1 = list(a_n)
                 a_n1[index] -= 1
                 a_n1 = tuple(a_n1)
@@ -197,18 +215,19 @@ class Gint2NAI(GaussianIntegral):
                 a_n2 = list(a_n)
                 a_n2[index] -= 2
                 a_n2 = tuple(a_n2)
-                return (
-                      v[index]*self.get_integral(a_n1, b_n, u, v, w, ab_a, ab_overlap, u2, m)
-                    - u[index]*self.get_integral(a_n1, b_n, u, v, w, ab_a, ab_overlap, u2, m+1)
+                result = mypowsimp((
+                      v[index]*self.get_integral(commands, a_n1, b_n, u, v, w, ab_a, ab_overlap, usq, m)
+                    - u[index]*self.get_integral(commands, a_n1, b_n, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ) + a_n1[index]/(2*ab_a)*(
-                      self.get_integral(a_n2, b_n, u, v, w, ab_a, ab_overlap, u2, m)
-                    - self.get_integral(a_n2, b_n, u, v, w, ab_a, ab_overlap, u2, m+1)
+                      self.get_integral(commands, a_n2, b_n, u, v, w, ab_a, ab_overlap, usq, m)
+                    - self.get_integral(commands, a_n2, b_n, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ) + b_n[index]/(2*ab_a)*(
-                      self.get_integral(a_n1, b_n1, u, v, w, ab_a, ab_overlap, u2, m)
-                    - self.get_integral(a_n1, b_n1, u, v, w, ab_a, ab_overlap, u2, m+1)
-                )
+                      self.get_integral(commands, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m)
+                    - self.get_integral(commands, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m+1)
+                ))
             else:
-                index = [i for i, n in enumerate(b_n) if n==max(b_n)][0]
+                assert low_b > 0
+                index = [i for i, n in enumerate(b_n) if n==low_b][0]
                 b_n1 = list(b_n)
                 b_n1[index] -= 1
                 b_n1 = tuple(b_n1)
@@ -218,61 +237,88 @@ class Gint2NAI(GaussianIntegral):
                 b_n2 = list(b_n)
                 b_n2[index] -= 2
                 b_n2 = tuple(b_n2)
-                return (
-                      w[index]*self.get_integral(a_n, b_n1, u, v, w, ab_a, ab_overlap, u2, m)
-                    - u[index]*self.get_integral(a_n, b_n1, u, v, w, ab_a, ab_overlap, u2, m+1)
+                result = mypowsimp((
+                      w[index]*self.get_integral(commands, a_n, b_n1, u, v, w, ab_a, ab_overlap, usq, m)
+                    - u[index]*self.get_integral(commands, a_n, b_n1, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ) + b_n1[index]/(2*ab_a)*(
-                      self.get_integral(a_n, b_n2, u, v, w, ab_a, ab_overlap, u2, m)
-                    - self.get_integral(a_n, b_n2, u, v, w, ab_a, ab_overlap, u2, m+1)
+                      self.get_integral(commands, a_n, b_n2, u, v, w, ab_a, ab_overlap, usq, m)
+                    - self.get_integral(commands, a_n, b_n2, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ) + a_n[index]/(2*ab_a)*(
-                      self.get_integral(a_n1, b_n1, u, v, w, ab_a, ab_overlap, u2, m)
-                    - self.get_integral(a_n1, b_n1, u, v, w, ab_a, ab_overlap, u2, m+1)
-                )
+                      self.get_integral(commands, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m)
+                    - self.get_integral(commands, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m+1)
+                ))
+        symbol = Symbol("nai_%i%i%i_%i%i%i_%i" % (
+            a_n[0], a_n[1], a_n[2], b_n[0], b_n[1], b_n[2], m
+        ))
+        commands.add(Record(symbol, result, "local"))
+        return symbol
 
-    def get_expressions(self, st_row):
-        ab_a = self.a_a + self.b_a
+    def get_key(self, st_row):
+        return "_".join(get_shell_label(st) for st in st_row[:-1])
+
+    def add_expressions(self, st_row, commands):
+        self.out_counter = 0
+
+        def symbol_vector(prefix):
+            return (Symbol("%s_0" % prefix), Symbol("%s_1" % prefix), Symbol("%s_2" % prefix))
+
+        ab_a = Symbol("ab_a")
+        commands.add(Record(ab_a, self.a_a + self.b_a, "local"))
         ab_b = self.a_a*self.b_a/ab_a
-        p = ((self.a_a*self.a[0] + self.b_a*self.b[0])/ab_a,
-             (self.a_a*self.a[1] + self.b_a*self.b[1])/ab_a,
-             (self.a_a*self.a[2] + self.b_a*self.b[2])/ab_a,)
-        d = (self.a[0] - self.b[0],
-             self.a[1] - self.b[1],
-             self.a[2] - self.b[2],)
-        d2 = (d[0])**2 + (d[1])**2 + (d[2])**2
-        u = (p[0] - self.c[0],
-             p[1] - self.c[1],
-             p[2] - self.c[2],)
-        v = (p[0] - self.a[0],
-             p[1] - self.a[1],
-             p[2] - self.a[2],)
-        w = (p[0] - self.b[0],
-             p[1] - self.b[1],
-             p[2] - self.b[2],)
-        u2 = ab_a*((u[0])**2 + (u[1])**2 + (u[2])**2)
-        ab_overlap = sqrt(pi/ab_a)**3*C.Function("exp")(-ab_b*d2)
-        obliges = [d[0], d[1], d[2], u[0], u[1], u[2], v[0], v[1], v[2], w[0], w[1], w[2]]
+
+        p = symbol_vector("p")
+        commands.add(Record(p[0], (self.a_a*self.a[0] + self.b_a*self.b[0])/ab_a, "local"))
+        commands.add(Record(p[1], (self.a_a*self.a[1] + self.b_a*self.b[1])/ab_a, "local"))
+        commands.add(Record(p[2], (self.a_a*self.a[2] + self.b_a*self.b[2])/ab_a, "local"))
+
+        d = symbol_vector("d")
+        commands.add(Record(d[0], self.a[0] - self.b[0], "local"))
+        commands.add(Record(d[1], self.a[1] - self.b[1], "local"))
+        commands.add(Record(d[2], self.a[2] - self.b[2], "local"))
+
+        dsq = Symbol("dsq")
+        commands.add(Record(dsq, d[0]**2 + d[1]**2 + d[2]**2, "local"))
+
+        myexp = Symbol("myexp")
+        commands.add(Record(myexp, C.Function("exp")(-ab_b*dsq), "local"))
+        ab_overlap = sqrt(pi/ab_a)**3*myexp
+
+        u = symbol_vector("u")
+        commands.add(Record(u[0], p[0] - self.c[0], "local"))
+        commands.add(Record(u[1], p[1] - self.c[1], "local"))
+        commands.add(Record(u[2], p[2] - self.c[2], "local"))
+
+        usq = Symbol("usq")
+        commands.add(Record(usq, ab_a*(u[0]**2 + u[1]**2 + u[2]**2), "local"))
+
+        v = symbol_vector("v")
+        commands.add(Record(v[0], p[0] - self.a[0], "local"))
+        commands.add(Record(v[1], p[1] - self.a[1], "local"))
+        commands.add(Record(v[2], p[2] - self.a[2], "local"))
+
+        w = symbol_vector("w")
+        commands.add(Record(w[0], p[0] - self.b[0], "local"))
+        commands.add(Record(w[1], p[1] - self.b[1], "local"))
+        commands.add(Record(w[2], p[2] - self.b[2], "local"))
+
         if st_row == (0,0,0):
-            nai = self.get_SS_integral(ab_a, ab_overlap, u2, 0)
+            nai = self.get_SS_integral(commands, ab_a, ab_overlap, usq, 0)
             nai /= get_cartesian_wfn_norm(self.a_a, 0, 0, 0).evalf()
             nai /= get_cartesian_wfn_norm(self.b_a, 0, 0, 0).evalf()
-            results = [nai]
+            out_symbol = self.get_out_symbol()
+            commands.add(Record(out_symbol, nai, "final"))
         elif st_row[0] >= -1 and st_row[1] >= -1:
-            results = []
             for a_n in iter_cartesian_powers(st_row[0]):
                 for b_n in iter_cartesian_powers(st_row[1]):
-                    nai = self.get_integral(a_n, b_n, u, v, w, ab_a, ab_overlap, u2, 0)
+                    nai = self.get_integral(commands, a_n, b_n, u, v, w, ab_a, ab_overlap, usq, 0)
                     nai /= get_cartesian_wfn_norm(self.a_a, a_n[0], a_n[1], a_n[2]).evalf()
                     nai /= get_cartesian_wfn_norm(self.b_a, b_n[0], b_n[1], b_n[2]).evalf()
-                    results.append(nai)
-        else:
-            results = []
-            obliges = []
-        key = "_".join(get_shell_label(st) for st in st_row[:-1])
-        return key, results, obliges
+                    out_symbol = self.get_out_symbol()
+                    commands.add(Record(out_symbol, nai, "final"))
 
 
 def main():
-    write(Gint2NAI(), max_shell=1)
+    write(Gint2NAI(), max_shell=3)
 
 
 if __name__ == "__main__":

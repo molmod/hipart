@@ -27,7 +27,7 @@ from sympy.utilities.iterables import numbered_symbols
 from sympy.printing.precedence import precedence
 from sympy.core.basic import S
 from sympy.mpmath import fac2
-from sympy.utilities.iterables import postorder_traversal
+from sympy.utilities.iterables import preorder_traversal
 
 from hipart.gint.basis import get_shell_dof
 
@@ -59,10 +59,48 @@ def iter_subsets(l):
             yield comb
 
 
+class MyPreOrder(object):
+    def __init__(self, expr):
+        self.expr = expr
+        self.state = -1
+        self.counter = 0
+        self.sub_iter = None
+
+    def next(self, deeper=True):
+        if self.state == -1:
+            if deeper:
+                self.state = 0
+                return self.expr
+            else:
+                return None
+        elif len(self.expr.args) > 0:
+            if self.sub_iter is None:
+                self.sub_iter = MyPreOrder(self.expr.args[0])
+            while True:
+                result = self.sub_iter.next(deeper)
+                if result is None:
+                    deeper = True
+                    self.counter += 1
+                    if self.counter >= len(self.expr.args):
+                        break
+                    self.sub_iter = MyPreOrder(self.expr.args[self.counter])
+                else:
+                    return result
+
+
 class Commands(object):
-    def __init__(self, records):
-        self.records = records
+    def __init__(self):
+        self.records = []
+        self.records_by_symbol = {}
         self.get_symbol = numbered_symbols("tmp")
+
+    def add(self, record):
+        if record.symbol in self.records_by_symbol:
+            assert(record.expr == self.records_by_symbol[record.symbol].expr)
+        else:
+            print "RECORD", record
+            self.records.append(record)
+            self.records_by_symbol[record.symbol] = record
 
     def _iter_subs(self, old_expr, sub, symbol):
         yield old_expr.subs(sub, symbol)
@@ -73,6 +111,7 @@ class Commands(object):
                         yield old_expr.subs(power, sub.base*symbol)
                     elif power.exp == 2*sub.exp:
                         yield old_expr.subs(power, sub*sub)
+        yield old_expr.subs(-sub, -symbol)
 
     def substitute(self, record, force=False):
         # Make substitutions
@@ -82,7 +121,7 @@ class Commands(object):
             for new_expr in self._iter_subs(old_expr, record.expr, record.symbol):
                 if old_expr == new_expr:
                     continue
-                if self.weigh(old_expr) > self.weigh(new_expr) or force:
+                if weigh(old_expr) > weigh(new_expr) or force:
                     self.records[p].expr = new_expr
                     if first is None:
                         first = p
@@ -92,50 +131,139 @@ class Commands(object):
         # insert new expression in records
         self.records.insert(first, record)
 
-    def autosub(self):
-        def iter_parts(expr):
+    def autosub(self, level=0):
+        def iter_parts(expr, level=0):
             yield expr
-            if isinstance(expr, C.Add) or isinstance(expr, C.Mul):
+            if level > 0 and (isinstance(expr, C.Add) or isinstance(expr, C.Mul)):
                 for new_args in iter_subsets(expr.args):
                     good = True
                     for arg in new_args:
-                        if isinstance(arg, C.Real):
+                        if isinstance(arg, C.Number):
                             good = False
                             break
                     if good:
                         yield expr.__class__(*new_args)
 
         all_parts = {}
+        highest_weight = 0
+        iterators = []
         for record in self.records:
-            for subtree in postorder_traversal(record.expr):
-                #print "---   ", subtree
-                for part in iter_parts(subtree):
-                    if part == record.expr:
-                        continue
-                    weight = self.weigh(part)
-                    if weight > 0:
-                        #print "------   ", part, weight
-                        all_parts[part] = all_parts.get(part, 0)+1
+            #print "   ", record.expr
+            my_pre_order = MyPreOrder(record.expr)
+            iterators.append((my_pre_order, True))
+
+        while len(iterators) > 0:
+            my_pre_order, deeper = iterators.pop(0)
+            subtree = my_pre_order.next(deeper)
+            if subtree is None:
+                continue
+            #print "---   ", subtree,
+            deeper = True
+            for part in iter_parts(subtree, level):
+                if part == record.expr:
+                    continue
+                if isinstance(part, C.Mul) and part.args[0] == -1:
+                    continue
+                if isinstance(part, C.Pow) and part.exp == -1:
+                    continue
+                if level==0 and isinstance(part, C.Mul) and isinstance(part.args[0], C.Number):
+                    continue
+                weight = weigh(part)
+                if weight > highest_weight:
+                    deeper = True
+                if weight > 0:
+                    #print "------   ", part, weight
+                    count, weight = all_parts.get(part, (0, weight))
+                    count += 1
+                    all_parts[part] = count, weight
+                    if count > 1:
+                        highest_weight = max(weight, highest_weight)
+            #print deeper
+            iterators.append((my_pre_order, deeper))
         all_parts = [
-            (count*self.weigh(part), part)
-            for (part, count)
+            (weight, count, part)
+            for (part, (count, weight))
             in all_parts.iteritems()
             if count > 1
         ]
         all_parts.sort(reverse=True)
-        symbol = self.get_symbol.next()
-        for score, part in all_parts:
+        success = False
+        for weight, count, part in all_parts:
+            if weight < highest_weight:
+                break
             try:
+                symbol = self.get_symbol.next()
                 self.substitute(Record(symbol, part, "auto"))
-                return True
+                print "AUTOSUB-%i" % level, count, weight, part
+                success = True
             except ValueError:
                 pass
-        return False
+        return success
+
+    def clean(self):
+        # go in reverse order through all records
+        counter = len(self.records)-1
+        while counter >= 0:
+            record = self.records[counter]
+            if record.tag != "final":
+                # do not remove end results
+                # check for usage
+                used = False
+                for later_record in self.records[counter+1:]:
+                    if record.symbol in later_record.expr:
+                        used = True
+                        break
+                if not used:
+                    print "CLEAN", record
+                    del self.records[counter]
+            counter -= 1
+
+    def singles(self):
+        counter = len(self.records)-1
+        while counter >= 0:
+            record = self.records[counter]
+            if record.tag != "final":
+                # do not consider end results
+                # check for usage
+                used = 0
+                tmp = None
+                for later_record in self.records[counter+1:]:
+                    if record.symbol in later_record.expr:
+                        # TODO: count the number of occurences and treat squares
+                        # as double
+                        for subtree in preorder_traversal(later_record.expr):
+                            if subtree == record.symbol:
+                                used += 1
+                                tmp = later_record
+                            if isinstance(subtree, C.Pow) and subtree.exp == 2 and subtree.base == record.symbol:
+                                used += 1
+                                tmp = later_record
+                if used == 1:
+                    tmp.expr = tmp.expr.subs(record.symbol, record.expr)
+                    print "SINGLE", record
+                    del self.records[counter]
+            counter -= 1
 
     def full(self):
+        # remove unused commands
+        self.clean()
+        # evalf
+        for record in self.records:
+            record.expr = mypowsimp(mycollectsimp(record.expr.evalf()))
+            record.expr = record.expr.subs(C.Real(-1.0), -1)
+            record.expr = record.expr.subs(C.Real(-2.0), -2)
         # substitute as much as possible
-        while self.autosub():
+        while self.autosub(level=0):
             pass
+        while self.autosub(level=1):
+            pass
+        # substitute back temporary variables that are used only once
+        self.singles()
+        # mypowsimp
+        for record in self.records:
+            record.expr = mypowsimp(record.expr)
+            record.expr = record.expr.subs(C.Real(-1.0), -1)
+            record.expr = record.expr.subs(C.Real(-2.0), -2)
 
     def get_recycle_records(self):
         result = [record.copy() for record in self.records]
@@ -151,32 +279,31 @@ class Commands(object):
                         avail.discard(symbol)
             # If there are some, use it and substitute in later records
             if len(avail) > 0:
-                symbol = avail.pop()
+                symbol = sorted(avail)[0]
                 for later_record in result[i+1:]:
                     later_record.expr = later_record.expr.subs(record.symbol, symbol)
                 record.symbol = symbol
                 record.tag += "+recycle"
+                print "RECYCLE", record
             inuse.add(record.symbol)
         return result
 
-    def weigh(self, expr):
-        ops = expr.count_ops()
-        weight = 0
-        if ops == 0:
-            return weight
-        if isinstance(ops, C.Add):
-            ops = ops.args
-        else:
-            ops = [ops]
-        for op in ops:
-            if isinstance(op, C.Mul):
-                weight += op.args[0]
-            else:
-                weight += 1
-        #for power in expr.atoms(C.Pow):
-        #    if power.exp != 2:
-        #        weight += 2
+
+def weigh(expr):
+    ops = expr.count_ops()
+    weight = 0
+    if ops == 0:
         return weight
+    if isinstance(ops, C.Add):
+        ops = ops.args
+    else:
+        ops = [ops]
+    for op in ops:
+        if isinstance(op, C.Mul):
+            weight += op.args[0]
+        else:
+            weight += 1
+    return weight
 
 
 class MyCCodePrinter(CCodePrinter):
@@ -207,22 +334,27 @@ def ccode(expr, **settings):
     return MyCCodePrinter(settings).doprint(expr)
 
 def mypowsimp(expr):
-    from sympy import Pow
     def find_double_pow(expr):
-        for sub in postorder_traversal(expr):
-            if isinstance(sub, Pow) and isinstance(sub.base, Pow):
+        for sub in preorder_traversal(expr):
+            if isinstance(sub, C.Pow) and isinstance(sub.base, C.Pow):
                 return sub
     while True:
         sub = find_double_pow(expr)
         if sub is None:
             break
-        expr = expr.subs(sub, Pow(sub.base.base, sub.exp*sub.base.exp))
+        expr = expr.subs(sub, C.Pow(sub.base.base, sub.exp*sub.base.exp))
     return expr
 
 def mycollectsimp(expr):
     from sympy import collect
-    for atom in expr.atoms(Symbol):
-        expr = collect(expr, atom)
+    counts = {}
+    for subtree in preorder_traversal(expr):
+        if isinstance(subtree, Symbol):
+            counts[subtree] = counts.get(subtree, 0)+1
+    counts = [(count, symbol) for symbol, count in counts.iteritems()]
+    counts.sort()
+    for count, symbol in counts:
+        expr = collect(expr, symbol)
     return expr
 
 # Representation of Gaussian integral algorithm
@@ -310,9 +442,17 @@ class GaussianIntegral():
         self.interface_fns = interface_fns
         self.includes = includes
         self.lookup = {}
+        self.out_counter = 0
         for ag in self.arg_groups:
             for arg in ag.args:
                 arg.update_lookup(self.lookup)
+
+    def get_out_symbol(self):
+        i = self.out_counter
+        symbol = Symbol("out_%i" % i)
+        self.lookup[symbol.name] = "out[%i]" % i
+        self.out_counter += 1
+        return symbol
 
     def iter_shell_types(self, max_shell, arg_groups=None):
         if arg_groups is None:
@@ -324,7 +464,10 @@ class GaussianIntegral():
                 for st in arg_groups[0].iter_shell_types(max_shell):
                     yield (st,) + result
 
-    def get_expressions(self, st_row):
+    def get_key(self, st_row):
+        raise NotImplementedError
+
+    def add_expressions(self, st_row, commands):
         raise NotImplementedError
 
     def get_c_args(self):
@@ -666,48 +809,38 @@ def write(gint, max_shell=3):
     print >> f, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
     print >> f
     for st_row in gint.iter_shell_types(max_shell):
-        key, results, obliges = gint.get_expressions(st_row)
-        print key
+        key = gint.get_key(st_row)
         fn_name = "%s_%s" % (gint.name, key)
         fn_names.append(fn_name)
-        print >> f, "static void %s(%s, double* out)" % (fn_name, gint.get_c_args())
-        print >> f, "{"
+        print "Starting", fn_name
+        commands = Commands()
+        gint.add_expressions(st_row, commands)
         # use commands thing to do cse
-        records = []
-        lookup = gint.lookup.copy()
-        for i, result in enumerate(results):
-            symbol = Symbol("out%i" % i)
-            lookup[symbol.name] = "out[%i]" % i
-            record = Record(symbol, result, "final")
-            print record
-            records.append(record)
-        commands = Commands(records)
-        for i, oblige in enumerate(obliges):
-            symbol = Symbol("fix%i" % i)
-            try:
-                record = Record(symbol, oblige, "oblige")
-                commands.substitute(record)
-                print record
-                for j in xrange(i+1,len(obliges)):
-                    obliges[j] = obliges[j].subs(oblige, symbol)
-            except ValueError:
-                continue
         commands.full()
         records = commands.get_recycle_records()
+        print "VARIABLES"
+        print >> f, "static void %s(%s, double* out)" % (fn_name, gint.get_c_args())
+        print >> f, "{"
         # variables
         variables = set([
             record.symbol.name for record in records
             if not record.symbol.name.startswith("out")
         ])
         if len(variables) > 0:
+            print >> f, "  // Number of local variables: %i" % len(variables)
             print >> f, "  double %s;" % (", ".join(sorted(variables)))
         # code lines
+        total_weight = 0
         for record in records:
-            print >> f, "  %s = %s; // %s" % (
-                lookup.get(record.symbol.name, record.symbol.name),
-                ccode(record.expr, lookup=lookup),
-                record.tag
+            print "CCODE", record
+            weight = weigh(record.expr)
+            total_weight += weight
+            print >> f, "  %s = %s; // %s, weighs %i" % (
+                gint.lookup.get(record.symbol.name, record.symbol.name),
+                ccode(record.expr, lookup=gint.lookup),
+                record.tag, weight
             )
+        print >> f, "  // total weight = %i" % total_weight
         print >> f, "}"
         print >> f
     # add some sugar
