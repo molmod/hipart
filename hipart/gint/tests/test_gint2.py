@@ -23,8 +23,7 @@ from hipart.gint.tests.utils import setup_fchk, h_sto3g_fchk, hf_sto3g_fchk, \
     o2_cc_pvtz_cart_fchk, o2_cc_pvtz_pure_fchk
 
 from hipart.gint.basis import GaussianBasis
-from hipart.gint.gint2_nai import gint2_nai_dmat
-from hipart.gint.ctools import reorder_density_matrix
+from hipart.gint.gint_ext import gint2_nai_dmat, reorder_density_matrix
 
 from molmod.io import FCHKFile
 from molmod import angstrom

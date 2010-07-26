@@ -24,8 +24,7 @@ from molmod import angstrom
 import os, numpy
 
 from hipart.gint.basis import GaussianBasis
-from hipart.gint.gint1_fn import gint1_fn_basis, gint1_fn_dmat
-from hipart.gint.ctools import reorder_density_matrix
+from hipart.gint.gint_ext import gint1_fn_basis, gint1_fn_dmat, reorder_density_matrix
 
 
 __all__ = ["load_wavefunction", "FchkWaveFunction"]

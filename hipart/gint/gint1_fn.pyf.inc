@@ -1,6 +1,3 @@
-python module gint1_fn
-interface
-
   integer function gint1_fn_basis(weights, fns, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_weights, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
     intent(c) gint1_fn_basis
     intent(c)
@@ -40,6 +37,3 @@ interface
     integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)
     integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
   end function gint1_fn_dmat
-
-end interface
-end python module gint1_fn

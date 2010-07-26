@@ -22,7 +22,7 @@ from hipart.gint.tests.utils import setup_fchk, h_sto3g_fchk, hf_sto3g_fchk, \
     o2_cc_pvtz_pure_fchk, o2_cc_pvtz_cart_fchk
 
 from hipart.gint.basis import GaussianBasis, get_shell_dof
-from hipart.gint.gint1_fn import gint1_fn_basis
+from hipart.gint.gint_ext import gint1_fn_basis
 
 from molmod.io import FCHKFile
 

@@ -19,7 +19,7 @@
 # --
 
 
-from hipart.gint.ctools import reorder_density_matrix
+from hipart.gint.gint_ext import reorder_density_matrix
 
 import numpy
 

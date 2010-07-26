@@ -29,27 +29,29 @@
 static void gint1_fn_pF(double* a, double a_a, double* p, double* out)
 {
   // Number of local variables: 9
-  double tmp12, tmp13, tmp14, tmp2, tmp3, tmp4, v_0, v_1, v_2;
+  double tmp11, tmp12, tmp13, tmp2, tmp3, tmp4, v_0, v_1, v_2;
   v_0 = p[0] - a[0]; // local, weighs 2
   v_1 = p[1] - a[1]; // local, weighs 2
   v_2 = p[2] - a[2]; // local, weighs 2
-  tmp2 = v_1*v_1; // auto, weighs 1
+  tmp13 = v_1*v_1; // auto, weighs 1
+  tmp2 = tmp13; // auto, weighs 0
   tmp3 = v_0*v_0; // auto, weighs 1
   tmp4 = v_2*v_2; // auto, weighs 1
-  tmp14 = pow(a_a,2.25)*exp(-a_a*(tmp2 + tmp3 + tmp4)); // auto, weighs 7
-  tmp3 = tmp14*tmp3; // auto+recycle, weighs 1
-  tmp2 = tmp14*tmp2; // auto+recycle, weighs 1
-  out[0] = v_2*(-2.20823713394864*tmp2 - 2.20823713394864*tmp3) + 1.47215808929909*tmp14*pow(v_2,3); // final, weighs 8
-  tmp4 = 3.60603613949341*tmp14*tmp4; // auto+recycle, weighs 2
-  tmp12 = tmp14*pow(v_0,3); // auto, weighs 2
-  out[1] = -0.901509034873353*tmp12 + v_0*(tmp4 - 0.901509034873353*tmp2); // final, weighs 5
-  tmp13 = tmp14*pow(v_1,3); // auto, weighs 2
+  tmp12 = pow(a_a,2.25)*exp(-a_a*(tmp2 + tmp3 + tmp4)); // auto, weighs 7
+  tmp3 = tmp12*tmp3; // auto+recycle, weighs 1
+  tmp2 = tmp12*tmp2; // auto+recycle, weighs 1
+  out[0] = v_2*(-2.20823713394864*tmp2 - 2.20823713394864*tmp3) + 1.47215808929909*tmp12*pow(v_2,3); // final, weighs 8
+  tmp4 = 3.60603613949341*tmp12*tmp4; // auto+recycle, weighs 2
+  tmp11 = tmp12*pow(v_0,3); // auto, weighs 2
+  out[1] = -0.901509034873353*tmp11 + v_0*(tmp4 - 0.901509034873353*tmp2); // final, weighs 5
+  tmp12 = tmp12*v_1; // auto+recycle, weighs 1
+  tmp13 = tmp12*tmp13; // auto+recycle, weighs 1
   out[2] = -0.901509034873353*tmp13 + v_1*(tmp4 - 0.901509034873353*tmp3); // final, weighs 5
   out[3] = v_2*(2.85082188141996*tmp3 - 2.85082188141996*tmp2); // final, weighs 4
-  out[4] = 5.70164376283992*tmp14*v_0*v_1*v_2; // final, weighs 4
-  out[5] = 1.16384315950667*tmp12 - 3.49152947852002*tmp2*v_0; // final, weighs 4
+  out[4] = 5.70164376283992*tmp12*v_0*v_2; // final, weighs 3
+  out[5] = 1.16384315950667*tmp11 - 3.49152947852002*tmp2*v_0; // final, weighs 4
   out[6] = -1.16384315950667*tmp13 + 3.49152947852002*tmp3*v_1; // final, weighs 4
-  // total weight = 58
+  // total weight = 57
 }
 
 static void gint1_fn_pD(double* a, double a_a, double* p, double* out)
@@ -167,9 +169,9 @@ static void gint1_fn_cF(double* a, double a_a, double* p, double* out)
 }
 
 typedef void (*fntype)(double*, double, double*, double*);
-const fntype fns[7] = {gint1_fn_pF, gint1_fn_pD, gint1_fn_SP, gint1_fn_S, gint1_fn_P, gint1_fn_cD, gint1_fn_cF};
+static const fntype fns[7] = {gint1_fn_pF, gint1_fn_pD, gint1_fn_SP, gint1_fn_S, gint1_fn_P, gint1_fn_cD, gint1_fn_cF};
 
-void gint1_fn_dispatch(int a_s, double* a, double a_a, double* p, double* out)
+static void gint1_fn_dispatch(int a_s, double* a, double a_a, double* p, double* out)
 {
   fns[3+a_s](a, a_a, p, out);
 }

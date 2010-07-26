@@ -19,7 +19,7 @@
 #
 # --
 
-from hipart.gint.gaux import gaux
+from hipart.gint.gint_ext import gaux
 
 import numpy
 from scipy.special import erf

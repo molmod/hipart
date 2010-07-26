@@ -2,13 +2,13 @@
 
 
 from writer import *
-from sympy import powsimp
+
 
 # TODO: gint1, gint2 and writer tests
-# TODO: reorganize writer modules, clean up a little, all in one .so file
 # TODO: pure gaussian basis functions
 # TODO: use symmetry to reduce the number of generated functions
 # TODO: reorder in density tests
+
 
 code_gint2_nai_dmat_c = """\
 static int get_shell_dof(int shell_type) {
@@ -135,6 +135,7 @@ EXIT:
   free(work_sum);
   return result;
 }"""
+
 
 code_gint2_nai_dmat_pyf = """\
   integer function gint2_nai_dmat(dmat, potentials, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_dmat, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)

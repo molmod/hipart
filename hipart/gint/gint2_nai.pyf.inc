@@ -1,6 +1,3 @@
-python module gint2_nai
-interface
-
   integer function gint2_nai_dmat(dmat, potentials, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_dmat, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
     intent(c) gint2_nai_dmat
     intent(c)
@@ -20,6 +17,3 @@ interface
     integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)
     integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
   end function gint2_nai_dmat
-
-end interface
-end python module gint2_nai

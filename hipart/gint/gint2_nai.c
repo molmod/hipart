@@ -112,9 +112,9 @@ static void gint2_nai_SP_SP(double* a, double a_a, double* b, double b_a, double
   // Number of local variables: 20
   double ab_a, d_0, d_1, d_2, nai_000_000_1, p_0, p_1, p_2, tmp1, tmp10, tmp11, tmp4, tmp9, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -173,9 +173,9 @@ static void gint2_nai_S_SP(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 11
   double ab_a, d_0, d_1, d_2, p_0, p_1, p_2, u_0, u_1, u_2, usq;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -200,9 +200,9 @@ static void gint2_nai_P_SP(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 17
   double ab_a, d_0, d_1, d_2, nai_100_000_0, p_0, p_1, p_2, tmp1, tmp6, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -250,9 +250,9 @@ static void gint2_nai_cD_SP(double* a, double a_a, double* b, double b_a, double
   // Number of local variables: 26
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_010_000_2, nai_100_000_0, nai_100_000_1, nai_110_000_0, nai_110_000_1, nai_200_000_0, nai_200_000_1, p_0, p_1, p_2, tmp1, tmp10, tmp4, tmp5, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -331,9 +331,9 @@ static void gint2_nai_cF_SP(double* a, double a_a, double* b, double b_a, double
   // Number of local variables: 35
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_000_3, nai_010_000_1, nai_010_000_2, nai_020_000_2, nai_100_000_0, nai_100_000_1, nai_100_000_2, nai_110_000_0, nai_110_000_1, nai_120_000_1, nai_200_000_0, nai_200_000_1, nai_200_000_2, p_0, p_1, p_2, tmp1, tmp14, tmp2, tmp3, tmp4, tmp7, tmp9, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -468,9 +468,9 @@ static void gint2_nai_SP_S(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 11
   double ab_a, d_0, d_1, d_2, p_0, p_1, p_2, u_0, u_1, u_2, usq;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -498,9 +498,9 @@ static void gint2_nai_S_S(double* a, double a_a, double* b, double b_a, double* 
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
-  u_0 = -c[0] + (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 7
-  u_1 = -c[1] + (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 7
-  u_2 = -c[2] + (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 7
+  u_0 = -c[0] + (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 7
+  u_1 = -c[1] + (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 7
+  u_2 = -c[2] + (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 7
   out[0] = 3.19153824321146*pow(a_a,0.75)*pow(b_a,0.75)*exp(-a_a*b_a*(d_0*d_0 + d_1*d_1 + d_2*d_2)/ab_a)*gaux(ab_a*(u_0*u_0 + u_1*u_1 + u_2*u_2), 0)/ab_a; // final, weighs 25
   // total weight = 53
 }
@@ -510,9 +510,9 @@ static void gint2_nai_P_S(double* a, double a_a, double* b, double b_a, double* 
   // Number of local variables: 11
   double ab_a, d_0, d_1, d_2, p_0, p_1, p_2, u_0, u_1, u_2, usq;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -535,9 +535,9 @@ static void gint2_nai_cD_S(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 13
   double ab_a, d_0, d_1, d_2, nai_010_000_0, nai_010_000_1, p_0, p_1, p_2, u_0, u_1, u_2, usq;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -572,9 +572,9 @@ static void gint2_nai_cF_S(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 18
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_100_000_0, nai_100_000_1, nai_200_000_0, nai_200_000_1, p_0, p_1, p_2, tmp1, tmp5, u_0, u_1, u_2, usq;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -634,9 +634,9 @@ static void gint2_nai_SP_P(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 19
   double ab_a, d_0, d_1, d_2, p_0, p_1, p_2, tmp1, tmp6, tmp7, tmp8, tmp9, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -687,9 +687,9 @@ static void gint2_nai_S_P(double* a, double a_a, double* b, double b_a, double* 
   // Number of local variables: 11
   double ab_a, d_0, d_1, d_2, p_0, p_1, p_2, u_0, u_1, u_2, usq;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -712,9 +712,9 @@ static void gint2_nai_P_P(double* a, double a_a, double* b, double b_a, double* 
   // Number of local variables: 15
   double ab_a, d_0, d_1, d_2, nai_100_000_0, p_0, p_1, p_2, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -757,9 +757,9 @@ static void gint2_nai_cD_P(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 25
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_010_000_2, nai_100_000_0, nai_100_000_1, nai_110_000_0, nai_110_000_1, nai_200_000_0, nai_200_000_1, p_0, p_1, p_2, tmp1, tmp4, tmp8, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -830,9 +830,9 @@ static void gint2_nai_cF_P(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 34
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_000_3, nai_010_000_0, nai_010_000_1, nai_010_000_2, nai_020_000_2, nai_100_000_0, nai_100_000_1, nai_100_000_2, nai_110_000_0, nai_110_000_1, nai_120_000_1, nai_200_000_0, nai_200_000_1, nai_200_000_2, p_0, p_1, p_2, tmp1, tmp2, tmp3, tmp4, tmp7, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -955,9 +955,9 @@ static void gint2_nai_SP_cD(double* a, double a_a, double* b, double b_a, double
   // Number of local variables: 34
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_001_0, nai_000_001_1, nai_000_002_0, nai_000_010_0, nai_000_010_1, nai_000_020_0, nai_000_100_0, nai_000_100_1, nai_000_200_0, nai_000_200_1, p_0, p_1, p_2, tmp1, tmp12, tmp13, tmp14, tmp15, tmp16, tmp17, tmp3, tmp8, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -1050,9 +1050,9 @@ static void gint2_nai_S_cD(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 13
   double ab_a, d_0, d_1, d_2, nai_000_010_0, nai_000_010_1, p_0, p_1, p_2, u_0, u_1, u_2, usq;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -1087,9 +1087,9 @@ static void gint2_nai_P_cD(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 33
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_001_0, nai_000_001_1, nai_000_010_1, nai_000_020_0, nai_000_020_1, nai_000_100_0, nai_000_100_1, nai_000_200_0, nai_000_200_1, p_0, p_1, p_2, tmp0, tmp1, tmp10, tmp11, tmp12, tmp15, tmp2, tmp6, tmp8, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -1174,9 +1174,9 @@ static void gint2_nai_cD_cD(double* a, double a_a, double* b, double b_a, double
   // Number of local variables: 48
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_000_3, nai_000_002_1, nai_000_002_2, nai_000_020_0, nai_000_020_1, nai_001_010_1, nai_010_000_2, nai_010_000_3, nai_010_001_1, nai_010_010_0, nai_010_010_1, nai_100_000_0, nai_100_000_1, nai_100_000_2, nai_100_001_1, nai_110_000_2, nai_200_000_0, nai_200_000_1, nai_200_000_2, p_0, p_1, p_2, tmp0, tmp1, tmp11, tmp14, tmp17, tmp19, tmp2, tmp21, tmp22, tmp24, tmp29, tmp33, tmp36, tmp39, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -1357,9 +1357,9 @@ static void gint2_nai_cF_cD(double* a, double a_a, double* b, double b_a, double
   // Number of local variables: 81
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_000_3, nai_000_000_4, nai_001_000_3, nai_010_000_2, nai_010_000_3, nai_011_000_1, nai_011_000_2, nai_020_000_3, nai_020_001_0, nai_020_001_1, nai_020_010_1, nai_020_200_0, nai_020_200_1, nai_100_000_0, nai_100_000_1, nai_100_000_2, nai_100_000_3, nai_101_000_1, nai_101_000_2, nai_110_000_1, nai_110_000_2, nai_200_000_0, nai_200_000_1, nai_200_000_2, nai_200_000_3, nai_200_001_0, nai_200_001_1, nai_200_010_0, nai_200_010_1, nai_300_000_0, nai_300_000_1, nai_300_000_2, nai_300_010_0, nai_300_010_1, p_0, p_1, p_2, tmp0, tmp1, tmp2, tmp3, tmp30, tmp31, tmp35, tmp40, tmp47, tmp49, tmp51, tmp52, tmp58, tmp6, tmp61, tmp62, tmp64, tmp66, tmp67, tmp7, tmp71, tmp72, tmp79, tmp80, tmp83, tmp85, tmp86, tmp87, tmp89, tmp90, tmp93, tmp96, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -1696,9 +1696,9 @@ static void gint2_nai_SP_cF(double* a, double a_a, double* b, double b_a, double
   // Number of local variables: 60
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_000_3, nai_000_001_0, nai_000_001_1, nai_000_001_2, nai_000_002_0, nai_000_002_1, nai_000_003_0, nai_000_010_0, nai_000_010_1, nai_000_010_2, nai_000_011_0, nai_000_011_1, nai_000_020_0, nai_000_020_1, nai_000_030_0, nai_000_100_0, nai_000_100_1, nai_000_100_2, nai_000_200_0, nai_000_200_1, nai_000_200_2, nai_000_300_0, nai_100_001_1, nai_100_020_1, p_0, p_1, p_2, tmp1, tmp12, tmp19, tmp2, tmp23, tmp24, tmp25, tmp26, tmp27, tmp28, tmp29, tmp33, tmp34, tmp35, tmp36, tmp37, tmp38, tmp39, tmp40, tmp41, tmp5, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -1852,9 +1852,9 @@ static void gint2_nai_S_cF(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 18
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_100_0, nai_000_100_1, nai_000_200_0, nai_000_200_1, p_0, p_1, p_2, tmp1, tmp5, u_0, u_1, u_2, usq;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -1904,9 +1904,9 @@ static void gint2_nai_P_cF(double* a, double a_a, double* b, double b_a, double*
   // Number of local variables: 52
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_000_3, nai_000_001_0, nai_000_001_1, nai_000_001_2, nai_000_010_1, nai_000_010_2, nai_000_020_0, nai_000_020_1, nai_000_020_2, nai_000_030_0, nai_000_100_0, nai_000_100_1, nai_000_100_2, nai_000_200_0, nai_000_200_1, nai_000_200_2, nai_000_300_0, nai_010_200_1, nai_100_001_1, nai_100_020_0, nai_100_020_1, p_0, p_1, p_2, tmp0, tmp1, tmp2, tmp21, tmp23, tmp25, tmp26, tmp27, tmp28, tmp29, tmp3, tmp30, tmp31, tmp33, tmp4, tmp5, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -2040,9 +2040,9 @@ static void gint2_nai_cD_cF(double* a, double a_a, double* b, double b_a, double
   // Number of local variables: 90
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_000_3, nai_000_000_4, nai_000_001_1, nai_000_001_2, nai_000_001_3, nai_000_002_0, nai_000_002_1, nai_000_002_2, nai_000_002_3, nai_000_003_2, nai_000_010_1, nai_000_010_2, nai_000_010_3, nai_000_020_0, nai_000_020_1, nai_000_020_2, nai_000_020_3, nai_000_030_0, nai_000_030_1, nai_000_100_0, nai_000_100_1, nai_000_100_2, nai_000_100_3, nai_000_200_0, nai_000_200_1, nai_000_200_2, nai_000_200_3, nai_000_300_0, nai_000_300_1, nai_010_001_0, nai_010_001_1, nai_010_001_2, nai_010_100_1, nai_010_200_0, nai_010_200_1, nai_010_300_0, nai_010_300_1, nai_100_001_1, nai_100_001_2, nai_100_002_0, nai_100_002_1, nai_100_020_0, nai_100_020_1, nai_110_200_0, nai_200_000_0, nai_200_000_1, nai_200_000_2, nai_200_100_1, p_0, p_1, p_2, tmp0, tmp1, tmp15, tmp2, tmp26, tmp27, tmp3, tmp30, tmp31, tmp32, tmp38, tmp43, tmp5, tmp53, tmp54, tmp55, tmp56, tmp64, tmp66, tmp67, tmp68, tmp69, tmp70, tmp71, tmp73, tmp74, tmp77, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -2364,9 +2364,9 @@ static void gint2_nai_cF_cF(double* a, double a_a, double* b, double b_a, double
   // Number of local variables: 137
   double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_000_000_3, nai_000_000_4, nai_000_000_5, nai_000_001_1, nai_000_001_2, nai_000_001_3, nai_000_001_4, nai_000_002_0, nai_000_002_1, nai_000_002_2, nai_000_002_3, nai_000_010_1, nai_000_010_2, nai_000_010_3, nai_000_010_4, nai_000_020_0, nai_000_020_1, nai_000_020_2, nai_000_020_3, nai_000_020_4, nai_010_001_1, nai_010_002_1, nai_010_020_0, nai_010_020_1, nai_010_020_2, nai_020_001_0, nai_020_001_1, nai_020_001_2, nai_020_010_2, nai_020_200_2, nai_100_000_0, nai_100_000_1, nai_100_000_2, nai_100_000_3, nai_100_000_4, nai_100_001_1, nai_100_030_1, nai_110_000_0, nai_110_000_1, nai_110_000_2, nai_110_000_3, nai_110_001_0, nai_110_001_1, nai_110_001_2, nai_110_020_0, nai_110_020_1, nai_120_001_1, nai_200_000_0, nai_200_000_1, nai_200_000_2, nai_200_000_3, nai_200_000_4, nai_200_001_0, nai_200_001_1, nai_200_001_2, nai_200_002_1, nai_200_003_0, nai_200_010_0, nai_200_010_1, nai_200_010_2, nai_200_020_0, nai_200_020_1, nai_200_030_0, nai_210_001_1, nai_300_000_0, nai_300_000_1, nai_300_000_2, nai_300_000_3, nai_300_100_0, nai_300_100_1, nai_300_200_0, nai_300_200_1, p_0, p_1, p_2, tmp0, tmp1, tmp106, tmp107, tmp108, tmp11, tmp110, tmp115, tmp12, tmp121, tmp122, tmp123, tmp124, tmp126, tmp129, tmp131, tmp133, tmp138, tmp139, tmp140, tmp157, tmp159, tmp160, tmp161, tmp162, tmp163, tmp164, tmp165, tmp166, tmp167, tmp169, tmp170, tmp173, tmp2, tmp20, tmp21, tmp3, tmp33, tmp34, tmp4, tmp62, tmp63, tmp69, tmp70, tmp74, tmp77, tmp8, tmp80, tmp87, tmp88, u_0, u_1, u_2, usq, v_0, v_1, v_2;
   ab_a = a_a + b_a; // local, weighs 1
-  p_0 = (a_a*a[0] + b_a*b[0])/ab_a; // local, weighs 5
-  p_1 = (a_a*a[1] + b_a*b[1])/ab_a; // local, weighs 5
-  p_2 = (a_a*a[2] + b_a*b[2])/ab_a; // local, weighs 5
+  p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
+  p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
+  p_2 = (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 5
   d_0 = a[0] - b[0]; // local, weighs 2
   d_1 = a[1] - b[1]; // local, weighs 2
   d_2 = a[2] - b[2]; // local, weighs 2
@@ -2978,9 +2978,9 @@ static void gint2_nai_cF_cF(double* a, double a_a, double* b, double b_a, double
 }
 
 typedef void (*fntype)(double*, double, double*, double, double*, double*);
-const fntype fns[49] = {gint2_nai_pF_pF, gint2_nai_pD_pF, gint2_nai_SP_pF, gint2_nai_S_pF, gint2_nai_P_pF, gint2_nai_cD_pF, gint2_nai_cF_pF, gint2_nai_pF_pD, gint2_nai_pD_pD, gint2_nai_SP_pD, gint2_nai_S_pD, gint2_nai_P_pD, gint2_nai_cD_pD, gint2_nai_cF_pD, gint2_nai_pF_SP, gint2_nai_pD_SP, gint2_nai_SP_SP, gint2_nai_S_SP, gint2_nai_P_SP, gint2_nai_cD_SP, gint2_nai_cF_SP, gint2_nai_pF_S, gint2_nai_pD_S, gint2_nai_SP_S, gint2_nai_S_S, gint2_nai_P_S, gint2_nai_cD_S, gint2_nai_cF_S, gint2_nai_pF_P, gint2_nai_pD_P, gint2_nai_SP_P, gint2_nai_S_P, gint2_nai_P_P, gint2_nai_cD_P, gint2_nai_cF_P, gint2_nai_pF_cD, gint2_nai_pD_cD, gint2_nai_SP_cD, gint2_nai_S_cD, gint2_nai_P_cD, gint2_nai_cD_cD, gint2_nai_cF_cD, gint2_nai_pF_cF, gint2_nai_pD_cF, gint2_nai_SP_cF, gint2_nai_S_cF, gint2_nai_P_cF, gint2_nai_cD_cF, gint2_nai_cF_cF};
+static const fntype fns[49] = {gint2_nai_pF_pF, gint2_nai_pD_pF, gint2_nai_SP_pF, gint2_nai_S_pF, gint2_nai_P_pF, gint2_nai_cD_pF, gint2_nai_cF_pF, gint2_nai_pF_pD, gint2_nai_pD_pD, gint2_nai_SP_pD, gint2_nai_S_pD, gint2_nai_P_pD, gint2_nai_cD_pD, gint2_nai_cF_pD, gint2_nai_pF_SP, gint2_nai_pD_SP, gint2_nai_SP_SP, gint2_nai_S_SP, gint2_nai_P_SP, gint2_nai_cD_SP, gint2_nai_cF_SP, gint2_nai_pF_S, gint2_nai_pD_S, gint2_nai_SP_S, gint2_nai_S_S, gint2_nai_P_S, gint2_nai_cD_S, gint2_nai_cF_S, gint2_nai_pF_P, gint2_nai_pD_P, gint2_nai_SP_P, gint2_nai_S_P, gint2_nai_P_P, gint2_nai_cD_P, gint2_nai_cF_P, gint2_nai_pF_cD, gint2_nai_pD_cD, gint2_nai_SP_cD, gint2_nai_S_cD, gint2_nai_P_cD, gint2_nai_cD_cD, gint2_nai_cF_cD, gint2_nai_pF_cF, gint2_nai_pD_cF, gint2_nai_SP_cF, gint2_nai_S_cF, gint2_nai_P_cF, gint2_nai_cD_cF, gint2_nai_cF_cF};
 
-void gint2_nai_dispatch(int a_s, double* a, double a_a, int b_s, double* b, double b_a, double* c, double* out)
+static void gint2_nai_dispatch(int a_s, double* a, double a_a, int b_s, double* b, double b_a, double* c, double* out)
 {
   fns[3+a_s+7*(3+b_s)](a, a_a, b, b_a, c, out);
 }
