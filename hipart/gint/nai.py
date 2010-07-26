@@ -4,7 +4,8 @@
 from writer import *
 from sympy import powsimp
 
-# TODO: adapt gint1 to work with new writer
+# TODO: gint1, gint2 and writer tests
+# TODO: reorganize writer modules, clean up a little, all in one .so file
 # TODO: pure gaussian basis functions
 # TODO: use symmetry to reduce the number of generated functions
 # TODO: reorder in density tests
@@ -258,9 +259,6 @@ class Gint2NAI(GaussianIntegral):
 
     def add_expressions(self, st_row, commands):
         self.out_counter = 0
-
-        def symbol_vector(prefix):
-            return (Symbol("%s_0" % prefix), Symbol("%s_1" % prefix), Symbol("%s_2" % prefix))
 
         ab_a = Symbol("ab_a")
         commands.add(Record(ab_a, self.a_a + self.b_a, "local"))

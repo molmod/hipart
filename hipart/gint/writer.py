@@ -33,11 +33,6 @@ from hipart.gint.basis import get_shell_dof
 
 # Sympy stuff
 
-x = Symbol("x", real=True)
-y = Symbol("y", real=True)
-z = Symbol("z", real=True)
-r = Symbol("r", real=True)
-
 
 class Record(object):
     def __init__(self, symbol, expr, tag):
@@ -410,9 +405,9 @@ class PointArgGroup(BaseArgGroup):
     def __init__(self, prefix):
         BaseArgGroup.__init__(self, prefix)
         self.args.append(ArrayArg(self.prefix, [
-            Symbol("%s_x" % prefix),
-            Symbol("%s_y" % prefix),
-            Symbol("%s_z" % prefix),
+            Symbol("%s_0" % prefix),
+            Symbol("%s_1" % prefix),
+            Symbol("%s_2" % prefix),
         ]))
 
     def iter_shell_types(self, max_shell):
@@ -476,6 +471,10 @@ class GaussianIntegral():
 
 # Auxiliary functions
 
+def symbol_vector(prefix):
+    return (Symbol("%s_0" % prefix), Symbol("%s_1" % prefix), Symbol("%s_2" % prefix))
+
+
 def get_shell_label(shell_type):
     shell_labels = "SPDFGHIJKLMNO"
     if shell_type > 1:
@@ -511,7 +510,9 @@ def iter_cartesian_powers(order):
                 yield l, m, order-l-m
 
 
-def get_polys(shell_type, alpha):
+def get_polys(shell_type, alpha, v):
+    r = Symbol("r", real=True)
+    x, y, z = v
     result = []
     if shell_type < -1:
         shell_type = abs(shell_type)
@@ -543,7 +544,7 @@ def get_polys(shell_type, alpha):
                 part = simplify(part)
                 result.append((part, wfn_norm))
     elif shell_type == -1:
-        return get_polys(0, alpha) + get_polys(1, alpha)
+        return get_polys(0, alpha, v) + get_polys(1, alpha, v)
     else:
         for l, m, n in iter_cartesian_powers(shell_type):
             result.append((x**l*y**m*z**n, get_cartesian_wfn_norm(alpha, l, m, n)))
@@ -575,7 +576,7 @@ int gint1_fn_basis(double* weights, double* fns, double* points,
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
-        gint_fn_dispatch(shell_type, center, *exponent, points, work);
+        gint1_fn_dispatch(shell_type, center, *exponent, points, work);
         //printf("shell_type=%d  primitive=%d  exponent=%f\\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
@@ -675,7 +676,7 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
-        gint1_fn(shell_type, center, *exponent, points, work);
+        gint1_fn_dispatch(shell_type, center, *exponent, points, work);
         //printf("shell_type=%d  primitive=%d  exponent=%f\\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
@@ -764,32 +765,34 @@ class Gint1Fn(GaussianIntegral):
     def __init__(self):
         a = ShellArgGroup("a")
         p = PointArgGroup("p")
-        self.a_x = a.args[0].symbols[0]
-        self.a_y = a.args[0].symbols[1]
-        self.a_z = a.args[0].symbols[2]
+        self.a = a.args[0].symbols
         self.a_a = a.args[1].symbol
-        self.p_x = p.args[0].symbols[0]
-        self.p_y = p.args[0].symbols[1]
-        self.p_z = p.args[0].symbols[2]
+        self.p =  p.args[0].symbols
         name = "gint1_fn"
         interface_fns = [
-            (code_gint1_basis_fn_c, code_gint1_basis_fn_pyf),
-            (code_gint1_basis_dmat_c, code_gint1_basis_dmat_pyf),
+            (code_gint1_fn_basis_c, code_gint1_fn_basis_pyf),
+            (code_gint1_fn_dmat_c, code_gint1_fn_dmat_pyf),
         ]
-        GaussianIntegral.__init__(self, name, [a, p], interface_fns)
+        GaussianIntegral.__init__(self, name, [a, p], interface_fns, [])
 
-    def get_expressions(self, st_row):
-        results = []
-        st = st_row[0]
-        for poly, wfn_norm in get_polys(st, self.a_a):
-            rsq = x*x + y*y + z*z
-            expr = mypowsimp(simplify(poly/wfn_norm))*C.Function("exp")(-self.a_a*rsq)
-            expr = expr.subs(x, self.p_x - self.a_x)
-            expr = expr.subs(y, self.p_y - self.a_y)
-            expr = expr.subs(z, self.p_z - self.a_z)
-            results.append(expr)
-        key = get_shell_label(st)
-        return key, results, [self.p_x - self.a_x, self.p_y - self.a_y, self.p_z - self.a_z]
+    def get_key(self, st_row):
+        return get_shell_label(st_row[0])
+
+    def add_expressions(self, st_row, commands):
+        self.out_counter = 0
+
+        v = symbol_vector("v")
+        commands.add(Record(v[0], self.p[0] - self.a[0], "local"))
+        commands.add(Record(v[1], self.p[1] - self.a[1], "local"))
+        commands.add(Record(v[2], self.p[2] - self.a[2], "local"))
+
+        rsq = Symbol("rsq")
+        commands.add(Record(rsq, v[0]*v[0] + v[1]*v[1] + v[2]*v[2], "local"))
+
+        for poly, wfn_norm in get_polys(st_row[0], self.a_a, v):
+            fn = mypowsimp(simplify(poly/wfn_norm))*C.Function("exp")(-self.a_a*rsq)
+            out_symbol = self.get_out_symbol()
+            commands.add(Record(out_symbol, fn, "final"))
 
 
 def write(gint, max_shell=3):

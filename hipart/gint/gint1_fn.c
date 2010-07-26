@@ -26,139 +26,150 @@
 #define NUM_SHELL_TYPES 7
 #define MAX_SHELL_DOF 10
 
-static void fn_pF(double* a, double a_a, double* p, double* out)
+static void gint1_fn_pF(double* a, double a_a, double* p, double* out)
 {
-  double fix0, fix1, fix2, tmp0, tmp1, tmp10, tmp11, tmp12, tmp13, tmp5, tmp6, tmp9;
-  fix0 = p[0] - a[0]; // oblige
-  fix1 = p[1] - a[1]; // oblige
-  fix2 = p[2] - a[2]; // oblige
-  tmp11 = fix2*fix2; // auto
-  tmp12 = fix1*fix1; // auto
-  tmp13 = fix0*fix0; // auto
-  tmp0 = exp(-a_a*(tmp11 + tmp12 + tmp13)); // auto
-  tmp1 = pow(a_a,2.25); // auto
-  tmp12 = tmp1*tmp12; // auto+recycle
-  tmp13 = tmp1*tmp13; // auto+recycle
-  tmp11 = tmp1*tmp11; // auto+recycle
-  tmp5 = fix2*tmp13; // auto
-  tmp6 = fix2*tmp12; // auto
-  out[0] = tmp0*(-2.20823713394864*tmp5 - 2.20823713394864*tmp6 + 1.47215808929909*fix2*tmp11); // final
-  tmp9 = fix0*tmp13; // auto
-  tmp10 = fix0*tmp12; // auto
-  out[1] = tmp0*(-0.901509034873353*tmp10 - 0.901509034873353*tmp9 + 3.60603613949341*fix0*tmp11); // final
-  tmp13 = fix1*tmp13; // auto+recycle
-  tmp12 = fix1*tmp12; // auto+recycle
-  out[2] = tmp0*(-0.901509034873353*tmp12 - 0.901509034873353*tmp13 + 3.60603613949341*fix1*tmp11); // final
-  out[3] = tmp0*(2.85082188141996*tmp5 - 2.85082188141996*tmp6); // final
-  out[4] = 5.70164376283992*fix0*fix1*fix2*tmp0*tmp1; // final
-  out[5] = tmp0*(1.16384315950667*tmp9 - 3.49152947852002*tmp10); // final
-  out[6] = tmp0*(3.49152947852002*tmp13 - 1.16384315950667*tmp12); // final
+  // Number of local variables: 9
+  double tmp12, tmp13, tmp14, tmp2, tmp3, tmp4, v_0, v_1, v_2;
+  v_0 = p[0] - a[0]; // local, weighs 2
+  v_1 = p[1] - a[1]; // local, weighs 2
+  v_2 = p[2] - a[2]; // local, weighs 2
+  tmp2 = v_1*v_1; // auto, weighs 1
+  tmp3 = v_0*v_0; // auto, weighs 1
+  tmp4 = v_2*v_2; // auto, weighs 1
+  tmp14 = pow(a_a,2.25)*exp(-a_a*(tmp2 + tmp3 + tmp4)); // auto, weighs 7
+  tmp3 = tmp14*tmp3; // auto+recycle, weighs 1
+  tmp2 = tmp14*tmp2; // auto+recycle, weighs 1
+  out[0] = v_2*(-2.20823713394864*tmp2 - 2.20823713394864*tmp3) + 1.47215808929909*tmp14*pow(v_2,3); // final, weighs 8
+  tmp4 = 3.60603613949341*tmp14*tmp4; // auto+recycle, weighs 2
+  tmp12 = tmp14*pow(v_0,3); // auto, weighs 2
+  out[1] = -0.901509034873353*tmp12 + v_0*(tmp4 - 0.901509034873353*tmp2); // final, weighs 5
+  tmp13 = tmp14*pow(v_1,3); // auto, weighs 2
+  out[2] = -0.901509034873353*tmp13 + v_1*(tmp4 - 0.901509034873353*tmp3); // final, weighs 5
+  out[3] = v_2*(2.85082188141996*tmp3 - 2.85082188141996*tmp2); // final, weighs 4
+  out[4] = 5.70164376283992*tmp14*v_0*v_1*v_2; // final, weighs 4
+  out[5] = 1.16384315950667*tmp12 - 3.49152947852002*tmp2*v_0; // final, weighs 4
+  out[6] = -1.16384315950667*tmp13 + 3.49152947852002*tmp3*v_1; // final, weighs 4
+  // total weight = 58
 }
 
-static void fn_pD(double* a, double a_a, double* p, double* out)
+static void gint1_fn_pD(double* a, double a_a, double* p, double* out)
 {
-  double fix0, fix1, fix2, tmp0, tmp1, tmp6, tmp7, tmp8;
-  fix0 = p[0] - a[0]; // oblige
-  fix1 = p[1] - a[1]; // oblige
-  fix2 = p[2] - a[2]; // oblige
-  tmp6 = fix2*fix2; // auto
-  tmp7 = fix1*fix1; // auto
-  tmp8 = fix0*fix0; // auto
-  tmp0 = exp(-a_a*(tmp6 + tmp7 + tmp8)); // auto
-  tmp1 = pow(a_a,1.75); // auto
-  tmp7 = tmp1*tmp7; // auto+recycle
-  tmp8 = tmp1*tmp8; // auto+recycle
-  out[0] = tmp0*(-0.822961390324745*tmp7 - 0.822961390324745*tmp8 + 1.64592278064949*tmp1*tmp6); // final
-  tmp1 = tmp0*tmp1; // auto+recycle
-  tmp6 = fix2*tmp1; // auto+recycle
-  out[1] = 2.85082188141996*fix0*tmp6; // final
-  out[2] = 2.85082188141996*fix1*tmp6; // final
-  out[3] = tmp0*(1.42541094070998*tmp8 - 1.42541094070998*tmp7); // final
-  out[4] = 2.85082188141996*fix0*fix1*tmp1; // final
+  // Number of local variables: 7
+  double tmp10, tmp2, tmp3, tmp4, v_0, v_1, v_2;
+  v_0 = p[0] - a[0]; // local, weighs 2
+  v_1 = p[1] - a[1]; // local, weighs 2
+  v_2 = p[2] - a[2]; // local, weighs 2
+  tmp2 = v_1*v_1; // auto, weighs 1
+  tmp3 = v_0*v_0; // auto, weighs 1
+  tmp4 = v_2*v_2; // auto, weighs 1
+  tmp10 = pow(a_a,1.75)*exp(-a_a*(tmp2 + tmp3 + tmp4)); // auto, weighs 7
+  tmp3 = tmp10*tmp3; // auto+recycle, weighs 1
+  tmp2 = tmp10*tmp2; // auto+recycle, weighs 1
+  out[0] = -0.822961390324745*tmp2 - 0.822961390324745*tmp3 + 1.64592278064949*tmp10*tmp4; // final, weighs 6
+  tmp4 = tmp10*v_2; // auto+recycle, weighs 1
+  out[1] = 2.85082188141996*tmp4*v_0; // final, weighs 2
+  out[2] = 2.85082188141996*tmp4*v_1; // final, weighs 2
+  out[3] = 1.42541094070998*tmp3 - 1.42541094070998*tmp2; // final, weighs 3
+  out[4] = 2.85082188141996*tmp10*v_0*v_1; // final, weighs 3
+  // total weight = 35
 }
 
-static void fn_SP(double* a, double a_a, double* p, double* out)
+static void gint1_fn_SP(double* a, double a_a, double* p, double* out)
 {
-  double fix0, fix1, fix2, tmp0;
-  fix0 = p[0] - a[0]; // oblige
-  fix1 = p[1] - a[1]; // oblige
-  fix2 = p[2] - a[2]; // oblige
-  tmp0 = exp(-a_a*(fix0*fix0 + fix1*fix1 + fix2*fix2)); // auto
-  out[0] = 0.71270547035499*tmp0*pow(a_a,0.75); // final
-  tmp0 = tmp0*pow(a_a,1.25); // auto+recycle
-  out[1] = 1.42541094070998*fix0*tmp0; // final
-  out[2] = 1.42541094070998*fix1*tmp0; // final
-  out[3] = 1.42541094070998*fix2*tmp0; // final
+  // Number of local variables: 4
+  double tmp0, v_0, v_1, v_2;
+  v_0 = p[0] - a[0]; // local, weighs 2
+  v_1 = p[1] - a[1]; // local, weighs 2
+  v_2 = p[2] - a[2]; // local, weighs 2
+  tmp0 = exp(-a_a*(v_0*v_0 + v_1*v_1 + v_2*v_2)); // auto, weighs 8
+  out[0] = 0.71270547035499*tmp0*pow(a_a,0.75); // final, weighs 3
+  tmp0 = tmp0*pow(a_a,1.25); // auto+recycle, weighs 2
+  out[1] = 1.42541094070998*tmp0*v_0; // final, weighs 2
+  out[2] = 1.42541094070998*tmp0*v_1; // final, weighs 2
+  out[3] = 1.42541094070998*tmp0*v_2; // final, weighs 2
+  // total weight = 25
 }
 
-static void fn_S(double* a, double a_a, double* p, double* out)
+static void gint1_fn_S(double* a, double a_a, double* p, double* out)
 {
-  double fix0, fix1, fix2;
-  fix0 = p[0] - a[0]; // oblige
-  fix1 = p[1] - a[1]; // oblige
-  fix2 = p[2] - a[2]; // oblige
-  out[0] = 0.71270547035499*pow(a_a,0.75)*exp(-a_a*(fix0*fix0 + fix1*fix1 + fix2*fix2)); // final
+  // Number of local variables: 3
+  double v_0, v_1, v_2;
+  v_0 = p[0] - a[0]; // local, weighs 2
+  v_1 = p[1] - a[1]; // local, weighs 2
+  v_2 = p[2] - a[2]; // local, weighs 2
+  out[0] = 0.71270547035499*pow(a_a,0.75)*exp(-a_a*(v_0*v_0 + v_1*v_1 + v_2*v_2)); // final, weighs 11
+  // total weight = 17
 }
 
-static void fn_P(double* a, double a_a, double* p, double* out)
+static void gint1_fn_P(double* a, double a_a, double* p, double* out)
 {
-  double fix0, fix1, fix2, tmp0;
-  fix0 = p[0] - a[0]; // oblige
-  fix1 = p[1] - a[1]; // oblige
-  fix2 = p[2] - a[2]; // oblige
-  tmp0 = pow(a_a,1.25)*exp(-a_a*(fix0*fix0 + fix1*fix1 + fix2*fix2)); // auto
-  out[0] = 1.42541094070998*fix0*tmp0; // final
-  out[1] = 1.42541094070998*fix1*tmp0; // final
-  out[2] = 1.42541094070998*fix2*tmp0; // final
+  // Number of local variables: 4
+  double tmp2, v_0, v_1, v_2;
+  v_0 = p[0] - a[0]; // local, weighs 2
+  v_1 = p[1] - a[1]; // local, weighs 2
+  v_2 = p[2] - a[2]; // local, weighs 2
+  tmp2 = pow(a_a,1.25)*exp(-a_a*(v_0*v_0 + v_1*v_1 + v_2*v_2)); // auto, weighs 10
+  out[0] = 1.42541094070998*tmp2*v_0; // final, weighs 2
+  out[1] = 1.42541094070998*tmp2*v_1; // final, weighs 2
+  out[2] = 1.42541094070998*tmp2*v_2; // final, weighs 2
+  // total weight = 22
 }
 
-static void fn_cD(double* a, double a_a, double* p, double* out)
+static void gint1_fn_cD(double* a, double a_a, double* p, double* out)
 {
-  double fix0, fix1, fix2, tmp0, tmp2, tmp3;
-  fix0 = p[0] - a[0]; // oblige
-  fix1 = p[1] - a[1]; // oblige
-  fix2 = p[2] - a[2]; // oblige
-  tmp2 = fix1*fix1; // auto
-  tmp3 = fix0*fix0; // auto
-  tmp0 = pow(a_a,1.75)*exp(-a_a*(tmp2 + tmp3 + fix2*fix2)); // auto
-  out[0] = 1.64592278064949*tmp0*tmp3; // final
-  out[1] = 2.85082188141996*fix0*fix1*tmp0; // final
-  tmp3 = fix2*tmp0; // auto+recycle
-  out[2] = 2.85082188141996*fix0*tmp3; // final
-  out[3] = 1.64592278064949*tmp0*tmp2; // final
-  out[4] = 2.85082188141996*fix1*tmp3; // final
-  out[5] = 1.64592278064949*fix2*tmp3; // final
+  // Number of local variables: 7
+  double tmp2, tmp3, tmp4, tmp8, v_0, v_1, v_2;
+  v_0 = p[0] - a[0]; // local, weighs 2
+  v_1 = p[1] - a[1]; // local, weighs 2
+  v_2 = p[2] - a[2]; // local, weighs 2
+  tmp2 = v_2*v_2; // auto, weighs 1
+  tmp3 = v_1*v_1; // auto, weighs 1
+  tmp4 = v_0*v_0; // auto, weighs 1
+  tmp8 = pow(a_a,1.75)*exp(-a_a*(tmp2 + tmp3 + tmp4)); // auto, weighs 7
+  out[0] = 1.64592278064949*tmp4*tmp8; // final, weighs 2
+  out[1] = 2.85082188141996*tmp8*v_0*v_1; // final, weighs 3
+  tmp4 = tmp8*v_2; // auto+recycle, weighs 1
+  out[2] = 2.85082188141996*tmp4*v_0; // final, weighs 2
+  out[3] = 1.64592278064949*tmp3*tmp8; // final, weighs 2
+  out[4] = 2.85082188141996*tmp4*v_1; // final, weighs 2
+  out[5] = 1.64592278064949*tmp2*tmp8; // final, weighs 2
+  // total weight = 30
 }
 
-static void fn_cF(double* a, double a_a, double* p, double* out)
+static void gint1_fn_cF(double* a, double a_a, double* p, double* out)
 {
-  double fix0, fix1, fix2, tmp0, tmp4, tmp5, tmp6;
-  fix0 = p[0] - a[0]; // oblige
-  fix1 = p[1] - a[1]; // oblige
-  fix2 = p[2] - a[2]; // oblige
-  tmp4 = fix2*fix2; // auto
-  tmp5 = fix1*fix1; // auto
-  tmp6 = fix0*fix0; // auto
-  tmp0 = pow(a_a,2.25)*exp(-a_a*(tmp4 + tmp5 + tmp6)); // auto
-  tmp6 = tmp0*tmp6; // auto+recycle
-  out[0] = 1.47215808929909*fix0*tmp6; // final
-  out[1] = 3.29184556129898*fix1*tmp6; // final
-  out[2] = 3.29184556129898*fix2*tmp6; // final
-  tmp5 = tmp0*tmp5; // auto+recycle
-  out[3] = 3.29184556129898*fix0*tmp5; // final
-  out[4] = 5.70164376283992*fix0*fix1*fix2*tmp0; // final
-  tmp4 = tmp0*tmp4; // auto+recycle
-  out[5] = 3.29184556129898*fix0*tmp4; // final
-  out[6] = 1.47215808929909*fix1*tmp5; // final
-  out[7] = 3.29184556129898*fix2*tmp5; // final
-  out[8] = 3.29184556129898*fix1*tmp4; // final
-  out[9] = 1.47215808929909*fix2*tmp4; // final
+  // Number of local variables: 11
+  double tmp11, tmp12, tmp13, tmp14, tmp2, tmp3, tmp4, tmp7, v_0, v_1, v_2;
+  v_0 = p[0] - a[0]; // local, weighs 2
+  v_1 = p[1] - a[1]; // local, weighs 2
+  v_2 = p[2] - a[2]; // local, weighs 2
+  tmp12 = v_2*v_2; // auto, weighs 1
+  tmp2 = tmp12; // auto, weighs 0
+  tmp13 = v_1*v_1; // auto, weighs 1
+  tmp3 = tmp13; // auto, weighs 0
+  tmp14 = v_0*v_0; // auto, weighs 1
+  tmp4 = tmp14; // auto, weighs 0
+  tmp11 = pow(a_a,2.25)*exp(-a_a*(tmp2 + tmp3 + tmp4)); // auto, weighs 7
+  tmp7 = tmp11*v_0; // auto, weighs 1
+  out[0] = 1.47215808929909*tmp14*tmp7; // final, weighs 2
+  tmp14 = tmp11*v_1; // auto+recycle, weighs 1
+  out[1] = 3.29184556129898*tmp14*tmp4; // final, weighs 2
+  tmp11 = tmp11*v_2; // auto+recycle, weighs 1
+  out[2] = 3.29184556129898*tmp11*tmp4; // final, weighs 2
+  out[3] = 3.29184556129898*tmp3*tmp7; // final, weighs 2
+  out[4] = 5.70164376283992*tmp11*v_0*v_1; // final, weighs 3
+  out[5] = 3.29184556129898*tmp2*tmp7; // final, weighs 2
+  out[6] = 1.47215808929909*tmp13*tmp14; // final, weighs 2
+  out[7] = 3.29184556129898*tmp11*tmp3; // final, weighs 2
+  out[8] = 3.29184556129898*tmp14*tmp2; // final, weighs 2
+  out[9] = 1.47215808929909*tmp11*tmp12; // final, weighs 2
+  // total weight = 40
 }
 
 typedef void (*fntype)(double*, double, double*, double*);
-const fntype fns[7] = {fn_pF, fn_pD, fn_SP, fn_S, fn_P, fn_cD, fn_cF};
+const fntype fns[7] = {gint1_fn_pF, gint1_fn_pD, gint1_fn_SP, gint1_fn_S, gint1_fn_P, gint1_fn_cD, gint1_fn_cF};
 
-void gint1_fn(int a_s, double* a, double a_a, double* p, double* out)
+void gint1_fn_dispatch(int a_s, double* a, double a_a, double* p, double* out)
 {
   fns[3+a_s](a, a_a, p, out);
 }
@@ -185,7 +196,7 @@ int gint1_fn_basis(double* weights, double* fns, double* points,
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
-        gint1_fn(shell_type, center, *exponent, points, work);
+        gint1_fn_dispatch(shell_type, center, *exponent, points, work);
         //printf("shell_type=%d  primitive=%d  exponent=%f\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
@@ -260,7 +271,7 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
-        gint1_fn(shell_type, center, *exponent, points, work);
+        gint1_fn_dispatch(shell_type, center, *exponent, points, work);
         //printf("shell_type=%d  primitive=%d  exponent=%f\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
