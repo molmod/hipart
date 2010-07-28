@@ -23,7 +23,7 @@ from hipart.gint.tests.utils import setup_fchk, h_sto3g_fchk, hf_sto3g_fchk, \
     o2_cc_pvtz_cart_fchk, o2_cc_pvtz_pure_fchk
 
 from hipart.gint.basis import GaussianBasis
-from hipart.gint.gint_ext import gint2_nai_dmat, reorder_density_matrix
+from hipart.gint.gint_ext import gint2_nai_dmat, gint2_nai_S_S, reorder_density_matrix
 
 from molmod.io import FCHKFile
 from molmod import angstrom
@@ -66,7 +66,7 @@ def test_pot_h_sto3g():
     potential = -basis.call_gint1(gint2_nai_dmat, dmat, points)
     assert(abs(potential-ref_data_h_sto3g_pot[:,3]).max() < 1e-8)
 
-def ignore_gint2_nai_S_S():
+def test_gint2_nai_S_S():
     from scipy.special import erf
     a = numpy.zeros(3)
     a_a = 3.42525091E+00
@@ -75,8 +75,7 @@ def ignore_gint2_nai_S_S():
         c = numpy.array([0.0, 0.0, z])
         gint2_nai_S_S(a, a_a, a, a_a, c, out1)
         out2 = erf(numpy.sqrt(2*a_a)*z)/z
-        print out1, out2
-    raise Exception
+        assert(abs(out1[0] - out2) < 1e-10)
 
 
 ref_data_hf_sto3g_pot = numpy.array([

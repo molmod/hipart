@@ -37,9 +37,11 @@ def test_norms():
     assert(a==b)
 
 def test_commands1():
-    c = Commands([
-        Record(Symbol("out"), x*x+y*y+z*z, "final"),
-    ])
+    x = Symbol("x")
+    y = Symbol("y")
+    z = Symbol("z")
+    c = Commands()
+    c.add(Record(Symbol("out"), x*x+y*y+z*z, "final"))
     c.substitute(Record(Symbol("tmp1"), x*x, "locked"))
     c.substitute(Record(Symbol("tmp2"), y*y, "locked"))
     assert(len(c.records)==3)
@@ -54,17 +56,21 @@ def test_commands1():
     assert(c.records[2].tag == "final")
 
 def test_commands2():
-    c = Commands([
-        Record(Symbol("out"), x*x+y*y+z*z, "final"),
-    ])
+    x = Symbol("x")
+    y = Symbol("y")
+    z = Symbol("z")
+    c = Commands()
+    c.add(Record(Symbol("out"), x*x+y*y+z*z, "final"))
     c.full()
     assert(len(c.records)==1)
 
 def test_commands3():
-    c = Commands([
-        Record(Symbol("out"), x*x+sin(x*x), "final"),
-    ])
+    x = Symbol("x")
+    c = Commands()
+    c.add(Record(Symbol("out"), x*x+sin(x*x), "final"))
     c.full()
+    for record in c.records:
+        print record
     assert(len(c.records)==2)
 
 def test_permutation_to_cycles():

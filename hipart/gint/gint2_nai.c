@@ -542,7 +542,7 @@ void gint2_nai_pF_pF(double* a, double a_a, double* b, double b_a, double* c, do
   nai_000_000_2 = nai_000_000_2*p_2 + (1.5*tmp1 - 1.5*nai_002_000_3)/ab_a - tmp4*u_2; // local+recycle, weighs 10
   nai_000_003_1 = d_1*p_2 + (tmp75 + 1.5*nai_002_001_0 - 1.5*nai_002_001_1)/ab_a - d_2*u_2; // local+recycle, weighs 11
   tmp1 = d_2*p_2 + (tmp74 + 1.5*nai_002_001_1 - 1.5*nai_002_001_2)/ab_a - nai_000_000_2*u_2; // local+recycle, weighs 11
-  tmp4 = pow(a_a,2.25)*pow(b_a,2.25); // auto+recycle, weighs 3
+  tmp4 = pow(a_a,2.25)*pow(b_a,2.25); // auto+recycle, weighs 5
   nai_200_020_0 = tmp4*(nai_201_020_0*p_2 + (0.5*nai_200_020_0 - 0.5*nai_200_020_1)/ab_a - nai_200_020_2*u_2); // auto+recycle, weighs 11
   nai_020_200_0 = tmp4*(p_2*tmp81 + (0.5*nai_020_200_0 - 0.5*nai_020_200_1)/ab_a - nai_020_200_2*u_2); // auto+recycle, weighs 11
   nai_020_200_1 = tmp4*(tmp113 + nai_201_200_0*p_2 - nai_100_000_4*u_2); // auto+recycle, weighs 6
@@ -683,7 +683,7 @@ void gint2_nai_pF_pF(double* a, double a_a, double* b, double b_a, double* c, do
   out[46] = 19.9074572739754*nai_002_200_2 - 6.63581909132513*nai_000_001_2; // final, weighs 3
   out[47] = 4.06359269979142*nai_000_001_0 + 4.06359269979142*nai_102_001_1 - 12.1907780993743*nai_000_001_1 - 1.35453089993047*nai_100_300_1; // final, weighs 7
   out[48] = 12.1907780993743*nai_030_200_0 + 1.35453089993047*nai_020_010_1 - 4.06359269979142*nai_002_010_0 - 4.06359269979142*nai_002_010_1; // final, weighs 7
-  // total weight = 3948
+  // total weight = 3950
 }
 
 void gint2_nai_pD_pF(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -1181,7 +1181,7 @@ void gint2_nai_pF_pD(double* a, double a_a, double* b, double b_a, double* c, do
   nai_003_010_1 = p_1*tmp44 - nai_001_000_3*u_1; // local, weighs 4
   nai_002_000_0 = p_2*tmp32 + (1.5*nai_002_000_0 - 1.5*nai_002_000_1)/ab_a - tmp44*u_2; // local+recycle, weighs 10
   nai_002_000_1 = p_2*tmp44 + (1.5*nai_002_000_1 - 1.5*nai_002_000_2)/ab_a - nai_001_000_3*u_2; // local+recycle, weighs 10
-  nai_002_000_2 = pow(a_a,2.25)*pow(b_a,1.75); // auto+recycle, weighs 3
+  nai_002_000_2 = pow(a_a,2.25)*pow(b_a,1.75); // auto+recycle, weighs 5
   tmp62 = nai_002_000_2*(tmp49*v_2 - nai_100_000_3*u_2); // auto, weighs 5
   tmp63 = nai_002_000_2*(nai_200_020_0*v_2 - tmp31*u_2); // auto, weighs 5
   tmp68 = nai_002_000_2*(nai_020_200_0*v_2 - nai_020_200_1*u_2); // auto, weighs 5
@@ -1261,7 +1261,7 @@ void gint2_nai_pF_pD(double* a, double a_a, double* b, double b_a, double* c, do
   out[32] = 9.95372863698769*nai_002_020_0 - 3.31790954566256*nai_002_020_1; // final, weighs 3
   out[33] = 4.97686431849385*nai_020_200_1 + 1.65895477283128*nai_020_010_0 - 4.97686431849385*nai_100_000_3 - 1.65895477283128*nai_010_000_3; // final, weighs 7
   out[34] = 9.95372863698769*nai_002_010_0 - 3.31790954566256*nai_002_200_0; // final, weighs 3
-  // total weight = 1932
+  // total weight = 1934
 }
 
 void gint2_nai_pD_pD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -1407,7 +1407,7 @@ void gint2_nai_pD_pD(double* a, double a_a, double* b, double b_a, double* c, do
   nai_002_010_1 = p_1*tmp0 - d_0*u_1; // local, weighs 4
   nai_002_001_0 = p_2*tmp1 + (d_1 - d_2)/ab_a - tmp0*u_2; // local, weighs 9
   nai_002_001_1 = p_2*tmp0 + (d_2 - nai_000_000_2)/ab_a - d_0*u_2; // local, weighs 9
-  tmp42 = pow(a_a,1.75)*pow(b_a,1.75); // auto, weighs 3
+  tmp42 = pow(a_a,1.75)*pow(b_a,1.75); // auto, weighs 5
   tmp22 = tmp42*(tmp3 + nai_200_010_0*p_1 - nai_200_010_1*u_1); // auto, weighs 6
   nai_000_001_2 = tmp42*(tmp6 + p_0*(nai_000_001_2*p_0 - tmp19*u_0) - u_0*(p_0*tmp19 - nai_010_000_3*u_0)); // auto+recycle, weighs 14
   nai_010_000_3 = tmp42*(p_0*(nai_200_000_0*p_0 + (nai_100_000_0 - nai_100_000_1)/ab_a - nai_200_000_1*u_0) + (tmp15 + tmp18 - tmp12 + nai_100_000_0*p_0 - nai_100_000_1*p_0)/ab_a - u_0*(nai_200_000_1*p_0 + (nai_100_000_1 - nai_100_000_2)/ab_a - nai_200_000_2*u_0)); // auto+recycle, weighs 34
@@ -1454,7 +1454,7 @@ void gint2_nai_pD_pD(double* a, double a_a, double* b, double b_a, double* c, do
   out[22] = 8.12718539958284*tmp42*(nai_110_001_0*p_1 + (0.5*nai_100_001_0 - 0.5*nai_100_001_1)/ab_a - nai_110_001_1*u_1); // final, weighs 12
   out[23] = 4.06359269979142*d_0 - 4.06359269979142*d_1; // final, weighs 3
   out[24] = 8.12718539958284*tmp42*(p_0*(tmp5 + nai_110_000_0*p_1 - nai_110_000_1*u_1) + (0.5*nai_010_010_0 - 0.5*nai_010_010_1)/ab_a - u_0*(tmp4 + nai_110_000_1*p_1 - nai_110_000_2*u_1)); // final, weighs 22
-  // total weight = 990
+  // total weight = 992
 }
 
 void gint2_nai_SP_pD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -1681,12 +1681,12 @@ void gint2_nai_pF_SP(double* a, double a_a, double* b, double b_a, double* c, do
   v_1 = tmp1*v_1 - d_0*u_1; // local+recycle, weighs 4
   d_1 = tmp2*v_2 + (d_1 - d_2)/ab_a - tmp1*u_2; // local+recycle, weighs 9
   d_0 = tmp1*v_2 + (d_2 - nai_000_000_2)/ab_a - d_0*u_2; // local+recycle, weighs 9
-  d_2 = pow(a_a,2.25); // auto+recycle, weighs 1
-  nai_000_000_2 = d_2*pow(b_a,0.75); // auto+recycle, weighs 2
+  d_2 = pow(a_a,2.25); // auto+recycle, weighs 2
+  nai_000_000_2 = d_2*pow(b_a,0.75); // auto+recycle, weighs 3
   v_2 = nai_000_000_2*nai_201_000_0; // auto+recycle, weighs 1
   tmp35 = nai_000_000_2*nai_010_000_2; // auto, weighs 1
   out[0] = -1.57382268520622*tmp35 - 1.57382268520622*v_2 + 1.04921512347081*d_1*nai_000_000_2; // final, weighs 6
-  d_2 = d_2*pow(b_a,1.25); // auto+recycle, weighs 2
+  d_2 = d_2*pow(b_a,1.25); // auto+recycle, weighs 3
   tmp20 = d_2*(tmp8 + nai_201_000_0*p_0 - nai_200_000_2*u_0); // auto, weighs 6
   tmp32 = d_2*(nai_010_000_2*p_0 - nai_020_000_2*u_0); // auto, weighs 5
   out[1] = -3.14764537041244*tmp20 - 3.14764537041244*tmp32 + 2.09843024694163*d_2*(d_1*p_0 - d_0*u_0); // final, weighs 10
@@ -1736,7 +1736,7 @@ void gint2_nai_pF_SP(double* a, double a_a, double* b, double b_a, double* c, do
   out[25] = 4.97686431849385*nai_120_000_1 - 1.65895477283128*tmp1; // final, weighs 3
   out[26] = 4.97686431849385*tmp2 - 1.65895477283128*nai_020_000_0; // final, weighs 3
   out[27] = 4.97686431849385*nai_010_000_1 - 1.65895477283128*nai_010_000_0; // final, weighs 3
-  // total weight = 660
+  // total weight = 663
 }
 
 void gint2_nai_pD_SP(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -1790,12 +1790,12 @@ void gint2_nai_pD_SP(double* a, double a_a, double* b, double b_a, double* c, do
   v_1 = d_2*v_1 - d_0*u_1; // local+recycle, weighs 4
   tmp1 = tmp1 + d_1*v_2 - d_2*u_2; // local+recycle, weighs 5
   d_0 = usq + d_2*v_2 - d_0*u_2; // local+recycle, weighs 5
-  usq = pow(a_a,1.75); // auto+recycle, weighs 1
-  v_2 = usq*pow(b_a,0.75); // auto+recycle, weighs 2
+  usq = pow(a_a,1.75); // auto+recycle, weighs 2
+  v_2 = usq*pow(b_a,0.75); // auto+recycle, weighs 3
   tmp12 = nai_200_000_0*v_2; // auto, weighs 1
   tmp16 = nai_020_000_0*v_2; // auto, weighs 1
   out[0] = -0.586529084775394*tmp12 - 0.586529084775394*tmp16 + 1.17305816955079*tmp1*v_2; // final, weighs 6
-  usq = usq*pow(b_a,1.25); // auto+recycle, weighs 2
+  usq = usq*pow(b_a,1.25); // auto+recycle, weighs 3
   nai_100_000_0 = usq*(nai_200_000_0*p_0 + (nai_100_000_0 - nai_100_000_1)/ab_a - nai_200_000_1*u_0); // auto+recycle, weighs 10
   nai_100_000_1 = usq*(nai_020_000_0*p_0 - nai_010_000_2*u_0); // auto+recycle, weighs 5
   out[1] = -1.17305816955079*nai_100_000_0 - 1.17305816955079*nai_100_000_1 + 2.34611633910158*usq*(p_0*tmp1 - d_0*u_0); // final, weighs 10
@@ -1821,7 +1821,7 @@ void gint2_nai_pD_SP(double* a, double a_a, double* b, double b_a, double* c, do
   out[17] = 4.06359269979142*usq*(tmp4 + nai_110_000_0*p_0 - nai_110_000_1*u_0); // final, weighs 7
   out[18] = 4.06359269979142*usq*(tmp3 + nai_110_000_0*p_1 - nai_110_000_1*u_1); // final, weighs 7
   out[19] = 4.06359269979142*usq*(nai_110_000_0*p_2 - nai_110_000_1*u_2); // final, weighs 6
-  // total weight = 352
+  // total weight = 355
 }
 
 void gint2_nai_SP_SP(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -1859,15 +1859,15 @@ void gint2_nai_SP_SP(double* a, double a_a, double* b, double b_a, double* c, do
   v_1 = d_2*v_1 - d_0*u_1; // local+recycle, weighs 4
   nai_001_000_0 = -tmp9 + d_1*v_2; // local, weighs 3
   d_0 = d_2*v_2 - d_0*u_2; // local+recycle, weighs 4
-  d_2 = pow(b_a,0.75); // auto+recycle, weighs 1
-  v_2 = pow(a_a,0.75); // auto+recycle, weighs 1
+  d_2 = pow(b_a,0.75); // auto+recycle, weighs 2
+  v_2 = pow(a_a,0.75); // auto+recycle, weighs 2
   out[0] = 0.507949087473928*d_1*d_2*v_2; // final, weighs 3
-  tmp1 = pow(b_a,1.25); // auto, weighs 1
+  tmp1 = pow(b_a,1.25); // auto, weighs 2
   v_2 = tmp1*v_2; // auto+recycle, weighs 1
   out[1] = 1.01589817494786*v_2*(-tmp11 + d_1*p_0); // final, weighs 5
   out[2] = 1.01589817494786*v_2*(-tmp10 + d_1*p_1); // final, weighs 5
   out[3] = 1.01589817494786*v_2*(-tmp9 + d_1*p_2); // final, weighs 5
-  d_1 = pow(a_a,1.25); // auto+recycle, weighs 1
+  d_1 = pow(a_a,1.25); // auto+recycle, weighs 2
   d_2 = d_1*d_2; // auto+recycle, weighs 1
   out[4] = 1.01589817494786*d_2*nai_100_000_0; // final, weighs 2
   d_1 = d_1*tmp1; // auto+recycle, weighs 1
@@ -1882,7 +1882,7 @@ void gint2_nai_SP_SP(double* a, double a_a, double* b, double b_a, double* c, do
   out[13] = 2.03179634989571*d_1*(nai_001_000_0*p_0 - d_0*u_0); // final, weighs 6
   out[14] = 2.03179634989571*d_1*(nai_001_000_0*p_1 - d_0*u_1); // final, weighs 6
   out[15] = 2.03179634989571*d_1*(ab_a + nai_001_000_0*p_2 - d_0*u_2); // final, weighs 7
-  // total weight = 185
+  // total weight = 189
 }
 
 void gint2_nai_S_SP(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -1988,8 +1988,8 @@ void gint2_nai_cF_SP(double* a, double a_a, double* b, double b_a, double* c, do
 
 void gint2_nai_pF_S(double* a, double a_a, double* b, double b_a, double* c, double* out)
 {
-  // Number of local variables: 24
-  double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_010_000_0, nai_010_000_1, nai_020_000_0, nai_020_000_1, nai_100_000_0, nai_100_000_1, nai_200_000_0, nai_200_000_1, nai_210_000_0, p_0, p_1, p_2, tmp1, tmp6, tmp9, u_0, u_1, u_2, usq;
+  // Number of local variables: 23
+  double ab_a, d_0, d_1, d_2, nai_000_000_2, nai_010_000_0, nai_010_000_1, nai_020_000_0, nai_020_000_1, nai_100_000_0, nai_100_000_1, nai_200_000_0, nai_200_000_1, p_0, p_1, p_2, tmp1, tmp6, tmp9, u_0, u_1, u_2, usq;
   ab_a = a_a + b_a; // local, weighs 1
   p_0 = (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 5
   p_1 = (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 5
@@ -2015,7 +2015,6 @@ void gint2_nai_pF_S(double* a, double a_a, double* b, double b_a, double* c, dou
   d_0 = 6.28318530717959*d_0*gaux(usq, 3); // local+recycle, weighs 3
   usq = (0.5*d_2 - 0.5*nai_000_000_2)/ab_a; // auto+recycle, weighs 5
   nai_200_000_1 = usq + nai_100_000_1*p_0 - u_0*(nai_000_000_2*p_0 - d_0*u_0); // local, weighs 9
-  nai_210_000_0 = nai_200_000_0*p_1 - nai_200_000_1*u_1; // local, weighs 4
   nai_010_000_0 = d_1*p_1 - d_2*u_1; // local, weighs 4
   nai_010_000_1 = d_2*p_1 - nai_000_000_2*u_1; // local, weighs 4
   nai_020_000_0 = tmp1 + nai_010_000_0*p_1 - nai_010_000_1*u_1; // local, weighs 5
@@ -2025,7 +2024,7 @@ void gint2_nai_pF_S(double* a, double a_a, double* b, double b_a, double* c, dou
   d_0 = nai_000_000_2*p_2 - d_0*u_2; // local+recycle, weighs 4
   nai_000_000_2 = tmp1 + d_1*p_2 - d_2*u_2; // local+recycle, weighs 5
   tmp1 = usq + d_2*p_2 - d_0*u_2; // local+recycle, weighs 5
-  usq = pow(a_a,2.25)*pow(b_a,0.75); // auto+recycle, weighs 3
+  usq = pow(a_a,2.25)*pow(b_a,0.75); // auto+recycle, weighs 5
   tmp6 = usq*(nai_200_000_0*p_2 - nai_200_000_1*u_2); // auto, weighs 5
   tmp9 = usq*(nai_020_000_0*p_2 - nai_020_000_1*u_2); // auto, weighs 5
   out[0] = -1.57382268520622*tmp6 - 1.57382268520622*tmp9 + 1.04921512347081*usq*(nai_000_000_2*p_2 + (d_1 - d_2)/ab_a - tmp1*u_2); // final, weighs 15
@@ -2033,12 +2032,13 @@ void gint2_nai_pF_S(double* a, double a_a, double* b, double b_a, double* c, dou
   nai_100_000_1 = usq*(nai_020_000_0*p_0 - nai_020_000_1*u_0); // auto+recycle, weighs 5
   out[1] = -0.642510420728686*nai_100_000_0 - 0.642510420728686*nai_100_000_1 + 2.57004168291475*usq*(nai_000_000_2*p_0 - tmp1*u_0); // final, weighs 10
   ab_a = usq*(nai_020_000_0*p_1 + (nai_010_000_0 - nai_010_000_1)/ab_a - nai_020_000_1*u_1); // auto+recycle, weighs 10
-  out[2] = -0.642510420728686*ab_a + 2.57004168291475*usq*(nai_000_000_2*p_1 - tmp1*u_1) - 0.642510420728686*nai_210_000_0*usq; // final, weighs 11
+  nai_010_000_0 = usq*(nai_200_000_0*p_1 - nai_200_000_1*u_1); // auto+recycle, weighs 5
+  out[2] = -0.642510420728686*ab_a - 0.642510420728686*nai_010_000_0 + 2.57004168291475*usq*(nai_000_000_2*p_1 - tmp1*u_1); // final, weighs 10
   out[3] = 2.03179634989571*tmp6 - 2.03179634989571*tmp9; // final, weighs 3
   out[4] = 4.06359269979142*usq*(p_0*(d_1*p_1 - d_2*u_1) - u_0*(d_2*p_1 - d_0*u_1)); // final, weighs 14
   out[5] = 0.829477386415641*nai_100_000_0 - 2.48843215924692*nai_100_000_1; // final, weighs 3
-  out[6] = -0.829477386415641*ab_a + 2.48843215924692*nai_210_000_0*usq; // final, weighs 4
-  // total weight = 243
+  out[6] = 2.48843215924692*nai_010_000_0 - 0.829477386415641*ab_a; // final, weighs 3
+  // total weight = 244
 }
 
 void gint2_nai_pD_S(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -2068,7 +2068,7 @@ void gint2_nai_pD_S(double* a, double a_a, double* b, double b_a, double* c, dou
   nai_010_000_1 = d_2*p_1 - d_0*u_1; // local, weighs 4
   nai_001_000_0 = d_1*p_2 - d_2*u_2; // local, weighs 4
   nai_001_000_1 = d_2*p_2 - d_0*u_2; // local, weighs 4
-  tmp6 = pow(a_a,1.75)*pow(b_a,0.75); // auto, weighs 3
+  tmp6 = pow(a_a,1.75)*pow(b_a,0.75); // auto, weighs 5
   d_0 = tmp6*(ab_a + p_0*(d_1*p_0 - d_2*u_0) - u_0*(d_2*p_0 - d_0*u_0)); // auto+recycle, weighs 14
   d_1 = tmp6*(ab_a + p_1*usq - nai_010_000_1*u_1); // auto+recycle, weighs 6
   out[0] = -0.586529084775394*d_0 - 0.586529084775394*d_1 + 1.17305816955079*tmp6*(ab_a + nai_001_000_0*p_2 - nai_001_000_1*u_2); // final, weighs 11
@@ -2076,7 +2076,7 @@ void gint2_nai_pD_S(double* a, double a_a, double* b, double b_a, double* c, dou
   out[2] = 2.03179634989571*tmp6*(nai_001_000_0*p_1 - nai_001_000_1*u_1); // final, weighs 6
   out[3] = 1.01589817494786*d_0 - 1.01589817494786*d_1; // final, weighs 3
   out[4] = 2.03179634989571*tmp6*(p_0*usq - nai_010_000_1*u_0); // final, weighs 6
-  // total weight = 138
+  // total weight = 140
 }
 
 void gint2_nai_SP_S(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -2097,13 +2097,13 @@ void gint2_nai_SP_S(double* a, double a_a, double* b, double b_a, double* c, dou
   ab_a = exp(-a_a*b_a*(d_0*d_0 + d_1*d_1 + d_2*d_2)/ab_a)/ab_a; // auto+recycle, weighs 13
   d_0 = 6.28318530717959*ab_a*gaux(usq, 0); // local+recycle, weighs 3
   ab_a = 6.28318530717959*ab_a*gaux(usq, 1); // local+recycle, weighs 3
-  d_1 = pow(b_a,0.75); // auto+recycle, weighs 1
-  out[0] = 0.507949087473928*d_0*d_1*pow(a_a,0.75); // final, weighs 4
-  d_1 = d_1*pow(a_a,1.25); // auto+recycle, weighs 2
+  d_1 = pow(b_a,0.75); // auto+recycle, weighs 2
+  out[0] = 0.507949087473928*d_0*d_1*pow(a_a,0.75); // final, weighs 5
+  d_1 = d_1*pow(a_a,1.25); // auto+recycle, weighs 3
   out[1] = 1.01589817494786*d_1*(d_0*(p_0 - a[0]) - ab_a*u_0); // final, weighs 8
   out[2] = 1.01589817494786*d_1*(d_0*(p_1 - a[1]) - ab_a*u_1); // final, weighs 8
   out[3] = 1.01589817494786*d_1*(d_0*(p_2 - a[2]) - ab_a*u_2); // final, weighs 8
-  // total weight = 84
+  // total weight = 87
 }
 
 void gint2_nai_S_S(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -2117,8 +2117,8 @@ void gint2_nai_S_S(double* a, double a_a, double* b, double b_a, double* c, doub
   u_0 = -c[0] + (a[0]*a_a + b[0]*b_a)/ab_a; // local, weighs 7
   u_1 = -c[1] + (a[1]*a_a + b[1]*b_a)/ab_a; // local, weighs 7
   u_2 = -c[2] + (a[2]*a_a + b[2]*b_a)/ab_a; // local, weighs 7
-  out[0] = 3.19153824321146*pow(a_a,0.75)*pow(b_a,0.75)*exp(-a_a*b_a*(d_0*d_0 + d_1*d_1 + d_2*d_2)/ab_a)*gaux(ab_a*(u_0*u_0 + u_1*u_1 + u_2*u_2), 0)/ab_a; // final, weighs 25
-  // total weight = 53
+  out[0] = 3.19153824321146*pow(a_a,0.75)*pow(b_a,0.75)*exp(-a_a*b_a*(d_0*d_0 + d_1*d_1 + d_2*d_2)/ab_a)*gaux(ab_a*(u_0*u_0 + u_1*u_1 + u_2*u_2), 0)/ab_a; // final, weighs 27
+  // total weight = 55
 }
 
 void gint2_nai_P_S(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -2217,7 +2217,7 @@ void gint2_nai_pF_P(double* a, double a_a, double* b, double b_a, double* c, dou
   v_1 = tmp1*v_1 - d_0*u_1; // local+recycle, weighs 4
   d_1 = tmp2*v_2 + (d_1 - d_2)/ab_a - tmp1*u_2; // local+recycle, weighs 9
   d_0 = tmp1*v_2 + (d_2 - nai_000_000_2)/ab_a - d_0*u_2; // local+recycle, weighs 9
-  d_2 = pow(a_a,2.25)*pow(b_a,1.25); // auto+recycle, weighs 3
+  d_2 = pow(a_a,2.25)*pow(b_a,1.25); // auto+recycle, weighs 5
   nai_000_000_2 = d_2*(tmp8 + nai_201_000_0*p_0 - nai_200_000_2*u_0); // auto+recycle, weighs 6
   v_2 = d_2*(nai_010_000_2*p_0 - nai_020_000_2*u_0); // auto+recycle, weighs 5
   out[0] = -3.14764537041244*nai_000_000_2 - 3.14764537041244*v_2 + 2.09843024694163*d_2*(d_1*p_0 - d_0*u_0); // final, weighs 10
@@ -2257,7 +2257,7 @@ void gint2_nai_pF_P(double* a, double a_a, double* b, double b_a, double* c, dou
   out[18] = 4.97686431849385*nai_102_000_0 - 1.65895477283128*nai_120_000_0; // final, weighs 3
   out[19] = 4.97686431849385*nai_120_000_1 - 1.65895477283128*nai_020_000_0; // final, weighs 3
   out[20] = 4.97686431849385*nai_010_000_1 - 1.65895477283128*nai_010_000_0; // final, weighs 3
-  // total weight = 623
+  // total weight = 625
 }
 
 void gint2_nai_pD_P(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -2311,7 +2311,7 @@ void gint2_nai_pD_P(double* a, double a_a, double* b, double b_a, double* c, dou
   v_1 = d_2*v_1 - d_0*u_1; // local+recycle, weighs 4
   tmp1 = tmp1 + d_1*v_2 - d_2*u_2; // local+recycle, weighs 5
   d_0 = usq + d_2*v_2 - d_0*u_2; // local+recycle, weighs 5
-  usq = pow(a_a,1.75)*pow(b_a,1.25); // auto+recycle, weighs 3
+  usq = pow(a_a,1.75)*pow(b_a,1.25); // auto+recycle, weighs 5
   nai_100_000_0 = usq*(nai_200_000_0*p_0 + (nai_100_000_0 - nai_100_000_1)/ab_a - nai_200_000_1*u_0); // auto+recycle, weighs 10
   nai_100_000_1 = usq*(nai_020_000_0*p_0 - nai_010_000_2*u_0); // auto+recycle, weighs 5
   out[0] = -1.17305816955079*nai_100_000_0 - 1.17305816955079*nai_100_000_1 + 2.34611633910158*usq*(p_0*tmp1 - d_0*u_0); // final, weighs 10
@@ -2333,7 +2333,7 @@ void gint2_nai_pD_P(double* a, double a_a, double* b, double b_a, double* c, dou
   out[12] = 4.06359269979142*usq*(tmp4 + nai_110_000_0*p_0 - nai_110_000_1*u_0); // final, weighs 7
   out[13] = 4.06359269979142*usq*(tmp3 + nai_110_000_0*p_1 - nai_110_000_1*u_1); // final, weighs 7
   out[14] = 4.06359269979142*usq*(nai_110_000_0*p_2 - nai_110_000_1*u_2); // final, weighs 6
-  // total weight = 333
+  // total weight = 335
 }
 
 void gint2_nai_SP_P(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -2371,12 +2371,12 @@ void gint2_nai_SP_P(double* a, double a_a, double* b, double b_a, double* c, dou
   v_1 = d_2*v_1 - d_0*u_1; // local+recycle, weighs 4
   nai_001_000_0 = -tmp7 + d_1*v_2; // local, weighs 3
   d_0 = d_2*v_2 - d_0*u_2; // local+recycle, weighs 4
-  d_2 = pow(b_a,1.25); // auto+recycle, weighs 1
-  v_2 = d_2*pow(a_a,0.75); // auto+recycle, weighs 2
+  d_2 = pow(b_a,1.25); // auto+recycle, weighs 2
+  v_2 = d_2*pow(a_a,0.75); // auto+recycle, weighs 3
   out[0] = 1.01589817494786*v_2*(-tmp9 + d_1*p_0); // final, weighs 5
   out[1] = 1.01589817494786*v_2*(-tmp8 + d_1*p_1); // final, weighs 5
   out[2] = 1.01589817494786*v_2*(-tmp7 + d_1*p_2); // final, weighs 5
-  d_1 = d_2*pow(a_a,1.25); // auto+recycle, weighs 2
+  d_1 = d_2*pow(a_a,1.25); // auto+recycle, weighs 3
   out[3] = 2.03179634989571*d_1*(ab_a + nai_100_000_0*p_0 - u_0*usq); // final, weighs 7
   out[4] = 2.03179634989571*d_1*(nai_100_000_0*p_1 - u_1*usq); // final, weighs 6
   out[5] = 2.03179634989571*d_1*(nai_100_000_0*p_2 - u_2*usq); // final, weighs 6
@@ -2386,7 +2386,7 @@ void gint2_nai_SP_P(double* a, double a_a, double* b, double b_a, double* c, dou
   out[9] = 2.03179634989571*d_1*(nai_001_000_0*p_0 - d_0*u_0); // final, weighs 6
   out[10] = 2.03179634989571*d_1*(nai_001_000_0*p_1 - d_0*u_1); // final, weighs 6
   out[11] = 2.03179634989571*d_1*(ab_a + nai_001_000_0*p_2 - d_0*u_2); // final, weighs 7
-  // total weight = 174
+  // total weight = 177
 }
 
 void gint2_nai_S_P(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -2407,11 +2407,11 @@ void gint2_nai_S_P(double* a, double a_a, double* b, double b_a, double* c, doub
   ab_a = exp(-a_a*b_a*(d_0*d_0 + d_1*d_1 + d_2*d_2)/ab_a)/ab_a; // auto+recycle, weighs 13
   d_0 = 6.28318530717959*ab_a*gaux(usq, 0); // local+recycle, weighs 3
   ab_a = 6.28318530717959*ab_a*gaux(usq, 1); // local+recycle, weighs 3
-  d_1 = pow(a_a,0.75)*pow(b_a,1.25); // auto+recycle, weighs 3
+  d_1 = pow(a_a,0.75)*pow(b_a,1.25); // auto+recycle, weighs 5
   out[0] = 1.01589817494786*d_1*(d_0*(p_0 - b[0]) - ab_a*u_0); // final, weighs 8
   out[1] = 1.01589817494786*d_1*(d_0*(p_1 - b[1]) - ab_a*u_1); // final, weighs 8
   out[2] = 1.01589817494786*d_1*(d_0*(p_2 - b[2]) - ab_a*u_2); // final, weighs 8
-  // total weight = 80
+  // total weight = 82
 }
 
 void gint2_nai_P_P(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -2446,7 +2446,7 @@ void gint2_nai_P_P(double* a, double a_a, double* b, double b_a, double* c, doub
   v_1 = d_2*v_1 - d_0*u_1; // local+recycle, weighs 4
   d_1 = d_1*v_2 - d_2*u_2; // local+recycle, weighs 4
   d_0 = d_2*v_2 - d_0*u_2; // local+recycle, weighs 4
-  d_2 = pow(a_a,1.25)*pow(b_a,1.25); // auto+recycle, weighs 3
+  d_2 = pow(a_a,1.25)*pow(b_a,1.25); // auto+recycle, weighs 5
   out[0] = 2.03179634989571*d_2*(ab_a + nai_100_000_0*p_0 - u_0*usq); // final, weighs 7
   out[1] = 2.03179634989571*d_2*(nai_100_000_0*p_1 - u_1*usq); // final, weighs 6
   out[2] = 2.03179634989571*d_2*(nai_100_000_0*p_2 - u_2*usq); // final, weighs 6
@@ -2456,7 +2456,7 @@ void gint2_nai_P_P(double* a, double a_a, double* b, double b_a, double* c, doub
   out[6] = 2.03179634989571*d_2*(d_1*p_0 - d_0*u_0); // final, weighs 6
   out[7] = 2.03179634989571*d_2*(d_1*p_1 - d_0*u_1); // final, weighs 6
   out[8] = 2.03179634989571*d_2*(ab_a + d_1*p_2 - d_0*u_2); // final, weighs 7
-  // total weight = 157
+  // total weight = 159
 }
 
 void gint2_nai_cD_P(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -2782,7 +2782,7 @@ void gint2_nai_pF_cD(double* a, double a_a, double* b, double b_a, double* c, do
   nai_003_010_1 = p_1*tmp44 - nai_001_000_3*u_1; // local, weighs 4
   nai_002_000_0 = p_2*tmp32 + (1.5*nai_002_000_0 - 1.5*nai_002_000_1)/ab_a - tmp44*u_2; // local+recycle, weighs 10
   nai_002_000_1 = p_2*tmp44 + (1.5*nai_002_000_1 - 1.5*nai_002_000_2)/ab_a - nai_001_000_3*u_2; // local+recycle, weighs 10
-  nai_002_000_2 = pow(a_a,2.25)*pow(b_a,1.75); // auto+recycle, weighs 3
+  nai_002_000_2 = pow(a_a,2.25)*pow(b_a,1.75); // auto+recycle, weighs 5
   tmp69 = nai_002_000_2*(tmp49*v_2 - nai_100_000_3*u_2); // auto, weighs 5
   tmp87 = nai_002_000_2*(nai_020_200_0*v_2 - nai_020_200_1*u_2); // auto, weighs 5
   out[0] = -3.63458780384221*tmp69 - 3.63458780384221*tmp87 + 2.4230585358948*nai_002_000_2*(tmp11 + p_0*(p_0*tmp32 - tmp44*u_0) - u_0*(p_0*tmp44 - nai_001_000_3*u_0)); // final, weighs 19
@@ -2861,7 +2861,7 @@ void gint2_nai_pF_cD(double* a, double a_a, double* b, double b_a, double* c, do
   out[39] = 5.74678790800533*nai_110_000_0 - 1.91559596933511*nai_020_010_0; // final, weighs 3
   out[40] = 9.95372863698769*nai_002_010_0 - 3.31790954566256*nai_002_010_1; // final, weighs 3
   out[41] = 5.74678790800533*nai_002_020_1 - 1.91559596933511*nai_002_020_0; // final, weighs 3
-  // total weight = 1861
+  // total weight = 1863
 }
 
 void gint2_nai_pD_cD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -3007,7 +3007,7 @@ void gint2_nai_pD_cD(double* a, double a_a, double* b, double b_a, double* c, do
   nai_002_010_1 = p_1*tmp0 - d_0*u_1; // local, weighs 4
   nai_002_001_0 = p_2*tmp1 + (d_1 - d_2)/ab_a - tmp0*u_2; // local, weighs 9
   nai_002_001_1 = p_2*tmp0 + (d_2 - nai_000_000_2)/ab_a - d_0*u_2; // local, weighs 9
-  tmp33 = pow(a_a,1.75)*pow(b_a,1.75); // auto, weighs 3
+  tmp33 = pow(a_a,1.75)*pow(b_a,1.75); // auto, weighs 5
   nai_200_000_0 = tmp33*(p_0*(nai_200_000_0*p_0 + (nai_100_000_0 - nai_100_000_1)/ab_a - nai_200_000_1*u_0) + (tmp14 + tmp17 - tmp11 + nai_100_000_0*p_0 - nai_100_000_1*p_0)/ab_a - u_0*(nai_200_000_1*p_0 + (nai_100_000_1 - nai_100_000_2)/ab_a - nai_200_000_2*u_0)); // auto+recycle, weighs 34
   nai_000_001_2 = tmp33*(tmp6 + p_0*(nai_000_001_2*p_0 - tmp18*u_0) - u_0*(p_0*tmp18 - nai_010_000_3*u_0)); // auto+recycle, weighs 14
   out[0] = -1.35453089993047*nai_000_001_2 - 1.35453089993047*nai_200_000_0 + 2.70906179986095*tmp33*(v_2 + p_0*(p_0*tmp1 - tmp0*u_0) - u_0*(p_0*tmp0 - d_0*u_0)); // final, weighs 19
@@ -3050,7 +3050,7 @@ void gint2_nai_pD_cD(double* a, double a_a, double* b, double b_a, double* c, do
   out[27] = 4.69223267820315*tmp33*(v_0*(nai_000_020_0*v_1 + (usq - tmp47)/ab_a - nai_000_020_1*u_1) - u_0*(nai_000_020_1*v_1 + (tmp47 - tmp44)/ab_a - tmp41*u_1)); // final, weighs 24
   out[28] = 8.12718539958284*tmp33*(nai_110_001_0*p_1 + (0.5*nai_100_001_0 - 0.5*nai_100_001_1)/ab_a - nai_110_001_1*u_1); // final, weighs 12
   out[29] = 4.69223267820315*tmp33*(v_0*(nai_000_002_0*v_1 - nai_000_002_1*u_1) - u_0*(nai_000_002_1*v_1 - nai_000_002_2*u_1)); // final, weighs 14
-  // total weight = 956
+  // total weight = 958
 }
 
 void gint2_nai_SP_cD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -3118,15 +3118,15 @@ void gint2_nai_SP_cD(double* a, double a_a, double* b, double b_a, double* c, do
   d_0 = -d_0 + nai_000_000_2*v_2; // local+recycle, weighs 3
   nai_000_000_2 = tmp1 + d_1*p_2 - d_2*u_2; // local+recycle, weighs 5
   p_2 = tmp0 + d_2*p_2 - d_0*u_2; // local+recycle, weighs 5
-  tmp12 = pow(b_a,1.75); // auto+recycle, weighs 1
-  tmp15 = tmp12*pow(a_a,0.75); // auto+recycle, weighs 2
+  tmp12 = pow(b_a,1.75); // auto+recycle, weighs 2
+  tmp15 = tmp12*pow(a_a,0.75); // auto+recycle, weighs 3
   out[0] = 1.17305816955079*nai_000_200_0*tmp15; // final, weighs 2
   out[1] = 2.03179634989571*tmp15*(nai_000_010_0*p_0 - nai_000_010_1*u_0); // final, weighs 6
   out[2] = 2.03179634989571*tmp15*(nai_000_001_0*p_0 - nai_000_001_1*u_0); // final, weighs 6
   out[3] = 1.17305816955079*nai_000_020_0*tmp15; // final, weighs 2
   out[4] = 2.03179634989571*tmp15*(nai_000_001_0*p_1 - nai_000_001_1*u_1); // final, weighs 6
   out[5] = 1.17305816955079*nai_000_002_0*tmp15; // final, weighs 2
-  tmp12 = tmp12*pow(a_a,1.25); // auto+recycle, weighs 2
+  tmp12 = tmp12*pow(a_a,1.25); // auto+recycle, weighs 3
   out[6] = 2.34611633910158*tmp12*(nai_000_200_0*v_0 + (nai_000_100_0 - nai_000_100_1)/ab_a - nai_000_200_1*u_0); // final, weighs 11
   out[7] = 4.06359269979142*tmp12*(p_0*(p_1*tmp17 - tmp14*u_1) + (0.5*nai_000_010_0 - 0.5*nai_000_010_1)/ab_a - u_0*(p_1*tmp14 - u_1*usq)); // final, weighs 20
   out[8] = 4.06359269979142*tmp12*(tmp2 + nai_100_001_0*p_0 - nai_100_001_1*u_0); // final, weighs 7
@@ -3145,7 +3145,7 @@ void gint2_nai_SP_cD(double* a, double a_a, double* b, double b_a, double* c, do
   out[21] = 2.34611633910158*tmp12*(nai_000_020_0*v_2 - nai_000_020_1*u_2); // final, weighs 6
   out[22] = 4.06359269979142*tmp12*(nai_000_000_2*p_1 - p_2*u_1); // final, weighs 6
   out[23] = 2.34611633910158*tmp12*(nai_000_002_0*v_2 + (nai_000_001_0 - nai_000_001_1)/ab_a - nai_000_002_1*u_2); // final, weighs 11
-  // total weight = 391
+  // total weight = 394
 }
 
 void gint2_nai_S_cD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -3175,14 +3175,14 @@ void gint2_nai_S_cD(double* a, double a_a, double* b, double b_a, double* c, dou
   nai_000_010_1 = d_2*p_1 - d_0*u_1; // local, weighs 4
   nai_000_001_0 = d_1*p_2 - d_2*u_2; // local, weighs 4
   nai_000_001_1 = d_2*p_2 - d_0*u_2; // local, weighs 4
-  tmp4 = pow(a_a,0.75)*pow(b_a,1.75); // auto, weighs 3
+  tmp4 = pow(a_a,0.75)*pow(b_a,1.75); // auto, weighs 5
   out[0] = 1.17305816955079*tmp4*(ab_a + p_0*(d_1*p_0 - d_2*u_0) - u_0*(d_2*p_0 - d_0*u_0)); // final, weighs 15
   out[1] = 2.03179634989571*tmp4*(p_0*usq - nai_000_010_1*u_0); // final, weighs 6
   out[2] = 2.03179634989571*tmp4*(nai_000_001_0*p_0 - nai_000_001_1*u_0); // final, weighs 6
   out[3] = 1.17305816955079*tmp4*(ab_a + p_1*usq - nai_000_010_1*u_1); // final, weighs 7
   out[4] = 2.03179634989571*tmp4*(nai_000_001_0*p_1 - nai_000_001_1*u_1); // final, weighs 6
   out[5] = 1.17305816955079*tmp4*(ab_a + nai_000_001_0*p_2 - nai_000_001_1*u_2); // final, weighs 7
-  // total weight = 133
+  // total weight = 135
 }
 
 void gint2_nai_P_cD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -3250,7 +3250,7 @@ void gint2_nai_P_cD(double* a, double a_a, double* b, double b_a, double* c, dou
   d_0 = -d_0 + nai_000_000_2*v_2; // local+recycle, weighs 3
   nai_000_000_2 = tmp1 + d_1*p_2 - d_2*u_2; // local+recycle, weighs 5
   p_2 = tmp0 + d_2*p_2 - d_0*u_2; // local+recycle, weighs 5
-  tmp10 = pow(a_a,1.25)*pow(b_a,1.75); // auto+recycle, weighs 3
+  tmp10 = pow(a_a,1.25)*pow(b_a,1.75); // auto+recycle, weighs 5
   out[0] = 2.34611633910158*tmp10*(nai_000_200_0*v_0 + (nai_000_100_0 - nai_000_100_1)/ab_a - nai_000_200_1*u_0); // final, weighs 11
   out[1] = 4.06359269979142*tmp10*(p_0*(p_1*tmp15 - tmp12*u_1) + (0.5*nai_000_010_0 - 0.5*nai_000_010_1)/ab_a - u_0*(p_1*tmp12 - u_1*usq)); // final, weighs 20
   out[2] = 4.06359269979142*tmp10*(tmp2 + nai_100_001_0*p_0 - nai_100_001_1*u_0); // final, weighs 7
@@ -3269,7 +3269,7 @@ void gint2_nai_P_cD(double* a, double a_a, double* b, double b_a, double* c, dou
   out[15] = 2.34611633910158*tmp10*(nai_000_020_0*v_2 - nai_000_020_1*u_2); // final, weighs 6
   out[16] = 4.06359269979142*tmp10*(nai_000_000_2*p_1 - p_2*u_1); // final, weighs 6
   out[17] = 2.34611633910158*tmp10*(nai_000_002_0*v_2 + (nai_000_001_0 - nai_000_001_1)/ab_a - nai_000_002_1*u_2); // final, weighs 11
-  // total weight = 365
+  // total weight = 367
 }
 
 void gint2_nai_cD_cD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -3415,7 +3415,7 @@ void gint2_nai_cD_cD(double* a, double a_a, double* b, double b_a, double* c, do
   nai_002_010_1 = p_1*tmp0 - d_0*u_1; // local, weighs 4
   nai_002_001_0 = p_2*tmp1 + (d_1 - d_2)/ab_a - tmp0*u_2; // local, weighs 9
   nai_002_001_1 = p_2*tmp0 + (d_2 - nai_000_000_2)/ab_a - d_0*u_2; // local, weighs 9
-  tmp21 = pow(a_a,1.75)*pow(b_a,1.75); // auto, weighs 3
+  tmp21 = pow(a_a,1.75)*pow(b_a,1.75); // auto, weighs 5
   out[0] = 2.70906179986095*tmp21*(p_0*(nai_200_000_0*p_0 + (nai_100_000_0 - nai_100_000_1)/ab_a - nai_200_000_1*u_0) + (tmp14 + tmp17 - tmp11 + nai_100_000_0*p_0 - nai_100_000_1*p_0)/ab_a - u_0*(nai_200_000_1*p_0 + (nai_100_000_1 - nai_100_000_2)/ab_a - nai_200_000_2*u_0)); // final, weighs 35
   out[1] = 4.69223267820315*tmp21*(nai_200_010_0*p_0 + (nai_100_000_0*p_1 + nai_100_000_2*u_1 - nai_100_000_1*p_1 - nai_100_000_1*u_1)/ab_a - nai_200_010_1*u_0); // final, weighs 18
   out[2] = 4.69223267820315*tmp21*(nai_200_001_0*p_0 + (nai_100_001_0 - nai_100_001_1)/ab_a - nai_200_001_1*u_0); // final, weighs 11
@@ -3452,7 +3452,7 @@ void gint2_nai_cD_cD(double* a, double a_a, double* b, double b_a, double* c, do
   out[33] = 2.70906179986095*tmp21*(v_2 + nai_002_010_0*p_1 - nai_002_010_1*u_1); // final, weighs 7
   out[34] = 4.69223267820315*tmp21*(nai_002_001_0*p_1 - nai_002_001_1*u_1); // final, weighs 6
   out[35] = 2.70906179986095*tmp21*(nai_002_001_0*p_2 + (nai_001_001_0 + tmp2 - nai_001_001_1)/ab_a - nai_002_001_1*u_2); // final, weighs 12
-  // total weight = 926
+  // total weight = 928
 }
 
 void gint2_nai_cF_cD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -4034,7 +4034,7 @@ void gint2_nai_pF_cF(double* a, double a_a, double* b, double b_a, double* c, do
   nai_000_000_2 = nai_000_000_2*p_2 + (1.5*tmp1 - 1.5*nai_002_000_3)/ab_a - tmp4*u_2; // local+recycle, weighs 10
   nai_000_003_1 = d_1*p_2 + (tmp72 + 1.5*nai_002_001_0 - 1.5*nai_002_001_1)/ab_a - d_2*u_2; // local+recycle, weighs 11
   tmp1 = d_2*p_2 + (tmp71 + 1.5*nai_002_001_1 - 1.5*nai_002_001_2)/ab_a - nai_000_000_2*u_2; // local+recycle, weighs 11
-  tmp4 = pow(a_a,2.25)*pow(b_a,2.25); // auto+recycle, weighs 3
+  tmp4 = pow(a_a,2.25)*pow(b_a,2.25); // auto+recycle, weighs 5
   tmp71 = tmp4*(tmp232*v_2 - nai_100_300_1*u_2); // auto+recycle, weighs 5
   tmp72 = tmp4*(nai_020_300_0*v_2 - nai_010_300_1*u_2); // auto+recycle, weighs 5
   out[0] = -3.25087415983314*tmp71 - 3.25087415983314*tmp72 + 2.16724943988876*tmp4*(nai_003_200_0*p_0 + (nai_003_100_0 - nai_003_100_1)/ab_a - nai_003_200_1*u_0); // final, weighs 15
@@ -4165,7 +4165,7 @@ void gint2_nai_pF_cF(double* a, double a_a, double* b, double b_a, double* c, do
   out[67] = 11.4935758160107*nai_002_001_2 - 3.83119193867022*nai_002_010_2; // final, weighs 3
   out[68] = 11.4935758160107*nai_002_010_0 - 3.83119193867022*nai_002_010_1; // final, weighs 3
   out[69] = 5.14008336582949*nai_000_000_3 - 1.71336112194316*nai_000_001_2; // final, weighs 3
-  // total weight = 3748
+  // total weight = 3750
 }
 
 void gint2_nai_pD_cF(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -4428,7 +4428,7 @@ void gint2_nai_pD_cF(double* a, double a_a, double* b, double b_a, double* c, do
   nai_000_000_2 = p_2*tmp51 + (nai_000_000_2 - nai_000_000_3)/ab_a - tmp3*u_2; // local+recycle, weighs 9
   tmp11 = nai_000_000_4*p_2 + (nai_001_001_0 + tmp36 - nai_001_001_1)/ab_a - d_2*u_2; // local+recycle, weighs 10
   tmp28 = d_2*p_2 + (nai_001_001_1 + tmp35 - nai_001_001_2)/ab_a - nai_000_000_2*u_2; // local+recycle, weighs 10
-  tmp3 = pow(a_a,1.75)*pow(b_a,2.25); // auto+recycle, weighs 3
+  tmp3 = pow(a_a,1.75)*pow(b_a,2.25); // auto+recycle, weighs 5
   nai_000_100_0 = tmp3*(v_0*(nai_000_300_0*v_0 + (1.5*nai_000_200_0 - 1.5*nai_000_200_1)/ab_a - nai_000_300_1*u_0) + (nai_000_100_3 + 1.5*nai_000_100_0 - 1.5*nai_000_100_1)/ab_a - u_0*(nai_000_300_1*v_0 + (1.5*nai_000_200_1 - 1.5*nai_000_200_2)/ab_a - nai_000_100_2*u_0)); // auto+recycle, weighs 32
   nai_000_100_1 = tmp3*(nai_000_002_2 + nai_010_300_0*v_1 - nai_010_300_1*u_1); // auto+recycle, weighs 6
   out[0] = -1.2115292679474*nai_000_100_0 - 1.2115292679474*nai_000_100_1 + 2.4230585358948*tmp3*(nai_000_002_2 + nai_001_300_0*v_2 - nai_001_300_1*u_2); // final, weighs 11
@@ -4499,7 +4499,7 @@ void gint2_nai_pD_cF(double* a, double a_a, double* b, double b_a, double* c, do
   out[47] = 9.3844653564063*tmp3*(nai_110_020_0*p_2 - nai_000_010_2*u_2); // final, weighs 6
   out[48] = 9.3844653564063*tmp3*(nai_110_002_0*p_1 + (0.5*nai_100_002_0 - 0.5*nai_100_002_1)/ab_a - nai_000_002_3*u_1); // final, weighs 12
   out[49] = 4.19686049388326*tmp3*(nai_010_003_0*v_0 - nai_010_003_1*u_0); // final, weighs 6
-  // total weight = 1880
+  // total weight = 1882
 }
 
 void gint2_nai_SP_cF(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -4612,8 +4612,8 @@ void gint2_nai_SP_cF(double* a, double a_a, double* b, double b_a, double* c, do
   tmp1 = tmp1 + d_2*p_2 - nai_000_000_2*u_2; // local+recycle, weighs 5
   tmp19 = tmp19 + nai_000_002_0*v_2; // local+recycle, weighs 2
   tmp20 = tmp20 + nai_000_002_1*v_2; // local+recycle, weighs 2
-  tmp33 = pow(b_a,2.25); // auto+recycle, weighs 1
-  tmp36 = tmp33*pow(a_a,0.75); // auto+recycle, weighs 2
+  tmp33 = pow(b_a,2.25); // auto+recycle, weighs 2
+  tmp36 = tmp33*pow(a_a,0.75); // auto+recycle, weighs 3
   out[0] = 1.04921512347081*nai_000_300_0*tmp36; // final, weighs 2
   out[1] = 2.34611633910158*tmp36*(-tmp25 + nai_000_200_0*p_1); // final, weighs 5
   out[2] = 2.34611633910158*tmp36*(-tmp24 + nai_000_200_0*p_2); // final, weighs 5
@@ -4624,7 +4624,7 @@ void gint2_nai_SP_cF(double* a, double a_a, double* b, double b_a, double* c, do
   out[7] = 2.34611633910158*tmp36*(-tmp26 + nai_000_020_0*p_2); // final, weighs 5
   out[8] = 2.34611633910158*tmp36*(-tmp28 + nai_000_002_0*p_1); // final, weighs 5
   out[9] = 1.04921512347081*nai_000_003_0*tmp36; // final, weighs 2
-  tmp24 = tmp33*pow(a_a,1.25); // auto+recycle, weighs 2
+  tmp24 = tmp33*pow(a_a,1.25); // auto+recycle, weighs 3
   out[10] = 2.09843024694163*tmp24*(nai_000_300_0*v_0 + (1.5*nai_000_200_0 - 1.5*nai_000_200_1)/ab_a - nai_000_100_2*u_0); // final, weighs 12
   out[11] = 4.69223267820315*tmp24*(nai_000_100_0*p_1 - nai_000_100_1*u_1); // final, weighs 6
   out[12] = 4.69223267820315*tmp24*(nai_000_100_0*p_2 - nai_000_100_1*u_2); // final, weighs 6
@@ -4655,7 +4655,7 @@ void gint2_nai_SP_cF(double* a, double a_a, double* b, double b_a, double* c, do
   out[37] = 4.69223267820315*tmp24*(tmp5 + nai_001_020_0*p_2 - nai_000_020_2*u_2); // final, weighs 7
   out[38] = 4.69223267820315*tmp24*(p_1*tmp19 - tmp20*u_1); // final, weighs 6
   out[39] = 2.09843024694163*tmp24*(nai_000_003_0*v_2 + (1.5*nai_000_002_0 - 1.5*nai_000_002_1)/ab_a - nai_000_003_1*u_2); // final, weighs 12
-  // total weight = 687
+  // total weight = 690
 }
 
 void gint2_nai_S_cF(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -4696,7 +4696,7 @@ void gint2_nai_S_cF(double* a, double a_a, double* b, double b_a, double* c, dou
   d_0 = nai_000_000_2*p_2 - d_0*u_2; // local+recycle, weighs 4
   nai_000_000_2 = tmp1 + d_1*p_2 - d_2*u_2; // local+recycle, weighs 5
   tmp1 = usq + d_2*p_2 - d_0*u_2; // local+recycle, weighs 5
-  usq = pow(a_a,0.75)*pow(b_a,2.25); // auto+recycle, weighs 3
+  usq = pow(a_a,0.75)*pow(b_a,2.25); // auto+recycle, weighs 5
   out[0] = 1.04921512347081*usq*(nai_000_200_0*p_0 + (nai_000_100_0 - nai_000_100_1)/ab_a - nai_000_200_1*u_0); // final, weighs 11
   out[1] = 2.34611633910158*usq*(nai_000_200_0*p_1 - nai_000_200_1*u_1); // final, weighs 6
   out[2] = 2.34611633910158*usq*(nai_000_200_0*p_2 - nai_000_200_1*u_2); // final, weighs 6
@@ -4707,7 +4707,7 @@ void gint2_nai_S_cF(double* a, double a_a, double* b, double b_a, double* c, dou
   out[7] = 2.34611633910158*usq*(nai_000_020_0*p_2 - nai_000_020_1*u_2); // final, weighs 6
   out[8] = 2.34611633910158*usq*(nai_000_000_2*p_1 - tmp1*u_1); // final, weighs 6
   out[9] = 1.04921512347081*usq*(nai_000_000_2*p_2 + (d_1 - d_2)/ab_a - tmp1*u_2); // final, weighs 11
-  // total weight = 227
+  // total weight = 229
 }
 
 void gint2_nai_P_cF(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -4812,7 +4812,7 @@ void gint2_nai_P_cF(double* a, double a_a, double* b, double b_a, double* c, dou
   tmp1 = tmp1 + d_2*p_2 - nai_000_000_2*u_2; // local+recycle, weighs 5
   tmp18 = tmp18 + nai_000_002_0*v_2; // local+recycle, weighs 2
   tmp19 = tmp19 + nai_000_002_1*v_2; // local+recycle, weighs 2
-  tmp25 = pow(a_a,1.25)*pow(b_a,2.25); // auto+recycle, weighs 3
+  tmp25 = pow(a_a,1.25)*pow(b_a,2.25); // auto+recycle, weighs 5
   out[0] = 2.09843024694163*tmp25*(nai_000_300_0*v_0 + (1.5*nai_000_200_0 - 1.5*nai_000_200_1)/ab_a - nai_000_100_2*u_0); // final, weighs 12
   out[1] = 4.69223267820315*tmp25*(nai_000_100_0*p_1 - nai_000_100_1*u_1); // final, weighs 6
   out[2] = 4.69223267820315*tmp25*(nai_000_100_0*p_2 - nai_000_100_1*u_2); // final, weighs 6
@@ -4843,7 +4843,7 @@ void gint2_nai_P_cF(double* a, double a_a, double* b, double b_a, double* c, dou
   out[27] = 4.69223267820315*tmp25*(tmp5 + nai_001_020_0*p_2 - nai_000_020_2*u_2); // final, weighs 7
   out[28] = 4.69223267820315*tmp25*(p_1*tmp18 - tmp19*u_1); // final, weighs 6
   out[29] = 2.09843024694163*tmp25*(nai_000_003_0*v_2 + (1.5*nai_000_002_0 - 1.5*nai_000_002_1)/ab_a - nai_000_003_1*u_2); // final, weighs 12
-  // total weight = 643
+  // total weight = 645
 }
 
 void gint2_nai_cD_cF(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -5106,7 +5106,7 @@ void gint2_nai_cD_cF(double* a, double a_a, double* b, double b_a, double* c, do
   nai_000_000_2 = p_2*tmp51 + (nai_000_000_2 - nai_000_000_3)/ab_a - tmp3*u_2; // local+recycle, weighs 9
   tmp11 = nai_000_000_4*p_2 + (nai_001_001_0 + tmp36 - nai_001_001_1)/ab_a - d_2*u_2; // local+recycle, weighs 10
   tmp28 = d_2*p_2 + (nai_001_001_1 + tmp35 - nai_001_001_2)/ab_a - nai_000_000_2*u_2; // local+recycle, weighs 10
-  tmp3 = pow(a_a,1.75)*pow(b_a,2.25); // auto+recycle, weighs 3
+  tmp3 = pow(a_a,1.75)*pow(b_a,2.25); // auto+recycle, weighs 5
   out[0] = 2.4230585358948*tmp3*(v_0*(nai_000_300_0*v_0 + (1.5*nai_000_200_0 - 1.5*nai_000_200_1)/ab_a - nai_000_300_1*u_0) + (nai_000_100_3 + 1.5*nai_000_100_0 - 1.5*nai_000_100_1)/ab_a - u_0*(nai_000_300_1*v_0 + (1.5*nai_000_200_1 - 1.5*nai_000_200_2)/ab_a - nai_000_100_2*u_0)); // final, weighs 33
   out[1] = 5.4181235997219*tmp3*(p_1*tmp43 - nai_200_100_1*u_1); // final, weighs 6
   out[2] = 5.4181235997219*tmp3*(p_2*tmp43 - nai_200_100_1*u_2); // final, weighs 6
@@ -5167,7 +5167,7 @@ void gint2_nai_cD_cF(double* a, double a_a, double* b, double b_a, double* c, do
   out[57] = 5.4181235997219*tmp3*(p_2*tmp12 + (nai_000_020_0 - nai_000_020_1)/ab_a - nai_002_010_1*u_2); // final, weighs 11
   out[58] = 5.4181235997219*tmp3*(p_1*tmp11 - tmp28*u_1); // final, weighs 6
   out[59] = 2.4230585358948*tmp3*(nai_000_002_0*v_2 + (tmp38 + 1.5*tmp39 - 1.5*tmp40)/ab_a - nai_000_002_1*u_2); // final, weighs 13
-  // total weight = 1830
+  // total weight = 1832
 }
 
 void gint2_nai_cF_cF(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -5684,7 +5684,7 @@ void gint2_nai_cF_cF(double* a, double a_a, double* b, double b_a, double* c, do
   nai_000_000_2 = nai_000_000_2*p_2 + (1.5*tmp1 - 1.5*nai_002_000_3)/ab_a - tmp4*u_2; // local+recycle, weighs 10
   nai_000_003_1 = d_1*p_2 + (tmp72 + 1.5*nai_002_001_0 - 1.5*nai_002_001_1)/ab_a - d_2*u_2; // local+recycle, weighs 11
   tmp1 = d_2*p_2 + (tmp71 + 1.5*nai_002_001_1 - 1.5*nai_002_001_2)/ab_a - nai_000_000_2*u_2; // local+recycle, weighs 11
-  tmp4 = pow(a_a,2.25)*pow(b_a,2.25); // auto+recycle, weighs 3
+  tmp4 = pow(a_a,2.25)*pow(b_a,2.25); // auto+recycle, weighs 5
   out[0] = 2.16724943988876*tmp4*(nai_300_200_0*p_0 + (nai_300_100_0 - nai_300_100_1 + 1.5*tmp106 - 1.5*tmp107)/ab_a - nai_300_200_1*u_0); // final, weighs 15
   out[1] = 4.84611707178961*tmp4*(nai_300_200_0*p_1 - nai_300_200_1*u_1); // final, weighs 6
   out[2] = 4.84611707178961*tmp4*(nai_300_200_0*p_2 - nai_300_200_1*u_2); // final, weighs 6
@@ -5785,7 +5785,7 @@ void gint2_nai_cF_cF(double* a, double a_a, double* b, double b_a, double* c, do
   out[97] = 4.84611707178961*tmp4*(tmp23 + p_2*tmp18 - tmp17*u_2); // final, weighs 7
   out[98] = 4.84611707178961*tmp4*(nai_000_003_1*p_1 - tmp1*u_1); // final, weighs 6
   out[99] = 2.16724943988876*tmp4*(nai_000_003_1*p_2 + (d_1 - d_2 + 1.5*tmp164 - 1.5*tmp84)/ab_a - tmp1*u_2); // final, weighs 15
-  // total weight = 3598
+  // total weight = 3600
 }
 
 typedef void (*fntype)(double*, double, double*, double, double*, double*);

@@ -140,7 +140,7 @@ class Commands(object):
                         yield expr.__class__(*new_args)
 
         all_parts = {}
-        highest_weight = 0
+        highest_weight = None
         iterators = []
         for record in self.records:
             #print "   ", record.expr
@@ -152,8 +152,8 @@ class Commands(object):
             subtree = my_pre_order.next(deeper)
             if subtree is None:
                 continue
-            #print "---   ", subtree,
-            deeper = False
+            #print "---   ", subtree
+            deeper = (highest_weight is None)
             for part in iter_parts(subtree, level):
                 if part == record.expr:
                     continue
@@ -167,9 +167,9 @@ class Commands(object):
                 if weight > highest_weight:
                     deeper = True
                 if weight > 0:
-                    #print "------   ", part, weight
                     count, weight = all_parts.get(part, (0, weight))
                     count += 1
+                    #print "------   ", part, weight, count
                     all_parts[part] = count, weight
                     if count > 1:
                         highest_weight = max(weight, highest_weight)
@@ -260,7 +260,9 @@ class Commands(object):
             record.expr = record.expr.subs(C.Real(-1.0), -1)
             record.expr = record.expr.subs(C.Real(-2.0), -2)
 
-    def get_recycle_records(self):
+    def get_records(self, recycle=True):
+        if not recycle:
+            return self.records
         result = [record.copy() for record in self.records]
         inuse = set([])
         for i, record in enumerate(result):
@@ -269,9 +271,8 @@ class Commands(object):
             # Determine which symbols are no longer used after this record.
             avail = inuse.copy()
             for later_record in result[i+1:]:
-                for symbol in list(avail):
-                    if symbol in later_record.expr:
-                        avail.discard(symbol)
+                for symbol in later_record.expr.atoms(C.Symbol):
+                    avail.discard(symbol)
             # If there are some, use it and substitute in later records
             if len(avail) > 0:
                 symbol = sorted(avail)[0]
@@ -298,7 +299,10 @@ def weigh(expr):
             weight += op.args[0]
         else:
             weight += 1
-    return weight
+    for pow in expr.atoms(C.Pow):
+        if not (pow.exp==-1 or pow.exp==2):
+            weight += 1
+    return int(weight)
 
 
 class MyCCodePrinter(CCodePrinter):
@@ -379,6 +383,9 @@ class ArrayArg(BaseArg):
     def get_c_type(self):
         return "double*"
 
+    def get_pyf_name(self):
+        return "%s(%i)" % (self.name, len(self.symbols))
+
 
 class ScalarArg(BaseArg):
     def __init__(self, symbol):
@@ -391,6 +398,9 @@ class ScalarArg(BaseArg):
     def get_c_type(self):
         return "double"
 
+    def get_pyf_name(self):
+        return self.name
+
 
 class BaseArgGroup(object):
     def __init__(self, prefix):
@@ -402,6 +412,9 @@ class BaseArgGroup(object):
 
     def get_c_names(self):
         return ", ".join(arg.name for arg in self.args)
+
+    def get_pyf_names(self):
+        return ", ".join(arg.get_pyf_name() for arg in self.args)
 
     def iter_shell_types(self, max_shell):
         raise NotImplementedError
@@ -483,15 +496,22 @@ class GaussianIntegral():
         else:
             return ", ".join(self.arg_groups[p].get_c_names() for p in permutation)
 
+    def get_pyf_names(self):
+        return ", ".join(ag.get_pyf_names() for ag in self.arg_groups)
+
     def write(self, max_shell=3):
         # C source code
         f_c = open("%s.c" % self.name, "w")
         f_h = open("%s.h" % self.name, "w")
-        f_header = open("../../HEADER.c")
-        f_c.write(f_header.read())
-        f_header.seek(0)
-        f_h.write(f_header.read())
-        f_header.close()
+        f_pyf = open("%s.pyf.inc" % self.name, "w")
+        f_c_header = open("../../HEADER.c")
+        f_c.write(f_c_header.read())
+        f_c_header.seek(0)
+        f_h.write(f_c_header.read())
+        f_c_header.close()
+        f_f_header = open("../../HEADER.f")
+        f_pyf.write(f_f_header.read())
+        f_f_header.close()
         fn_names = []
         print >> f_c
         print >> f_c, "#include <math.h>"
@@ -504,7 +524,7 @@ class GaussianIntegral():
         print >> f_c, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
         print >> f_c
         for st_row in self.iter_shell_types(max_shell):
-            fn_name = self.write_routine(f_c, f_h, st_row)
+            fn_name = self.write_routine(f_pyf, f_c, f_h, st_row)
             fn_names.append(fn_name)
         # add some sugar
         arg_c_types = []
@@ -541,25 +561,39 @@ class GaussianIntegral():
             f_c.write("\n")
             f_c.write(interface_fn[0])
             f_c.write("\n")
+            print >> f_pyf, interface_fn[1]
         f_c.close()
+        f_h.close()
+        f_pyf.close()
 
-        # F2PY Interface
-        f = open("%s.pyf.inc" % self.name, "w")
-        for interface_fn in self.interface_fns:
-            print >> f, interface_fn[1]
-        f.close()
+    def write_routine_proto(self, f_pyf, f_c, f_h, fn_name, num_out):
+        c_names = self.get_c_names()
+        pyf_names = self.get_pyf_names()
+        c_types_names = self.get_c_types_names()
+        # prototype definitions in pyf
+        print >> f_pyf, "  subroutine %s(%s, out)" % (fn_name, c_names)
+        print >> f_pyf, "    intent(c) %s" % fn_name
+        print >> f_pyf, "    intent(c)"
+        print >> f_pyf, "    double precision intent(in) :: %s" % pyf_names
+        print >> f_pyf, "    double precision intent(inout) :: out(%i)" % num_out
+        print >> f_pyf, "  end subroutine %s" % fn_name
+        print >> f_pyf
+        # prototype definitions in h
+        print >> f_h, "void %s(%s, double* out);" % (fn_name, c_types_names)
+        # routine itself
+        print >> f_c, "void %s(%s, double* out)" % (fn_name, c_types_names)
+        print >> f_c, "{"
 
-    def write_routine(self, f_c, f_h, st_row):
+    def write_routine(self, f_pyf, f_c, f_h, st_row):
         fn_name = "%s_%s" % (self.name, self.get_key(st_row))
         print "Starting", fn_name
         commands = Commands()
         self.add_expressions(st_row, commands)
         # use commands thing to do cse
         commands.full()
-        records = commands.get_recycle_records()
-        print >> f_h, "void %s(%s, double* out);" % (fn_name, self.get_c_types_names())
-        print >> f_c, "void %s(%s, double* out)" % (fn_name, self.get_c_types_names())
-        print >> f_c, "{"
+        records = commands.get_records()
+        num_out = sum(record.symbol.name.startswith("out") for record in records)
+        self.write_routine_proto(f_pyf, f_c, f_h, fn_name, num_out)
         print "VARIABLES"
         # variables
         variables = set([
@@ -585,13 +619,12 @@ class GaussianIntegral():
         print >> f_c
         return fn_name
 
-    def write_permutation_routine(self, f_c, f_h, st_row, other_st_row, out_permutation, arg_permutation):
+    def write_permutation_routine(self, f_pyf, f_c, f_h, st_row, other_st_row, out_permutation, arg_permutation):
         fn_name = "%s_%s" % (self.name, self.get_key(st_row))
         other_fn_name = "%s_%s" % (self.name, self.get_key(other_st_row))
         cycles = permutation_to_cycles(out_permutation)
-        print >> f_h, "void %s(%s, double* out);" % (fn_name, self.get_c_types_names())
-        print >> f_c, "void %s(%s, double* out)" % (fn_name, self.get_c_types_names())
-        print >> f_c, "{"
+        num_out = len(out_permutation)
+        self.write_routine_proto(f_pyf, f_c, f_h, fn_name, num_out)
         if len(cycles) > 0:
             print >> f_c, "  double tmp;"
         print >> f_c, "  %s(%s, out);" % (other_fn_name, self.get_c_names(arg_permutation))

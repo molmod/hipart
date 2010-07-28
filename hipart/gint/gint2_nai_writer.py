@@ -342,7 +342,7 @@ class Gint2NAI(GaussianIntegral):
                 out_symbol = self.get_out_symbol()
                 commands.add(Record(out_symbol, nai, "final"))
 
-    def write_routine(self, f_c, f_h, st_row):
+    def write_routine(self, f_pyf, f_c, f_h, st_row):
         if st_row[0] > st_row[1]:
             # transpose the result of another routine
             other_st_row = (st_row[1], st_row[0], 0)
@@ -355,9 +355,9 @@ class Gint2NAI(GaussianIntegral):
                     old = ia + size_a*ib
                     out_permutation[new] = old
             arg_permutation = [1, 0, 2]
-            return self.write_permutation_routine(f_c, f_h, st_row, other_st_row, out_permutation, arg_permutation)
+            return self.write_permutation_routine(f_pyf, f_c, f_h, st_row, other_st_row, out_permutation, arg_permutation)
         else:
-            return GaussianIntegral.write_routine(self, f_c, f_h, st_row)
+            return GaussianIntegral.write_routine(self, f_pyf, f_c, f_h, st_row)
 
 
 def main():

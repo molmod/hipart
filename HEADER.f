@@ -18,26 +18,4 @@
 !
 ! --
 
-python module gint_ext
-interface
 
-include 'gint1_fn.pyf.inc'
-include 'gint2_nai.pyf.inc'
-
-  double precision function gaux(T, n)
-    intent(c) gaux
-    intent(c)
-    double precision intent(in) :: T
-    integer intent(int) :: n
-  end function gaux
-
-  integer function reorder_density_matrix(dmat, permutation, num_dof)
-    intent(c) reorder_density_matrix
-    intent(c)
-    double precision intent(inout) :: dmat((num_dof*(num_dof+1))/2)
-    integer intent(int) :: permutation(num_dof)
-    integer intent(hide), depend(permutation) :: num_dof=len(permutation)
-  end function reorder_density_matrix
-
-end interface
-end python module gint_ext
