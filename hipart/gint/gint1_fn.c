@@ -22,11 +22,12 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include "gint1_fn.h"
 #define MAX_SHELL 3
 #define NUM_SHELL_TYPES 7
 #define MAX_SHELL_DOF 10
 
-static void gint1_fn_pF(double* a, double a_a, double* p, double* out)
+void gint1_fn_pF(double* a, double a_a, double* p, double* out)
 {
   // Number of local variables: 9
   double tmp11, tmp12, tmp13, tmp2, tmp3, tmp4, v_0, v_1, v_2;
@@ -54,7 +55,7 @@ static void gint1_fn_pF(double* a, double a_a, double* p, double* out)
   // total weight = 57
 }
 
-static void gint1_fn_pD(double* a, double a_a, double* p, double* out)
+void gint1_fn_pD(double* a, double a_a, double* p, double* out)
 {
   // Number of local variables: 7
   double tmp10, tmp2, tmp3, tmp4, v_0, v_1, v_2;
@@ -76,7 +77,7 @@ static void gint1_fn_pD(double* a, double a_a, double* p, double* out)
   // total weight = 35
 }
 
-static void gint1_fn_SP(double* a, double a_a, double* p, double* out)
+void gint1_fn_SP(double* a, double a_a, double* p, double* out)
 {
   // Number of local variables: 4
   double tmp0, v_0, v_1, v_2;
@@ -92,7 +93,7 @@ static void gint1_fn_SP(double* a, double a_a, double* p, double* out)
   // total weight = 25
 }
 
-static void gint1_fn_S(double* a, double a_a, double* p, double* out)
+void gint1_fn_S(double* a, double a_a, double* p, double* out)
 {
   // Number of local variables: 3
   double v_0, v_1, v_2;
@@ -103,7 +104,7 @@ static void gint1_fn_S(double* a, double a_a, double* p, double* out)
   // total weight = 17
 }
 
-static void gint1_fn_P(double* a, double a_a, double* p, double* out)
+void gint1_fn_P(double* a, double a_a, double* p, double* out)
 {
   // Number of local variables: 4
   double tmp2, v_0, v_1, v_2;
@@ -117,7 +118,7 @@ static void gint1_fn_P(double* a, double a_a, double* p, double* out)
   // total weight = 22
 }
 
-static void gint1_fn_cD(double* a, double a_a, double* p, double* out)
+void gint1_fn_cD(double* a, double a_a, double* p, double* out)
 {
   // Number of local variables: 7
   double tmp2, tmp3, tmp4, tmp8, v_0, v_1, v_2;
@@ -138,7 +139,7 @@ static void gint1_fn_cD(double* a, double a_a, double* p, double* out)
   // total weight = 30
 }
 
-static void gint1_fn_cF(double* a, double a_a, double* p, double* out)
+void gint1_fn_cF(double* a, double a_a, double* p, double* out)
 {
   // Number of local variables: 11
   double tmp11, tmp12, tmp13, tmp14, tmp2, tmp3, tmp4, tmp7, v_0, v_1, v_2;

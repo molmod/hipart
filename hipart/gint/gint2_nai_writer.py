@@ -306,18 +306,62 @@ class Gint2NAI(GaussianIntegral):
             nai /= get_cartesian_wfn_norm(self.b_a, 0, 0, 0).evalf()
             out_symbol = self.get_out_symbol()
             commands.add(Record(out_symbol, nai, "final"))
-        elif st_row[0] >= -1 and st_row[1] >= -1:
-            for a_n in iter_cartesian_powers(st_row[0]):
-                for b_n in iter_cartesian_powers(st_row[1]):
+        else:
+            st_a = st_row[0]
+            if st_a < -1:
+                st_a_cart = -st_a
+            else:
+                st_a_cart = st_a
+            st_b = st_row[1]
+            if st_b < -1:
+                st_b_cart = -st_b
+            else:
+                st_b_cart = st_b
+            # generate cartesian integral expressions
+            a_ns = list(iter_cartesian_powers(st_a_cart))
+            b_ns = list(iter_cartesian_powers(st_b_cart))
+            nais = numpy.zeros((len(a_ns),len(b_ns)), dtype=object)
+            for a_i, a_n in enumerate(a_ns):
+                for b_i, b_n in enumerate(b_ns):
                     nai = self.get_integral(commands, a_n, b_n, u, v, w, ab_a, ab_overlap, usq, 0)
-                    nai /= get_cartesian_wfn_norm(self.a_a, a_n[0], a_n[1], a_n[2]).evalf()
-                    nai /= get_cartesian_wfn_norm(self.b_a, b_n[0], b_n[1], b_n[2]).evalf()
-                    out_symbol = self.get_out_symbol()
-                    commands.add(Record(out_symbol, nai, "final"))
+                    #nai /= get_cartesian_wfn_norm(self.a_a, a_n[0], a_n[1], a_n[2]).evalf()
+                    #nai /= get_cartesian_wfn_norm(self.b_a, b_n[0], b_n[1], b_n[2]).evalf()
+                    nais[a_i,b_i] = nai
+            print "Combine rows and normalize"
+            lcs = get_poly_lcs(st_a, self.a_a)
+            print lcs.transpose().shape, nais.shape
+            print lcs
+            nais = numpy.dot(lcs.transpose(), nais)
+            print "combine columns and normalize"
+            lcs = get_poly_lcs(st_b, self.b_a)
+            print nais.shape, lcs.shape
+            print lcs
+            nais = numpy.dot(nais, lcs)
+            # add the outputs
+            for nai in nais.flat:
+                out_symbol = self.get_out_symbol()
+                commands.add(Record(out_symbol, nai, "final"))
+
+    def write_routine(self, f_c, f_h, st_row):
+        if st_row[0] > st_row[1]:
+            # transpose the result of another routine
+            other_st_row = (st_row[1], st_row[0], 0)
+            size_a = get_shell_dof(st_row[0])
+            size_b = get_shell_dof(st_row[1])
+            out_permutation = numpy.zeros(size_a*size_b, int)
+            for ia in xrange(size_a):
+                for ib in xrange(size_b):
+                    new = ib + size_b*ia
+                    old = ia + size_a*ib
+                    out_permutation[new] = old
+            arg_permutation = [1, 0, 2]
+            return self.write_permutation_routine(f_c, f_h, st_row, other_st_row, out_permutation, arg_permutation)
+        else:
+            return GaussianIntegral.write_routine(self, f_c, f_h, st_row)
 
 
 def main():
-    write(Gint2NAI(), max_shell=3)
+    Gint2NAI().write(max_shell=3)
 
 
 if __name__ == "__main__":

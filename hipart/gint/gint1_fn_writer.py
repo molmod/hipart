@@ -265,7 +265,7 @@ class Gint1Fn(GaussianIntegral):
 
 
 def main():
-    write(Gint1Fn(), max_shell=3)
+    Gint1Fn().write(max_shell=3)
 
 
 if __name__ == "__main__":

@@ -19,12 +19,14 @@
 # --
 
 
-from sympy import simplify, Symbol, sqrt, cos, sin, exp, Ylm, I, pi, C, S
+from sympy import simplify, Symbol, Wild, sqrt, cos, sin, exp, Ylm, I, pi, C, S
 from sympy.printing.ccode import CCodePrinter
 from sympy.utilities.iterables import numbered_symbols
 from sympy.printing.precedence import precedence
 from sympy.mpmath import fac2
 from sympy.utilities.iterables import preorder_traversal
+
+import numpy
 
 from hipart.gint.basis import get_shell_dof
 
@@ -361,7 +363,7 @@ class BaseArg(object):
     def __init__(self, name):
         self.name = name
 
-    def get_c_arg(self):
+    def get_c_type_name(self):
         return "%s %s" % (self.get_c_type(), self.name)
 
 
@@ -395,8 +397,11 @@ class BaseArgGroup(object):
         self.prefix = prefix
         self.args = []
 
-    def get_c_args(self):
-        return ", ".join(arg.get_c_arg() for arg in self.args)
+    def get_c_types_names(self):
+        return ", ".join(arg.get_c_type_name() for arg in self.args)
+
+    def get_c_names(self):
+        return ", ".join(arg.name for arg in self.args)
 
     def iter_shell_types(self, max_shell):
         raise NotImplementedError
@@ -469,11 +474,165 @@ class GaussianIntegral():
     def add_expressions(self, st_row, commands):
         raise NotImplementedError
 
-    def get_c_args(self):
-        return ", ".join(ag.get_c_args() for ag in self.arg_groups)
+    def get_c_types_names(self):
+        return ", ".join(ag.get_c_types_names() for ag in self.arg_groups)
+
+    def get_c_names(self, permutation=None):
+        if permutation is None:
+            return ", ".join(ag.get_c_names() for ag in self.arg_groups)
+        else:
+            return ", ".join(self.arg_groups[p].get_c_names() for p in permutation)
+
+    def write(self, max_shell=3):
+        # C source code
+        f_c = open("%s.c" % self.name, "w")
+        f_h = open("%s.h" % self.name, "w")
+        f_header = open("../../HEADER.c")
+        f_c.write(f_header.read())
+        f_header.seek(0)
+        f_h.write(f_header.read())
+        f_header.close()
+        fn_names = []
+        print >> f_c
+        print >> f_c, "#include <math.h>"
+        print >> f_c, "#include <stdlib.h>"
+        print >> f_c, "#include \"%s.h\"" % self.name
+        for include in self.includes:
+            print >> f_c, "#include \"%s\"" % include
+        print >> f_c, "#define MAX_SHELL %i" % max_shell
+        print >> f_c, "#define NUM_SHELL_TYPES %i" % (2*max_shell+1)
+        print >> f_c, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
+        print >> f_c
+        for st_row in self.iter_shell_types(max_shell):
+            fn_name = self.write_routine(f_c, f_h, st_row)
+            fn_names.append(fn_name)
+        # add some sugar
+        arg_c_types = []
+        for ag in self.arg_groups:
+            for arg in ag.args:
+                arg_c_types.append(arg.get_c_type())
+        print >> f_c, "typedef void (*fntype)(%s, double*);" % (", ".join(arg_c_types))
+        print >> f_c, "static const fntype fns[%i] = {%s};" % (len(fn_names), ", ".join(fn_names))
+        print >> f_c
+        all_c_types_names = []
+        c_names = []
+        switches = []
+        for ag in self.arg_groups:
+            switch = ag.get_switch_name()
+            if switch is not None:
+                all_c_types_names.append("int %s" % switch)
+                switches.append(switch)
+            for arg in ag.args:
+                c_names.append(arg.name)
+            all_c_types_names.append(ag.get_c_types_names())
+        print >> f_c, "static void %s_dispatch(%s, double* out)" % (self.name, ", ".join(all_c_types_names))
+        print >> f_c, "{"
+        factor = 1
+        offsets = []
+        for switch in switches:
+            if factor == 1:
+                offsets.append("%i+%s" % (max_shell, switch))
+            else:
+                offsets.append("%i*(%i+%s)" % (factor, max_shell, switch))
+            factor *= 2*max_shell + 1
+        print >> f_c, "  fns[%s](%s, out);" % ("+".join(offsets), ", ".join(c_names))
+        print >> f_c, "}"
+        for interface_fn in self.interface_fns:
+            f_c.write("\n")
+            f_c.write(interface_fn[0])
+            f_c.write("\n")
+        f_c.close()
+
+        # F2PY Interface
+        f = open("%s.pyf.inc" % self.name, "w")
+        for interface_fn in self.interface_fns:
+            print >> f, interface_fn[1]
+        f.close()
+
+    def write_routine(self, f_c, f_h, st_row):
+        fn_name = "%s_%s" % (self.name, self.get_key(st_row))
+        print "Starting", fn_name
+        commands = Commands()
+        self.add_expressions(st_row, commands)
+        # use commands thing to do cse
+        commands.full()
+        records = commands.get_recycle_records()
+        print >> f_h, "void %s(%s, double* out);" % (fn_name, self.get_c_types_names())
+        print >> f_c, "void %s(%s, double* out)" % (fn_name, self.get_c_types_names())
+        print >> f_c, "{"
+        print "VARIABLES"
+        # variables
+        variables = set([
+            record.symbol.name for record in records
+            if not record.symbol.name.startswith("out")
+        ])
+        if len(variables) > 0:
+            print >> f_c, "  // Number of local variables: %i" % len(variables)
+            print >> f_c, "  double %s;" % (", ".join(sorted(variables)))
+        # code lines
+        total_weight = 0
+        for record in records:
+            print "CCODE", record
+            weight = weigh(record.expr)
+            total_weight += weight
+            print >> f_c, "  %s = %s; // %s, weighs %i" % (
+                self.lookup.get(record.symbol.name, record.symbol.name),
+                ccode(record.expr, lookup=self.lookup),
+                record.tag, weight
+            )
+        print >> f_c, "  // total weight = %i" % total_weight
+        print >> f_c, "}"
+        print >> f_c
+        return fn_name
+
+    def write_permutation_routine(self, f_c, f_h, st_row, other_st_row, out_permutation, arg_permutation):
+        fn_name = "%s_%s" % (self.name, self.get_key(st_row))
+        other_fn_name = "%s_%s" % (self.name, self.get_key(other_st_row))
+        cycles = permutation_to_cycles(out_permutation)
+        print >> f_h, "void %s(%s, double* out);" % (fn_name, self.get_c_types_names())
+        print >> f_c, "void %s(%s, double* out)" % (fn_name, self.get_c_types_names())
+        print >> f_c, "{"
+        if len(cycles) > 0:
+            print >> f_c, "  double tmp;"
+        print >> f_c, "  %s(%s, out);" % (other_fn_name, self.get_c_names(arg_permutation))
+        if len(cycles) > 0:
+            for cycle in cycles:
+                print >> f_c, "  tmp = out[%i];" % cycle[0]
+                for i in xrange(1, len(cycle)):
+                    print >> f_c, "  out[%i] = out[%i];" % (cycle[i-1], cycle[i])
+                print >> f_c, "  out[%i] = tmp;" % cycle[-1]
+        print >> f_c, "}"
+        print >> f_c
+        return fn_name
+
 
 
 # Auxiliary functions
+
+
+def permutation_to_cycles(permutation):
+    print "PERMUTATION", permutation
+    # the permutation is an array with the indexes of the old positions.
+    # the cycles are lists of indexes where every old index is preceded by its
+    # new index in a cyclic fashion.
+    # turn the permutation into a dictionary
+    permutation = dict((new, old) for new, old in enumerate(permutation))
+    # turn the permutation into cycles
+    cycles = []
+    current = None
+    while len(permutation) > 0:
+        if current is None:
+            new, old = permutation.popitem()
+            current = [new]
+        else:
+            old = permutation.pop(current[-1])
+        if old == current[0]:
+            if len(current) > 1:
+                cycles.append(current)
+            current = None
+        else:
+            current.append(old)
+    return cycles
 
 
 def symbol_vector(prefix):
@@ -556,98 +715,35 @@ def get_polys(shell_type, alpha, v):
     return result
 
 
-# The generic write routine
-
-def write(gint, max_shell=3):
-    # C source code
-    f = open("%s.c" % gint.name, "w")
-    f_header = open("../../HEADER.c")
-    f.write(f_header.read())
-    f_header.close()
-    fn_names = []
-    print >> f
-    print >> f, "#include <math.h>"
-    print >> f, "#include <stdlib.h>"
-    for include in gint.includes:
-        print >> f, "#include \"%s\"" % include
-    print >> f, "#define MAX_SHELL %i" % max_shell
-    print >> f, "#define NUM_SHELL_TYPES %i" % (2*max_shell+1)
-    print >> f, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
-    print >> f
-    for st_row in gint.iter_shell_types(max_shell):
-        key = gint.get_key(st_row)
-        fn_name = "%s_%s" % (gint.name, key)
-        fn_names.append(fn_name)
-        print "Starting", fn_name
-        commands = Commands()
-        gint.add_expressions(st_row, commands)
-        # use commands thing to do cse
-        commands.full()
-        records = commands.get_recycle_records()
-        print "VARIABLES"
-        print >> f, "static void %s(%s, double* out)" % (fn_name, gint.get_c_args())
-        print >> f, "{"
-        # variables
-        variables = set([
-            record.symbol.name for record in records
-            if not record.symbol.name.startswith("out")
-        ])
-        if len(variables) > 0:
-            print >> f, "  // Number of local variables: %i" % len(variables)
-            print >> f, "  double %s;" % (", ".join(sorted(variables)))
-        # code lines
-        total_weight = 0
-        for record in records:
-            print "CCODE", record
-            weight = weigh(record.expr)
-            total_weight += weight
-            print >> f, "  %s = %s; // %s, weighs %i" % (
-                gint.lookup.get(record.symbol.name, record.symbol.name),
-                ccode(record.expr, lookup=gint.lookup),
-                record.tag, weight
-            )
-        print >> f, "  // total weight = %i" % total_weight
-        print >> f, "}"
-        print >> f
-    # add some sugar
-    arg_c_types = []
-    for ag in gint.arg_groups:
-        for arg in ag.args:
-            arg_c_types.append(arg.get_c_type())
-    print >> f, "typedef void (*fntype)(%s, double*);" % (", ".join(arg_c_types))
-    print >> f, "static const fntype fns[%i] = {%s};" % (len(fn_names), ", ".join(fn_names))
-    print >> f
-    all_args = []
-    c_arg_names = []
-    switches = []
-    for ag in gint.arg_groups:
-        switch = ag.get_switch_name()
-        if switch is not None:
-            all_args.append("int %s" % switch)
-            switches.append(switch)
-        for arg in ag.args:
-            c_arg_names.append(arg.name)
-        all_args.append(ag.get_c_args())
-    print >> f, "static void %s_dispatch(%s, double* out)" % (gint.name, ", ".join(all_args))
-    print >> f, "{"
-    factor = 1
-    offsets = []
-    for switch in switches:
-        if factor == 1:
-            offsets.append("%i+%s" % (max_shell, switch))
-        else:
-            offsets.append("%i*(%i+%s)" % (factor, max_shell, switch))
-        factor *= 2*max_shell + 1
-    print >> f, "  fns[%s](%s, out);" % ("+".join(offsets), ", ".join(c_arg_names))
-    print >> f, "}"
-    for interface_fn in gint.interface_fns:
-        f.write("\n")
-        f.write(interface_fn[0])
-        f.write("\n")
-    f.close()
-
-    # F2PY Interface
-    f = open("%s.pyf.inc" % gint.name, "w")
-    for interface_fn in gint.interface_fns:
-        print >> f, interface_fn[1]
-    f.close()
+def get_poly_lcs(shell_type, alpha):
+    num_dof_out = get_shell_dof(shell_type)
+    x = Symbol("x")
+    y = Symbol("y")
+    z = Symbol("z")
+    xyz = (x,y,z)
+    if shell_type >= -1:
+        lcs = numpy.zeros((num_dof_out, num_dof_out), dtype=object)
+        for i_out, (poly, wfn_norm) in enumerate(get_polys(shell_type, alpha, xyz)):
+            lcs[i_out,i_out] = (1/wfn_norm).evalf()
+    else:
+        px = Wild("px")
+        py = Wild("py")
+        pz = Wild("pz")
+        c = Wild("c")
+        num_dof_in = get_shell_dof(abs(shell_type))
+        lcs = numpy.zeros((num_dof_in, num_dof_out), dtype=object)
+        for i_out, (poly, wfn_norm) in enumerate(get_polys(shell_type, alpha, xyz)):
+            poly = poly.expand()
+            if isinstance(poly, C.Add):
+                terms = poly.args
+            else:
+                terms = [poly]
+            coeffs = {}
+            for term in terms:
+                d = term.evalf().match(c*x**px*y**py*z**pz)
+                key = (int(d[px]), int(d[py]), int(d[pz]))
+                coeffs[key] = d[c]
+            for i_in, key in enumerate(iter_cartesian_powers(abs(shell_type))):
+                lcs[i_in,i_out] = coeffs.get(key, 0)
+            lcs[:,i_out] /= wfn_norm.evalf()
+    return lcs

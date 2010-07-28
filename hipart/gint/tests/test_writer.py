@@ -66,3 +66,10 @@ def test_commands3():
     ])
     c.full()
     assert(len(c.records)==2)
+
+def test_permutation_to_cycles():
+    permutation = [0, 3, 6, 9, 1, 4, 7, 10, 2, 5, 8, 11]
+    cycles = permutation_to_cycles(permutation)
+    assert(len(cycles)==2)
+    assert([1, 3, 9, 5, 4] in cycles)
+    assert([2, 6, 7, 10, 8] in cycles)
