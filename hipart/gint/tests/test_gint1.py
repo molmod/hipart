@@ -176,6 +176,7 @@ def test_dens_h_sto3g():
     shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
+    weights = weights[basis.g03_permutation]
     points = ref_data_h_sto3g_orb0[:,:3]
     orb0 = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
     num_dmat = (basis.num_dof*(basis.num_dof+1))/2
@@ -202,7 +203,7 @@ def test_dens_hf_sto3g():
     start = 0
     for i in xrange(num_alpha):
         end = start + basis.num_dof
-        weights = fchk.fields["Alpha MO coefficients"][start:end]
+        weights = fchk.fields["Alpha MO coefficients"][start:end][basis.g03_permutation]
         start = end
         orb = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
         expected_density += 2*(orb**2)
@@ -228,7 +229,7 @@ def test_dens_o2_cc_pvtz_cart():
     start = 0
     for i in xrange(num_alpha):
         end = start + basis.num_dof
-        weights = fchk.fields["Alpha MO coefficients"][start:end]
+        weights = fchk.fields["Alpha MO coefficients"][start:end][basis.g03_permutation]
         start = end
         orb = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
         expected_density += 2*(orb**2)
@@ -254,7 +255,7 @@ def test_dens_o2_cc_pvtz_pure():
     start = 0
     for i in xrange(num_alpha):
         end = start + basis.num_dof
-        weights = fchk.fields["Alpha MO coefficients"][start:end]
+        weights = fchk.fields["Alpha MO coefficients"][start:end][basis.g03_permutation]
         start = end
         orb = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
         expected_density += 2*(orb**2)

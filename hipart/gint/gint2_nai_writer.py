@@ -5,9 +5,6 @@ from writer import *
 
 
 # TODO: gint1, gint2 and writer tests
-# TODO: pure gaussian basis functions
-# TODO: use symmetry to reduce the number of generated functions
-# TODO: reorder in density tests
 
 
 code_gint2_nai_dmat_c = """\
