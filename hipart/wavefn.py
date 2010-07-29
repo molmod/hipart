@@ -24,7 +24,8 @@ from molmod import angstrom
 import os, numpy
 
 from hipart.gint.basis import GaussianBasis
-from hipart.gint.gint_ext import gint1_fn_basis, gint1_fn_dmat, reorder_density_matrix
+from hipart.gint.gint_ext import gint1_fn_basis, gint1_fn_dmat, \
+    gint2_nai_dmat, reorder_density_matrix
 
 
 __all__ = ["load_wavefunction", "FchkWaveFunction"]
@@ -289,6 +290,22 @@ class MyFCHKWaveFunction(FCHKWaveFunction):
                     molspindens = self.basis.call_gint1(gint1_fn_dmat, dmat, grid.points)
             grid.dump("molspindens", molspindens)
         grid.molspindens = molspindens
+
+    def compute_potential(self, grid):
+        molpot = grid.load("molpot")
+        if molpot is None:
+            if self._hack_fchk:
+                raise NotImplementedError
+            else:
+                dmat = self.density_matrices[self._density_type]
+                molpot = -self.basis.call_gint1(gint2_nai_dmat, dmat, grid.points)
+            # add the contribution from the nuclei
+            for i in xrange(self.molecule.size):
+                n = self.molecule.numbers[i]
+                c = self.molecule.coordinates[i]
+                molpot += n*((grid.points - c)**2).sum(axis=1)**(-0.5)
+            grid.dump("molpot", molpot)
+        grid.molpot = molpot
 
     def compute_orbitals(self, grid):
         alpha_orbitals = []

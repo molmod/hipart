@@ -312,5 +312,5 @@ def check_hf_mol_esp_cost(cache):
     cache.do_esp_costfunction()
     assert(abs(cache.mol_esp_cost.A - expected_A).max() < 1e-4)
     assert(abs(cache.mol_esp_cost.B - expected_B).max() < 1e-4)
-    assert(abs(cache.mol_esp_cost.C - expected_C) < 1e-4)
+    assert(abs(cache.mol_esp_cost.C - expected_C) < 1e-6)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "mol_esp_cost.txt")))
