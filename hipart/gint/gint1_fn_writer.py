@@ -247,21 +247,21 @@ class Gint1Fn(GaussianIntegral):
     def get_key(self, st_row):
         return get_shell_label(st_row[0])
 
-    def add_expressions(self, st_row, commands):
+    def add_expressions(self, st_row, routine):
         self.out_counter = 0
 
         v = symbol_vector("v")
-        commands.add(Record(v[0], self.p[0] - self.a[0], "local"))
-        commands.add(Record(v[1], self.p[1] - self.a[1], "local"))
-        commands.add(Record(v[2], self.p[2] - self.a[2], "local"))
+        routine.add(v[0], self.p[0] - self.a[0], "local")
+        routine.add(v[1], self.p[1] - self.a[1], "local")
+        routine.add(v[2], self.p[2] - self.a[2], "local")
 
         rsq = Symbol("rsq")
-        commands.add(Record(rsq, v[0]*v[0] + v[1]*v[1] + v[2]*v[2], "local"))
+        routine.add(rsq, v[0]*v[0] + v[1]*v[1] + v[2]*v[2], "local")
 
         for poly, wfn_norm in get_polys(st_row[0], self.a_a, v):
             fn = mypowsimp(simplify(poly/wfn_norm))*C.Function("exp")(-self.a_a*rsq)
             out_symbol = self.get_out_symbol()
-            commands.add(Record(out_symbol, fn, "final"))
+            routine.add(out_symbol, fn, "final")
 
 
 def main():

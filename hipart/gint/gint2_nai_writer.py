@@ -175,13 +175,13 @@ class Gint2NAI(GaussianIntegral):
         includes = ["gaux.h"]
         GaussianIntegral.__init__(self, name, [a, b, c], interface_fns, includes)
 
-    def get_SS_integral(self, commands, ab_a, ab_overlap, usq, m):
+    def get_SS_integral(self, routine, ab_a, ab_overlap, usq, m):
         result = 2*sqrt(ab_a/pi)*ab_overlap*C.Function("gaux")(usq, m)
         symbol = Symbol("nai_000_000_%i" % m)
-        commands.add(Record(symbol, result, "local"))
+        routine.add(symbol, result, "local")
         return symbol
 
-    def get_integral(self, commands, a_n, b_n, u, v, w, ab_a, ab_overlap, usq, m):
+    def get_integral(self, routine, a_n, b_n, u, v, w, ab_a, ab_overlap, usq, m):
         #print "get_integral: %s %s" % (a_n, b_n)
         # This the recurrence relation from the paper of Obara and Saika
         # (see http://dx.doi.org/10.1063/1.450106)
@@ -190,7 +190,7 @@ class Gint2NAI(GaussianIntegral):
             return 0
         elif (a_n[0] == 0) and (a_n[1] == 0) and (a_n[2] == 0) and (b_n[0] == 0) and (b_n[1] == 0) and (b_n[2] == 0):
             # This is where the recurrence relations leads to the SS term
-            return self.get_SS_integral(commands, ab_a, ab_overlap, usq, m)
+            return self.get_SS_integral(routine, ab_a, ab_overlap, usq, m)
         else:
             # apply the recurrence relation
             # Note: we must decide which of the six possible paths we take.
@@ -218,14 +218,14 @@ class Gint2NAI(GaussianIntegral):
                 a_n2[index] -= 2
                 a_n2 = tuple(a_n2)
                 result = mypowsimp((
-                      v[index]*self.get_integral(commands, a_n1, b_n, u, v, w, ab_a, ab_overlap, usq, m)
-                    - u[index]*self.get_integral(commands, a_n1, b_n, u, v, w, ab_a, ab_overlap, usq, m+1)
+                      v[index]*self.get_integral(routine, a_n1, b_n, u, v, w, ab_a, ab_overlap, usq, m)
+                    - u[index]*self.get_integral(routine, a_n1, b_n, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ) + a_n1[index]/(2*ab_a)*(
-                      self.get_integral(commands, a_n2, b_n, u, v, w, ab_a, ab_overlap, usq, m)
-                    - self.get_integral(commands, a_n2, b_n, u, v, w, ab_a, ab_overlap, usq, m+1)
+                      self.get_integral(routine, a_n2, b_n, u, v, w, ab_a, ab_overlap, usq, m)
+                    - self.get_integral(routine, a_n2, b_n, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ) + b_n[index]/(2*ab_a)*(
-                      self.get_integral(commands, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m)
-                    - self.get_integral(commands, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m+1)
+                      self.get_integral(routine, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m)
+                    - self.get_integral(routine, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ))
             else:
                 assert low_b > 0
@@ -240,72 +240,72 @@ class Gint2NAI(GaussianIntegral):
                 b_n2[index] -= 2
                 b_n2 = tuple(b_n2)
                 result = mypowsimp((
-                      w[index]*self.get_integral(commands, a_n, b_n1, u, v, w, ab_a, ab_overlap, usq, m)
-                    - u[index]*self.get_integral(commands, a_n, b_n1, u, v, w, ab_a, ab_overlap, usq, m+1)
+                      w[index]*self.get_integral(routine, a_n, b_n1, u, v, w, ab_a, ab_overlap, usq, m)
+                    - u[index]*self.get_integral(routine, a_n, b_n1, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ) + b_n1[index]/(2*ab_a)*(
-                      self.get_integral(commands, a_n, b_n2, u, v, w, ab_a, ab_overlap, usq, m)
-                    - self.get_integral(commands, a_n, b_n2, u, v, w, ab_a, ab_overlap, usq, m+1)
+                      self.get_integral(routine, a_n, b_n2, u, v, w, ab_a, ab_overlap, usq, m)
+                    - self.get_integral(routine, a_n, b_n2, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ) + a_n[index]/(2*ab_a)*(
-                      self.get_integral(commands, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m)
-                    - self.get_integral(commands, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m+1)
+                      self.get_integral(routine, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m)
+                    - self.get_integral(routine, a_n1, b_n1, u, v, w, ab_a, ab_overlap, usq, m+1)
                 ))
         symbol = Symbol("nai_%i%i%i_%i%i%i_%i" % (
             a_n[0], a_n[1], a_n[2], b_n[0], b_n[1], b_n[2], m
         ))
-        commands.add(Record(symbol, result, "local"))
+        routine.add(symbol, result, "local")
         return symbol
 
     def get_key(self, st_row):
         return "_".join(get_shell_label(st) for st in st_row[:-1])
 
-    def add_expressions(self, st_row, commands):
+    def add_expressions(self, st_row, routine):
         self.out_counter = 0
 
         ab_a = Symbol("ab_a")
-        commands.add(Record(ab_a, self.a_a + self.b_a, "local"))
+        routine.add(ab_a, self.a_a + self.b_a, "local")
         ab_b = self.a_a*self.b_a/ab_a
 
         p = symbol_vector("p")
-        commands.add(Record(p[0], (self.a_a*self.a[0] + self.b_a*self.b[0])/ab_a, "local"))
-        commands.add(Record(p[1], (self.a_a*self.a[1] + self.b_a*self.b[1])/ab_a, "local"))
-        commands.add(Record(p[2], (self.a_a*self.a[2] + self.b_a*self.b[2])/ab_a, "local"))
+        routine.add(p[0], (self.a_a*self.a[0] + self.b_a*self.b[0])/ab_a, "local")
+        routine.add(p[1], (self.a_a*self.a[1] + self.b_a*self.b[1])/ab_a, "local")
+        routine.add(p[2], (self.a_a*self.a[2] + self.b_a*self.b[2])/ab_a, "local")
 
         d = symbol_vector("d")
-        commands.add(Record(d[0], self.a[0] - self.b[0], "local"))
-        commands.add(Record(d[1], self.a[1] - self.b[1], "local"))
-        commands.add(Record(d[2], self.a[2] - self.b[2], "local"))
+        routine.add(d[0], self.a[0] - self.b[0], "local")
+        routine.add(d[1], self.a[1] - self.b[1], "local")
+        routine.add(d[2], self.a[2] - self.b[2], "local")
 
         dsq = Symbol("dsq")
-        commands.add(Record(dsq, d[0]**2 + d[1]**2 + d[2]**2, "local"))
+        routine.add(dsq, d[0]**2 + d[1]**2 + d[2]**2, "local")
 
         myexp = Symbol("myexp")
-        commands.add(Record(myexp, C.Function("exp")(-ab_b*dsq), "local"))
+        routine.add(myexp, C.Function("exp")(-ab_b*dsq), "local")
         ab_overlap = sqrt(pi/ab_a)**3*myexp
 
         u = symbol_vector("u")
-        commands.add(Record(u[0], p[0] - self.c[0], "local"))
-        commands.add(Record(u[1], p[1] - self.c[1], "local"))
-        commands.add(Record(u[2], p[2] - self.c[2], "local"))
+        routine.add(u[0], p[0] - self.c[0], "local")
+        routine.add(u[1], p[1] - self.c[1], "local")
+        routine.add(u[2], p[2] - self.c[2], "local")
 
         usq = Symbol("usq")
-        commands.add(Record(usq, ab_a*(u[0]**2 + u[1]**2 + u[2]**2), "local"))
+        routine.add(usq, ab_a*(u[0]**2 + u[1]**2 + u[2]**2), "local")
 
         v = symbol_vector("v")
-        commands.add(Record(v[0], p[0] - self.a[0], "local"))
-        commands.add(Record(v[1], p[1] - self.a[1], "local"))
-        commands.add(Record(v[2], p[2] - self.a[2], "local"))
+        routine.add(v[0], p[0] - self.a[0], "local")
+        routine.add(v[1], p[1] - self.a[1], "local")
+        routine.add(v[2], p[2] - self.a[2], "local")
 
         w = symbol_vector("w")
-        commands.add(Record(w[0], p[0] - self.b[0], "local"))
-        commands.add(Record(w[1], p[1] - self.b[1], "local"))
-        commands.add(Record(w[2], p[2] - self.b[2], "local"))
+        routine.add(w[0], p[0] - self.b[0], "local")
+        routine.add(w[1], p[1] - self.b[1], "local")
+        routine.add(w[2], p[2] - self.b[2], "local")
 
         if st_row == (0,0,0):
-            nai = self.get_SS_integral(commands, ab_a, ab_overlap, usq, 0)
+            nai = self.get_SS_integral(routine, ab_a, ab_overlap, usq, 0)
             nai /= get_cartesian_wfn_norm(self.a_a, 0, 0, 0).evalf()
             nai /= get_cartesian_wfn_norm(self.b_a, 0, 0, 0).evalf()
             out_symbol = self.get_out_symbol()
-            commands.add(Record(out_symbol, nai, "final"))
+            routine.add(out_symbol, nai, "final")
         else:
             st_a = st_row[0]
             if st_a < -1:
@@ -323,24 +323,18 @@ class Gint2NAI(GaussianIntegral):
             nais = numpy.zeros((len(a_ns),len(b_ns)), dtype=object)
             for a_i, a_n in enumerate(a_ns):
                 for b_i, b_n in enumerate(b_ns):
-                    nai = self.get_integral(commands, a_n, b_n, u, v, w, ab_a, ab_overlap, usq, 0)
+                    nai = self.get_integral(routine, a_n, b_n, u, v, w, ab_a, ab_overlap, usq, 0)
                     #nai /= get_cartesian_wfn_norm(self.a_a, a_n[0], a_n[1], a_n[2]).evalf()
                     #nai /= get_cartesian_wfn_norm(self.b_a, b_n[0], b_n[1], b_n[2]).evalf()
                     nais[a_i,b_i] = nai
-            print "Combine rows and normalize"
             lcs = get_poly_lcs(st_a, self.a_a)
-            print lcs.transpose().shape, nais.shape
-            print lcs
             nais = numpy.dot(lcs.transpose(), nais)
-            print "combine columns and normalize"
             lcs = get_poly_lcs(st_b, self.b_a)
-            print nais.shape, lcs.shape
-            print lcs
             nais = numpy.dot(nais, lcs)
             # add the outputs
             for nai in nais.flat:
                 out_symbol = self.get_out_symbol()
-                commands.add(Record(out_symbol, nai, "final"))
+                routine.add(out_symbol, nai, "final")
 
     def write_routine(self, f_pyf, f_c, f_h, st_row):
         if st_row[0] > st_row[1]:
@@ -357,7 +351,7 @@ class Gint2NAI(GaussianIntegral):
             arg_permutation = [1, 0, 2]
             return self.write_permutation_routine(f_pyf, f_c, f_h, st_row, other_st_row, out_permutation, arg_permutation)
         else:
-            return GaussianIntegral.write_routine(self, f_pyf, f_c, f_h, st_row)
+            return self.write_cse_routine(f_pyf, f_c, f_h, st_row)
 
 
 def main():

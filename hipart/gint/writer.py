@@ -34,7 +34,7 @@ from hipart.gint.basis import get_shell_dof
 # Sympy stuff
 
 
-class Record(object):
+class Command(object):
     def __init__(self, symbol, expr, tag):
         self.symbol = symbol
         self.expr = expr
@@ -44,7 +44,7 @@ class Record(object):
         return "%s = %s   {%s}" % (self.symbol, self.expr, self.tag)
 
     def copy(self):
-        return Record(self.symbol, self.expr, self.tag)
+        return Command(self.symbol, self.expr, self.tag)
 
 
 def iter_subsets(l):
@@ -83,19 +83,25 @@ class MyPreOrder(object):
                     return result
 
 
-class Commands(object):
-    def __init__(self):
-        self.records = []
-        self.records_by_symbol = {}
+class BaseRoutine(object):
+    def __init__(self, commands):
+        self.commands = commands
         self.get_symbol = numbered_symbols("tmp")
 
-    def add(self, record):
-        if record.symbol in self.records_by_symbol:
-            assert(record.expr == self.records_by_symbol[record.symbol].expr)
+
+class CSERoutine(BaseRoutine):
+    def __init__(self):
+        self.commands_by_symbol = {}
+        BaseRoutine.__init__(self, [])
+
+    def add(self, symbol, expr, tag):
+        if symbol in self.commands_by_symbol:
+            assert(expr == self.commands_by_symbol[symbol].expr)
         else:
-            print "RECORD", record
-            self.records.append(record)
-            self.records_by_symbol[record.symbol] = record
+            command = Command(symbol, expr, tag)
+            print "RECORD", command
+            self.commands.append(command)
+            self.commands_by_symbol[command.symbol] = command
 
     def _iter_subs(self, old_expr, sub, symbol):
         yield old_expr.subs(sub, symbol)
@@ -108,23 +114,23 @@ class Commands(object):
                         yield old_expr.subs(power, sub*sub)
         yield old_expr.subs(-sub, -symbol)
 
-    def substitute(self, record, force=False):
+    def substitute(self, symbol, expr, tag, force=False):
         # Make substitutions
         first = None
-        for p in xrange(len(self.records)):
-            old_expr = self.records[p].expr
-            for new_expr in self._iter_subs(old_expr, record.expr, record.symbol):
+        for p in xrange(len(self.commands)):
+            old_expr = self.commands[p].expr
+            for new_expr in self._iter_subs(old_expr, expr, symbol):
                 if old_expr == new_expr:
                     continue
                 if weigh(old_expr) > weigh(new_expr) or force:
-                    self.records[p].expr = new_expr
+                    self.commands[p].expr = new_expr
                     if first is None:
                         first = p
                     break
         if first is None:
-            raise ValueError("Failed to substitute: %s" % record)
-        # insert new expression in records
-        self.records.insert(first, record)
+            raise ValueError("Failed to substitute")
+        # insert new expression in commands
+        self.commands.insert(first, Command(symbol, expr, tag))
 
     def autosub(self, level=0):
         def iter_parts(expr, level=0):
@@ -142,9 +148,9 @@ class Commands(object):
         all_parts = {}
         highest_weight = None
         iterators = []
-        for record in self.records:
-            #print "   ", record.expr
-            my_pre_order = MyPreOrder(record.expr)
+        for command in self.commands:
+            #print "   ", command.expr
+            my_pre_order = MyPreOrder(command.expr)
             iterators.append((my_pre_order, True))
 
         while len(iterators) > 0:
@@ -155,7 +161,7 @@ class Commands(object):
             #print "---   ", subtree
             deeper = (highest_weight is None)
             for part in iter_parts(subtree, level):
-                if part == record.expr:
+                if part == command.expr:
                     continue
                 if isinstance(part, C.Mul) and part.args[0] == -1:
                     continue
@@ -188,7 +194,7 @@ class Commands(object):
                 break
             try:
                 symbol = self.get_symbol.next()
-                self.substitute(Record(symbol, part, "auto"))
+                self.substitute(symbol, part, "auto")
                 print "AUTOSUB-%i" % level, count, weight, part
                 success = True
             except ValueError:
@@ -196,57 +202,55 @@ class Commands(object):
         return success
 
     def clean(self):
-        # go in reverse order through all records
-        counter = len(self.records)-1
+        # go in reverse order through all commands
+        counter = len(self.commands)-1
         while counter >= 0:
-            record = self.records[counter]
-            if record.tag != "final":
+            command = self.commands[counter]
+            if command.tag != "final":
                 # do not remove end results
                 # check for usage
                 used = False
-                for later_record in self.records[counter+1:]:
-                    if record.symbol in later_record.expr:
+                for later_command in self.commands[counter+1:]:
+                    if command.symbol in later_command.expr:
                         used = True
                         break
                 if not used:
-                    print "CLEAN", record
-                    del self.records[counter]
+                    print "CLEAN", command
+                    del self.commands[counter]
             counter -= 1
 
     def singles(self):
-        counter = len(self.records)-1
+        counter = len(self.commands)-1
         while counter >= 0:
-            record = self.records[counter]
-            if record.tag != "final":
+            command = self.commands[counter]
+            if command.tag != "final":
                 # do not consider end results
                 # check for usage
                 used = 0
                 tmp = None
-                for later_record in self.records[counter+1:]:
-                    if record.symbol in later_record.expr:
-                        # TODO: count the number of occurences and treat squares
-                        # as double
-                        for subtree in preorder_traversal(later_record.expr):
-                            if subtree == record.symbol:
+                for later_command in self.commands[counter+1:]:
+                    if command.symbol in later_command.expr:
+                        for subtree in preorder_traversal(later_command.expr):
+                            if subtree == command.symbol:
                                 used += 1
-                                tmp = later_record
-                            if isinstance(subtree, C.Pow) and subtree.exp == 2 and subtree.base == record.symbol:
+                                tmp = later_command
+                            if isinstance(subtree, C.Pow) and subtree.exp == 2 and subtree.base == command.symbol:
                                 used += 1
-                                tmp = later_record
+                                tmp = later_command
                 if used == 1:
-                    tmp.expr = tmp.expr.subs(record.symbol, record.expr)
-                    print "SINGLE", record
-                    del self.records[counter]
+                    tmp.expr = tmp.expr.subs(command.symbol, command.expr)
+                    print "SINGLE", command
+                    del self.commands[counter]
             counter -= 1
 
     def full(self):
         # remove unused commands
         self.clean()
         # evalf
-        for record in self.records:
-            record.expr = mypowsimp(mycollectsimp(record.expr.evalf()))
-            record.expr = record.expr.subs(C.Real(-1.0), -1)
-            record.expr = record.expr.subs(C.Real(-2.0), -2)
+        for command in self.commands:
+            command.expr = mypowsimp(mycollectsimp(command.expr.evalf()))
+            command.expr = command.expr.subs(C.Real(-1.0), -1)
+            command.expr = command.expr.subs(C.Real(-2.0), -2)
         # substitute as much as possible
         while self.autosub(level=0):
             pass
@@ -255,34 +259,32 @@ class Commands(object):
         # substitute back temporary variables that are used only once
         self.singles()
         # mypowsimp
-        for record in self.records:
-            record.expr = mypowsimp(record.expr)
-            record.expr = record.expr.subs(C.Real(-1.0), -1)
-            record.expr = record.expr.subs(C.Real(-2.0), -2)
+        for command in self.commands:
+            command.expr = mypowsimp(command.expr)
+            command.expr = command.expr.subs(C.Real(-1.0), -1)
+            command.expr = command.expr.subs(C.Real(-2.0), -2)
 
-    def get_records(self, recycle=True):
-        if not recycle:
-            return self.records
-        result = [record.copy() for record in self.records]
+    def recycled(self):
+        commands = [command.copy() for command in self.commands]
         inuse = set([])
-        for i, record in enumerate(result):
-            if record.tag == "final":
+        for i, command in enumerate(commands):
+            if command.tag == "final":
                 continue
-            # Determine which symbols are no longer used after this record.
+            # Determine which symbols are no longer used after this command.
             avail = inuse.copy()
-            for later_record in result[i+1:]:
-                for symbol in later_record.expr.atoms(C.Symbol):
+            for later_command in commands[i+1:]:
+                for symbol in later_command.expr.atoms(C.Symbol):
                     avail.discard(symbol)
-            # If there are some, use it and substitute in later records
+            # If there are some, use it and substitute in later commands
             if len(avail) > 0:
                 symbol = sorted(avail)[0]
-                for later_record in result[i+1:]:
-                    later_record.expr = later_record.expr.subs(record.symbol, symbol)
-                record.symbol = symbol
-                record.tag += "+recycle"
-                print "RECYCLE", record
-            inuse.add(record.symbol)
-        return result
+                for later_command in commands[i+1:]:
+                    later_command.expr = later_command.expr.subs(command.symbol, symbol)
+                command.symbol = symbol
+                command.tag += "+recycle"
+                print "RECYCLE", command
+            inuse.add(command.symbol)
+        return BaseRoutine(commands)
 
 
 def weigh(expr):
@@ -484,8 +486,11 @@ class GaussianIntegral():
     def get_key(self, st_row):
         raise NotImplementedError
 
-    def add_expressions(self, st_row, commands):
+    def add_expressions(self, st_row, routine):
         raise NotImplementedError
+
+    def symbol_to_c(self, symbol):
+        return self.lookup.get(symbol.name, symbol.name)
 
     def get_c_types_names(self):
         return ", ".join(ag.get_c_types_names() for ag in self.arg_groups)
@@ -584,47 +589,56 @@ class GaussianIntegral():
         print >> f_c, "void %s(%s, double* out)" % (fn_name, c_types_names)
         print >> f_c, "{"
 
-    def write_routine(self, f_pyf, f_c, f_h, st_row):
-        fn_name = "%s_%s" % (self.name, self.get_key(st_row))
-        print "Starting", fn_name
-        commands = Commands()
-        self.add_expressions(st_row, commands)
-        # use commands thing to do cse
-        commands.full()
-        records = commands.get_records()
-        num_out = sum(record.symbol.name.startswith("out") for record in records)
-        self.write_routine_proto(f_pyf, f_c, f_h, fn_name, num_out)
+    def write_local_variables(self, f_c, routine):
         print "VARIABLES"
         # variables
         variables = set([
-            record.symbol.name for record in records
-            if not record.symbol.name.startswith("out")
+            command.symbol.name for command in routine.commands
+            if not command.tag == "final"
         ])
         if len(variables) > 0:
             print >> f_c, "  // Number of local variables: %i" % len(variables)
             print >> f_c, "  double %s;" % (", ".join(sorted(variables)))
-        # code lines
+
+    def write_commands(self, f_c, commands):
         total_weight = 0
-        for record in records:
-            print "CCODE", record
-            weight = weigh(record.expr)
+        for command in commands:
+            print "CCODE", command
+            weight = weigh(command.expr)
             total_weight += weight
             print >> f_c, "  %s = %s; // %s, weighs %i" % (
-                self.lookup.get(record.symbol.name, record.symbol.name),
-                ccode(record.expr, lookup=self.lookup),
-                record.tag, weight
+                self.symbol_to_c(command.symbol),
+                ccode(command.expr, lookup=self.lookup),
+                command.tag, weight
             )
         print >> f_c, "  // total weight = %i" % total_weight
+
+    def write_routine(self, f_pyf, f_c, f_h, st_row):
+        return self.write_cse_routine(f_pyf, f_c, f_h, st_row)
+
+    def write_cse_routine(self, f_pyf, f_c, f_h, st_row):
+        fn_name = "%s_%s" % (self.name, self.get_key(st_row))
+        print "Starting", fn_name
+        routine = CSERoutine()
+        self.add_expressions(st_row, routine)
+        # use routine thing to do cse
+        routine.full()
+        routine = routine.recycled()
+        num_out = sum(command.tag == "final" for command in routine.commands)
+        self.write_routine_proto(f_pyf, f_c, f_h, fn_name, num_out)
+        self.write_local_variables(f_c, routine)
+        self.write_commands(f_c, routine.commands)
         print >> f_c, "}"
         print >> f_c
         return fn_name
 
     def write_permutation_routine(self, f_pyf, f_c, f_h, st_row, other_st_row, out_permutation, arg_permutation):
+        """Permutation of the output of another routine."""
         fn_name = "%s_%s" % (self.name, self.get_key(st_row))
         other_fn_name = "%s_%s" % (self.name, self.get_key(other_st_row))
-        cycles = permutation_to_cycles(out_permutation)
         num_out = len(out_permutation)
         self.write_routine_proto(f_pyf, f_c, f_h, fn_name, num_out)
+        cycles = permutation_to_cycles(out_permutation)
         if len(cycles) > 0:
             print >> f_c, "  double tmp;"
         print >> f_c, "  %s(%s, out);" % (other_fn_name, self.get_c_names(arg_permutation))
@@ -644,7 +658,6 @@ class GaussianIntegral():
 
 
 def permutation_to_cycles(permutation):
-    print "PERMUTATION", permutation
     # the permutation is an array with the indexes of the old positions.
     # the cycles are lists of indexes where every old index is preceded by its
     # new index in a cyclic fashion.
