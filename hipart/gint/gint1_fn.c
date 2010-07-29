@@ -29,6 +29,7 @@
 
 void gint1_fn_pF(double* a, double a_a, double* p, double* out)
 {
+  // Generated code based on 'Common SubExpression' analysis.
   // Number of local variables: 10
   double tmp10, tmp15, tmp4, tmp5, tmp6, tmp8, tmp9, v_0, v_1, v_2;
   v_0 = p[0] - a[0]; // local, weighs 2
@@ -56,6 +57,7 @@ void gint1_fn_pF(double* a, double a_a, double* p, double* out)
 
 void gint1_fn_pD(double* a, double a_a, double* p, double* out)
 {
+  // Generated code based on 'Common SubExpression' analysis.
   // Number of local variables: 7
   double tmp10, tmp2, tmp3, tmp4, v_0, v_1, v_2;
   v_0 = p[0] - a[0]; // local, weighs 2
@@ -78,6 +80,7 @@ void gint1_fn_pD(double* a, double a_a, double* p, double* out)
 
 void gint1_fn_SP(double* a, double a_a, double* p, double* out)
 {
+  // Generated code based on 'Common SubExpression' analysis.
   // Number of local variables: 4
   double tmp0, v_0, v_1, v_2;
   v_0 = p[0] - a[0]; // local, weighs 2
@@ -94,6 +97,7 @@ void gint1_fn_SP(double* a, double a_a, double* p, double* out)
 
 void gint1_fn_S(double* a, double a_a, double* p, double* out)
 {
+  // Generated code based on 'Common SubExpression' analysis.
   // Number of local variables: 3
   double v_0, v_1, v_2;
   v_0 = p[0] - a[0]; // local, weighs 2
@@ -105,6 +109,7 @@ void gint1_fn_S(double* a, double a_a, double* p, double* out)
 
 void gint1_fn_P(double* a, double a_a, double* p, double* out)
 {
+  // Generated code based on 'Common SubExpression' analysis.
   // Number of local variables: 4
   double tmp2, v_0, v_1, v_2;
   v_0 = p[0] - a[0]; // local, weighs 2
@@ -119,6 +124,7 @@ void gint1_fn_P(double* a, double a_a, double* p, double* out)
 
 void gint1_fn_cD(double* a, double a_a, double* p, double* out)
 {
+  // Generated code based on 'Common SubExpression' analysis.
   // Number of local variables: 7
   double tmp2, tmp3, tmp4, tmp8, v_0, v_1, v_2;
   v_0 = p[0] - a[0]; // local, weighs 2
@@ -130,16 +136,17 @@ void gint1_fn_cD(double* a, double a_a, double* p, double* out)
   tmp8 = pow(a_a,1.75)*exp(-a_a*(tmp2 + tmp3 + tmp4)); // auto, weighs 8
   out[0] = 1.64592278064949*tmp4*tmp8; // final, weighs 2
   out[1] = 2.85082188141996*tmp8*v_0*v_1; // final, weighs 3
-  tmp4 = tmp8*v_2; // auto+recycle, weighs 1
-  out[2] = 2.85082188141996*tmp4*v_0; // final, weighs 2
+  v_2 = tmp8*v_2; // auto+recycle, weighs 1
+  out[2] = 2.85082188141996*v_0*v_2; // final, weighs 2
   out[3] = 1.64592278064949*tmp3*tmp8; // final, weighs 2
-  out[4] = 2.85082188141996*tmp4*v_1; // final, weighs 2
+  out[4] = 2.85082188141996*v_1*v_2; // final, weighs 2
   out[5] = 1.64592278064949*tmp2*tmp8; // final, weighs 2
   // total weight = 31
 }
 
 void gint1_fn_cF(double* a, double a_a, double* p, double* out)
 {
+  // Generated code based on 'Common SubExpression' analysis.
   // Number of local variables: 9
   double tmp11, tmp2, tmp3, tmp4, tmp6, tmp7, v_0, v_1, v_2;
   v_0 = p[0] - a[0]; // local, weighs 2
@@ -153,15 +160,15 @@ void gint1_fn_cF(double* a, double a_a, double* p, double* out)
   out[0] = 1.47215808929909*tmp4*tmp7; // final, weighs 2
   tmp6 = tmp11*v_1; // auto, weighs 1
   out[1] = 3.29184556129898*tmp4*tmp6; // final, weighs 2
-  tmp11 = tmp11*v_2; // auto+recycle, weighs 1
-  out[2] = 3.29184556129898*tmp11*tmp4; // final, weighs 2
+  v_2 = tmp11*v_2; // auto+recycle, weighs 1
+  out[2] = 3.29184556129898*tmp4*v_2; // final, weighs 2
   out[3] = 3.29184556129898*tmp3*tmp7; // final, weighs 2
-  out[4] = 5.70164376283992*tmp11*v_0*v_1; // final, weighs 3
+  out[4] = 5.70164376283992*v_0*v_1*v_2; // final, weighs 3
   out[5] = 3.29184556129898*tmp2*tmp7; // final, weighs 2
   out[6] = 1.47215808929909*tmp3*tmp6; // final, weighs 2
-  out[7] = 3.29184556129898*tmp11*tmp3; // final, weighs 2
+  out[7] = 3.29184556129898*tmp3*v_2; // final, weighs 2
   out[8] = 3.29184556129898*tmp2*tmp6; // final, weighs 2
-  out[9] = 1.47215808929909*tmp11*tmp2; // final, weighs 2
+  out[9] = 1.47215808929909*tmp2*v_2; // final, weighs 2
   // total weight = 41
 }
 

@@ -306,38 +306,57 @@ class Gint2NAI(GaussianIntegral):
             nai /= get_cartesian_wfn_norm(self.b_a, 0, 0, 0).evalf()
             out_symbol = self.get_out_symbol()
             routine.add(out_symbol, nai, "final")
-        else:
-            st_a = st_row[0]
-            if st_a < -1:
-                st_a_cart = -st_a
-            else:
-                st_a_cart = st_a
-            st_b = st_row[1]
-            if st_b < -1:
-                st_b_cart = -st_b
-            else:
-                st_b_cart = st_b
+        elif st_row[0] >= -1 and st_row[1] >= -1:
             # generate cartesian integral expressions
-            a_ns = list(iter_cartesian_powers(st_a_cart))
-            b_ns = list(iter_cartesian_powers(st_b_cart))
+            a_ns = list(iter_cartesian_powers(st_row[0]))
+            b_ns = list(iter_cartesian_powers(st_row[1]))
             nais = numpy.zeros((len(a_ns),len(b_ns)), dtype=object)
             for a_i, a_n in enumerate(a_ns):
                 for b_i, b_n in enumerate(b_ns):
                     nai = self.get_integral(routine, a_n, b_n, u, v, w, ab_a, ab_overlap, usq, 0)
-                    #nai /= get_cartesian_wfn_norm(self.a_a, a_n[0], a_n[1], a_n[2]).evalf()
-                    #nai /= get_cartesian_wfn_norm(self.b_a, b_n[0], b_n[1], b_n[2]).evalf()
+                    nai /= get_cartesian_wfn_norm(self.a_a, a_n[0], a_n[1], a_n[2]).evalf()
+                    nai /= get_cartesian_wfn_norm(self.b_a, b_n[0], b_n[1], b_n[2]).evalf()
+                    out_symbol = self.get_out_symbol()
+                    routine.add(out_symbol, nai, "final")
                     nais[a_i,b_i] = nai
-            lcs = get_poly_lcs(st_a, self.a_a)
-            nais = numpy.dot(lcs.transpose(), nais)
-            lcs = get_poly_lcs(st_b, self.b_a)
-            nais = numpy.dot(nais, lcs)
-            # add the outputs
-            for nai in nais.flat:
-                out_symbol = self.get_out_symbol()
-                routine.add(out_symbol, nai, "final")
+        else:
+            raise NotImplementedError("No integrals with pure functions.")
 
     def write_routine(self, f_pyf, f_c, f_h, st_row):
-        if st_row[0] > st_row[1]:
+        if st_row[0] < -1 or st_row[1] < -1:
+            # convert the result of a Cartesian gaussian to pure one
+            if st_row[0] < -1:
+                other_st_row = (-st_row[0], st_row[1], 0)
+                size_a = get_shell_dof(-st_row[0])
+                size_b = get_shell_dof(st_row[1])
+                nais = numpy.zeros((size_a,size_b), dtype=object)
+                self.out_counter = 0
+                for ia in xrange(size_a):
+                    for ib in xrange(size_b):
+                        nais[ia,ib] = self.get_out_symbol()
+                lcs = get_poly_conversion(st_row[0])
+                nais = numpy.dot(lcs.transpose(), nais)
+                self.out_counter = 0
+                routine = InplaceRoutine([])
+                for nai in nais.flat:
+                    routine.append(self.get_out_symbol(), nai, "final")
+            else:
+                other_st_row = (st_row[0], -st_row[1], 0)
+                size_a = get_shell_dof(st_row[0])
+                size_b = get_shell_dof(-st_row[1])
+                nais = numpy.zeros((size_a,size_b), dtype=object)
+                self.out_counter = 0
+                for ia in xrange(size_a):
+                    for ib in xrange(size_b):
+                        nais[ia,ib] = self.get_out_symbol()
+                lcs = get_poly_conversion(st_row[1])
+                nais = numpy.dot(nais, lcs)
+                self.out_counter = 0
+                routine = InplaceRoutine([])
+                for nai in nais.flat:
+                    routine.append(self.get_out_symbol(), nai, "final")
+            return self.write_inplace_routine(f_pyf, f_c, f_h, st_row, other_st_row, routine)
+        elif st_row[0] > st_row[1]:
             # transpose the result of another routine
             other_st_row = (st_row[1], st_row[0], 0)
             size_a = get_shell_dof(st_row[0])

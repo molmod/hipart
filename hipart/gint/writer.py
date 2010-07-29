@@ -88,6 +88,29 @@ class BaseRoutine(object):
         self.commands = commands
         self.get_symbol = numbered_symbols("tmp")
 
+    size = property(lambda self: len(self.commands))
+
+    def get_num_out(self):
+        return sum(command.tag == "final" for command in self.commands)
+
+    def clean(self):
+        # go in reverse order through all commands and remove unused ones.
+        counter = self.size-1
+        while counter >= 0:
+            command = self.commands[counter]
+            if command.tag != "final":
+                # do not remove end results
+                # check for usage
+                used = False
+                for later_command in self.commands[counter+1:]:
+                    if command.symbol in later_command.expr:
+                        used = True
+                        break
+                if not used:
+                    print "CLEAN", command
+                    del self.commands[counter]
+            counter -= 1
+
 
 class CSERoutine(BaseRoutine):
     def __init__(self):
@@ -117,7 +140,7 @@ class CSERoutine(BaseRoutine):
     def substitute(self, symbol, expr, tag, force=False):
         # Make substitutions
         first = None
-        for p in xrange(len(self.commands)):
+        for p in xrange(self.size):
             old_expr = self.commands[p].expr
             for new_expr in self._iter_subs(old_expr, expr, symbol):
                 if old_expr == new_expr:
@@ -201,26 +224,8 @@ class CSERoutine(BaseRoutine):
                 pass
         return success
 
-    def clean(self):
-        # go in reverse order through all commands
-        counter = len(self.commands)-1
-        while counter >= 0:
-            command = self.commands[counter]
-            if command.tag != "final":
-                # do not remove end results
-                # check for usage
-                used = False
-                for later_command in self.commands[counter+1:]:
-                    if command.symbol in later_command.expr:
-                        used = True
-                        break
-                if not used:
-                    print "CLEAN", command
-                    del self.commands[counter]
-            counter -= 1
-
     def singles(self):
-        counter = len(self.commands)-1
+        counter = self.size-1
         while counter >= 0:
             command = self.commands[counter]
             if command.tag != "final":
@@ -266,25 +271,101 @@ class CSERoutine(BaseRoutine):
 
     def recycled(self):
         commands = [command.copy() for command in self.commands]
-        inuse = set([])
+        inuse = []
         for i, command in enumerate(commands):
             if command.tag == "final":
                 continue
-            # Determine which symbols are no longer used after this command.
-            avail = inuse.copy()
-            for later_command in commands[i+1:]:
-                for symbol in later_command.expr.atoms(C.Symbol):
-                    avail.discard(symbol)
-            # If there are some, use it and substitute in later commands
-            if len(avail) > 0:
-                symbol = sorted(avail)[0]
+            # Determine a symbol that is no longer used after this command.
+            avail = False
+            for j in xrange(len(inuse)):
+                pivot = inuse.pop(0)
+                avail = True
                 for later_command in commands[i+1:]:
-                    later_command.expr = later_command.expr.subs(command.symbol, symbol)
-                command.symbol = symbol
+                    if pivot in later_command.expr:
+                        avail = False
+                        break
+                if avail:
+                    break
+                else:
+                    inuse.append(pivot)
+            # If there are some, use it and substitute in later commands
+            if avail:
+                for later_command in commands[i+1:]:
+                    later_command.expr = later_command.expr.subs(command.symbol, pivot)
+                command.symbol = pivot
                 command.tag += "+recycle"
                 print "RECYCLE", command
-            inuse.add(command.symbol)
+            inuse.append(command.symbol)
         return BaseRoutine(commands)
+
+
+class InplaceRoutine(BaseRoutine):
+    def append(self, symbol, expr, tag):
+        self.commands.append(Command(symbol, expr, tag))
+
+    def sort(self):
+        i = 0
+        old_penalty = None
+        penalty = 0
+        while True:
+            command1 = self.commands[i]
+            command2 = self.commands[i+1]
+            # check if command i can be swapped with command i+1
+            if command2.symbol not in command1.expr:
+                # check if command i wants to move after command i+1
+                move = False
+                for j, command in enumerate(self.commands[i+1:]):
+                    if command1.symbol in command.expr:
+                        move = True
+                        penalty += j+1
+                if move:
+                    # perform the swap
+                    #print "SWAPPING", i, i+1
+                    self.commands[i+1] = command1
+                    self.commands[i] = command2
+                    changed = True
+            i = (i + 1) % (self.size - 1)
+            if i == 0:
+                #print "PENALTY", penalty
+                if old_penalty is None or penalty != old_penalty:
+                    old_penalty = penalty
+                    penalty = 0
+                else:
+                    break
+
+    def non_overlapping(self):
+        self.sort()
+        # introduce temporary vairables so that every in-place operation is
+        # based on the original output array, and not on the already partially
+        # modified output.
+        commands = [command.copy() for command in self.commands]
+        avail_tmp_vars = []
+        i = 0
+        while i < len(commands):
+            command = commands[i]
+            if command.tag == "temporary":
+                avail_tmp_vars.append(command.expr)
+                command.tag = "final"
+            else:
+                assign_to = command.symbol
+                last_used = None
+                for j, later_command in enumerate(self.commands[i+1:]):
+                    if assign_to in later_command.expr:
+                        last_used = i+j+1
+                if last_used is not None:
+                    # get a temporary var
+                    if len(avail_tmp_vars) > 0:
+                        tmp = avail_tmp_vars.pop(0)
+                    else:
+                        tmp = self.get_symbol.next()
+                    command.symbol = tmp
+                    command.tag = "stacked"
+                    commands.insert(last_used+1, Command(assign_to, tmp, "temporary"))
+            i += 1
+        # remove assignment to itself
+        commands = [command for command in commands if (command.symbol!=command.expr)]
+        return BaseRoutine(commands)
+
 
 
 def weigh(expr):
@@ -529,6 +610,7 @@ class GaussianIntegral():
         print >> f_c, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
         print >> f_c
         for st_row in self.iter_shell_types(max_shell):
+            print st_row
             fn_name = self.write_routine(f_pyf, f_c, f_h, st_row)
             fn_names.append(fn_name)
         # add some sugar
@@ -590,12 +672,12 @@ class GaussianIntegral():
         print >> f_c, "{"
 
     def write_local_variables(self, f_c, routine):
-        print "VARIABLES"
         # variables
         variables = set([
             command.symbol.name for command in routine.commands
             if not command.tag == "final"
         ])
+        print "VARIABLES", len(variables)
         if len(variables) > 0:
             print >> f_c, "  // Number of local variables: %i" % len(variables)
             print >> f_c, "  double %s;" % (", ".join(sorted(variables)))
@@ -618,14 +700,14 @@ class GaussianIntegral():
 
     def write_cse_routine(self, f_pyf, f_c, f_h, st_row):
         fn_name = "%s_%s" % (self.name, self.get_key(st_row))
-        print "Starting", fn_name
         routine = CSERoutine()
         self.add_expressions(st_row, routine)
         # use routine thing to do cse
         routine.full()
         routine = routine.recycled()
-        num_out = sum(command.tag == "final" for command in routine.commands)
+        num_out = routine.get_num_out()
         self.write_routine_proto(f_pyf, f_c, f_h, fn_name, num_out)
+        print >> f_c, "  // Generated code based on 'Common SubExpression' analysis."
         self.write_local_variables(f_c, routine)
         self.write_commands(f_c, routine.commands)
         print >> f_c, "}"
@@ -639,6 +721,7 @@ class GaussianIntegral():
         num_out = len(out_permutation)
         self.write_routine_proto(f_pyf, f_c, f_h, fn_name, num_out)
         cycles = permutation_to_cycles(out_permutation)
+        print >> f_c, "  // In-place permutation of the output of another routine."
         if len(cycles) > 0:
             print >> f_c, "  double tmp;"
         print >> f_c, "  %s(%s, out);" % (other_fn_name, self.get_c_names(arg_permutation))
@@ -652,6 +735,20 @@ class GaussianIntegral():
         print >> f_c
         return fn_name
 
+    def write_inplace_routine(self, f_pyf, f_c, f_h, st_row, other_st_row, inplace_routine):
+        fn_name = "%s_%s" % (self.name, self.get_key(st_row))
+        other_fn_name = "%s_%s" % (self.name, self.get_key(other_st_row))
+        num_out = inplace_routine.get_num_out()
+        self.write_routine_proto(f_pyf, f_c, f_h, fn_name, num_out)
+        print >> f_c, "  // In-place modification of the output of another routine."
+        routine = inplace_routine.non_overlapping()
+        self.write_local_variables(f_c, routine)
+        # call the other function
+        print >> f_c, "  %s(%s, out);" % (other_fn_name, self.get_c_names())
+        self.write_commands(f_c, routine.commands)
+        print >> f_c, "}"
+        print >> f_c
+        return fn_name
 
 
 # Auxiliary functions
@@ -761,35 +858,37 @@ def get_polys(shell_type, alpha, v):
     return result
 
 
-def get_poly_lcs(shell_type, alpha):
-    num_dof_out = get_shell_dof(shell_type)
+def get_poly_conversion(shell_type):
+    # conversion from normalised Cartesian to normalized pure
+    assert shell_type < -1
+    alpha = Symbol("alpha")
     x = Symbol("x")
     y = Symbol("y")
     z = Symbol("z")
     xyz = (x,y,z)
-    if shell_type >= -1:
-        lcs = numpy.zeros((num_dof_out, num_dof_out), dtype=object)
-        for i_out, (poly, wfn_norm) in enumerate(get_polys(shell_type, alpha, xyz)):
-            lcs[i_out,i_out] = (1/wfn_norm).evalf()
-    else:
-        px = Wild("px")
-        py = Wild("py")
-        pz = Wild("pz")
-        c = Wild("c")
-        num_dof_in = get_shell_dof(abs(shell_type))
-        lcs = numpy.zeros((num_dof_in, num_dof_out), dtype=object)
-        for i_out, (poly, wfn_norm) in enumerate(get_polys(shell_type, alpha, xyz)):
-            poly = poly.expand()
-            if isinstance(poly, C.Add):
-                terms = poly.args
-            else:
-                terms = [poly]
-            coeffs = {}
-            for term in terms:
-                d = term.evalf().match(c*x**px*y**py*z**pz)
-                key = (int(d[px]), int(d[py]), int(d[pz]))
-                coeffs[key] = d[c]
-            for i_in, key in enumerate(iter_cartesian_powers(abs(shell_type))):
-                lcs[i_in,i_out] = coeffs.get(key, 0)
-            lcs[:,i_out] /= wfn_norm.evalf()
+
+    px = Wild("px")
+    py = Wild("py")
+    pz = Wild("pz")
+    c = Wild("c")
+
+    num_dof_in = get_shell_dof(abs(shell_type))
+    num_dof_out = get_shell_dof(shell_type)
+    lcs = numpy.zeros((num_dof_in, num_dof_out), dtype=float)
+
+    for i_out, (poly, pure_wfn_norm) in enumerate(get_polys(shell_type, alpha, xyz)):
+        poly = poly.expand()
+        if isinstance(poly, C.Add):
+            terms = poly.args
+        else:
+            terms = [poly]
+        coeffs = {}
+        for term in terms:
+            d = term.evalf().match(c*x**px*y**py*z**pz)
+            key = (int(d[px]), int(d[py]), int(d[pz]))
+            coeffs[key] = d[c]
+        for i_in, key in enumerate(iter_cartesian_powers(abs(shell_type))):
+            cart_wfn_norm = get_cartesian_wfn_norm(alpha, key[0], key[1], key[2])
+            norm_ratio = mypowsimp((cart_wfn_norm/pure_wfn_norm).evalf())
+            lcs[i_in,i_out] = coeffs.get(key, 0)*norm_ratio
     return lcs
