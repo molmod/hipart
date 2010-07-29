@@ -349,7 +349,7 @@ class InplaceRoutine(BaseRoutine):
             else:
                 assign_to = command.symbol
                 last_used = None
-                for j, later_command in enumerate(self.commands[i+1:]):
+                for j, later_command in enumerate(commands[i+1:]):
                     if assign_to in later_command.expr:
                         last_used = i+j+1
                 if last_used is not None:
@@ -872,9 +872,9 @@ def get_poly_conversion(shell_type):
     pz = Wild("pz")
     c = Wild("c")
 
-    num_dof_in = get_shell_dof(abs(shell_type))
+    num_dof_in = get_shell_dof(-shell_type)
     num_dof_out = get_shell_dof(shell_type)
-    lcs = numpy.zeros((num_dof_in, num_dof_out), dtype=float)
+    lcs = numpy.zeros((num_dof_in, num_dof_out), dtype=object)
 
     for i_out, (poly, pure_wfn_norm) in enumerate(get_polys(shell_type, alpha, xyz)):
         poly = poly.expand()
@@ -884,11 +884,14 @@ def get_poly_conversion(shell_type):
             terms = [poly]
         coeffs = {}
         for term in terms:
-            d = term.evalf().match(c*x**px*y**py*z**pz)
+            d = term.evalf(20).match(c*x**px*y**py*z**pz)
             key = (int(d[px]), int(d[py]), int(d[pz]))
             coeffs[key] = d[c]
         for i_in, key in enumerate(iter_cartesian_powers(abs(shell_type))):
             cart_wfn_norm = get_cartesian_wfn_norm(alpha, key[0], key[1], key[2])
-            norm_ratio = mypowsimp((cart_wfn_norm/pure_wfn_norm).evalf())
-            lcs[i_in,i_out] = coeffs.get(key, 0)*norm_ratio
+            norm_ratio = mypowsimp((cart_wfn_norm/pure_wfn_norm).evalf(20))
+            lc = float(coeffs.get(key, 0)*norm_ratio)
+            if abs(lc-int(lc)) < 1e-12:
+                lc = int(lc)
+            lcs[i_in,i_out] = lc
     return lcs

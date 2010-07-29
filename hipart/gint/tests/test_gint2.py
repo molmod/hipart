@@ -119,3 +119,89 @@ def test_pot_hf_sto3g():
     ref_potential -= nuc_potential
     potential = -basis.call_gint1(gint2_nai_dmat, dmat, points)
     assert(abs(potential-ref_potential).max() < 1e-6)
+
+
+ref_data_o2_cc_pvtz_cart_pot = numpy.array([
+    [0.0, 0.0, 0.1, 1.971246175321],
+    [0.0, 0.0, 0.3, 5.584079118098],
+    [0.0, 0.0, 0.5, 37.501673472694],
+    [0.0, 0.0, 0.7, 20.054265047189],
+    [0.0, 0.0, 0.9, 3.844098145251],
+    [0.0, 0.0, 1.1, 1.062428560276],
+    [0.0, 0.0, 1.3, 0.321980437457],
+    [0.0, 0.0, 1.5, 0.102001763361],
+    [0.0, 0.0, 1.7, 0.032322797425],
+    [0.0, 0.0, 1.9, 0.008990991016],
+    [1.21034804944, 1.33431925871, -1.48568061514, -0.000237748327],
+    [0.380907186701, 0.535526212774, -0.780217757666, 0.44483717424],
+    [-0.904257874251, 1.36596259147, 0.235856329873, 0.019236467036],
+    [-0.401756143828, 1.28759317986, -1.94015316532, 0.003269057603],
+    [0.187244262091, 0.534106808229, -0.111489589034, 0.557180506617],
+    [-0.456926257829, -0.397398227751, -0.780884131355, 0.526630653799],
+    [0.634413295603, -1.06814100395, -1.34416503192, 0.011553360451],
+    [-0.912912115442, -1.54821426052, -1.20810766211, 0.005807421374],
+    [0.374821493462, 0.89586852407, 0.564724774034, 0.146277164719],
+    [-0.56907756444, 0.677762323202, -0.907287206105, 0.104050724016],
+])
+
+def test_pot_o2_cc_pvtz_cart():
+    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_cart_fchk)
+    fchk = FCHKFile(fn_fchk)
+    shutil.rmtree(tmpdir)
+    basis = GaussianBasis.from_fchk(fchk)
+    dmat = fchk.fields["Total SCF Density"]
+    reorder_density_matrix(dmat, basis.g03_permutation)
+    points = ref_data_o2_cc_pvtz_cart_pot[:,:3]*angstrom
+    ref_potential = ref_data_o2_cc_pvtz_cart_pot[:,3]
+    nuc_potential = 0.0
+    for i in xrange(fchk.molecule.size):
+        center = fchk.molecule.coordinates[i]
+        Z = fchk.molecule.numbers[i]
+        radius = numpy.sqrt(((points-center)**2).sum(axis=1))
+        nuc_potential += Z/radius
+    ref_potential -= nuc_potential
+    potential = -basis.call_gint1(gint2_nai_dmat, dmat, points)
+    assert(abs(potential-ref_potential).max() < 1e-6)
+
+
+ref_data_o2_cc_pvtz_pure_pot = numpy.array([
+    [0.0, 0.0, 0.1, 1.970967629165],
+    [0.0, 0.0, 0.3, 5.582810453891],
+    [0.0, 0.0, 0.5, 37.501129979615],
+    [0.0, 0.0, 0.7, 20.052490127704],
+    [0.0, 0.0, 0.9, 3.841536231275],
+    [0.0, 0.0, 1.1, 1.060529841566],
+    [0.0, 0.0, 1.3, 0.320231603715],
+    [0.0, 0.0, 1.5, 0.100514642099],
+    [0.0, 0.0, 1.7, 0.031442987225],
+    [0.0, 0.0, 1.9, 0.008629268923],
+    [1.21034804944, 1.33431925871, -1.48568061514, -0.000235995135],
+    [0.380907186701, 0.535526212774, -0.780217757666, 0.443484404126],
+    [-0.904257874251, 1.36596259147, 0.235856329873, 0.019097438009],
+    [-0.401756143828, 1.28759317986, -1.94015316532, 0.003276995961],
+    [0.187244262091, 0.534106808229, -0.111489589034, 0.556322338245],
+    [-0.456926257829, -0.397398227751, -0.780884131355, 0.525248128634],
+    [0.634413295603, -1.06814100395, -1.34416503192, 0.011379054108],
+    [-0.912912115442, -1.54821426052, -1.20810766211, 0.005786492404],
+    [0.374821493462, 0.89586852407, 0.564724774034, 0.145519199534],
+    [-0.56907756444, 0.677762323202, -0.907287206105, 0.102948159996],
+])
+
+def test_pot_o2_cc_pvtz_pure():
+    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_pure_fchk)
+    fchk = FCHKFile(fn_fchk)
+    shutil.rmtree(tmpdir)
+    basis = GaussianBasis.from_fchk(fchk)
+    dmat = fchk.fields["Total SCF Density"]
+    reorder_density_matrix(dmat, basis.g03_permutation)
+    points = ref_data_o2_cc_pvtz_pure_pot[:,:3]*angstrom
+    ref_potential = ref_data_o2_cc_pvtz_pure_pot[:,3]
+    nuc_potential = 0.0
+    for i in xrange(fchk.molecule.size):
+        center = fchk.molecule.coordinates[i]
+        Z = fchk.molecule.numbers[i]
+        radius = numpy.sqrt(((points-center)**2).sum(axis=1))
+        nuc_potential += Z/radius
+    ref_potential -= nuc_potential
+    potential = -basis.call_gint1(gint2_nai_dmat, dmat, points)
+    assert(abs(potential-ref_potential).max() < 1e-6)

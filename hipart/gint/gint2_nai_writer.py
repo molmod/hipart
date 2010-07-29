@@ -323,6 +323,7 @@ class Gint2NAI(GaussianIntegral):
         if st_row[0] < -1 or st_row[1] < -1:
             # convert the result of a Cartesian gaussian to pure one
             if st_row[0] < -1:
+                # make linear combinations of rows
                 other_st_row = (-st_row[0], st_row[1], 0)
                 size_a = get_shell_dof(-st_row[0])
                 size_b = get_shell_dof(st_row[1])
@@ -338,6 +339,7 @@ class Gint2NAI(GaussianIntegral):
                 for nai in nais.flat:
                     routine.append(self.get_out_symbol(), nai, "final")
             else:
+                # make linear combintions of columns
                 other_st_row = (st_row[0], -st_row[1], 0)
                 size_a = get_shell_dof(st_row[0])
                 size_b = get_shell_dof(-st_row[1])

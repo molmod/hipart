@@ -34,63 +34,63 @@ void gint2_nai_pF_pF(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 12
   double tmp0, tmp1, tmp10, tmp11, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9;
   gint2_nai_cF_pF(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[35] - 0.273861278752583*out[21] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[35] - 0.273861278752583*out[21] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = out[63] - 0.670820393249937*out[14] - 0.670820393249937*out[49]; // stacked, weighs 4
   tmp2 = 0.866025403784439*out[14] - 0.866025403784439*out[49]; // stacked, weighs 3
-  out[14] = 1.09544511501033*out[56] - 0.273861278752583*out[7] - 0.612372435695795*out[42]; // final, weighs 5
-  tmp3 = 1.09544511501033*out[37] - 0.273861278752583*out[23] - 0.612372435695795*out[2]; // stacked, weighs 5
+  out[14] = 1.09544511501033*out[56] - 0.273861278752583*out[7] - 0.612372435695794*out[42]; // final, weighs 5
+  tmp3 = 1.09544511501033*out[37] - 0.273861278752583*out[23] - 0.612372435695794*out[2]; // stacked, weighs 5
   tmp4 = 0.866025403784439*out[16] - 0.866025403784439*out[51]; // stacked, weighs 3
   tmp5 = out[65] - 0.670820393249937*out[16] - 0.670820393249937*out[51]; // stacked, weighs 4
-  out[16] = 1.09544511501033*out[58] - 0.273861278752583*out[9] - 0.612372435695795*out[44]; // final, weighs 5
-  tmp6 = 1.09544511501033*out[39] - 0.273861278752583*out[25] - 0.612372435695795*out[4]; // stacked, weighs 5
+  out[16] = 1.09544511501033*out[58] - 0.273861278752583*out[9] - 0.612372435695794*out[44]; // final, weighs 5
+  tmp6 = 1.09544511501033*out[39] - 0.273861278752583*out[25] - 0.612372435695794*out[4]; // stacked, weighs 5
   tmp7 = out[67] - 0.670820393249937*out[18] - 0.670820393249937*out[53]; // stacked, weighs 4
   tmp8 = 0.866025403784439*out[18] - 0.866025403784439*out[53]; // stacked, weighs 3
-  out[18] = 1.09544511501033*out[60] - 0.273861278752583*out[11] - 0.612372435695795*out[46]; // final, weighs 5
-  tmp9 = 1.09544511501033*out[41] - 0.273861278752583*out[27] - 0.612372435695795*out[6]; // stacked, weighs 5
+  out[18] = 1.09544511501033*out[60] - 0.273861278752583*out[11] - 0.612372435695794*out[46]; // final, weighs 5
+  tmp9 = 1.09544511501033*out[41] - 0.273861278752583*out[27] - 0.612372435695794*out[6]; // stacked, weighs 5
   tmp10 = 0.866025403784439*out[20] - 0.866025403784439*out[55]; // stacked, weighs 3
   tmp11 = out[69] - 0.670820393249937*out[20] - 0.670820393249937*out[55]; // stacked, weighs 4
-  out[20] = 1.09544511501033*out[62] - 0.273861278752583*out[13] - 0.612372435695795*out[48]; // final, weighs 5
+  out[20] = 1.09544511501033*out[62] - 0.273861278752583*out[13] - 0.612372435695794*out[48]; // final, weighs 5
   out[35] = 0.790569415042095*out[0] - 1.06066017177982*out[21]; // final, weighs 3
   out[21] = tmp2; // final, weighs 0
   out[0] = tmp1; // final, weighs 0
-  tmp2 = 1.09544511501033*out[36] - 0.273861278752583*out[22] - 0.612372435695795*out[1]; // stacked, weighs 5
+  tmp2 = 1.09544511501033*out[36] - 0.273861278752583*out[22] - 0.612372435695794*out[1]; // stacked, weighs 5
   out[36] = 0.790569415042095*out[1] - 1.06066017177982*out[22]; // final, weighs 3
   out[1] = out[64] - 0.670820393249937*out[15] - 0.670820393249937*out[50]; // final, weighs 4
   out[22] = 0.866025403784439*out[15] - 0.866025403784439*out[50]; // final, weighs 3
+  out[15] = 1.09544511501033*out[57] - 0.273861278752583*out[8] - 0.612372435695794*out[43]; // final, weighs 5
+  out[37] = 0.790569415042095*out[2] - 1.06066017177982*out[23]; // final, weighs 3
   out[2] = tmp5; // final, weighs 0
   out[23] = tmp4; // final, weighs 0
-  out[15] = 1.09544511501033*out[57] - 0.273861278752583*out[8] - 0.612372435695795*out[43]; // final, weighs 5
-  out[37] = 0.790569415042095*out[2] - 1.06066017177982*out[23]; // final, weighs 3
-  tmp1 = 1.09544511501033*out[38] - 0.273861278752583*out[24] - 0.612372435695795*out[3]; // stacked, weighs 5
+  tmp1 = 1.09544511501033*out[38] - 0.273861278752583*out[24] - 0.612372435695794*out[3]; // stacked, weighs 5
   out[38] = 0.790569415042095*out[3] - 1.06066017177982*out[24]; // final, weighs 3
-  out[25] = tmp8; // final, weighs 0
-  out[4] = tmp7; // final, weighs 0
   out[3] = out[66] - 0.670820393249937*out[17] - 0.670820393249937*out[52]; // final, weighs 4
   out[24] = 0.866025403784439*out[17] - 0.866025403784439*out[52]; // final, weighs 3
-  out[17] = 1.09544511501033*out[59] - 0.273861278752583*out[10] - 0.612372435695795*out[45]; // final, weighs 5
+  out[17] = 1.09544511501033*out[59] - 0.273861278752583*out[10] - 0.612372435695794*out[45]; // final, weighs 5
   out[39] = 0.790569415042095*out[4] - 1.06066017177982*out[25]; // final, weighs 3
-  out[6] = tmp11; // final, weighs 0
-  out[27] = tmp10; // final, weighs 0
-  out[8] = tmp2; // final, weighs 0
-  tmp5 = 1.09544511501033*out[40] - 0.273861278752583*out[26] - 0.612372435695795*out[5]; // stacked, weighs 5
-  out[10] = tmp1; // final, weighs 0
+  out[25] = tmp8; // final, weighs 0
+  out[4] = tmp7; // final, weighs 0
+  tmp5 = 1.09544511501033*out[40] - 0.273861278752583*out[26] - 0.612372435695794*out[5]; // stacked, weighs 5
   out[40] = 0.790569415042095*out[5] - 1.06066017177982*out[26]; // final, weighs 3
-  out[12] = tmp5; // final, weighs 0
   out[5] = out[68] - 0.670820393249937*out[19] - 0.670820393249937*out[54]; // final, weighs 4
   out[26] = 0.866025403784439*out[19] - 0.866025403784439*out[54]; // final, weighs 3
-  out[19] = 1.09544511501033*out[61] - 0.273861278752583*out[12] - 0.612372435695795*out[47]; // final, weighs 5
+  out[19] = 1.09544511501033*out[61] - 0.273861278752583*out[12] - 0.612372435695794*out[47]; // final, weighs 5
   out[41] = 0.790569415042095*out[6] - 1.06066017177982*out[27]; // final, weighs 3
+  out[6] = tmp11; // final, weighs 0
+  out[27] = tmp10; // final, weighs 0
   out[42] = 1.06066017177982*out[7] - 0.790569415042095*out[42]; // final, weighs 3
-  out[13] = tmp9; // final, weighs 0
-  out[11] = tmp6; // final, weighs 0
-  out[9] = tmp3; // final, weighs 0
   out[7] = tmp0; // final, weighs 0
   out[43] = 1.06066017177982*out[8] - 0.790569415042095*out[43]; // final, weighs 3
+  out[8] = tmp2; // final, weighs 0
   out[44] = 1.06066017177982*out[9] - 0.790569415042095*out[44]; // final, weighs 3
+  out[9] = tmp3; // final, weighs 0
   out[45] = 1.06066017177982*out[10] - 0.790569415042095*out[45]; // final, weighs 3
+  out[10] = tmp1; // final, weighs 0
   out[46] = 1.06066017177982*out[11] - 0.790569415042095*out[46]; // final, weighs 3
+  out[11] = tmp6; // final, weighs 0
   out[47] = 1.06066017177982*out[12] - 0.790569415042095*out[47]; // final, weighs 3
+  out[12] = tmp5; // final, weighs 0
   out[48] = 1.06066017177982*out[13] - 0.790569415042095*out[48]; // final, weighs 3
+  out[13] = tmp9; // final, weighs 0
   // total weight = 161
 }
 
@@ -100,50 +100,56 @@ void gint2_nai_pD_pF(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 8
   double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
   gint2_nai_cD_pF(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[14]; // stacked, weighs 1
-  out[14] = 1.0*out[28]; // final, weighs 1
-  tmp1 = 1.0*out[15]; // stacked, weighs 1
-  out[15] = 1.0*out[29]; // final, weighs 1
-  tmp2 = 1.0*out[16]; // stacked, weighs 1
-  out[16] = 1.0*out[30]; // final, weighs 1
-  tmp3 = 1.0*out[17]; // stacked, weighs 1
-  out[17] = 1.0*out[31]; // final, weighs 1
-  tmp4 = 1.0*out[18]; // stacked, weighs 1
-  out[18] = 1.0*out[32]; // final, weighs 1
-  tmp5 = 1.0*out[19]; // stacked, weighs 1
-  out[19] = 1.0*out[33]; // final, weighs 1
-  tmp6 = 1.0*out[20]; // stacked, weighs 1
-  out[20] = 1.0*out[34]; // final, weighs 1
-  tmp7 = 1.0*out[35] - 0.5*out[0] - 0.5*out[21]; // stacked, weighs 5
+  tmp0 = out[14]; // stacked, weighs 0
+  out[14] = out[28]; // final, weighs 0
+  tmp1 = out[15]; // stacked, weighs 0
+  out[15] = out[29]; // final, weighs 0
+  tmp2 = out[16]; // stacked, weighs 0
+  out[16] = out[30]; // final, weighs 0
+  tmp3 = out[17]; // stacked, weighs 0
+  out[17] = out[31]; // final, weighs 0
+  tmp4 = out[18]; // stacked, weighs 0
+  out[18] = out[32]; // final, weighs 0
+  tmp5 = out[19]; // stacked, weighs 0
+  out[19] = out[33]; // final, weighs 0
+  tmp6 = out[20]; // stacked, weighs 0
+  out[20] = out[34]; // final, weighs 0
+  tmp7 = out[35] - 0.5*out[0] - 0.5*out[21]; // stacked, weighs 4
   out[21] = 0.866025403784439*out[0] - 0.866025403784439*out[21]; // final, weighs 3
   out[0] = tmp7; // final, weighs 0
-  out[1] = 1.0*out[36] - 0.5*out[1] - 0.5*out[22]; // final, weighs 5
+  tmp7 = out[36] - 0.5*out[1] - 0.5*out[22]; // stacked, weighs 4
   out[22] = 0.866025403784439*out[1] - 0.866025403784439*out[22]; // final, weighs 3
-  out[2] = 1.0*out[37] - 0.5*out[2] - 0.5*out[23]; // final, weighs 5
+  out[1] = tmp7; // final, weighs 0
+  tmp7 = out[37] - 0.5*out[2] - 0.5*out[23]; // stacked, weighs 4
   out[23] = 0.866025403784439*out[2] - 0.866025403784439*out[23]; // final, weighs 3
-  out[3] = 1.0*out[38] - 0.5*out[24] - 0.5*out[3]; // final, weighs 5
+  out[2] = tmp7; // final, weighs 0
+  tmp7 = out[38] - 0.5*out[24] - 0.5*out[3]; // stacked, weighs 4
   out[24] = 0.866025403784439*out[3] - 0.866025403784439*out[24]; // final, weighs 3
-  out[4] = 1.0*out[39] - 0.5*out[25] - 0.5*out[4]; // final, weighs 5
+  out[3] = tmp7; // final, weighs 0
+  tmp7 = out[39] - 0.5*out[25] - 0.5*out[4]; // stacked, weighs 4
   out[25] = 0.866025403784439*out[4] - 0.866025403784439*out[25]; // final, weighs 3
-  out[5] = 1.0*out[40] - 0.5*out[26] - 0.5*out[5]; // final, weighs 5
+  out[4] = tmp7; // final, weighs 0
+  tmp7 = out[40] - 0.5*out[26] - 0.5*out[5]; // stacked, weighs 4
   out[26] = 0.866025403784439*out[5] - 0.866025403784439*out[26]; // final, weighs 3
-  out[6] = 1.0*out[41] - 0.5*out[27] - 0.5*out[6]; // final, weighs 5
+  out[5] = tmp7; // final, weighs 0
+  tmp7 = out[41] - 0.5*out[27] - 0.5*out[6]; // stacked, weighs 4
   out[27] = 0.866025403784439*out[6] - 0.866025403784439*out[27]; // final, weighs 3
-  out[28] = 1.0*out[7]; // final, weighs 1
+  out[6] = tmp7; // final, weighs 0
+  out[28] = out[7]; // final, weighs 0
   out[7] = tmp0; // final, weighs 0
+  out[29] = out[8]; // final, weighs 0
   out[8] = tmp1; // final, weighs 0
+  out[30] = out[9]; // final, weighs 0
   out[9] = tmp2; // final, weighs 0
+  out[31] = out[10]; // final, weighs 0
   out[10] = tmp3; // final, weighs 0
+  out[32] = out[11]; // final, weighs 0
   out[11] = tmp4; // final, weighs 0
+  out[33] = out[12]; // final, weighs 0
   out[12] = tmp5; // final, weighs 0
+  out[34] = out[13]; // final, weighs 0
   out[13] = tmp6; // final, weighs 0
-  out[29] = 1.0*out[8]; // final, weighs 1
-  out[30] = 1.0*out[9]; // final, weighs 1
-  out[31] = 1.0*out[10]; // final, weighs 1
-  out[32] = 1.0*out[11]; // final, weighs 1
-  out[33] = 1.0*out[12]; // final, weighs 1
-  out[34] = 1.0*out[13]; // final, weighs 1
-  // total weight = 77
+  // total weight = 49
 }
 
 void gint2_nai_SP_pF(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -152,32 +158,33 @@ void gint2_nai_SP_pF(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 3
   double tmp0, tmp1, tmp2;
   gint2_nai_SP_cF(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = 0.866025403784439*out[2] - 0.866025403784439*out[7]; // stacked, weighs 3
   tmp2 = out[9] - 0.670820393249937*out[2] - 0.670820393249937*out[7]; // stacked, weighs 4
-  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695795*out[6]; // final, weighs 5
+  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695794*out[6]; // final, weighs 5
   out[5] = 0.790569415042095*out[0] - 1.06066017177982*out[3]; // final, weighs 3
   out[0] = tmp2; // final, weighs 0
   out[3] = tmp1; // final, weighs 0
   out[6] = 1.06066017177982*out[1] - 0.790569415042095*out[6]; // final, weighs 3
   out[1] = tmp0; // final, weighs 0
   out[7] = out[19] - 0.670820393249937*out[12] - 0.670820393249937*out[17]; // final, weighs 4
-  out[8] = 1.09544511501033*out[15] - 0.273861278752583*out[13] - 0.612372435695795*out[10]; // final, weighs 5
-  out[9] = 1.09544511501033*out[18] - 0.273861278752583*out[11] - 0.612372435695795*out[16]; // final, weighs 5
-  out[10] = 0.866025403784439*out[12] - 0.866025403784439*out[17]; // final, weighs 3
+  out[8] = 1.09544511501033*out[15] - 0.273861278752583*out[13] - 0.612372435695794*out[10]; // final, weighs 5
+  out[9] = 1.09544511501033*out[18] - 0.273861278752583*out[11] - 0.612372435695794*out[16]; // final, weighs 5
+  tmp2 = 0.866025403784439*out[12] - 0.866025403784439*out[17]; // stacked, weighs 3
   out[12] = 0.790569415042095*out[10] - 1.06066017177982*out[13]; // final, weighs 3
+  out[10] = tmp2; // final, weighs 0
   out[13] = 1.06066017177982*out[11] - 0.790569415042095*out[16]; // final, weighs 3
   out[11] = out[14]; // final, weighs 0
   out[14] = out[29] - 0.670820393249937*out[22] - 0.670820393249937*out[27]; // final, weighs 4
-  out[15] = 1.09544511501033*out[25] - 0.273861278752583*out[23] - 0.612372435695795*out[20]; // final, weighs 5
-  out[16] = 1.09544511501033*out[28] - 0.273861278752583*out[21] - 0.612372435695795*out[26]; // final, weighs 5
+  out[15] = 1.09544511501033*out[25] - 0.273861278752583*out[23] - 0.612372435695794*out[20]; // final, weighs 5
+  out[16] = 1.09544511501033*out[28] - 0.273861278752583*out[21] - 0.612372435695794*out[26]; // final, weighs 5
   out[17] = 0.866025403784439*out[22] - 0.866025403784439*out[27]; // final, weighs 3
   out[18] = out[24]; // final, weighs 0
   out[19] = 0.790569415042095*out[20] - 1.06066017177982*out[23]; // final, weighs 3
   out[20] = 1.06066017177982*out[21] - 0.790569415042095*out[26]; // final, weighs 3
   out[21] = out[39] - 0.670820393249937*out[32] - 0.670820393249937*out[37]; // final, weighs 4
-  out[22] = 1.09544511501033*out[35] - 0.273861278752583*out[33] - 0.612372435695795*out[30]; // final, weighs 5
-  out[23] = 1.09544511501033*out[38] - 0.273861278752583*out[31] - 0.612372435695795*out[36]; // final, weighs 5
+  out[22] = 1.09544511501033*out[35] - 0.273861278752583*out[33] - 0.612372435695794*out[30]; // final, weighs 5
+  out[23] = 1.09544511501033*out[38] - 0.273861278752583*out[31] - 0.612372435695794*out[36]; // final, weighs 5
   out[24] = 0.866025403784439*out[32] - 0.866025403784439*out[37]; // final, weighs 3
   out[25] = out[34]; // final, weighs 0
   out[26] = 0.790569415042095*out[30] - 1.06066017177982*out[33]; // final, weighs 3
@@ -191,10 +198,10 @@ void gint2_nai_S_pF(double* a, double a_a, double* b, double b_a, double* c, dou
   // Number of local variables: 3
   double tmp0, tmp1, tmp2;
   gint2_nai_S_cF(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = out[9] - 0.670820393249937*out[2] - 0.670820393249937*out[7]; // stacked, weighs 4
   tmp2 = 0.866025403784439*out[2] - 0.866025403784439*out[7]; // stacked, weighs 3
-  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695795*out[6]; // final, weighs 5
+  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695794*out[6]; // final, weighs 5
   out[5] = 0.790569415042095*out[0] - 1.06066017177982*out[3]; // final, weighs 3
   out[3] = tmp2; // final, weighs 0
   out[0] = tmp1; // final, weighs 0
@@ -209,25 +216,26 @@ void gint2_nai_P_pF(double* a, double a_a, double* b, double b_a, double* c, dou
   // Number of local variables: 3
   double tmp0, tmp1, tmp2;
   gint2_nai_P_cF(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = 0.866025403784439*out[2] - 0.866025403784439*out[7]; // stacked, weighs 3
   tmp2 = out[9] - 0.670820393249937*out[2] - 0.670820393249937*out[7]; // stacked, weighs 4
-  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695795*out[6]; // final, weighs 5
+  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695794*out[6]; // final, weighs 5
   out[5] = 0.790569415042095*out[0] - 1.06066017177982*out[3]; // final, weighs 3
   out[0] = tmp2; // final, weighs 0
   out[3] = tmp1; // final, weighs 0
   out[6] = 1.06066017177982*out[1] - 0.790569415042095*out[6]; // final, weighs 3
   out[1] = tmp0; // final, weighs 0
   out[7] = out[19] - 0.670820393249937*out[12] - 0.670820393249937*out[17]; // final, weighs 4
-  out[8] = 1.09544511501033*out[15] - 0.273861278752583*out[13] - 0.612372435695795*out[10]; // final, weighs 5
-  out[9] = 1.09544511501033*out[18] - 0.273861278752583*out[11] - 0.612372435695795*out[16]; // final, weighs 5
-  out[10] = 0.866025403784439*out[12] - 0.866025403784439*out[17]; // final, weighs 3
+  out[8] = 1.09544511501033*out[15] - 0.273861278752583*out[13] - 0.612372435695794*out[10]; // final, weighs 5
+  out[9] = 1.09544511501033*out[18] - 0.273861278752583*out[11] - 0.612372435695794*out[16]; // final, weighs 5
+  tmp2 = 0.866025403784439*out[12] - 0.866025403784439*out[17]; // stacked, weighs 3
   out[12] = 0.790569415042095*out[10] - 1.06066017177982*out[13]; // final, weighs 3
+  out[10] = tmp2; // final, weighs 0
   out[13] = 1.06066017177982*out[11] - 0.790569415042095*out[16]; // final, weighs 3
   out[11] = out[14]; // final, weighs 0
   out[14] = out[29] - 0.670820393249937*out[22] - 0.670820393249937*out[27]; // final, weighs 4
-  out[15] = 1.09544511501033*out[25] - 0.273861278752583*out[23] - 0.612372435695795*out[20]; // final, weighs 5
-  out[16] = 1.09544511501033*out[28] - 0.273861278752583*out[21] - 0.612372435695795*out[26]; // final, weighs 5
+  out[15] = 1.09544511501033*out[25] - 0.273861278752583*out[23] - 0.612372435695794*out[20]; // final, weighs 5
+  out[16] = 1.09544511501033*out[28] - 0.273861278752583*out[21] - 0.612372435695794*out[26]; // final, weighs 5
   out[17] = 0.866025403784439*out[22] - 0.866025403784439*out[27]; // final, weighs 3
   out[18] = out[24]; // final, weighs 0
   out[19] = 0.790569415042095*out[20] - 1.06066017177982*out[23]; // final, weighs 3
@@ -241,46 +249,47 @@ void gint2_nai_cD_pF(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 3
   double tmp0, tmp1, tmp2;
   gint2_nai_cD_cF(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = 0.866025403784439*out[2] - 0.866025403784439*out[7]; // stacked, weighs 3
   tmp2 = out[9] - 0.670820393249937*out[2] - 0.670820393249937*out[7]; // stacked, weighs 4
-  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695795*out[6]; // final, weighs 5
+  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695794*out[6]; // final, weighs 5
   out[5] = 0.790569415042095*out[0] - 1.06066017177982*out[3]; // final, weighs 3
   out[0] = tmp2; // final, weighs 0
   out[3] = tmp1; // final, weighs 0
   out[6] = 1.06066017177982*out[1] - 0.790569415042095*out[6]; // final, weighs 3
   out[1] = tmp0; // final, weighs 0
   out[7] = out[19] - 0.670820393249937*out[12] - 0.670820393249937*out[17]; // final, weighs 4
-  out[8] = 1.09544511501033*out[15] - 0.273861278752583*out[13] - 0.612372435695795*out[10]; // final, weighs 5
-  out[9] = 1.09544511501033*out[18] - 0.273861278752583*out[11] - 0.612372435695795*out[16]; // final, weighs 5
-  out[10] = 0.866025403784439*out[12] - 0.866025403784439*out[17]; // final, weighs 3
+  out[8] = 1.09544511501033*out[15] - 0.273861278752583*out[13] - 0.612372435695794*out[10]; // final, weighs 5
+  out[9] = 1.09544511501033*out[18] - 0.273861278752583*out[11] - 0.612372435695794*out[16]; // final, weighs 5
+  tmp2 = 0.866025403784439*out[12] - 0.866025403784439*out[17]; // stacked, weighs 3
   out[12] = 0.790569415042095*out[10] - 1.06066017177982*out[13]; // final, weighs 3
+  out[10] = tmp2; // final, weighs 0
   out[13] = 1.06066017177982*out[11] - 0.790569415042095*out[16]; // final, weighs 3
   out[11] = out[14]; // final, weighs 0
   out[14] = out[29] - 0.670820393249937*out[22] - 0.670820393249937*out[27]; // final, weighs 4
-  out[15] = 1.09544511501033*out[25] - 0.273861278752583*out[23] - 0.612372435695795*out[20]; // final, weighs 5
-  out[16] = 1.09544511501033*out[28] - 0.273861278752583*out[21] - 0.612372435695795*out[26]; // final, weighs 5
+  out[15] = 1.09544511501033*out[25] - 0.273861278752583*out[23] - 0.612372435695794*out[20]; // final, weighs 5
+  out[16] = 1.09544511501033*out[28] - 0.273861278752583*out[21] - 0.612372435695794*out[26]; // final, weighs 5
   out[17] = 0.866025403784439*out[22] - 0.866025403784439*out[27]; // final, weighs 3
   out[18] = out[24]; // final, weighs 0
   out[19] = 0.790569415042095*out[20] - 1.06066017177982*out[23]; // final, weighs 3
   out[20] = 1.06066017177982*out[21] - 0.790569415042095*out[26]; // final, weighs 3
   out[21] = out[39] - 0.670820393249937*out[32] - 0.670820393249937*out[37]; // final, weighs 4
-  out[22] = 1.09544511501033*out[35] - 0.273861278752583*out[33] - 0.612372435695795*out[30]; // final, weighs 5
-  out[23] = 1.09544511501033*out[38] - 0.273861278752583*out[31] - 0.612372435695795*out[36]; // final, weighs 5
+  out[22] = 1.09544511501033*out[35] - 0.273861278752583*out[33] - 0.612372435695794*out[30]; // final, weighs 5
+  out[23] = 1.09544511501033*out[38] - 0.273861278752583*out[31] - 0.612372435695794*out[36]; // final, weighs 5
   out[24] = 0.866025403784439*out[32] - 0.866025403784439*out[37]; // final, weighs 3
   out[25] = out[34]; // final, weighs 0
   out[26] = 0.790569415042095*out[30] - 1.06066017177982*out[33]; // final, weighs 3
   out[27] = 1.06066017177982*out[31] - 0.790569415042095*out[36]; // final, weighs 3
   out[28] = out[49] - 0.670820393249937*out[42] - 0.670820393249937*out[47]; // final, weighs 4
-  out[29] = 1.09544511501033*out[45] - 0.273861278752583*out[43] - 0.612372435695795*out[40]; // final, weighs 5
-  out[30] = 1.09544511501033*out[48] - 0.273861278752583*out[41] - 0.612372435695795*out[46]; // final, weighs 5
+  out[29] = 1.09544511501033*out[45] - 0.273861278752583*out[43] - 0.612372435695794*out[40]; // final, weighs 5
+  out[30] = 1.09544511501033*out[48] - 0.273861278752583*out[41] - 0.612372435695794*out[46]; // final, weighs 5
   out[31] = 0.866025403784439*out[42] - 0.866025403784439*out[47]; // final, weighs 3
   out[32] = out[44]; // final, weighs 0
   out[33] = 0.790569415042095*out[40] - 1.06066017177982*out[43]; // final, weighs 3
   out[34] = 1.06066017177982*out[41] - 0.790569415042095*out[46]; // final, weighs 3
   out[35] = out[59] - 0.670820393249937*out[52] - 0.670820393249937*out[57]; // final, weighs 4
-  out[36] = 1.09544511501033*out[55] - 0.273861278752583*out[53] - 0.612372435695795*out[50]; // final, weighs 5
-  out[37] = 1.09544511501033*out[58] - 0.273861278752583*out[51] - 0.612372435695795*out[56]; // final, weighs 5
+  out[36] = 1.09544511501033*out[55] - 0.273861278752583*out[53] - 0.612372435695794*out[50]; // final, weighs 5
+  out[37] = 1.09544511501033*out[58] - 0.273861278752583*out[51] - 0.612372435695794*out[56]; // final, weighs 5
   out[38] = 0.866025403784439*out[52] - 0.866025403784439*out[57]; // final, weighs 3
   out[39] = out[54]; // final, weighs 0
   out[40] = 0.790569415042095*out[50] - 1.06066017177982*out[53]; // final, weighs 3
@@ -294,74 +303,75 @@ void gint2_nai_cF_pF(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 3
   double tmp0, tmp1, tmp2;
   gint2_nai_cF_cF(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = 0.866025403784439*out[2] - 0.866025403784439*out[7]; // stacked, weighs 3
   tmp2 = out[9] - 0.670820393249937*out[2] - 0.670820393249937*out[7]; // stacked, weighs 4
-  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695795*out[6]; // final, weighs 5
+  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695794*out[6]; // final, weighs 5
   out[5] = 0.790569415042095*out[0] - 1.06066017177982*out[3]; // final, weighs 3
   out[0] = tmp2; // final, weighs 0
   out[3] = tmp1; // final, weighs 0
   out[6] = 1.06066017177982*out[1] - 0.790569415042095*out[6]; // final, weighs 3
   out[1] = tmp0; // final, weighs 0
   out[7] = out[19] - 0.670820393249937*out[12] - 0.670820393249937*out[17]; // final, weighs 4
-  out[8] = 1.09544511501033*out[15] - 0.273861278752583*out[13] - 0.612372435695795*out[10]; // final, weighs 5
-  out[9] = 1.09544511501033*out[18] - 0.273861278752583*out[11] - 0.612372435695795*out[16]; // final, weighs 5
-  out[10] = 0.866025403784439*out[12] - 0.866025403784439*out[17]; // final, weighs 3
+  out[8] = 1.09544511501033*out[15] - 0.273861278752583*out[13] - 0.612372435695794*out[10]; // final, weighs 5
+  out[9] = 1.09544511501033*out[18] - 0.273861278752583*out[11] - 0.612372435695794*out[16]; // final, weighs 5
+  tmp2 = 0.866025403784439*out[12] - 0.866025403784439*out[17]; // stacked, weighs 3
   out[12] = 0.790569415042095*out[10] - 1.06066017177982*out[13]; // final, weighs 3
+  out[10] = tmp2; // final, weighs 0
   out[13] = 1.06066017177982*out[11] - 0.790569415042095*out[16]; // final, weighs 3
   out[11] = out[14]; // final, weighs 0
   out[14] = out[29] - 0.670820393249937*out[22] - 0.670820393249937*out[27]; // final, weighs 4
-  out[15] = 1.09544511501033*out[25] - 0.273861278752583*out[23] - 0.612372435695795*out[20]; // final, weighs 5
-  out[16] = 1.09544511501033*out[28] - 0.273861278752583*out[21] - 0.612372435695795*out[26]; // final, weighs 5
+  out[15] = 1.09544511501033*out[25] - 0.273861278752583*out[23] - 0.612372435695794*out[20]; // final, weighs 5
+  out[16] = 1.09544511501033*out[28] - 0.273861278752583*out[21] - 0.612372435695794*out[26]; // final, weighs 5
   out[17] = 0.866025403784439*out[22] - 0.866025403784439*out[27]; // final, weighs 3
   out[18] = out[24]; // final, weighs 0
   out[19] = 0.790569415042095*out[20] - 1.06066017177982*out[23]; // final, weighs 3
   out[20] = 1.06066017177982*out[21] - 0.790569415042095*out[26]; // final, weighs 3
   out[21] = out[39] - 0.670820393249937*out[32] - 0.670820393249937*out[37]; // final, weighs 4
-  out[22] = 1.09544511501033*out[35] - 0.273861278752583*out[33] - 0.612372435695795*out[30]; // final, weighs 5
-  out[23] = 1.09544511501033*out[38] - 0.273861278752583*out[31] - 0.612372435695795*out[36]; // final, weighs 5
+  out[22] = 1.09544511501033*out[35] - 0.273861278752583*out[33] - 0.612372435695794*out[30]; // final, weighs 5
+  out[23] = 1.09544511501033*out[38] - 0.273861278752583*out[31] - 0.612372435695794*out[36]; // final, weighs 5
   out[24] = 0.866025403784439*out[32] - 0.866025403784439*out[37]; // final, weighs 3
   out[25] = out[34]; // final, weighs 0
   out[26] = 0.790569415042095*out[30] - 1.06066017177982*out[33]; // final, weighs 3
   out[27] = 1.06066017177982*out[31] - 0.790569415042095*out[36]; // final, weighs 3
   out[28] = out[49] - 0.670820393249937*out[42] - 0.670820393249937*out[47]; // final, weighs 4
-  out[29] = 1.09544511501033*out[45] - 0.273861278752583*out[43] - 0.612372435695795*out[40]; // final, weighs 5
-  out[30] = 1.09544511501033*out[48] - 0.273861278752583*out[41] - 0.612372435695795*out[46]; // final, weighs 5
+  out[29] = 1.09544511501033*out[45] - 0.273861278752583*out[43] - 0.612372435695794*out[40]; // final, weighs 5
+  out[30] = 1.09544511501033*out[48] - 0.273861278752583*out[41] - 0.612372435695794*out[46]; // final, weighs 5
   out[31] = 0.866025403784439*out[42] - 0.866025403784439*out[47]; // final, weighs 3
   out[32] = out[44]; // final, weighs 0
   out[33] = 0.790569415042095*out[40] - 1.06066017177982*out[43]; // final, weighs 3
   out[34] = 1.06066017177982*out[41] - 0.790569415042095*out[46]; // final, weighs 3
   out[35] = out[59] - 0.670820393249937*out[52] - 0.670820393249937*out[57]; // final, weighs 4
-  out[36] = 1.09544511501033*out[55] - 0.273861278752583*out[53] - 0.612372435695795*out[50]; // final, weighs 5
-  out[37] = 1.09544511501033*out[58] - 0.273861278752583*out[51] - 0.612372435695795*out[56]; // final, weighs 5
+  out[36] = 1.09544511501033*out[55] - 0.273861278752583*out[53] - 0.612372435695794*out[50]; // final, weighs 5
+  out[37] = 1.09544511501033*out[58] - 0.273861278752583*out[51] - 0.612372435695794*out[56]; // final, weighs 5
   out[38] = 0.866025403784439*out[52] - 0.866025403784439*out[57]; // final, weighs 3
   out[39] = out[54]; // final, weighs 0
   out[40] = 0.790569415042095*out[50] - 1.06066017177982*out[53]; // final, weighs 3
   out[41] = 1.06066017177982*out[51] - 0.790569415042095*out[56]; // final, weighs 3
   out[42] = out[69] - 0.670820393249937*out[62] - 0.670820393249937*out[67]; // final, weighs 4
-  out[43] = 1.09544511501033*out[65] - 0.273861278752583*out[63] - 0.612372435695795*out[60]; // final, weighs 5
-  out[44] = 1.09544511501033*out[68] - 0.273861278752583*out[61] - 0.612372435695795*out[66]; // final, weighs 5
+  out[43] = 1.09544511501033*out[65] - 0.273861278752583*out[63] - 0.612372435695794*out[60]; // final, weighs 5
+  out[44] = 1.09544511501033*out[68] - 0.273861278752583*out[61] - 0.612372435695794*out[66]; // final, weighs 5
   out[45] = 0.866025403784439*out[62] - 0.866025403784439*out[67]; // final, weighs 3
   out[46] = out[64]; // final, weighs 0
   out[47] = 0.790569415042095*out[60] - 1.06066017177982*out[63]; // final, weighs 3
   out[48] = 1.06066017177982*out[61] - 0.790569415042095*out[66]; // final, weighs 3
   out[49] = out[79] - 0.670820393249937*out[72] - 0.670820393249937*out[77]; // final, weighs 4
-  out[50] = 1.09544511501033*out[75] - 0.273861278752583*out[73] - 0.612372435695795*out[70]; // final, weighs 5
-  out[51] = 1.09544511501033*out[78] - 0.273861278752583*out[71] - 0.612372435695795*out[76]; // final, weighs 5
+  out[50] = 1.09544511501033*out[75] - 0.273861278752583*out[73] - 0.612372435695794*out[70]; // final, weighs 5
+  out[51] = 1.09544511501033*out[78] - 0.273861278752583*out[71] - 0.612372435695794*out[76]; // final, weighs 5
   out[52] = 0.866025403784439*out[72] - 0.866025403784439*out[77]; // final, weighs 3
   out[53] = out[74]; // final, weighs 0
   out[54] = 0.790569415042095*out[70] - 1.06066017177982*out[73]; // final, weighs 3
   out[55] = 1.06066017177982*out[71] - 0.790569415042095*out[76]; // final, weighs 3
   out[56] = out[89] - 0.670820393249937*out[82] - 0.670820393249937*out[87]; // final, weighs 4
-  out[57] = 1.09544511501033*out[85] - 0.273861278752583*out[83] - 0.612372435695795*out[80]; // final, weighs 5
-  out[58] = 1.09544511501033*out[88] - 0.273861278752583*out[81] - 0.612372435695795*out[86]; // final, weighs 5
+  out[57] = 1.09544511501033*out[85] - 0.273861278752583*out[83] - 0.612372435695794*out[80]; // final, weighs 5
+  out[58] = 1.09544511501033*out[88] - 0.273861278752583*out[81] - 0.612372435695794*out[86]; // final, weighs 5
   out[59] = 0.866025403784439*out[82] - 0.866025403784439*out[87]; // final, weighs 3
   out[60] = out[84]; // final, weighs 0
   out[61] = 0.790569415042095*out[80] - 1.06066017177982*out[83]; // final, weighs 3
   out[62] = 1.06066017177982*out[81] - 0.790569415042095*out[86]; // final, weighs 3
   out[63] = out[99] - 0.670820393249937*out[92] - 0.670820393249937*out[97]; // final, weighs 4
-  out[64] = 1.09544511501033*out[95] - 0.273861278752583*out[93] - 0.612372435695795*out[90]; // final, weighs 5
-  out[65] = 1.09544511501033*out[98] - 0.273861278752583*out[91] - 0.612372435695795*out[96]; // final, weighs 5
+  out[64] = 1.09544511501033*out[95] - 0.273861278752583*out[93] - 0.612372435695794*out[90]; // final, weighs 5
+  out[65] = 1.09544511501033*out[98] - 0.273861278752583*out[91] - 0.612372435695794*out[96]; // final, weighs 5
   out[66] = 0.866025403784439*out[92] - 0.866025403784439*out[97]; // final, weighs 3
   out[67] = out[94]; // final, weighs 0
   out[68] = 0.790569415042095*out[90] - 1.06066017177982*out[93]; // final, weighs 3
@@ -375,47 +385,47 @@ void gint2_nai_pF_pD(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 9
   double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8;
   gint2_nai_cF_pD(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[25] - 0.273861278752583*out[15] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[25] - 0.273861278752583*out[15] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = out[45] - 0.670820393249937*out[10] - 0.670820393249937*out[35]; // stacked, weighs 4
   tmp2 = 0.866025403784439*out[10] - 0.866025403784439*out[35]; // stacked, weighs 3
-  out[10] = 1.09544511501033*out[40] - 0.273861278752583*out[5] - 0.612372435695795*out[30]; // final, weighs 5
-  tmp3 = 1.09544511501033*out[27] - 0.273861278752583*out[17] - 0.612372435695795*out[2]; // stacked, weighs 5
+  out[10] = 1.09544511501033*out[40] - 0.273861278752583*out[5] - 0.612372435695794*out[30]; // final, weighs 5
+  tmp3 = 1.09544511501033*out[27] - 0.273861278752583*out[17] - 0.612372435695794*out[2]; // stacked, weighs 5
   tmp4 = 0.866025403784439*out[12] - 0.866025403784439*out[37]; // stacked, weighs 3
   tmp5 = out[47] - 0.670820393249937*out[12] - 0.670820393249937*out[37]; // stacked, weighs 4
-  out[12] = 1.09544511501033*out[42] - 0.273861278752583*out[7] - 0.612372435695795*out[32]; // final, weighs 5
-  tmp6 = 1.09544511501033*out[29] - 0.273861278752583*out[19] - 0.612372435695795*out[4]; // stacked, weighs 5
+  out[12] = 1.09544511501033*out[42] - 0.273861278752583*out[7] - 0.612372435695794*out[32]; // final, weighs 5
+  tmp6 = 1.09544511501033*out[29] - 0.273861278752583*out[19] - 0.612372435695794*out[4]; // stacked, weighs 5
   tmp7 = out[49] - 0.670820393249937*out[14] - 0.670820393249937*out[39]; // stacked, weighs 4
   tmp8 = 0.866025403784439*out[14] - 0.866025403784439*out[39]; // stacked, weighs 3
-  out[14] = 1.09544511501033*out[44] - 0.273861278752583*out[9] - 0.612372435695795*out[34]; // final, weighs 5
+  out[14] = 1.09544511501033*out[44] - 0.273861278752583*out[9] - 0.612372435695794*out[34]; // final, weighs 5
   out[25] = 0.790569415042095*out[0] - 1.06066017177982*out[15]; // final, weighs 3
   out[15] = tmp2; // final, weighs 0
   out[0] = tmp1; // final, weighs 0
-  tmp2 = 1.09544511501033*out[26] - 0.273861278752583*out[16] - 0.612372435695795*out[1]; // stacked, weighs 5
+  tmp2 = 1.09544511501033*out[26] - 0.273861278752583*out[16] - 0.612372435695794*out[1]; // stacked, weighs 5
   out[26] = 0.790569415042095*out[1] - 1.06066017177982*out[16]; // final, weighs 3
   out[1] = out[46] - 0.670820393249937*out[11] - 0.670820393249937*out[36]; // final, weighs 4
   out[16] = 0.866025403784439*out[11] - 0.866025403784439*out[36]; // final, weighs 3
+  out[11] = 1.09544511501033*out[41] - 0.273861278752583*out[6] - 0.612372435695794*out[31]; // final, weighs 5
+  out[27] = 0.790569415042095*out[2] - 1.06066017177982*out[17]; // final, weighs 3
   out[2] = tmp5; // final, weighs 0
   out[17] = tmp4; // final, weighs 0
-  out[11] = 1.09544511501033*out[41] - 0.273861278752583*out[6] - 0.612372435695795*out[31]; // final, weighs 5
-  out[27] = 0.790569415042095*out[2] - 1.06066017177982*out[17]; // final, weighs 3
-  tmp1 = 1.09544511501033*out[28] - 0.273861278752583*out[18] - 0.612372435695795*out[3]; // stacked, weighs 5
+  tmp1 = 1.09544511501033*out[28] - 0.273861278752583*out[18] - 0.612372435695794*out[3]; // stacked, weighs 5
   out[28] = 0.790569415042095*out[3] - 1.06066017177982*out[18]; // final, weighs 3
+  out[3] = out[48] - 0.670820393249937*out[13] - 0.670820393249937*out[38]; // final, weighs 4
+  out[18] = 0.866025403784439*out[13] - 0.866025403784439*out[38]; // final, weighs 3
+  out[13] = 1.09544511501033*out[43] - 0.273861278752583*out[8] - 0.612372435695794*out[33]; // final, weighs 5
+  out[29] = 0.790569415042095*out[4] - 1.06066017177982*out[19]; // final, weighs 3
   out[19] = tmp8; // final, weighs 0
   out[4] = tmp7; // final, weighs 0
-  out[6] = tmp2; // final, weighs 0
-  out[3] = out[48] - 0.670820393249937*out[13] - 0.670820393249937*out[38]; // final, weighs 4
-  out[8] = tmp1; // final, weighs 0
-  out[18] = 0.866025403784439*out[13] - 0.866025403784439*out[38]; // final, weighs 3
-  out[13] = 1.09544511501033*out[43] - 0.273861278752583*out[8] - 0.612372435695795*out[33]; // final, weighs 5
-  out[29] = 0.790569415042095*out[4] - 1.06066017177982*out[19]; // final, weighs 3
   out[30] = 1.06066017177982*out[5] - 0.790569415042095*out[30]; // final, weighs 3
-  out[9] = tmp6; // final, weighs 0
-  out[7] = tmp3; // final, weighs 0
   out[5] = tmp0; // final, weighs 0
   out[31] = 1.06066017177982*out[6] - 0.790569415042095*out[31]; // final, weighs 3
+  out[6] = tmp2; // final, weighs 0
   out[32] = 1.06066017177982*out[7] - 0.790569415042095*out[32]; // final, weighs 3
+  out[7] = tmp3; // final, weighs 0
   out[33] = 1.06066017177982*out[8] - 0.790569415042095*out[33]; // final, weighs 3
+  out[8] = tmp1; // final, weighs 0
   out[34] = 1.06066017177982*out[9] - 0.790569415042095*out[34]; // final, weighs 3
+  out[9] = tmp6; // final, weighs 0
   // total weight = 115
 }
 
@@ -425,38 +435,42 @@ void gint2_nai_pD_pD(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 6
   double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5;
   gint2_nai_cD_pD(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[10]; // stacked, weighs 1
-  out[10] = 1.0*out[20]; // final, weighs 1
-  tmp1 = 1.0*out[11]; // stacked, weighs 1
-  out[11] = 1.0*out[21]; // final, weighs 1
-  tmp2 = 1.0*out[12]; // stacked, weighs 1
-  out[12] = 1.0*out[22]; // final, weighs 1
-  tmp3 = 1.0*out[13]; // stacked, weighs 1
-  out[13] = 1.0*out[23]; // final, weighs 1
-  tmp4 = 1.0*out[14]; // stacked, weighs 1
-  out[14] = 1.0*out[24]; // final, weighs 1
-  tmp5 = 1.0*out[25] - 0.5*out[0] - 0.5*out[15]; // stacked, weighs 5
+  tmp0 = out[10]; // stacked, weighs 0
+  out[10] = out[20]; // final, weighs 0
+  tmp1 = out[11]; // stacked, weighs 0
+  out[11] = out[21]; // final, weighs 0
+  tmp2 = out[12]; // stacked, weighs 0
+  out[12] = out[22]; // final, weighs 0
+  tmp3 = out[13]; // stacked, weighs 0
+  out[13] = out[23]; // final, weighs 0
+  tmp4 = out[14]; // stacked, weighs 0
+  out[14] = out[24]; // final, weighs 0
+  tmp5 = out[25] - 0.5*out[0] - 0.5*out[15]; // stacked, weighs 4
   out[15] = 0.866025403784439*out[0] - 0.866025403784439*out[15]; // final, weighs 3
   out[0] = tmp5; // final, weighs 0
-  out[1] = 1.0*out[26] - 0.5*out[1] - 0.5*out[16]; // final, weighs 5
+  tmp5 = out[26] - 0.5*out[1] - 0.5*out[16]; // stacked, weighs 4
   out[16] = 0.866025403784439*out[1] - 0.866025403784439*out[16]; // final, weighs 3
-  out[2] = 1.0*out[27] - 0.5*out[17] - 0.5*out[2]; // final, weighs 5
+  out[1] = tmp5; // final, weighs 0
+  tmp5 = out[27] - 0.5*out[17] - 0.5*out[2]; // stacked, weighs 4
   out[17] = 0.866025403784439*out[2] - 0.866025403784439*out[17]; // final, weighs 3
-  out[3] = 1.0*out[28] - 0.5*out[18] - 0.5*out[3]; // final, weighs 5
+  out[2] = tmp5; // final, weighs 0
+  tmp5 = out[28] - 0.5*out[18] - 0.5*out[3]; // stacked, weighs 4
   out[18] = 0.866025403784439*out[3] - 0.866025403784439*out[18]; // final, weighs 3
-  out[4] = 1.0*out[29] - 0.5*out[19] - 0.5*out[4]; // final, weighs 5
+  out[3] = tmp5; // final, weighs 0
+  tmp5 = out[29] - 0.5*out[19] - 0.5*out[4]; // stacked, weighs 4
   out[19] = 0.866025403784439*out[4] - 0.866025403784439*out[19]; // final, weighs 3
-  out[20] = 1.0*out[5]; // final, weighs 1
+  out[4] = tmp5; // final, weighs 0
+  out[20] = out[5]; // final, weighs 0
   out[5] = tmp0; // final, weighs 0
+  out[21] = out[6]; // final, weighs 0
   out[6] = tmp1; // final, weighs 0
+  out[22] = out[7]; // final, weighs 0
   out[7] = tmp2; // final, weighs 0
+  out[23] = out[8]; // final, weighs 0
   out[8] = tmp3; // final, weighs 0
+  out[24] = out[9]; // final, weighs 0
   out[9] = tmp4; // final, weighs 0
-  out[21] = 1.0*out[6]; // final, weighs 1
-  out[22] = 1.0*out[7]; // final, weighs 1
-  out[23] = 1.0*out[8]; // final, weighs 1
-  out[24] = 1.0*out[9]; // final, weighs 1
-  // total weight = 55
+  // total weight = 35
 }
 
 void gint2_nai_SP_pD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -465,29 +479,30 @@ void gint2_nai_SP_pD(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 2
   double tmp0, tmp1;
   gint2_nai_SP_cD(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[2]; // stacked, weighs 1
-  out[2] = 1.0*out[4]; // final, weighs 1
-  tmp1 = 1.0*out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 5
+  tmp0 = out[2]; // stacked, weighs 0
+  out[2] = out[4]; // final, weighs 0
+  tmp1 = out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 4
   out[3] = 0.866025403784439*out[0] - 0.866025403784439*out[3]; // final, weighs 3
   out[0] = tmp1; // final, weighs 0
-  out[4] = 1.0*out[1]; // final, weighs 1
+  out[4] = out[1]; // final, weighs 0
   out[1] = tmp0; // final, weighs 0
-  out[5] = 1.0*out[11] - 0.5*out[6] - 0.5*out[9]; // final, weighs 5
-  out[6] = 1.0*out[8]; // final, weighs 1
+  out[5] = out[11] - 0.5*out[6] - 0.5*out[9]; // final, weighs 4
+  tmp1 = out[8]; // stacked, weighs 0
   out[8] = 0.866025403784439*out[6] - 0.866025403784439*out[9]; // final, weighs 3
-  out[9] = 1.0*out[7]; // final, weighs 1
-  out[7] = 1.0*out[10]; // final, weighs 1
-  out[10] = 1.0*out[17] - 0.5*out[12] - 0.5*out[15]; // final, weighs 5
-  out[11] = 1.0*out[14]; // final, weighs 1
-  out[13] = 0.866025403784439*out[12] - 0.866025403784439*out[15]; // final, weighs 3
-  out[12] = 1.0*out[16]; // final, weighs 1
-  out[14] = 1.0*out[13]; // final, weighs 1
-  out[15] = 1.0*out[23] - 0.5*out[18] - 0.5*out[21]; // final, weighs 5
-  out[16] = 1.0*out[20]; // final, weighs 1
-  out[17] = 1.0*out[22]; // final, weighs 1
+  out[6] = tmp1; // final, weighs 0
+  out[9] = out[7]; // final, weighs 0
+  out[7] = out[10]; // final, weighs 0
+  out[10] = out[17] - 0.5*out[12] - 0.5*out[15]; // final, weighs 4
+  out[11] = out[14]; // final, weighs 0
+  tmp0 = 0.866025403784439*out[12] - 0.866025403784439*out[15]; // stacked, weighs 3
+  out[12] = out[16]; // final, weighs 0
+  out[14] = out[13]; // final, weighs 0
+  out[13] = tmp0; // final, weighs 0
+  out[15] = out[23] - 0.5*out[18] - 0.5*out[21]; // final, weighs 4
+  out[16] = out[20]; // final, weighs 0
+  out[17] = out[22]; // final, weighs 0
   out[18] = 0.866025403784439*out[18] - 0.866025403784439*out[21]; // final, weighs 3
-  out[19] = 1.0*out[19]; // final, weighs 1
-  // total weight = 44
+  // total weight = 28
 }
 
 void gint2_nai_S_pD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -496,14 +511,14 @@ void gint2_nai_S_pD(double* a, double a_a, double* b, double b_a, double* c, dou
   // Number of local variables: 2
   double tmp0, tmp1;
   gint2_nai_S_cD(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[2]; // stacked, weighs 1
-  out[2] = 1.0*out[4]; // final, weighs 1
-  tmp1 = 1.0*out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 5
+  tmp0 = out[2]; // stacked, weighs 0
+  out[2] = out[4]; // final, weighs 0
+  tmp1 = out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 4
   out[3] = 0.866025403784439*out[0] - 0.866025403784439*out[3]; // final, weighs 3
   out[0] = tmp1; // final, weighs 0
-  out[4] = 1.0*out[1]; // final, weighs 1
+  out[4] = out[1]; // final, weighs 0
   out[1] = tmp0; // final, weighs 0
-  // total weight = 11
+  // total weight = 7
 }
 
 void gint2_nai_P_pD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -512,24 +527,26 @@ void gint2_nai_P_pD(double* a, double a_a, double* b, double b_a, double* c, dou
   // Number of local variables: 2
   double tmp0, tmp1;
   gint2_nai_P_cD(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[2]; // stacked, weighs 1
-  out[2] = 1.0*out[4]; // final, weighs 1
-  tmp1 = 1.0*out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 5
+  tmp0 = out[2]; // stacked, weighs 0
+  out[2] = out[4]; // final, weighs 0
+  tmp1 = out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 4
   out[3] = 0.866025403784439*out[0] - 0.866025403784439*out[3]; // final, weighs 3
   out[0] = tmp1; // final, weighs 0
-  out[4] = 1.0*out[1]; // final, weighs 1
+  out[4] = out[1]; // final, weighs 0
   out[1] = tmp0; // final, weighs 0
-  out[5] = 1.0*out[11] - 0.5*out[6] - 0.5*out[9]; // final, weighs 5
-  out[6] = 1.0*out[8]; // final, weighs 1
+  out[5] = out[11] - 0.5*out[6] - 0.5*out[9]; // final, weighs 4
+  tmp1 = out[8]; // stacked, weighs 0
   out[8] = 0.866025403784439*out[6] - 0.866025403784439*out[9]; // final, weighs 3
-  out[9] = 1.0*out[7]; // final, weighs 1
-  out[7] = 1.0*out[10]; // final, weighs 1
-  out[10] = 1.0*out[17] - 0.5*out[12] - 0.5*out[15]; // final, weighs 5
-  out[11] = 1.0*out[14]; // final, weighs 1
-  out[13] = 0.866025403784439*out[12] - 0.866025403784439*out[15]; // final, weighs 3
-  out[12] = 1.0*out[16]; // final, weighs 1
-  out[14] = 1.0*out[13]; // final, weighs 1
-  // total weight = 33
+  out[6] = tmp1; // final, weighs 0
+  out[9] = out[7]; // final, weighs 0
+  out[7] = out[10]; // final, weighs 0
+  out[10] = out[17] - 0.5*out[12] - 0.5*out[15]; // final, weighs 4
+  out[11] = out[14]; // final, weighs 0
+  tmp0 = 0.866025403784439*out[12] - 0.866025403784439*out[15]; // stacked, weighs 3
+  out[12] = out[16]; // final, weighs 0
+  out[14] = out[13]; // final, weighs 0
+  out[13] = tmp0; // final, weighs 0
+  // total weight = 21
 }
 
 void gint2_nai_cD_pD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -538,39 +555,40 @@ void gint2_nai_cD_pD(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 2
   double tmp0, tmp1;
   gint2_nai_cD_cD(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[2]; // stacked, weighs 1
-  out[2] = 1.0*out[4]; // final, weighs 1
-  tmp1 = 1.0*out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 5
+  tmp0 = out[2]; // stacked, weighs 0
+  out[2] = out[4]; // final, weighs 0
+  tmp1 = out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 4
   out[3] = 0.866025403784439*out[0] - 0.866025403784439*out[3]; // final, weighs 3
   out[0] = tmp1; // final, weighs 0
-  out[4] = 1.0*out[1]; // final, weighs 1
+  out[4] = out[1]; // final, weighs 0
   out[1] = tmp0; // final, weighs 0
-  out[5] = 1.0*out[11] - 0.5*out[6] - 0.5*out[9]; // final, weighs 5
-  out[6] = 1.0*out[8]; // final, weighs 1
+  out[5] = out[11] - 0.5*out[6] - 0.5*out[9]; // final, weighs 4
+  tmp1 = out[8]; // stacked, weighs 0
   out[8] = 0.866025403784439*out[6] - 0.866025403784439*out[9]; // final, weighs 3
-  out[9] = 1.0*out[7]; // final, weighs 1
-  out[7] = 1.0*out[10]; // final, weighs 1
-  out[10] = 1.0*out[17] - 0.5*out[12] - 0.5*out[15]; // final, weighs 5
-  out[11] = 1.0*out[14]; // final, weighs 1
-  out[13] = 0.866025403784439*out[12] - 0.866025403784439*out[15]; // final, weighs 3
-  out[12] = 1.0*out[16]; // final, weighs 1
-  out[14] = 1.0*out[13]; // final, weighs 1
-  out[15] = 1.0*out[23] - 0.5*out[18] - 0.5*out[21]; // final, weighs 5
-  out[16] = 1.0*out[20]; // final, weighs 1
-  out[17] = 1.0*out[22]; // final, weighs 1
+  out[6] = tmp1; // final, weighs 0
+  out[9] = out[7]; // final, weighs 0
+  out[7] = out[10]; // final, weighs 0
+  out[10] = out[17] - 0.5*out[12] - 0.5*out[15]; // final, weighs 4
+  out[11] = out[14]; // final, weighs 0
+  tmp0 = 0.866025403784439*out[12] - 0.866025403784439*out[15]; // stacked, weighs 3
+  out[12] = out[16]; // final, weighs 0
+  out[14] = out[13]; // final, weighs 0
+  out[13] = tmp0; // final, weighs 0
+  out[15] = out[23] - 0.5*out[18] - 0.5*out[21]; // final, weighs 4
+  out[16] = out[20]; // final, weighs 0
+  out[17] = out[22]; // final, weighs 0
   out[18] = 0.866025403784439*out[18] - 0.866025403784439*out[21]; // final, weighs 3
-  out[19] = 1.0*out[19]; // final, weighs 1
-  out[20] = 1.0*out[29] - 0.5*out[24] - 0.5*out[27]; // final, weighs 5
-  out[21] = 1.0*out[26]; // final, weighs 1
-  out[22] = 1.0*out[28]; // final, weighs 1
+  out[20] = out[29] - 0.5*out[24] - 0.5*out[27]; // final, weighs 4
+  out[21] = out[26]; // final, weighs 0
+  out[22] = out[28]; // final, weighs 0
   out[23] = 0.866025403784439*out[24] - 0.866025403784439*out[27]; // final, weighs 3
-  out[24] = 1.0*out[25]; // final, weighs 1
-  out[25] = 1.0*out[35] - 0.5*out[30] - 0.5*out[33]; // final, weighs 5
-  out[26] = 1.0*out[32]; // final, weighs 1
-  out[27] = 1.0*out[34]; // final, weighs 1
+  out[24] = out[25]; // final, weighs 0
+  out[25] = out[35] - 0.5*out[30] - 0.5*out[33]; // final, weighs 4
+  out[26] = out[32]; // final, weighs 0
+  out[27] = out[34]; // final, weighs 0
   out[28] = 0.866025403784439*out[30] - 0.866025403784439*out[33]; // final, weighs 3
-  out[29] = 1.0*out[31]; // final, weighs 1
-  // total weight = 66
+  out[29] = out[31]; // final, weighs 0
+  // total weight = 42
 }
 
 void gint2_nai_cF_pD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -579,59 +597,60 @@ void gint2_nai_cF_pD(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 2
   double tmp0, tmp1;
   gint2_nai_cF_cD(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[2]; // stacked, weighs 1
-  out[2] = 1.0*out[4]; // final, weighs 1
-  tmp1 = 1.0*out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 5
+  tmp0 = out[2]; // stacked, weighs 0
+  out[2] = out[4]; // final, weighs 0
+  tmp1 = out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 4
   out[3] = 0.866025403784439*out[0] - 0.866025403784439*out[3]; // final, weighs 3
   out[0] = tmp1; // final, weighs 0
-  out[4] = 1.0*out[1]; // final, weighs 1
+  out[4] = out[1]; // final, weighs 0
   out[1] = tmp0; // final, weighs 0
-  out[5] = 1.0*out[11] - 0.5*out[6] - 0.5*out[9]; // final, weighs 5
-  out[6] = 1.0*out[8]; // final, weighs 1
+  out[5] = out[11] - 0.5*out[6] - 0.5*out[9]; // final, weighs 4
+  tmp1 = out[8]; // stacked, weighs 0
   out[8] = 0.866025403784439*out[6] - 0.866025403784439*out[9]; // final, weighs 3
-  out[9] = 1.0*out[7]; // final, weighs 1
-  out[7] = 1.0*out[10]; // final, weighs 1
-  out[10] = 1.0*out[17] - 0.5*out[12] - 0.5*out[15]; // final, weighs 5
-  out[11] = 1.0*out[14]; // final, weighs 1
-  out[13] = 0.866025403784439*out[12] - 0.866025403784439*out[15]; // final, weighs 3
-  out[12] = 1.0*out[16]; // final, weighs 1
-  out[14] = 1.0*out[13]; // final, weighs 1
-  out[15] = 1.0*out[23] - 0.5*out[18] - 0.5*out[21]; // final, weighs 5
-  out[16] = 1.0*out[20]; // final, weighs 1
-  out[17] = 1.0*out[22]; // final, weighs 1
+  out[6] = tmp1; // final, weighs 0
+  out[9] = out[7]; // final, weighs 0
+  out[7] = out[10]; // final, weighs 0
+  out[10] = out[17] - 0.5*out[12] - 0.5*out[15]; // final, weighs 4
+  out[11] = out[14]; // final, weighs 0
+  tmp0 = 0.866025403784439*out[12] - 0.866025403784439*out[15]; // stacked, weighs 3
+  out[12] = out[16]; // final, weighs 0
+  out[14] = out[13]; // final, weighs 0
+  out[13] = tmp0; // final, weighs 0
+  out[15] = out[23] - 0.5*out[18] - 0.5*out[21]; // final, weighs 4
+  out[16] = out[20]; // final, weighs 0
+  out[17] = out[22]; // final, weighs 0
   out[18] = 0.866025403784439*out[18] - 0.866025403784439*out[21]; // final, weighs 3
-  out[19] = 1.0*out[19]; // final, weighs 1
-  out[20] = 1.0*out[29] - 0.5*out[24] - 0.5*out[27]; // final, weighs 5
-  out[21] = 1.0*out[26]; // final, weighs 1
-  out[22] = 1.0*out[28]; // final, weighs 1
+  out[20] = out[29] - 0.5*out[24] - 0.5*out[27]; // final, weighs 4
+  out[21] = out[26]; // final, weighs 0
+  out[22] = out[28]; // final, weighs 0
   out[23] = 0.866025403784439*out[24] - 0.866025403784439*out[27]; // final, weighs 3
-  out[24] = 1.0*out[25]; // final, weighs 1
-  out[25] = 1.0*out[35] - 0.5*out[30] - 0.5*out[33]; // final, weighs 5
-  out[26] = 1.0*out[32]; // final, weighs 1
-  out[27] = 1.0*out[34]; // final, weighs 1
+  out[24] = out[25]; // final, weighs 0
+  out[25] = out[35] - 0.5*out[30] - 0.5*out[33]; // final, weighs 4
+  out[26] = out[32]; // final, weighs 0
+  out[27] = out[34]; // final, weighs 0
   out[28] = 0.866025403784439*out[30] - 0.866025403784439*out[33]; // final, weighs 3
-  out[29] = 1.0*out[31]; // final, weighs 1
-  out[30] = 1.0*out[41] - 0.5*out[36] - 0.5*out[39]; // final, weighs 5
-  out[31] = 1.0*out[38]; // final, weighs 1
-  out[32] = 1.0*out[40]; // final, weighs 1
+  out[29] = out[31]; // final, weighs 0
+  out[30] = out[41] - 0.5*out[36] - 0.5*out[39]; // final, weighs 4
+  out[31] = out[38]; // final, weighs 0
+  out[32] = out[40]; // final, weighs 0
   out[33] = 0.866025403784439*out[36] - 0.866025403784439*out[39]; // final, weighs 3
-  out[34] = 1.0*out[37]; // final, weighs 1
-  out[35] = 1.0*out[47] - 0.5*out[42] - 0.5*out[45]; // final, weighs 5
-  out[36] = 1.0*out[44]; // final, weighs 1
-  out[37] = 1.0*out[46]; // final, weighs 1
+  out[34] = out[37]; // final, weighs 0
+  out[35] = out[47] - 0.5*out[42] - 0.5*out[45]; // final, weighs 4
+  out[36] = out[44]; // final, weighs 0
+  out[37] = out[46]; // final, weighs 0
   out[38] = 0.866025403784439*out[42] - 0.866025403784439*out[45]; // final, weighs 3
-  out[39] = 1.0*out[43]; // final, weighs 1
-  out[40] = 1.0*out[53] - 0.5*out[48] - 0.5*out[51]; // final, weighs 5
-  out[41] = 1.0*out[50]; // final, weighs 1
-  out[42] = 1.0*out[52]; // final, weighs 1
+  out[39] = out[43]; // final, weighs 0
+  out[40] = out[53] - 0.5*out[48] - 0.5*out[51]; // final, weighs 4
+  out[41] = out[50]; // final, weighs 0
+  out[42] = out[52]; // final, weighs 0
   out[43] = 0.866025403784439*out[48] - 0.866025403784439*out[51]; // final, weighs 3
-  out[44] = 1.0*out[49]; // final, weighs 1
-  out[45] = 1.0*out[59] - 0.5*out[54] - 0.5*out[57]; // final, weighs 5
-  out[46] = 1.0*out[56]; // final, weighs 1
-  out[47] = 1.0*out[58]; // final, weighs 1
+  out[44] = out[49]; // final, weighs 0
+  out[45] = out[59] - 0.5*out[54] - 0.5*out[57]; // final, weighs 4
+  out[46] = out[56]; // final, weighs 0
+  out[47] = out[58]; // final, weighs 0
   out[48] = 0.866025403784439*out[54] - 0.866025403784439*out[57]; // final, weighs 3
-  out[49] = 1.0*out[55]; // final, weighs 1
-  // total weight = 110
+  out[49] = out[55]; // final, weighs 0
+  // total weight = 70
 }
 
 void gint2_nai_pF_SP(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -640,38 +659,38 @@ void gint2_nai_pF_SP(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 6
   double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5;
   gint2_nai_cF_SP(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[20] - 0.273861278752583*out[12] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[20] - 0.273861278752583*out[12] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = out[36] - 0.670820393249937*out[28] - 0.670820393249937*out[8]; // stacked, weighs 4
   tmp2 = 0.866025403784439*out[8] - 0.866025403784439*out[28]; // stacked, weighs 3
-  out[8] = 1.09544511501033*out[32] - 0.273861278752583*out[4] - 0.612372435695795*out[24]; // final, weighs 5
-  tmp3 = 1.09544511501033*out[22] - 0.273861278752583*out[14] - 0.612372435695795*out[2]; // stacked, weighs 5
+  out[8] = 1.09544511501033*out[32] - 0.273861278752583*out[4] - 0.612372435695794*out[24]; // final, weighs 5
+  tmp3 = 1.09544511501033*out[22] - 0.273861278752583*out[14] - 0.612372435695794*out[2]; // stacked, weighs 5
   tmp4 = 0.866025403784439*out[10] - 0.866025403784439*out[30]; // stacked, weighs 3
   tmp5 = out[38] - 0.670820393249937*out[10] - 0.670820393249937*out[30]; // stacked, weighs 4
-  out[10] = 1.09544511501033*out[34] - 0.273861278752583*out[6] - 0.612372435695795*out[26]; // final, weighs 5
+  out[10] = 1.09544511501033*out[34] - 0.273861278752583*out[6] - 0.612372435695794*out[26]; // final, weighs 5
   out[20] = 0.790569415042095*out[0] - 1.06066017177982*out[12]; // final, weighs 3
   out[12] = tmp2; // final, weighs 0
   out[0] = tmp1; // final, weighs 0
-  tmp2 = 1.09544511501033*out[21] - 0.273861278752583*out[13] - 0.612372435695795*out[1]; // stacked, weighs 5
+  tmp2 = 1.09544511501033*out[21] - 0.273861278752583*out[13] - 0.612372435695794*out[1]; // stacked, weighs 5
   out[21] = 0.790569415042095*out[1] - 1.06066017177982*out[13]; // final, weighs 3
   out[1] = out[37] - 0.670820393249937*out[29] - 0.670820393249937*out[9]; // final, weighs 4
   out[13] = 0.866025403784439*out[9] - 0.866025403784439*out[29]; // final, weighs 3
+  out[9] = 1.09544511501033*out[33] - 0.273861278752583*out[5] - 0.612372435695794*out[25]; // final, weighs 5
+  out[22] = 0.790569415042095*out[2] - 1.06066017177982*out[14]; // final, weighs 3
   out[2] = tmp5; // final, weighs 0
   out[14] = tmp4; // final, weighs 0
-  out[9] = 1.09544511501033*out[33] - 0.273861278752583*out[5] - 0.612372435695795*out[25]; // final, weighs 5
-  out[22] = 0.790569415042095*out[2] - 1.06066017177982*out[14]; // final, weighs 3
-  tmp1 = 1.09544511501033*out[23] - 0.273861278752583*out[15] - 0.612372435695795*out[3]; // stacked, weighs 5
+  tmp1 = 1.09544511501033*out[23] - 0.273861278752583*out[15] - 0.612372435695794*out[3]; // stacked, weighs 5
   out[23] = 0.790569415042095*out[3] - 1.06066017177982*out[15]; // final, weighs 3
   out[3] = out[39] - 0.670820393249937*out[11] - 0.670820393249937*out[31]; // final, weighs 4
-  out[5] = tmp2; // final, weighs 0
   out[15] = 0.866025403784439*out[11] - 0.866025403784439*out[31]; // final, weighs 3
-  out[7] = tmp1; // final, weighs 0
-  out[11] = 1.09544511501033*out[35] - 0.273861278752583*out[7] - 0.612372435695795*out[27]; // final, weighs 5
+  out[11] = 1.09544511501033*out[35] - 0.273861278752583*out[7] - 0.612372435695794*out[27]; // final, weighs 5
   out[24] = 1.06066017177982*out[4] - 0.790569415042095*out[24]; // final, weighs 3
-  out[6] = tmp3; // final, weighs 0
   out[4] = tmp0; // final, weighs 0
   out[25] = 1.06066017177982*out[5] - 0.790569415042095*out[25]; // final, weighs 3
+  out[5] = tmp2; // final, weighs 0
   out[26] = 1.06066017177982*out[6] - 0.790569415042095*out[26]; // final, weighs 3
+  out[6] = tmp3; // final, weighs 0
   out[27] = 1.06066017177982*out[7] - 0.790569415042095*out[27]; // final, weighs 3
+  out[7] = tmp1; // final, weighs 0
   // total weight = 92
 }
 
@@ -681,32 +700,35 @@ void gint2_nai_pD_SP(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 5
   double tmp0, tmp1, tmp2, tmp3, tmp4;
   gint2_nai_cD_SP(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[8]; // stacked, weighs 1
-  out[8] = 1.0*out[16]; // final, weighs 1
-  tmp1 = 1.0*out[9]; // stacked, weighs 1
-  out[9] = 1.0*out[17]; // final, weighs 1
-  tmp2 = 1.0*out[10]; // stacked, weighs 1
-  out[10] = 1.0*out[18]; // final, weighs 1
-  tmp3 = 1.0*out[11]; // stacked, weighs 1
-  out[11] = 1.0*out[19]; // final, weighs 1
-  tmp4 = 1.0*out[20] - 0.5*out[0] - 0.5*out[12]; // stacked, weighs 5
+  tmp0 = out[8]; // stacked, weighs 0
+  out[8] = out[16]; // final, weighs 0
+  tmp1 = out[9]; // stacked, weighs 0
+  out[9] = out[17]; // final, weighs 0
+  tmp2 = out[10]; // stacked, weighs 0
+  out[10] = out[18]; // final, weighs 0
+  tmp3 = out[11]; // stacked, weighs 0
+  out[11] = out[19]; // final, weighs 0
+  tmp4 = out[20] - 0.5*out[0] - 0.5*out[12]; // stacked, weighs 4
   out[12] = 0.866025403784439*out[0] - 0.866025403784439*out[12]; // final, weighs 3
   out[0] = tmp4; // final, weighs 0
-  out[1] = 1.0*out[21] - 0.5*out[1] - 0.5*out[13]; // final, weighs 5
+  tmp4 = out[21] - 0.5*out[1] - 0.5*out[13]; // stacked, weighs 4
   out[13] = 0.866025403784439*out[1] - 0.866025403784439*out[13]; // final, weighs 3
-  out[2] = 1.0*out[22] - 0.5*out[14] - 0.5*out[2]; // final, weighs 5
+  out[1] = tmp4; // final, weighs 0
+  tmp4 = out[22] - 0.5*out[14] - 0.5*out[2]; // stacked, weighs 4
   out[14] = 0.866025403784439*out[2] - 0.866025403784439*out[14]; // final, weighs 3
-  out[3] = 1.0*out[23] - 0.5*out[15] - 0.5*out[3]; // final, weighs 5
+  out[2] = tmp4; // final, weighs 0
+  tmp4 = out[23] - 0.5*out[15] - 0.5*out[3]; // stacked, weighs 4
   out[15] = 0.866025403784439*out[3] - 0.866025403784439*out[15]; // final, weighs 3
-  out[16] = 1.0*out[4]; // final, weighs 1
+  out[3] = tmp4; // final, weighs 0
+  out[16] = out[4]; // final, weighs 0
   out[4] = tmp0; // final, weighs 0
+  out[17] = out[5]; // final, weighs 0
   out[5] = tmp1; // final, weighs 0
+  out[18] = out[6]; // final, weighs 0
   out[6] = tmp2; // final, weighs 0
+  out[19] = out[7]; // final, weighs 0
   out[7] = tmp3; // final, weighs 0
-  out[17] = 1.0*out[5]; // final, weighs 1
-  out[18] = 1.0*out[6]; // final, weighs 1
-  out[19] = 1.0*out[7]; // final, weighs 1
-  // total weight = 44
+  // total weight = 28
 }
 
 void gint2_nai_SP_SP(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -882,10 +904,10 @@ void gint2_nai_pF_S(double* a, double a_a, double* b, double b_a, double* c, dou
   // Number of local variables: 3
   double tmp0, tmp1, tmp2;
   gint2_nai_cF_S(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[5] - 0.273861278752583*out[3] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = out[9] - 0.670820393249937*out[2] - 0.670820393249937*out[7]; // stacked, weighs 4
   tmp2 = 0.866025403784439*out[2] - 0.866025403784439*out[7]; // stacked, weighs 3
-  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695795*out[6]; // final, weighs 5
+  out[2] = 1.09544511501033*out[8] - 0.273861278752583*out[1] - 0.612372435695794*out[6]; // final, weighs 5
   out[5] = 0.790569415042095*out[0] - 1.06066017177982*out[3]; // final, weighs 3
   out[3] = tmp2; // final, weighs 0
   out[0] = tmp1; // final, weighs 0
@@ -900,14 +922,14 @@ void gint2_nai_pD_S(double* a, double a_a, double* b, double b_a, double* c, dou
   // Number of local variables: 2
   double tmp0, tmp1;
   gint2_nai_cD_S(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[2]; // stacked, weighs 1
-  out[2] = 1.0*out[4]; // final, weighs 1
-  tmp1 = 1.0*out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 5
+  tmp0 = out[2]; // stacked, weighs 0
+  out[2] = out[4]; // final, weighs 0
+  tmp1 = out[5] - 0.5*out[0] - 0.5*out[3]; // stacked, weighs 4
   out[3] = 0.866025403784439*out[0] - 0.866025403784439*out[3]; // final, weighs 3
   out[0] = tmp1; // final, weighs 0
-  out[4] = 1.0*out[1]; // final, weighs 1
+  out[4] = out[1]; // final, weighs 0
   out[1] = tmp0; // final, weighs 0
-  // total weight = 11
+  // total weight = 7
 }
 
 void gint2_nai_SP_S(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -978,31 +1000,31 @@ void gint2_nai_pF_P(double* a, double a_a, double* b, double b_a, double* c, dou
   // Number of local variables: 6
   double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5;
   gint2_nai_cF_P(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[15] - 0.273861278752583*out[9] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[15] - 0.273861278752583*out[9] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = out[27] - 0.670820393249937*out[21] - 0.670820393249937*out[6]; // stacked, weighs 4
   tmp2 = 0.866025403784439*out[6] - 0.866025403784439*out[21]; // stacked, weighs 3
-  out[6] = 1.09544511501033*out[24] - 0.273861278752583*out[3] - 0.612372435695795*out[18]; // final, weighs 5
-  tmp3 = 1.09544511501033*out[17] - 0.273861278752583*out[11] - 0.612372435695795*out[2]; // stacked, weighs 5
+  out[6] = 1.09544511501033*out[24] - 0.273861278752583*out[3] - 0.612372435695794*out[18]; // final, weighs 5
+  tmp3 = 1.09544511501033*out[17] - 0.273861278752583*out[11] - 0.612372435695794*out[2]; // stacked, weighs 5
   tmp4 = 0.866025403784439*out[8] - 0.866025403784439*out[23]; // stacked, weighs 3
   tmp5 = out[29] - 0.670820393249937*out[23] - 0.670820393249937*out[8]; // stacked, weighs 4
-  out[8] = 1.09544511501033*out[26] - 0.273861278752583*out[5] - 0.612372435695795*out[20]; // final, weighs 5
+  out[8] = 1.09544511501033*out[26] - 0.273861278752583*out[5] - 0.612372435695794*out[20]; // final, weighs 5
   out[15] = 0.790569415042095*out[0] - 1.06066017177982*out[9]; // final, weighs 3
   out[9] = tmp2; // final, weighs 0
   out[0] = tmp1; // final, weighs 0
-  tmp2 = 1.09544511501033*out[16] - 0.273861278752583*out[10] - 0.612372435695795*out[1]; // stacked, weighs 5
+  tmp2 = 1.09544511501033*out[16] - 0.273861278752583*out[10] - 0.612372435695794*out[1]; // stacked, weighs 5
   out[16] = 0.790569415042095*out[1] - 1.06066017177982*out[10]; // final, weighs 3
   out[1] = out[28] - 0.670820393249937*out[22] - 0.670820393249937*out[7]; // final, weighs 4
   out[10] = 0.866025403784439*out[7] - 0.866025403784439*out[22]; // final, weighs 3
+  out[7] = 1.09544511501033*out[25] - 0.273861278752583*out[4] - 0.612372435695794*out[19]; // final, weighs 5
+  out[17] = 0.790569415042095*out[2] - 1.06066017177982*out[11]; // final, weighs 3
   out[2] = tmp5; // final, weighs 0
   out[11] = tmp4; // final, weighs 0
-  out[4] = tmp2; // final, weighs 0
-  out[7] = 1.09544511501033*out[25] - 0.273861278752583*out[4] - 0.612372435695795*out[19]; // final, weighs 5
-  out[17] = 0.790569415042095*out[2] - 1.06066017177982*out[11]; // final, weighs 3
   out[18] = 1.06066017177982*out[3] - 0.790569415042095*out[18]; // final, weighs 3
-  out[5] = tmp3; // final, weighs 0
   out[3] = tmp0; // final, weighs 0
   out[19] = 1.06066017177982*out[4] - 0.790569415042095*out[19]; // final, weighs 3
+  out[4] = tmp2; // final, weighs 0
   out[20] = 1.06066017177982*out[5] - 0.790569415042095*out[20]; // final, weighs 3
+  out[5] = tmp3; // final, weighs 0
   // total weight = 69
 }
 
@@ -1012,26 +1034,28 @@ void gint2_nai_pD_P(double* a, double a_a, double* b, double b_a, double* c, dou
   // Number of local variables: 4
   double tmp0, tmp1, tmp2, tmp3;
   gint2_nai_cD_P(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[6]; // stacked, weighs 1
-  out[6] = 1.0*out[12]; // final, weighs 1
-  tmp1 = 1.0*out[7]; // stacked, weighs 1
-  out[7] = 1.0*out[13]; // final, weighs 1
-  tmp2 = 1.0*out[8]; // stacked, weighs 1
-  out[8] = 1.0*out[14]; // final, weighs 1
-  tmp3 = 1.0*out[15] - 0.5*out[0] - 0.5*out[9]; // stacked, weighs 5
+  tmp0 = out[6]; // stacked, weighs 0
+  out[6] = out[12]; // final, weighs 0
+  tmp1 = out[7]; // stacked, weighs 0
+  out[7] = out[13]; // final, weighs 0
+  tmp2 = out[8]; // stacked, weighs 0
+  out[8] = out[14]; // final, weighs 0
+  tmp3 = out[15] - 0.5*out[0] - 0.5*out[9]; // stacked, weighs 4
   out[9] = 0.866025403784439*out[0] - 0.866025403784439*out[9]; // final, weighs 3
   out[0] = tmp3; // final, weighs 0
-  out[1] = 1.0*out[16] - 0.5*out[1] - 0.5*out[10]; // final, weighs 5
+  tmp3 = out[16] - 0.5*out[1] - 0.5*out[10]; // stacked, weighs 4
   out[10] = 0.866025403784439*out[1] - 0.866025403784439*out[10]; // final, weighs 3
-  out[2] = 1.0*out[17] - 0.5*out[11] - 0.5*out[2]; // final, weighs 5
+  out[1] = tmp3; // final, weighs 0
+  tmp3 = out[17] - 0.5*out[11] - 0.5*out[2]; // stacked, weighs 4
   out[11] = 0.866025403784439*out[2] - 0.866025403784439*out[11]; // final, weighs 3
-  out[12] = 1.0*out[3]; // final, weighs 1
+  out[2] = tmp3; // final, weighs 0
+  out[12] = out[3]; // final, weighs 0
   out[3] = tmp0; // final, weighs 0
+  out[13] = out[4]; // final, weighs 0
   out[4] = tmp1; // final, weighs 0
+  out[14] = out[5]; // final, weighs 0
   out[5] = tmp2; // final, weighs 0
-  out[13] = 1.0*out[4]; // final, weighs 1
-  out[14] = 1.0*out[5]; // final, weighs 1
-  // total weight = 33
+  // total weight = 21
 }
 
 void gint2_nai_SP_P(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -1226,54 +1250,54 @@ void gint2_nai_pF_cD(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 9
   double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8;
   gint2_nai_cF_cD(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[30] - 0.273861278752583*out[18] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[30] - 0.273861278752583*out[18] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = out[54] - 0.670820393249937*out[12] - 0.670820393249937*out[42]; // stacked, weighs 4
   tmp2 = 0.866025403784439*out[12] - 0.866025403784439*out[42]; // stacked, weighs 3
-  out[12] = 1.09544511501033*out[48] - 0.273861278752583*out[6] - 0.612372435695795*out[36]; // final, weighs 5
-  tmp3 = 1.09544511501033*out[32] - 0.273861278752583*out[20] - 0.612372435695795*out[2]; // stacked, weighs 5
+  out[12] = 1.09544511501033*out[48] - 0.273861278752583*out[6] - 0.612372435695794*out[36]; // final, weighs 5
+  tmp3 = 1.09544511501033*out[32] - 0.273861278752583*out[20] - 0.612372435695794*out[2]; // stacked, weighs 5
   tmp4 = 0.866025403784439*out[14] - 0.866025403784439*out[44]; // stacked, weighs 3
   tmp5 = out[56] - 0.670820393249937*out[14] - 0.670820393249937*out[44]; // stacked, weighs 4
-  out[14] = 1.09544511501033*out[50] - 0.273861278752583*out[8] - 0.612372435695795*out[38]; // final, weighs 5
-  tmp6 = 1.09544511501033*out[34] - 0.273861278752583*out[22] - 0.612372435695795*out[4]; // stacked, weighs 5
+  out[14] = 1.09544511501033*out[50] - 0.273861278752583*out[8] - 0.612372435695794*out[38]; // final, weighs 5
+  tmp6 = 1.09544511501033*out[34] - 0.273861278752583*out[22] - 0.612372435695794*out[4]; // stacked, weighs 5
   tmp7 = out[58] - 0.670820393249937*out[16] - 0.670820393249937*out[46]; // stacked, weighs 4
   tmp8 = 0.866025403784439*out[16] - 0.866025403784439*out[46]; // stacked, weighs 3
-  out[16] = 1.09544511501033*out[52] - 0.273861278752583*out[10] - 0.612372435695795*out[40]; // final, weighs 5
+  out[16] = 1.09544511501033*out[52] - 0.273861278752583*out[10] - 0.612372435695794*out[40]; // final, weighs 5
   out[30] = 0.790569415042095*out[0] - 1.06066017177982*out[18]; // final, weighs 3
   out[18] = tmp2; // final, weighs 0
   out[0] = tmp1; // final, weighs 0
-  tmp2 = 1.09544511501033*out[31] - 0.273861278752583*out[19] - 0.612372435695795*out[1]; // stacked, weighs 5
+  tmp2 = 1.09544511501033*out[31] - 0.273861278752583*out[19] - 0.612372435695794*out[1]; // stacked, weighs 5
   out[31] = 0.790569415042095*out[1] - 1.06066017177982*out[19]; // final, weighs 3
   out[1] = out[55] - 0.670820393249937*out[13] - 0.670820393249937*out[43]; // final, weighs 4
   out[19] = 0.866025403784439*out[13] - 0.866025403784439*out[43]; // final, weighs 3
+  out[13] = 1.09544511501033*out[49] - 0.273861278752583*out[7] - 0.612372435695794*out[37]; // final, weighs 5
+  out[32] = 0.790569415042095*out[2] - 1.06066017177982*out[20]; // final, weighs 3
   out[2] = tmp5; // final, weighs 0
   out[20] = tmp4; // final, weighs 0
-  out[13] = 1.09544511501033*out[49] - 0.273861278752583*out[7] - 0.612372435695795*out[37]; // final, weighs 5
-  out[32] = 0.790569415042095*out[2] - 1.06066017177982*out[20]; // final, weighs 3
-  tmp1 = 1.09544511501033*out[33] - 0.273861278752583*out[21] - 0.612372435695795*out[3]; // stacked, weighs 5
+  tmp1 = 1.09544511501033*out[33] - 0.273861278752583*out[21] - 0.612372435695794*out[3]; // stacked, weighs 5
   out[33] = 0.790569415042095*out[3] - 1.06066017177982*out[21]; // final, weighs 3
-  out[22] = tmp8; // final, weighs 0
-  out[4] = tmp7; // final, weighs 0
   out[3] = out[57] - 0.670820393249937*out[15] - 0.670820393249937*out[45]; // final, weighs 4
   out[21] = 0.866025403784439*out[15] - 0.866025403784439*out[45]; // final, weighs 3
-  out[15] = 1.09544511501033*out[51] - 0.273861278752583*out[9] - 0.612372435695795*out[39]; // final, weighs 5
+  out[15] = 1.09544511501033*out[51] - 0.273861278752583*out[9] - 0.612372435695794*out[39]; // final, weighs 5
   out[34] = 0.790569415042095*out[4] - 1.06066017177982*out[22]; // final, weighs 3
-  tmp5 = 1.09544511501033*out[35] - 0.273861278752583*out[23] - 0.612372435695795*out[5]; // stacked, weighs 5
-  out[7] = tmp2; // final, weighs 0
+  out[22] = tmp8; // final, weighs 0
+  out[4] = tmp7; // final, weighs 0
+  tmp5 = 1.09544511501033*out[35] - 0.273861278752583*out[23] - 0.612372435695794*out[5]; // stacked, weighs 5
   out[35] = 0.790569415042095*out[5] - 1.06066017177982*out[23]; // final, weighs 3
-  out[9] = tmp1; // final, weighs 0
   out[5] = out[59] - 0.670820393249937*out[17] - 0.670820393249937*out[47]; // final, weighs 4
-  out[11] = tmp5; // final, weighs 0
   out[23] = 0.866025403784439*out[17] - 0.866025403784439*out[47]; // final, weighs 3
-  out[17] = 1.09544511501033*out[53] - 0.273861278752583*out[11] - 0.612372435695795*out[41]; // final, weighs 5
+  out[17] = 1.09544511501033*out[53] - 0.273861278752583*out[11] - 0.612372435695794*out[41]; // final, weighs 5
   out[36] = 1.06066017177982*out[6] - 0.790569415042095*out[36]; // final, weighs 3
-  out[10] = tmp6; // final, weighs 0
-  out[8] = tmp3; // final, weighs 0
   out[6] = tmp0; // final, weighs 0
   out[37] = 1.06066017177982*out[7] - 0.790569415042095*out[37]; // final, weighs 3
+  out[7] = tmp2; // final, weighs 0
   out[38] = 1.06066017177982*out[8] - 0.790569415042095*out[38]; // final, weighs 3
+  out[8] = tmp3; // final, weighs 0
   out[39] = 1.06066017177982*out[9] - 0.790569415042095*out[39]; // final, weighs 3
+  out[9] = tmp1; // final, weighs 0
   out[40] = 1.06066017177982*out[10] - 0.790569415042095*out[40]; // final, weighs 3
+  out[10] = tmp6; // final, weighs 0
   out[41] = 1.06066017177982*out[11] - 0.790569415042095*out[41]; // final, weighs 3
+  out[11] = tmp5; // final, weighs 0
   // total weight = 138
 }
 
@@ -1283,44 +1307,49 @@ void gint2_nai_pD_cD(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 7
   double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6;
   gint2_nai_cD_cD(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[12]; // stacked, weighs 1
-  out[12] = 1.0*out[24]; // final, weighs 1
-  tmp1 = 1.0*out[13]; // stacked, weighs 1
-  out[13] = 1.0*out[25]; // final, weighs 1
-  tmp2 = 1.0*out[14]; // stacked, weighs 1
-  out[14] = 1.0*out[26]; // final, weighs 1
-  tmp3 = 1.0*out[15]; // stacked, weighs 1
-  out[15] = 1.0*out[27]; // final, weighs 1
-  tmp4 = 1.0*out[16]; // stacked, weighs 1
-  out[16] = 1.0*out[28]; // final, weighs 1
-  tmp5 = 1.0*out[17]; // stacked, weighs 1
-  out[17] = 1.0*out[29]; // final, weighs 1
-  tmp6 = 1.0*out[30] - 0.5*out[0] - 0.5*out[18]; // stacked, weighs 5
+  tmp0 = out[12]; // stacked, weighs 0
+  out[12] = out[24]; // final, weighs 0
+  tmp1 = out[13]; // stacked, weighs 0
+  out[13] = out[25]; // final, weighs 0
+  tmp2 = out[14]; // stacked, weighs 0
+  out[14] = out[26]; // final, weighs 0
+  tmp3 = out[15]; // stacked, weighs 0
+  out[15] = out[27]; // final, weighs 0
+  tmp4 = out[16]; // stacked, weighs 0
+  out[16] = out[28]; // final, weighs 0
+  tmp5 = out[17]; // stacked, weighs 0
+  out[17] = out[29]; // final, weighs 0
+  tmp6 = out[30] - 0.5*out[0] - 0.5*out[18]; // stacked, weighs 4
   out[18] = 0.866025403784439*out[0] - 0.866025403784439*out[18]; // final, weighs 3
   out[0] = tmp6; // final, weighs 0
-  out[1] = 1.0*out[31] - 0.5*out[1] - 0.5*out[19]; // final, weighs 5
+  tmp6 = out[31] - 0.5*out[1] - 0.5*out[19]; // stacked, weighs 4
   out[19] = 0.866025403784439*out[1] - 0.866025403784439*out[19]; // final, weighs 3
-  out[2] = 1.0*out[32] - 0.5*out[2] - 0.5*out[20]; // final, weighs 5
+  out[1] = tmp6; // final, weighs 0
+  tmp6 = out[32] - 0.5*out[2] - 0.5*out[20]; // stacked, weighs 4
   out[20] = 0.866025403784439*out[2] - 0.866025403784439*out[20]; // final, weighs 3
-  out[3] = 1.0*out[33] - 0.5*out[21] - 0.5*out[3]; // final, weighs 5
+  out[2] = tmp6; // final, weighs 0
+  tmp6 = out[33] - 0.5*out[21] - 0.5*out[3]; // stacked, weighs 4
   out[21] = 0.866025403784439*out[3] - 0.866025403784439*out[21]; // final, weighs 3
-  out[4] = 1.0*out[34] - 0.5*out[22] - 0.5*out[4]; // final, weighs 5
+  out[3] = tmp6; // final, weighs 0
+  tmp6 = out[34] - 0.5*out[22] - 0.5*out[4]; // stacked, weighs 4
   out[22] = 0.866025403784439*out[4] - 0.866025403784439*out[22]; // final, weighs 3
-  out[5] = 1.0*out[35] - 0.5*out[23] - 0.5*out[5]; // final, weighs 5
+  out[4] = tmp6; // final, weighs 0
+  tmp6 = out[35] - 0.5*out[23] - 0.5*out[5]; // stacked, weighs 4
   out[23] = 0.866025403784439*out[5] - 0.866025403784439*out[23]; // final, weighs 3
-  out[24] = 1.0*out[6]; // final, weighs 1
+  out[5] = tmp6; // final, weighs 0
+  out[24] = out[6]; // final, weighs 0
   out[6] = tmp0; // final, weighs 0
+  out[25] = out[7]; // final, weighs 0
   out[7] = tmp1; // final, weighs 0
+  out[26] = out[8]; // final, weighs 0
   out[8] = tmp2; // final, weighs 0
+  out[27] = out[9]; // final, weighs 0
   out[9] = tmp3; // final, weighs 0
+  out[28] = out[10]; // final, weighs 0
   out[10] = tmp4; // final, weighs 0
+  out[29] = out[11]; // final, weighs 0
   out[11] = tmp5; // final, weighs 0
-  out[25] = 1.0*out[7]; // final, weighs 1
-  out[26] = 1.0*out[8]; // final, weighs 1
-  out[27] = 1.0*out[9]; // final, weighs 1
-  out[28] = 1.0*out[10]; // final, weighs 1
-  out[29] = 1.0*out[11]; // final, weighs 1
-  // total weight = 66
+  // total weight = 42
 }
 
 void gint2_nai_SP_cD(double* a, double a_a, double* b, double b_a, double* c, double* out)
@@ -1801,85 +1830,86 @@ void gint2_nai_pF_cF(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 15
   double tmp0, tmp1, tmp10, tmp11, tmp12, tmp13, tmp14, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9;
   gint2_nai_cF_cF(a, a_a, b, b_a, c, out);
-  tmp0 = 1.09544511501033*out[50] - 0.273861278752583*out[30] - 0.612372435695795*out[0]; // stacked, weighs 5
+  tmp0 = 1.09544511501033*out[50] - 0.273861278752583*out[30] - 0.612372435695794*out[0]; // stacked, weighs 5
   tmp1 = out[90] - 0.670820393249937*out[20] - 0.670820393249937*out[70]; // stacked, weighs 4
   tmp2 = 0.866025403784439*out[20] - 0.866025403784439*out[70]; // stacked, weighs 3
-  out[20] = 1.09544511501033*out[80] - 0.273861278752583*out[10] - 0.612372435695795*out[60]; // final, weighs 5
-  tmp3 = 1.09544511501033*out[52] - 0.273861278752583*out[32] - 0.612372435695795*out[2]; // stacked, weighs 5
+  out[20] = 1.09544511501033*out[80] - 0.273861278752583*out[10] - 0.612372435695794*out[60]; // final, weighs 5
+  tmp3 = 1.09544511501033*out[52] - 0.273861278752583*out[32] - 0.612372435695794*out[2]; // stacked, weighs 5
   tmp4 = 0.866025403784439*out[22] - 0.866025403784439*out[72]; // stacked, weighs 3
   tmp5 = out[92] - 0.670820393249937*out[22] - 0.670820393249937*out[72]; // stacked, weighs 4
-  out[22] = 1.09544511501033*out[82] - 0.273861278752583*out[12] - 0.612372435695795*out[62]; // final, weighs 5
-  tmp6 = 1.09544511501033*out[54] - 0.273861278752583*out[34] - 0.612372435695795*out[4]; // stacked, weighs 5
+  out[22] = 1.09544511501033*out[82] - 0.273861278752583*out[12] - 0.612372435695794*out[62]; // final, weighs 5
+  tmp6 = 1.09544511501033*out[54] - 0.273861278752583*out[34] - 0.612372435695794*out[4]; // stacked, weighs 5
   tmp7 = out[94] - 0.670820393249937*out[24] - 0.670820393249937*out[74]; // stacked, weighs 4
   tmp8 = 0.866025403784439*out[24] - 0.866025403784439*out[74]; // stacked, weighs 3
-  out[24] = 1.09544511501033*out[84] - 0.273861278752583*out[14] - 0.612372435695795*out[64]; // final, weighs 5
-  tmp9 = 1.09544511501033*out[56] - 0.273861278752583*out[36] - 0.612372435695795*out[6]; // stacked, weighs 5
+  out[24] = 1.09544511501033*out[84] - 0.273861278752583*out[14] - 0.612372435695794*out[64]; // final, weighs 5
+  tmp9 = 1.09544511501033*out[56] - 0.273861278752583*out[36] - 0.612372435695794*out[6]; // stacked, weighs 5
   tmp10 = 0.866025403784439*out[26] - 0.866025403784439*out[76]; // stacked, weighs 3
   tmp11 = out[96] - 0.670820393249937*out[26] - 0.670820393249937*out[76]; // stacked, weighs 4
-  out[26] = 1.09544511501033*out[86] - 0.273861278752583*out[16] - 0.612372435695795*out[66]; // final, weighs 5
-  tmp12 = 1.09544511501033*out[58] - 0.273861278752583*out[38] - 0.612372435695795*out[8]; // stacked, weighs 5
+  out[26] = 1.09544511501033*out[86] - 0.273861278752583*out[16] - 0.612372435695794*out[66]; // final, weighs 5
+  tmp12 = 1.09544511501033*out[58] - 0.273861278752583*out[38] - 0.612372435695794*out[8]; // stacked, weighs 5
   tmp13 = out[98] - 0.670820393249937*out[28] - 0.670820393249937*out[78]; // stacked, weighs 4
   tmp14 = 0.866025403784439*out[28] - 0.866025403784439*out[78]; // stacked, weighs 3
-  out[28] = 1.09544511501033*out[88] - 0.273861278752583*out[18] - 0.612372435695795*out[68]; // final, weighs 5
+  out[28] = 1.09544511501033*out[88] - 0.273861278752583*out[18] - 0.612372435695794*out[68]; // final, weighs 5
   out[50] = 0.790569415042095*out[0] - 1.06066017177982*out[30]; // final, weighs 3
   out[30] = tmp2; // final, weighs 0
   out[0] = tmp1; // final, weighs 0
-  tmp2 = 1.09544511501033*out[51] - 0.273861278752583*out[31] - 0.612372435695795*out[1]; // stacked, weighs 5
+  tmp2 = 1.09544511501033*out[51] - 0.273861278752583*out[31] - 0.612372435695794*out[1]; // stacked, weighs 5
   out[51] = 0.790569415042095*out[1] - 1.06066017177982*out[31]; // final, weighs 3
   out[1] = out[91] - 0.670820393249937*out[21] - 0.670820393249937*out[71]; // final, weighs 4
   out[31] = 0.866025403784439*out[21] - 0.866025403784439*out[71]; // final, weighs 3
+  out[21] = 1.09544511501033*out[81] - 0.273861278752583*out[11] - 0.612372435695794*out[61]; // final, weighs 5
+  out[52] = 0.790569415042095*out[2] - 1.06066017177982*out[32]; // final, weighs 3
   out[2] = tmp5; // final, weighs 0
   out[32] = tmp4; // final, weighs 0
-  out[21] = 1.09544511501033*out[81] - 0.273861278752583*out[11] - 0.612372435695795*out[61]; // final, weighs 5
-  out[52] = 0.790569415042095*out[2] - 1.06066017177982*out[32]; // final, weighs 3
-  tmp1 = 1.09544511501033*out[53] - 0.273861278752583*out[33] - 0.612372435695795*out[3]; // stacked, weighs 5
+  tmp1 = 1.09544511501033*out[53] - 0.273861278752583*out[33] - 0.612372435695794*out[3]; // stacked, weighs 5
   out[53] = 0.790569415042095*out[3] - 1.06066017177982*out[33]; // final, weighs 3
-  out[34] = tmp8; // final, weighs 0
-  out[4] = tmp7; // final, weighs 0
   out[3] = out[93] - 0.670820393249937*out[23] - 0.670820393249937*out[73]; // final, weighs 4
   out[33] = 0.866025403784439*out[23] - 0.866025403784439*out[73]; // final, weighs 3
-  out[23] = 1.09544511501033*out[83] - 0.273861278752583*out[13] - 0.612372435695795*out[63]; // final, weighs 5
+  out[23] = 1.09544511501033*out[83] - 0.273861278752583*out[13] - 0.612372435695794*out[63]; // final, weighs 5
   out[54] = 0.790569415042095*out[4] - 1.06066017177982*out[34]; // final, weighs 3
-  out[6] = tmp11; // final, weighs 0
-  out[36] = tmp10; // final, weighs 0
-  tmp5 = 1.09544511501033*out[55] - 0.273861278752583*out[35] - 0.612372435695795*out[5]; // stacked, weighs 5
+  out[34] = tmp8; // final, weighs 0
+  out[4] = tmp7; // final, weighs 0
+  tmp5 = 1.09544511501033*out[55] - 0.273861278752583*out[35] - 0.612372435695794*out[5]; // stacked, weighs 5
   out[55] = 0.790569415042095*out[5] - 1.06066017177982*out[35]; // final, weighs 3
   out[5] = out[95] - 0.670820393249937*out[25] - 0.670820393249937*out[75]; // final, weighs 4
   out[35] = 0.866025403784439*out[25] - 0.866025403784439*out[75]; // final, weighs 3
-  out[38] = tmp14; // final, weighs 0
-  out[8] = tmp13; // final, weighs 0
-  out[25] = 1.09544511501033*out[85] - 0.273861278752583*out[15] - 0.612372435695795*out[65]; // final, weighs 5
+  out[25] = 1.09544511501033*out[85] - 0.273861278752583*out[15] - 0.612372435695794*out[65]; // final, weighs 5
   out[56] = 0.790569415042095*out[6] - 1.06066017177982*out[36]; // final, weighs 3
-  tmp4 = 1.09544511501033*out[57] - 0.273861278752583*out[37] - 0.612372435695795*out[7]; // stacked, weighs 5
+  out[6] = tmp11; // final, weighs 0
+  out[36] = tmp10; // final, weighs 0
+  tmp4 = 1.09544511501033*out[57] - 0.273861278752583*out[37] - 0.612372435695794*out[7]; // stacked, weighs 5
   out[57] = 0.790569415042095*out[7] - 1.06066017177982*out[37]; // final, weighs 3
   out[7] = out[97] - 0.670820393249937*out[27] - 0.670820393249937*out[77]; // final, weighs 4
-  out[11] = tmp2; // final, weighs 0
   out[37] = 0.866025403784439*out[27] - 0.866025403784439*out[77]; // final, weighs 3
-  out[13] = tmp1; // final, weighs 0
-  out[27] = 1.09544511501033*out[87] - 0.273861278752583*out[17] - 0.612372435695795*out[67]; // final, weighs 5
-  out[15] = tmp5; // final, weighs 0
+  out[27] = 1.09544511501033*out[87] - 0.273861278752583*out[17] - 0.612372435695794*out[67]; // final, weighs 5
   out[58] = 0.790569415042095*out[8] - 1.06066017177982*out[38]; // final, weighs 3
-  out[17] = tmp4; // final, weighs 0
-  out[19] = 1.09544511501033*out[59] - 0.273861278752583*out[39] - 0.612372435695795*out[9]; // final, weighs 5
+  out[38] = tmp14; // final, weighs 0
+  out[8] = tmp13; // final, weighs 0
+  tmp8 = 1.09544511501033*out[59] - 0.273861278752583*out[39] - 0.612372435695794*out[9]; // stacked, weighs 5
   out[59] = 0.790569415042095*out[9] - 1.06066017177982*out[39]; // final, weighs 3
   out[9] = out[99] - 0.670820393249937*out[29] - 0.670820393249937*out[79]; // final, weighs 4
   out[39] = 0.866025403784439*out[29] - 0.866025403784439*out[79]; // final, weighs 3
-  out[29] = 1.09544511501033*out[89] - 0.273861278752583*out[19] - 0.612372435695795*out[69]; // final, weighs 5
+  out[29] = 1.09544511501033*out[89] - 0.273861278752583*out[19] - 0.612372435695794*out[69]; // final, weighs 5
   out[60] = 1.06066017177982*out[10] - 0.790569415042095*out[60]; // final, weighs 3
-  out[18] = tmp12; // final, weighs 0
-  out[16] = tmp9; // final, weighs 0
-  out[14] = tmp6; // final, weighs 0
-  out[12] = tmp3; // final, weighs 0
   out[10] = tmp0; // final, weighs 0
   out[61] = 1.06066017177982*out[11] - 0.790569415042095*out[61]; // final, weighs 3
+  out[11] = tmp2; // final, weighs 0
   out[62] = 1.06066017177982*out[12] - 0.790569415042095*out[62]; // final, weighs 3
+  out[12] = tmp3; // final, weighs 0
   out[63] = 1.06066017177982*out[13] - 0.790569415042095*out[63]; // final, weighs 3
+  out[13] = tmp1; // final, weighs 0
   out[64] = 1.06066017177982*out[14] - 0.790569415042095*out[64]; // final, weighs 3
+  out[14] = tmp6; // final, weighs 0
   out[65] = 1.06066017177982*out[15] - 0.790569415042095*out[65]; // final, weighs 3
+  out[15] = tmp5; // final, weighs 0
   out[66] = 1.06066017177982*out[16] - 0.790569415042095*out[66]; // final, weighs 3
+  out[16] = tmp9; // final, weighs 0
   out[67] = 1.06066017177982*out[17] - 0.790569415042095*out[67]; // final, weighs 3
+  out[17] = tmp4; // final, weighs 0
   out[68] = 1.06066017177982*out[18] - 0.790569415042095*out[68]; // final, weighs 3
+  out[18] = tmp12; // final, weighs 0
   out[69] = 1.06066017177982*out[19] - 0.790569415042095*out[69]; // final, weighs 3
+  out[19] = tmp8; // final, weighs 0
   // total weight = 230
 }
 
@@ -1889,68 +1919,77 @@ void gint2_nai_pD_cF(double* a, double a_a, double* b, double b_a, double* c, do
   // Number of local variables: 11
   double tmp0, tmp1, tmp10, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9;
   gint2_nai_cD_cF(a, a_a, b, b_a, c, out);
-  tmp0 = 1.0*out[20]; // stacked, weighs 1
-  out[20] = 1.0*out[40]; // final, weighs 1
-  tmp1 = 1.0*out[21]; // stacked, weighs 1
-  out[21] = 1.0*out[41]; // final, weighs 1
-  tmp2 = 1.0*out[22]; // stacked, weighs 1
-  out[22] = 1.0*out[42]; // final, weighs 1
-  tmp3 = 1.0*out[23]; // stacked, weighs 1
-  out[23] = 1.0*out[43]; // final, weighs 1
-  tmp4 = 1.0*out[24]; // stacked, weighs 1
-  out[24] = 1.0*out[44]; // final, weighs 1
-  tmp5 = 1.0*out[25]; // stacked, weighs 1
-  out[25] = 1.0*out[45]; // final, weighs 1
-  tmp6 = 1.0*out[26]; // stacked, weighs 1
-  out[26] = 1.0*out[46]; // final, weighs 1
-  tmp7 = 1.0*out[27]; // stacked, weighs 1
-  out[27] = 1.0*out[47]; // final, weighs 1
-  tmp8 = 1.0*out[28]; // stacked, weighs 1
-  out[28] = 1.0*out[48]; // final, weighs 1
-  tmp9 = 1.0*out[29]; // stacked, weighs 1
-  out[29] = 1.0*out[49]; // final, weighs 1
-  tmp10 = 1.0*out[50] - 0.5*out[0] - 0.5*out[30]; // stacked, weighs 5
+  tmp0 = out[20]; // stacked, weighs 0
+  out[20] = out[40]; // final, weighs 0
+  tmp1 = out[21]; // stacked, weighs 0
+  out[21] = out[41]; // final, weighs 0
+  tmp2 = out[22]; // stacked, weighs 0
+  out[22] = out[42]; // final, weighs 0
+  tmp3 = out[23]; // stacked, weighs 0
+  out[23] = out[43]; // final, weighs 0
+  tmp4 = out[24]; // stacked, weighs 0
+  out[24] = out[44]; // final, weighs 0
+  tmp5 = out[25]; // stacked, weighs 0
+  out[25] = out[45]; // final, weighs 0
+  tmp6 = out[26]; // stacked, weighs 0
+  out[26] = out[46]; // final, weighs 0
+  tmp7 = out[27]; // stacked, weighs 0
+  out[27] = out[47]; // final, weighs 0
+  tmp8 = out[28]; // stacked, weighs 0
+  out[28] = out[48]; // final, weighs 0
+  tmp9 = out[29]; // stacked, weighs 0
+  out[29] = out[49]; // final, weighs 0
+  tmp10 = out[50] - 0.5*out[0] - 0.5*out[30]; // stacked, weighs 4
   out[30] = 0.866025403784439*out[0] - 0.866025403784439*out[30]; // final, weighs 3
   out[0] = tmp10; // final, weighs 0
-  out[1] = 1.0*out[51] - 0.5*out[1] - 0.5*out[31]; // final, weighs 5
+  tmp10 = out[51] - 0.5*out[1] - 0.5*out[31]; // stacked, weighs 4
   out[31] = 0.866025403784439*out[1] - 0.866025403784439*out[31]; // final, weighs 3
-  out[2] = 1.0*out[52] - 0.5*out[2] - 0.5*out[32]; // final, weighs 5
+  out[1] = tmp10; // final, weighs 0
+  tmp10 = out[52] - 0.5*out[2] - 0.5*out[32]; // stacked, weighs 4
   out[32] = 0.866025403784439*out[2] - 0.866025403784439*out[32]; // final, weighs 3
-  out[3] = 1.0*out[53] - 0.5*out[3] - 0.5*out[33]; // final, weighs 5
+  out[2] = tmp10; // final, weighs 0
+  tmp10 = out[53] - 0.5*out[3] - 0.5*out[33]; // stacked, weighs 4
   out[33] = 0.866025403784439*out[3] - 0.866025403784439*out[33]; // final, weighs 3
-  out[4] = 1.0*out[54] - 0.5*out[34] - 0.5*out[4]; // final, weighs 5
+  out[3] = tmp10; // final, weighs 0
+  tmp10 = out[54] - 0.5*out[34] - 0.5*out[4]; // stacked, weighs 4
   out[34] = 0.866025403784439*out[4] - 0.866025403784439*out[34]; // final, weighs 3
-  out[5] = 1.0*out[55] - 0.5*out[35] - 0.5*out[5]; // final, weighs 5
+  out[4] = tmp10; // final, weighs 0
+  tmp10 = out[55] - 0.5*out[35] - 0.5*out[5]; // stacked, weighs 4
   out[35] = 0.866025403784439*out[5] - 0.866025403784439*out[35]; // final, weighs 3
-  out[6] = 1.0*out[56] - 0.5*out[36] - 0.5*out[6]; // final, weighs 5
+  out[5] = tmp10; // final, weighs 0
+  tmp10 = out[56] - 0.5*out[36] - 0.5*out[6]; // stacked, weighs 4
   out[36] = 0.866025403784439*out[6] - 0.866025403784439*out[36]; // final, weighs 3
-  out[7] = 1.0*out[57] - 0.5*out[37] - 0.5*out[7]; // final, weighs 5
+  out[6] = tmp10; // final, weighs 0
+  tmp10 = out[57] - 0.5*out[37] - 0.5*out[7]; // stacked, weighs 4
   out[37] = 0.866025403784439*out[7] - 0.866025403784439*out[37]; // final, weighs 3
-  out[8] = 1.0*out[58] - 0.5*out[38] - 0.5*out[8]; // final, weighs 5
+  out[7] = tmp10; // final, weighs 0
+  tmp10 = out[58] - 0.5*out[38] - 0.5*out[8]; // stacked, weighs 4
   out[38] = 0.866025403784439*out[8] - 0.866025403784439*out[38]; // final, weighs 3
-  out[9] = 1.0*out[59] - 0.5*out[39] - 0.5*out[9]; // final, weighs 5
+  out[8] = tmp10; // final, weighs 0
+  tmp10 = out[59] - 0.5*out[39] - 0.5*out[9]; // stacked, weighs 4
   out[39] = 0.866025403784439*out[9] - 0.866025403784439*out[39]; // final, weighs 3
-  out[40] = 1.0*out[10]; // final, weighs 1
+  out[9] = tmp10; // final, weighs 0
+  out[40] = out[10]; // final, weighs 0
   out[10] = tmp0; // final, weighs 0
+  out[41] = out[11]; // final, weighs 0
   out[11] = tmp1; // final, weighs 0
+  out[42] = out[12]; // final, weighs 0
   out[12] = tmp2; // final, weighs 0
+  out[43] = out[13]; // final, weighs 0
   out[13] = tmp3; // final, weighs 0
+  out[44] = out[14]; // final, weighs 0
   out[14] = tmp4; // final, weighs 0
+  out[45] = out[15]; // final, weighs 0
   out[15] = tmp5; // final, weighs 0
+  out[46] = out[16]; // final, weighs 0
   out[16] = tmp6; // final, weighs 0
+  out[47] = out[17]; // final, weighs 0
   out[17] = tmp7; // final, weighs 0
+  out[48] = out[18]; // final, weighs 0
   out[18] = tmp8; // final, weighs 0
+  out[49] = out[19]; // final, weighs 0
   out[19] = tmp9; // final, weighs 0
-  out[41] = 1.0*out[11]; // final, weighs 1
-  out[42] = 1.0*out[12]; // final, weighs 1
-  out[43] = 1.0*out[13]; // final, weighs 1
-  out[44] = 1.0*out[14]; // final, weighs 1
-  out[45] = 1.0*out[15]; // final, weighs 1
-  out[46] = 1.0*out[16]; // final, weighs 1
-  out[47] = 1.0*out[17]; // final, weighs 1
-  out[48] = 1.0*out[18]; // final, weighs 1
-  out[49] = 1.0*out[19]; // final, weighs 1
-  // total weight = 110
+  // total weight = 70
 }
 
 void gint2_nai_SP_cF(double* a, double a_a, double* b, double b_a, double* c, double* out)
