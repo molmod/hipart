@@ -279,3 +279,38 @@ def check_hf_gross_net_populations(cache):
     cache.do_gross_net_populations()
     assert(abs(cache.gross_net_populations - expected[cache.key]).max() < 1e-2)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_gross_net_populations.txt" % cache.prefix)))
+
+
+def test_hf_mol_esp_cost():
+    for cache in iter_hf_sto3g_gaussian_caches():
+        yield check_hf_mol_esp_cost, cache
+
+def check_hf_mol_esp_cost(cache):
+    expected_A = numpy.array([
+        [6.48538806e-03, 6.01517359e-03, 1.84842712e-06, -1.13002199e-06,
+         2.42079860e-04, 5.24182736e-07, -1.97722198e-06, 2.45763010e-04],
+        [6.01517359e-03, 5.77420167e-03, 1.27717341e-06, -1.42144727e-06,
+         1.13216795e-04, 2.64573017e-07, -2.28072390e-06, 1.34829027e-04],
+        [1.84842712e-06, 1.27717341e-06, 8.35583232e-05, -1.89864116e-08,
+         3.45861341e-07, 6.34890875e-05, 1.20691190e-07, 2.37151713e-07],
+        [-1.13002199e-06, -1.42144727e-06, -1.89864116e-08, 8.40184485e-05,
+         2.72719526e-07, 1.20691190e-07, 6.39798830e-05, 4.68388644e-08],
+        [2.42079860e-04, 1.13216795e-04, 3.45861341e-07, 2.72719526e-07,
+         7.78488314e-05, 1.58151368e-07, 2.44930293e-07, 5.78852051e-05],
+        [5.24182736e-07, 2.64573017e-07, 6.34890875e-05, 1.20691190e-07,
+         1.58151368e-07, 5.95626741e-05, 1.65163832e-07, 1.11021715e-07],
+        [-1.97722198e-06, -2.28072390e-06, 1.20691190e-07, 6.39798830e-05,
+         2.44930293e-07, 1.65163832e-07, 5.99986010e-05, 7.79501731e-08],
+        [2.45763010e-04, 1.34829027e-04, 2.37151713e-07, 4.68388644e-08,
+         5.78852051e-05, 1.11021715e-07, 7.79501731e-08, 5.77542761e-05]
+    ])
+    expected_B = numpy.array([
+        -1.19596516e-04, -6.29794625e-05, 2.83959175e-08, 1.04535738e-07,
+        -3.11187068e-05, -4.36903490e-09, -3.49417636e-09, -2.78998269e-05
+    ])
+    expected_C = 1.4012993451e-05
+    cache.do_esp_costfunction()
+    assert(abs(cache.mol_esp_cost.A - expected_A).max() < 1e-4)
+    assert(abs(cache.mol_esp_cost.B - expected_B).max() < 1e-4)
+    assert(abs(cache.mol_esp_cost.C - expected_C) < 1e-4)
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "mol_esp_cost.txt")))
