@@ -23,7 +23,7 @@
 #include <string.h>
 
 
-int reorder_density_matrix(double* dmat, int* permutation, int num_dof) {
+int reorder_dmat_c(double* dmat, int* permutation, int num_dof) {
   int result, size, i, j, ip, jp, k, kp;
   double *tmp;
 
@@ -63,4 +63,22 @@ int reorder_density_matrix(double* dmat, int* permutation, int num_dof) {
 EXIT:
   free(tmp);
   return result;
+}
+
+
+void add_orbitals_to_dmat(double* orbitals, double* dmat, int num_orbitals, int num_dof) {
+  int i, j, k, o;
+  double *orbital;
+
+  orbital = orbitals;
+  for (o=0; o<num_orbitals; o++) {
+    k = 0;
+    for (i=0; i<num_dof; i++) {
+      for (j=0; j<=i; j++) {
+        dmat[k] += orbital[i]*orbital[j];
+        k++;
+      }
+    }
+    orbital += num_dof;
+  }
 }

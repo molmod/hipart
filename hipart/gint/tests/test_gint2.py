@@ -22,8 +22,8 @@
 from hipart.gint.tests.utils import setup_fchk, h_sto3g_fchk, hf_sto3g_fchk, \
     o2_cc_pvtz_cart_fchk, o2_cc_pvtz_pure_fchk
 
-from hipart.gint.basis import GaussianBasis
-from hipart.gint.gint_ext import gint2_nai_dmat, gint2_nai_S_S, reorder_density_matrix
+from hipart.gint import GaussianBasis, gint2_nai_dmat, gint2_nai_S_S, \
+    reorder_dmat
 
 from molmod.io import FCHKFile
 from molmod import angstrom
@@ -107,7 +107,7 @@ def test_pot_hf_sto3g():
     shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
     dmat = fchk.fields["Total SCF Density"]
-    reorder_density_matrix(dmat, basis.g03_permutation)
+    reorder_dmat(dmat, basis.g03_permutation)
     points = ref_data_hf_sto3g_pot[:,:3]*angstrom
     ref_potential = ref_data_hf_sto3g_pot[:,3]
     nuc_potential = 0.0
@@ -150,7 +150,7 @@ def test_pot_o2_cc_pvtz_cart():
     shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
     dmat = fchk.fields["Total SCF Density"]
-    reorder_density_matrix(dmat, basis.g03_permutation)
+    reorder_dmat(dmat, basis.g03_permutation)
     points = ref_data_o2_cc_pvtz_cart_pot[:,:3]*angstrom
     ref_potential = ref_data_o2_cc_pvtz_cart_pot[:,3]
     nuc_potential = 0.0
@@ -193,7 +193,7 @@ def test_pot_o2_cc_pvtz_pure():
     shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
     dmat = fchk.fields["Total SCF Density"]
-    reorder_density_matrix(dmat, basis.g03_permutation)
+    reorder_dmat(dmat, basis.g03_permutation)
     points = ref_data_o2_cc_pvtz_pure_pot[:,:3]*angstrom
     ref_potential = ref_data_o2_cc_pvtz_pure_pot[:,3]
     nuc_potential = 0.0

@@ -23,22 +23,22 @@ from molmod.io import FCHKFile
 from molmod import angstrom
 import os, numpy
 
-from hipart.gint.basis import GaussianBasis
-from hipart.gint.gint_ext import gint1_fn_basis, gint1_fn_dmat, \
-    gint2_nai_dmat, reorder_density_matrix
+from hipart.gint import GaussianBasis, gint1_fn_basis, gint1_fn_dmat, \
+    gint2_nai_dmat, reorder_dmat, add_orbitals_to_dmat
 
 
 __all__ = ["load_wavefunction", "FchkWaveFunction"]
 
 
 def load_wavefunction(filename):
-    if filename.endswith(".fchk"):
-        return MyFCHKWaveFunction(filename)
+    if filename.endswith(".fchk") or (filename.count(":")==1 and \
+       filename.split(":")[0].endswith(".fchk")):
+        return FCHKWaveFunction(filename)
     else:
         raise ValueError("File extension of %s not recognized" % filename)
 
 
-class FCHKWaveFunction(object):
+class OldFCHKWaveFunction(object):
     def __init__(self, filename):
         self.filename = filename
         self.prefix = filename[:-5]
@@ -204,8 +204,12 @@ class FCHKWaveFunction(object):
         grid.beta_orbitals = beta_orbitals
 
 
-class MyFCHKWaveFunction(FCHKWaveFunction):
+class FCHKWaveFunction(object):
     def __init__(self, filename):
+        if filename.count(":") == 1:
+            filename, density_type = filename.split(":")
+        else:
+            density_type = None
         self.filename = filename
         self.prefix = filename[:-5]
         fchk = FCHKFile(filename)
@@ -219,86 +223,92 @@ class MyFCHKWaveFunction(FCHKWaveFunction):
         self.restricted = "Beta Orbital Energies" not in fchk.fields
         self.molecule = fchk.molecule
         # for internal usage
+        if density_type is None:
+            if "mp2" in fchk.lot.lower():
+                density_type = "mp2"
+            elif "mp3" in fchk.lot.lower():
+                density_type = "mp3"
+            elif "mp4" in fchk.lot.lower():
+                density_type = "mp4"
+            else:
+                density_type = "scf"
+        # electronic structure data
         self.basis = GaussianBasis.from_fchk(fchk)
-        self.alpha_orbital_energies = fchk.fields["Alpha Orbital Energies"]
-        self.beta_orbital_energies = fchk.fields.get("Beta Orbital Energies", self.alpha_orbital_energies)
-        self.alpha_orbitals = fchk.fields["Alpha MO coefficients"].reshape((-1,self.basis.num_dof))
-        self.alpha_orbitals = self.alpha_orbitals[:,self.basis.g03_permutation]
-        self.beta_orbitals = fchk.fields.get("Beta MO coefficients")
-        if self.beta_orbitals is None:
-            self.beta_orbitals = self.alpha_orbitals
+        # orbitals
+        if density_type == "scf":
+            # Load orbital stuff only for scf computations.
+            self.alpha_orbital_energies = fchk.fields["Alpha Orbital Energies"]
+            self.beta_orbital_energies = fchk.fields.get("Beta Orbital Energies", self.alpha_orbital_energies)
+            self.alpha_orbitals = fchk.fields["Alpha MO coefficients"].reshape((-1,self.basis.num_dof))
+            self.alpha_orbitals = self.alpha_orbitals[:,self.basis.g03_permutation]
+            self.beta_orbitals = fchk.fields.get("Beta MO coefficients")
+            if self.beta_orbitals is None:
+                self.beta_orbitals = self.alpha_orbitals
+            else:
+                self.beta_orbitals = self.beta_orbitals.reshape((-1,self.basis.num_dof))[:,self.basis.g03_permutation]
         else:
-            self.beta_orbitals = self.beta_orbitals.reshape((-1,self.basis.num_dof))[:,self.basis.g03_permutation]
-        self.density_matrices = {}
-        self.spin_density_matrices = {}
-        for key in fchk.fields:
-            if key.startswith("Total") and key.endswith("Density"):
-                dmat = fchk.fields[key]
-                reorder_density_matrix(dmat, self.basis.g03_permutation)
-                self.density_matrices[key[6:-8].lower()] = dmat
-            if key.startswith("Spin") and key.endswith("Density"):
-                dmat = fchk.fields[key]
-                reorder_density_matrix(dmat, self.basis.g03_permutation)
-                self.spin_density_matrices[key[5:-8].lower()] = dmat
-        # for compatibility
-        self._hack_fchk = self.restricted and (self.num_alpha != self.num_beta)
-        if "mp2" in fchk.lot.lower():
-            self._density_type = "mp2"
-        elif "mp3" in fchk.lot.lower():
-            self._density_type = "mp3"
-        elif "mp4" in fchk.lot.lower():
-            self._density_type = "mp4"
+            # TODO: optionally work with natural orbitals.
+            self.alpha_orbital_energies = None
+            self.beta_orbital_energies = None
+            self.alpha_orbitals = None
+            self.beta_orbitals = None
+        # density matrices
+        hack_fchk = self.restricted and (self.num_alpha != self.num_beta) and density_type == "scf"
+        if hack_fchk:
+            # construct density matrices manually because the fchk file
+            # contains the wrong one. we only do this for scf computations.
+            n = self.basis.num_dof
+            size = (n*(n+1))/2
+            self.density_matrix = numpy.zeros(size, float)
+            add_orbitals_to_dmat(self.alpha_orbitals[:self.num_alpha], self.density_matrix)
+            add_orbitals_to_dmat(self.beta_orbitals[:self.num_beta], self.density_matrix)
+            self.spin_density_matrix = numpy.zeros(size, float)
+            num_min = min(self.num_alpha, self.num_beta)
+            num_max = max(self.num_alpha, self.num_beta)
+            add_orbitals_to_dmat(self.alpha_orbitals[num_min:num_max], self.spin_density_matrix)
         else:
-            self._density_type = "scf"
+            self.density_matrix = None
+            self.spin_density_matrix = None
+            # load the density matrices
+            for key in fchk.fields:
+                if key.startswith("Total") and key.endswith("Density"):
+                    if key[6:-8].lower() != density_type:
+                        continue
+                    assert self.density_matrix is None
+                    dmat = fchk.fields[key]
+                    reorder_dmat(dmat, self.basis.g03_permutation)
+                    self.density_matrix = dmat
+                elif key.startswith("Spin") and key.endswith("Density"):
+                    if key[5:-8].lower() != density_type:
+                        continue
+                    assert self.spin_density_matrix is None
+                    dmat = fchk.fields[key]
+                    reorder_dmat(dmat, self.basis.g03_permutation)
+                    self.spin_density_matrix = dmat
+            if self.density_matrix is None:
+                raise ValueError("Could not find the '%s' density matrix in the fchk file." % self._density_type)
 
     def compute_density(self, grid):
         moldens = grid.load("moldens")
         if moldens is None:
-            if self._hack_fchk:
-                self.compute_orbitals(grid)
-                moldens = 0.0
-                for j in xrange(max(self.num_alpha, self.num_beta)):
-                    # ugly hack: Workaround for stupid fchk file that contains the
-                    # incorrect density matrix in case of RO calculations. pfff...
-                    orb = grid.alpha_orbitals[j]
-                    occup = (j < self.num_alpha) + (j < self.num_beta)
-                    moldens += occup*orb**2
-            else:
-                dmat = self.density_matrices[self._density_type]
-                moldens = self.basis.call_gint1(gint1_fn_dmat, dmat, grid.points)
-                grid.dump("moldens", moldens)
+            moldens = self.basis.call_gint1(gint1_fn_dmat, self.density_matrix, grid.points)
+            grid.dump("moldens", moldens)
         grid.moldens = moldens
 
     def compute_spin_density(self, grid):
         molspindens = grid.load("molspindens")
         if molspindens is None:
-            if self._hack_fchk:
-                # ugly hack: Workaround for stupid fchk file that contains the
-                # incorrect density matrix in case of RO calculations. pfff...
-                self.compute_orbitals(grid)
-                molspindens = 0.0
-                n_min = min(self.num_alpha, self.num_beta)
-                n_max = max(self.num_alpha, self.num_beta)
-                for j in xrange(n_min, n_max):
-                    orb = grid.alpha_orbitals[j]
-                    molspindens += orb**2
+            if self.spin_density_matrix is None:
+                molspindens = numpy.zeros(len(grid.points), float)
             else:
-                dmat = self.spin_density_matrices.get(self._density_type)
-                if dmat is None:
-                    molspindens = numpy.zeros(len(grid.points), float)
-                else:
-                    molspindens = self.basis.call_gint1(gint1_fn_dmat, dmat, grid.points)
+                molspindens = self.basis.call_gint1(gint1_fn_dmat, self.spin_density_matrix, grid.points)
             grid.dump("molspindens", molspindens)
         grid.molspindens = molspindens
 
     def compute_potential(self, grid):
         molpot = grid.load("molpot")
         if molpot is None:
-            if self._hack_fchk:
-                raise NotImplementedError
-            else:
-                dmat = self.density_matrices[self._density_type]
-                molpot = -self.basis.call_gint1(gint2_nai_dmat, dmat, grid.points)
+            molpot = -self.basis.call_gint1(gint2_nai_dmat, self.density_matrix, grid.points)
             # add the contribution from the nuclei
             for i in xrange(self.molecule.size):
                 n = self.molecule.numbers[i]
@@ -308,6 +318,8 @@ class MyFCHKWaveFunction(FCHKWaveFunction):
         grid.molpot = molpot
 
     def compute_orbitals(self, grid):
+        if self.alpha_orbitals is None:
+            raise ValueError("The orbitals are not available.")
         alpha_orbitals = []
         beta_orbitals = []
         for i in xrange(self.num_orbitals):

@@ -19,21 +19,21 @@
 # --
 
 
-from hipart.gint.gint_ext import reorder_density_matrix
+from hipart.gint import reorder_dmat, add_orbitals_to_dmat
 
 import numpy
 
 
-def test_reorder_density_matrix1():
+def test_reorder_dmat1():
     # This test uses a very simple small matrix.
     dmat = numpy.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0])
     permutation = numpy.array([1,2,0])
-    reorder_density_matrix(dmat, permutation)
+    reorder_dmat(dmat, permutation)
     expected_dmat = numpy.array([2.0, 4.0, 5.0, 1.0, 3.0, 0.0])
     assert(abs(dmat-expected_dmat).max() < 1e-10)
 
 
-def test_reorder_density_matrix2():
+def test_reorder_dmat2():
     # This is a test based on a randomly generated matrix.
     num_dof = 10
     size = (num_dof*(num_dof+1))/2
@@ -51,5 +51,25 @@ def test_reorder_density_matrix2():
     for i in xrange(num_dof):
         expected_dmat[j:j+i+1] = square[i,0:i+1]
         j += i+1
-    reorder_density_matrix(dmat, permutation)
+    reorder_dmat(dmat, permutation)
     assert(abs(dmat-expected_dmat).max() < 1e-10)
+
+
+def test_add_orbitals_to_dmat1():
+    orbitals = numpy.array([[1, 2], [3, 4]])
+    expected_dmat = numpy.array([10, 14, 20])
+    dmat = numpy.zeros(3, float)
+    add_orbitals_to_dmat(orbitals, dmat)
+    assert(abs(dmat - expected_dmat).max() < 1e-10)
+
+
+def test_add_orbitals_to_dmat2():
+    num_dof = 10
+    num_orbitals = 5
+    size = (num_dof*(num_dof+1))/2
+    orbitals = numpy.random.normal(0, 1, (num_orbitals, num_dof))
+    dmat = numpy.zeros(size, float)
+    add_orbitals_to_dmat(orbitals, dmat)
+    expected_dmat = numpy.dot(orbitals.transpose(), orbitals)
+    expected_dmat = numpy.concatenate([expected_dmat[i,:i+1] for i in xrange(num_dof)])
+    assert(abs(dmat - expected_dmat).max() < 1e-10)

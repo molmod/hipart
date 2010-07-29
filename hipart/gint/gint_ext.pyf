@@ -31,13 +31,22 @@ include 'gint2_nai.pyf.inc'
     integer intent(int) :: n
   end function gaux
 
-  integer function reorder_density_matrix(dmat, permutation, num_dof)
-    intent(c) reorder_density_matrix
+  integer function reorder_dmat_c(dmat, permutation, num_dof)
+    intent(c) reorder_dmat_c
     intent(c)
     double precision intent(inout) :: dmat((num_dof*(num_dof+1))/2)
     integer intent(int) :: permutation(num_dof)
     integer intent(hide), depend(permutation) :: num_dof=len(permutation)
-  end function reorder_density_matrix
+  end function reorder_dmat_c
+
+  integer function add_orbitals_to_dmat(orbitals, dmat, num_orbitals, num_dof)
+    intent(c) add_orbitals_to_dmat
+    intent(c)
+    double precision intent(in) :: orbitals(num_orbitals,num_dof)
+    double precision intent(inout) :: dmat((num_dof*(num_dof+1))/2)
+    integer intent(hide), depend(orbitals) :: num_orbitals=shape(orbitals,0)
+    integer intent(hide), depend(orbitals) :: num_dof=shape(orbitals,1)
+  end function add_orbitals_to_dmat
 
 end interface
 end python module gint_ext

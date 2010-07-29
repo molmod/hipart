@@ -19,6 +19,13 @@
 # --
 
 
-from hipart.gint.tools import *
-from hipart.gint.gint_ext import *
-from hipart.gint.basis import *
+from hipart.gint.gint_ext import reorder_dmat_c
+
+
+__all__ = ["reorder_dmat"]
+
+
+def reorder_dmat(dmat, permutation):
+    retcode = reorder_dmat_c(dmat, permutation)
+    if retcode != 0:
+        raise MemoryError("Out of memory while reordering the density matrix.")
