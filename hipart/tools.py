@@ -64,12 +64,12 @@ def dump_atom_scalars(filename, scalars, numbers=None, name="Charge"):
     f = file(filename, "w")
     print >> f, "number of atoms: %i" % len(scalars)
     print >> f, "  i        Z  %s" % name.rjust(10)
-    print >> f, "-----------------------------"
+    print >> f, "--------------------------------"
     for i, symbol, number in _iter_symbols_numbers(numbers, len(scalars)):
-        print >> f, "% 3i  %2s  % 3i   % 10.5f" % (
+        print >> f, "% 3i  %2s  % 3i   % 15.12f" % (
             i+1, symbol, number, scalars[i]
         )
-    print >> f, "-----------------------------"
+    print >> f, "--------------------------------"
 
 
 def load_atom_scalars(filename):
@@ -90,13 +90,18 @@ def load_atom_scalars(filename):
 
 
 def dump_atom_vectors(filename, vectors, numbers=None, name="Dipole"):
-    name = name.rjust(10)
+    names = (
+        (name+"-X").center(15),
+        (name+"-Y").center(15),
+        (name+"-Z").center(15),
+        (name+"-norm").center(15),
+    )
     f = file(filename, "w")
     print >> f, "number of atoms:", len(vectors)
-    print >> f, "  i        Z %(name)s-X %(name)s-Y %(name)s-Z  %(name)s" % {"name": name}
-    print >> f, "------------------------------------------------------------------"
+    print >> f, "  i        Z  %s %s %s %s" % names
+    print >> f, "-------------------------------------------------------------------------------"
     for i, symbol, number in _iter_symbols_numbers(numbers, len(vectors)):
-        print >> f, "% 3i  %2s  % 3i   % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+        print >> f, "% 3i  %2s  % 3i  % 15.12f % 15.12f % 15.12f % 15.12f" % (
             i+1, symbol, number, vectors[i,0], vectors[i,1],
             vectors[i,2], numpy.linalg.norm(vectors[i]),
         )
@@ -127,13 +132,13 @@ def dump_atom_matrix(filename, matrix, numbers=None, name="Matrix"):
     f = file(filename, "w")
     print >> f, "number of atoms:", len(matrix)
     print >> f, "%s | %s" % (name, " ".join(
-        "  % 3i %2s  " % (key[0]+1, key[1]) for key
+        "    % 3i %2s     " % (key[0]+1, key[1]) for key
         in _iter_symbols_numbers(numbers, len(matrix))
     ))
-    print >> f, "----------------+-"+"-"*(3+11*len(matrix))
+    print >> f, "----------------+-"+"-"*(1+16*len(matrix))
     for i, symbol, number in _iter_symbols_numbers(numbers, len(matrix)):
         print >> f, "% 3i  %2s  % 3i    | %s" % (
-            i+1, symbol, number, " ".join("% 10.5f" % val for val in matrix[i])
+            i+1, symbol, number, " ".join("% 15.12f" % val for val in matrix[i])
         )
     f.close()
 
@@ -161,11 +166,11 @@ def dump_atom_fields(filename, table, labels, numbers=None, name="Matrix"):
     f = file(filename, "w")
     print >> f, "number of atoms:", len(table)
     print >> f, "number of fields:", len(labels)
-    print >> f, "%s |  %s" % (name, " ".join(label.center(10) for label in labels))
-    print >> f, "----------------+-"+"-"*(2+11*len(labels))
+    print >> f, "%s | %s" % (name, " ".join(label.center(15) for label in labels))
+    print >> f, "----------------+-"+"-"*(1+16*len(labels))
     for i, symbol, number in _iter_symbols_numbers(numbers, len(table)):
         print >> f, "% 3i  %2s  % 3i    | %s" % (
-            i+1, symbol, number, " ".join("% 10.7f" % val for val in table[i])
+            i+1, symbol, number, " ".join("% 15.12f" % val for val in table[i])
         )
     f.close()
 

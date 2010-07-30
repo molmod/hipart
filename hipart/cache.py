@@ -262,7 +262,7 @@ class BaseCache(object):
     @OnlyOnce("Molecular potential on the molecular grid")
     def do_molgrid_molpot(self):
         self.do_molgrid()
-        log("This make take a minute. Hang on.")
+        log("This may take a minute. Hang on.")
         self.context.wavefn.compute_potential(self.molgrid)
 
     def _prepare_atweights(self):
@@ -496,28 +496,32 @@ class BaseCache(object):
 
         filename = os.path.join(self.context.outdir, "%s_esp_test.txt" % self.prefix)
         f = file(filename, "w")
-        print >> f, "                 Dipole-X     Dipole-Y     Dipole-Z      Dipole"
-        print >> f, "------------------------------------------------------------------"
+        print >> f, "Reproduction of the molecular dipole"
+        print >> f, "-------------------------------------------------------------------------------"
+        print >> f, "                  Dipole-X        Dipole-Y        Dipole-Z       Dipole-norm"
+        print >> f, "-------------------------------------------------------------------------------"
         dipole_q = (molecule.coordinates*self.charges.reshape((-1,1))).sum(axis=0)
         dipole_p = self.dipoles.sum(axis=0)
         dipole_qp = dipole_q + dipole_p
         dipole_qm = self.context.wavefn.dipole
-        print >> f, "Molecular dipole due to ..."
-        print >> f, "charges (q)    % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+        print >> f, "charges (q)   % 15.12f % 15.12f % 15.12f % 15.12f" % (
             dipole_q[0], dipole_q[1], dipole_q[2], numpy.linalg.norm(dipole_q),
         )
-        print >> f, "dipoles (p)    % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+        print >> f, "dipoles (p)   % 15.12f % 15.12f % 15.12f % 15.12f" % (
             dipole_p[0], dipole_p[1], dipole_p[2], numpy.linalg.norm(dipole_p),
         )
-        print >> f, "q and p        % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+        print >> f, "q and p       % 15.12f % 15.12f % 15.12f % 15.12f" % (
             dipole_qp[0], dipole_qp[1], dipole_qp[2], numpy.linalg.norm(dipole_qp),
         )
-        print >> f, "total density  % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+        print >> f, "total density % 15.12f % 15.12f % 15.12f % 15.12f" % (
             dipole_qm[0], dipole_qm[1], dipole_qm[2], numpy.linalg.norm(dipole_qm),
         )
-        print >> f, "------------------------------------------------------------------"
-        print >> f, "Reproduction of the external molecular ESP ..."
+        print >> f, "-------------------------------------------------------------------------------"
+        print >> f
+        print >> f, "Reproduction of the external molecular ESP"
+        print >> f, "-------------------------------------------------------------"
         print >> f, "                     RMSD             RMS       CORRELATION"
+        print >> f, "-------------------------------------------------------------"
         print >> f, "charges (q)      % 10.5e    % 10.5e      % 5.2f" % (
             self.mol_esp_cost.rmsd(self.charges),
             self.mol_esp_cost.model_rms(self.charges),
@@ -534,6 +538,7 @@ class BaseCache(object):
             self.mol_esp_cost.correlation(self.charges, self.dipoles),
         )
         print >> f, "total density                    % 10.5e" % self.mol_esp_cost.rms
+        print >> f, "-------------------------------------------------------------"
         f.close()
         log("Written %s" % filename)
 
