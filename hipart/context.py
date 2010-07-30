@@ -45,6 +45,7 @@ class Context(object):
 
     def __init__(self, filename, options):
         self.wavefn = load_wavefunction(filename)
+        self.wavefn.log()
         self.options = options
 
         self.outdir = "%s.hipart" % self.wavefn.prefix

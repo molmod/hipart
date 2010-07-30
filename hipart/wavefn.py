@@ -25,6 +25,7 @@ import os, numpy
 
 from hipart.gint import GaussianBasis, gint1_fn_basis, gint1_fn_dmat, \
     gint2_nai_dmat, reorder_dmat, add_orbitals_to_dmat
+from hipart.log import log
 
 
 __all__ = ["load_wavefunction", "FchkWaveFunction"]
@@ -72,6 +73,9 @@ class OldFCHKWaveFunction(object):
             self._density_type = "mp4"
         else:
             self._density_type = "scf"
+
+    def log(self):
+        pass
 
     def _load_cube(self, filename, N):
         f = file(filename)
@@ -218,6 +222,7 @@ class FCHKWaveFunction(object):
         else:
             raise ValueError("Only one option is supported for the FCHKWaveFunction")
         self.filename = filename
+        self.options = options
         self.prefix = filename[:-5]
         fchk = FCHKFile(filename)
         # for use by the rest of the program
@@ -294,6 +299,18 @@ class FCHKWaveFunction(object):
                     self.spin_density_matrix = dmat
             if self.density_matrix is None:
                 raise ValueError("Could not find the '%s' density matrix in the fchk file." % self._density_type)
+
+    def log(self):
+        log("Electronic structure read from: %s (%s)" % (self.filename, ",".join(self.options)))
+        log("Restricted: %s" % self.restricted)
+        log("Orbitals present: %s" % (self.alpha_orbital_energies is not None))
+        log("Spin density present: %s" % (self.spin_density_matrix is not None))
+        log("Number of alpha electrons: %i" % self.num_alpha)
+        log("Number of beta electrons: %i" % self.num_beta)
+        log("Number of electrons: %i" % self.num_electrons)
+        log("Total charge: %i" % self.charge)
+        log("Number of atoms: %i" % self.molecule.size)
+        log("Chemical formula: %s" % self.molecule.chemical_formula)
 
     def compute_density(self, grid):
         moldens = grid.load("moldens")

@@ -52,12 +52,15 @@ class ProgressBar(object):
         self.i += 1
 
 
+bright = '\033[1;33m'
+reset = '\033[0m'
+
 class Log(object):
     def __init__(self):
         self.level = 0
 
     def begin(self, s):
-        print "%sBEGIN %s" % (" "*self.level, s)
+        print "%s%sBEGIN%s %s" % (" "*self.level, bright, reset, s)
         self.level += 1
 
     def __call__(self, s):
@@ -66,7 +69,7 @@ class Log(object):
     def end(self, s):
         self.level -= 1
         if self.level < 0: self.level = 0
-        print "%sEND %s" % (" "*self.level, s)
+        print "%s%sEND%s %s" % (" "*self.level, bright, reset, s)
 
     def pb(self, s, num):
         return ProgressBar(s, num, indent=self.level)
