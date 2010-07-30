@@ -19,8 +19,7 @@
 # --
 
 
-from hipart.tools import load_atom_scalars, load_atom_vectors, \
-    load_atom_matrix, dump_atom_scalars, dump_atom_vectors, dump_atom_matrix
+from hipart.tools import *
 
 from molmod import angstrom
 import tempfile, shutil, os, numpy
@@ -144,4 +143,47 @@ def test_dump_atom_matrix():
     check = load_atom_matrix(fn_txt)
     assert(matrix.shape==check.shape)
     assert(abs(matrix-check).max() < 1e-5)
+    shutil.rmtree(tmpdir)
+
+
+some_fields_txt = """\
+number of atoms: 2
+number of labels: 3
+   bla-bla-bla  |     one        two        three
+----------------+----------------------------------
+  1   C    6    |    1.50000    3.00000    3.00000
+  2   O    8    |    4.00000    2.00000    5.00000
+"""
+
+def test_load_atom_fields():
+    tmpdir = tempfile.mkdtemp("hipart-load-fields")
+    fn_txt = os.path.join(tmpdir, "some_fields.txt")
+    f = open(fn_txt, "w")
+    f.write(some_fields_txt)
+    f.close()
+    table, labels = load_atom_fields(fn_txt)
+    assert(labels == ["one", "two", "three"])
+    assert(table.shape == (2,3))
+    assert(abs(table[0,0] - 1.5) < 1e-4)
+    assert(abs(table[1,1] - 2.0) < 1e-4)
+    assert(abs(table[-1,2] - 5.0) < 1e-4)
+    shutil.rmtree(tmpdir)
+
+
+def test_dump_atom_fields():
+    tmpdir = tempfile.mkdtemp("hipart-dump-fields")
+    fn_txt = os.path.join(tmpdir, "fields.txt")
+    table = numpy.random.normal(0,1,(5,8))
+    numbers = numpy.random.randint(1,10,5)
+    labels = list("abcdefgh")
+    dump_atom_fields(fn_txt, table, labels, numbers)
+    check_table, check_labels = load_atom_fields(fn_txt)
+    assert(labels==check_labels)
+    assert(table.shape==check_table.shape)
+    assert(abs(table-check_table).max() < 1e-5)
+    dump_atom_fields(fn_txt, table, labels, numbers)
+    check_table, check_labels = load_atom_fields(fn_txt)
+    assert(labels==check_labels)
+    assert(table.shape==check_table.shape)
+    assert(abs(table-check_table).max() < 1e-5)
     shutil.rmtree(tmpdir)

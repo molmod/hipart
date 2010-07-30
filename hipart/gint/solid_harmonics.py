@@ -19,7 +19,7 @@
 # --
 
 
-from sympy import simplify, Symbol, cos, sin, exp, Ylm, I, sqrt
+from sympy import simplify, Symbol, cos, sin, exp, Ylm, I, sqrt, pi
 
 
 __all__ = ["get_solid_harmonics"]
@@ -56,3 +56,31 @@ def get_solid_harmonics(shell, xyz):
             part = simplify(part)
             result.append(part)
     return result
+
+
+if __name__ == "__main__":
+    def iter_m():
+        counter = 0
+        yield str(counter)
+        while True:
+            counter += 1
+            yield "%i+" % counter
+            yield "%i-" % counter
+
+    x = Symbol("x")
+    y = Symbol("y")
+    z = Symbol("z")
+    xyz = (x, y, z)
+    labels = []
+    print "solid_harmonics = ["
+    for shell in xrange(5):
+        im = iter_m()
+        factor = sqrt(4*pi/(2*shell+1))
+        for poly in get_solid_harmonics(shell, xyz):
+            m = im.next()
+            print "    lambda x,y,z: %s, # (%i,%s)" % (
+                (poly*factor).evalf(20), shell, m
+            )
+            labels.append("(%i,%s)" % (shell, m))
+    print "]"
+    print "labels = %s" % labels
