@@ -274,7 +274,7 @@ class BaseCache(object):
         log("Trying to load weight functions")
         success = self._load_atgrid_atweights()
         if not success:
-            log("Could not load all weights functions from workdir. Computing them...")
+            log("Could not load all weight functions from workdir. Computing them...")
             self._prepare_atweights()
             self._compute_atgrid_atweights()
             log("Writing results to workdir")
