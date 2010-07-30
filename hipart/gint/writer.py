@@ -19,7 +19,7 @@
 # --
 
 
-from sympy import simplify, Symbol, Wild, sqrt, cos, sin, exp, Ylm, I, pi, C, S
+from sympy import Symbol, Wild, sqrt, pi, C, S, simplify
 from sympy.printing.ccode import CCodePrinter
 from sympy.utilities.iterables import numbered_symbols
 from sympy.printing.precedence import precedence
@@ -29,6 +29,7 @@ from sympy.utilities.iterables import preorder_traversal
 import numpy
 
 from hipart.gint.basis import get_shell_dof
+from hipart.gint.solid_harmonics import get_solid_harmonics
 
 
 # Sympy stuff
@@ -817,42 +818,17 @@ def iter_cartesian_powers(order):
                 yield l, m, order-l-m
 
 
-def get_polys(shell_type, alpha, v):
-    r = Symbol("r", real=True)
-    x, y, z = v
+def get_polys(shell_type, alpha, xyz):
     result = []
     if shell_type < -1:
         shell_type = abs(shell_type)
-        theta = Symbol("theta", real=True)
-        phi = Symbol("phi", real=True)
         wfn_norm = get_pure_wfn_norm(alpha, shell_type)
-        for m in range(shell_type+1):
-            if m > 0:
-                part_plus = (Ylm(shell_type,m,theta,phi)*r**shell_type).expand()
-                part_plus = part_plus.subs(exp(I*phi),(x+I*y)/sin(theta)/r)
-                part_min = (Ylm(shell_type,-m,theta,phi)*r**shell_type).expand()
-                part_min = part_min.subs(exp(-I*phi),(x-I*y)/sin(theta)/r)
-                sym = simplify(((-1)**m*part_plus+part_min)/sqrt(2))
-                sym = sym.subs(r*cos(theta),z)
-                sym = sym.subs(r**2,x**2+y**2+z**2)
-                sym = sym.subs(cos(theta)**2,1-sin(theta)**2)
-                sym = simplify(sym)
-                asym = simplify(((-1)**m*part_plus-part_min)/I/sqrt(2))
-                asym = asym.subs(r*cos(theta),z)
-                asym = asym.subs(r**2,x**2+y**2+z**2)
-                asym = asym.subs(cos(theta)**2,1-sin(theta)**2)
-                asym = simplify(asym)
-                result.append((sym, wfn_norm))
-                result.append((asym, wfn_norm))
-            else:
-                part = (Ylm(shell_type,0,theta,phi)*r**shell_type).expand()
-                part = part.subs(r*cos(theta),z)
-                part = part.subs(r**2,x**2+y**2+z**2)
-                part = simplify(part)
-                result.append((part, wfn_norm))
+        polys = get_solid_harmonics(shell_type, xyz)
+        result = [(poly, wfn_norm) for poly in polys]
     elif shell_type == -1:
-        return get_polys(0, alpha, v) + get_polys(1, alpha, v)
+        return get_polys(0, alpha, xyz) + get_polys(1, alpha, xyz)
     else:
+        x, y, z = xyz
         for l, m, n in iter_cartesian_powers(shell_type):
             result.append((x**l*y**m*z**n, get_cartesian_wfn_norm(alpha, l, m, n)))
     return result

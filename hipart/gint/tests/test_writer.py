@@ -19,6 +19,8 @@
 # --
 
 
+from sympy import sin
+
 from hipart.gint.writer import *
 
 
