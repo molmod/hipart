@@ -20,7 +20,7 @@
 
 
 from hipart.tools import load_atom_scalars, load_atom_vectors, \
-    dump_atom_scalars, dump_atom_vectors
+    load_atom_matrix, dump_atom_scalars, dump_atom_vectors, dump_atom_matrix
 
 from molmod import angstrom
 import tempfile, shutil, os, numpy
@@ -41,6 +41,7 @@ def test_load_atom_scalars():
     f.write(hirshi_charges_txt)
     f.close()
     charges = load_atom_scalars(fn_txt)
+    assert(charges.shape == (2,))
     assert(abs(charges[0] - (-0.19438)) < 1e-3)
     assert(abs(charges[1] - 0.19438) < 1e-3)
     shutil.rmtree(tmpdir)
@@ -77,6 +78,7 @@ def test_load_atom_vectors():
     f.write(hirshi_dipoles_txt)
     f.close()
     dipoles = load_atom_vectors(fn_txt)
+    assert(dipoles.shape == (2,3))
     assert(abs(dipoles[0,1] -  0.00002) < 1e-3)
     assert(abs(dipoles[1,2] - (-0.03385)) < 1e-3)
     shutil.rmtree(tmpdir)
@@ -92,10 +94,54 @@ def test_dump_atom_vectors():
     numbers = [1, 6]
     dump_atom_vectors(fn_txt, dipoles, numbers)
     check = load_atom_vectors(fn_txt)
-    assert(len(dipoles)==len(check))
+    assert(dipoles.shape==check.shape)
     assert(abs(dipoles-check).max() < 1e-5)
     dump_atom_vectors(fn_txt, dipoles)
     check = load_atom_vectors(fn_txt)
-    assert(len(dipoles)==len(check))
+    assert(dipoles.shape==check.shape)
     assert(abs(dipoles-check).max() < 1e-5)
+    shutil.rmtree(tmpdir)
+
+
+hirshi_bond_orders_txt = """\
+number of atoms: 8
+   Bond order   |     1  C       2  O       3  O       4  H       5  C       6  H       7  H       8  H
+----------------+-----------------------------------------------------------------------------------------
+  1   C    6    |    0.00000    1.19387    1.82032    0.04743    0.97009    0.05155    0.05472    0.05476
+  2   O    8    |    1.19387    0.00000    0.33499    0.78470    0.22559    0.01126    0.02059    0.02064
+  3   O    8    |    1.82032    0.33499    0.00000    0.04033    0.25623    0.02708    0.01639    0.01638
+  4   H    1    |    0.04743    0.78470    0.04033    0.00000    0.01245    0.00118    0.00084    0.00085
+  5   C    6    |    0.97009    0.22559    0.25623    0.01245    0.00000    0.94421    0.94237    0.94216
+  6   H    1    |    0.05155    0.01126    0.02708    0.00118    0.94421    0.00000    0.05648    0.05619
+  7   H    1    |    0.05472    0.02059    0.01639    0.00084    0.94237    0.05648    0.00000    0.05849
+  8   H    1    |    0.05476    0.02064    0.01638    0.00085    0.94216    0.05619    0.05849    0.00000
+"""
+
+def test_load_atom_matrix():
+    tmpdir = tempfile.mkdtemp("hipart-load-matrix")
+    fn_txt = os.path.join(tmpdir, "hirshi_bond_orders.txt")
+    f = open(fn_txt, "w")
+    f.write(hirshi_bond_orders_txt)
+    f.close()
+    matrix = load_atom_matrix(fn_txt)
+    assert(matrix.shape == (8,8))
+    assert(abs(matrix[0,0]) < 1e-4)
+    assert(abs(matrix[1,2] - 0.33499) < 1e-4)
+    assert(abs(matrix[-1,2] - 0.01638) < 1e-4)
+    shutil.rmtree(tmpdir)
+
+
+def test_dump_atom_matrix():
+    tmpdir = tempfile.mkdtemp("hipart-dump-matrix")
+    fn_txt = os.path.join(tmpdir, "hirshi_matrix.txt")
+    matrix = numpy.random.normal(0,1,(5,5))
+    numbers = numpy.random.randint(1,10,5)
+    dump_atom_matrix(fn_txt, matrix, numbers)
+    check = load_atom_matrix(fn_txt)
+    assert(matrix.shape==check.shape)
+    assert(abs(matrix-check).max() < 1e-5)
+    dump_atom_matrix(fn_txt, matrix)
+    check = load_atom_matrix(fn_txt)
+    assert(matrix.shape==check.shape)
+    assert(abs(matrix-check).max() < 1e-5)
     shutil.rmtree(tmpdir)

@@ -35,8 +35,10 @@
 
 
 from hipart.log import log
-from hipart.tools import get_atom_grid, dump_atom_scalars, dump_atom_vectors
-from hipart.integrate import cumul_integrate_log, integrate_log, integrate_lebedev
+from hipart.tools import get_atom_grid, dump_atom_scalars, dump_atom_vectors, \
+    dump_atom_matrix
+from hipart.integrate import cumul_integrate_log, integrate_log, \
+    integrate_lebedev
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid
 from hipart.atoms import AtomTable, AtomFn
@@ -261,6 +263,7 @@ class BaseCache(object):
     @OnlyOnce("Molecular potential on the molecular grid")
     def do_molgrid_molpot(self):
         self.do_molgrid()
+        log("This make take a minute. Hang on.")
         self.context.wavefn.compute_potential(self.molgrid)
 
     def _prepare_atweights(self):
@@ -272,7 +275,7 @@ class BaseCache(object):
         success = self._load_atgrid_atweights()
         if not success:
             log("Could not load all weights functions from workdir. Computing them...")
-            self._prepare_at_weights()
+            self._prepare_atweights()
             self._compute_atgrid_atweights()
             log("Writing results to workdir")
             self._dump_atgrid_atweights()
@@ -573,17 +576,18 @@ class BaseCache(object):
             self.bond_orders.tofile(bond_orders_fn_bin)
             self.valences.tofile(valences_fn_bin)
 
-        filename = os.path.join(self.context.outdir, "%s_bond_orders.txt" % self.prefix)
-        f = file(filename, "w")
-        print >> f, "number of atoms: ", molecule.size
-        print >> f, "Bond orders"
-        for i in xrange(molecule.size):
-            print >> f, " ".join("%15.9f" % v for v in self.bond_orders[i])
-        print >> f, "Valences, Free valences"
-        for i in xrange(molecule.size):
-            print >> f, "%15.9f" % self.valences[i], "%15.9f" % (self.valences[i] - self.bond_orders[i].sum())
-        f.close()
-        log("Written %s" % filename)
+        bond_orders_fn = os.path.join(self.context.outdir, "%s_bond_orders.txt" % self.prefix)
+        dump_atom_matrix(bond_orders_fn, self.bond_orders, molecule.numbers, "Bond order")
+        log("Written %s" % bond_orders_fn)
+
+        valences_fn = os.path.join(self.context.outdir, "%s_valences.txt" % self.prefix)
+        dump_atom_scalars(valences_fn, self.valences, molecule.numbers, "Valences")
+        log("Written %s" % valences_fn)
+
+        free_valences_fn = os.path.join(self.context.outdir, "%s_free_valences.txt" % self.prefix)
+        self.free_valences = self.valences - self.bond_orders.sum(axis=1)
+        dump_atom_scalars(free_valences_fn, self.free_valences, molecule.numbers, "Free valences")
+        log("Written %s" % free_valences_fn)
 
     @OnlyOnce("Atomic weights on other atoms' grids.")
     def do_atgrids_od_atweights(self):
@@ -659,17 +663,8 @@ class BaseCache(object):
             pb()
             self.gross_net_populations.tofile(gross_net_populations_fn_bin)
 
-        def output(filename, gross_net_populations):
-            # print a file with the gross and net populations
-            filename = os.path.join(self.context.outdir, filename)
-            f = file(filename, "w")
-            print >> f, "number of atoms:", molecule.size
-            for i in xrange(molecule.size):
-                print >> f, " ".join("%15.9f" % v for v in gross_net_populations[i])
-            f.close()
-            log("Written %s" % filename)
-
-        output("%s_gross_net_populations.txt" % self.prefix, self.gross_net_populations)
+        gross_net_fn = os.path.join(self.context.outdir, "%s_gross_net_populations.txt" % self.prefix)
+        dump_atom_matrix(gross_net_fn, self.gross_net_populations, molecule.numbers, "Gross/Net")
 
 
 class StockholderCache(BaseCache):

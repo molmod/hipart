@@ -31,7 +31,8 @@ import numpy, sys, os
 
 __all__ = [
     "get_atom_grid",
-    "load_atom_scalars", "load_atom_vectors", "dump_atom_scalars", "dump_atom_vectors"
+    "load_atom_scalars", "load_atom_vectors",
+    "dump_atom_scalars", "dump_atom_vectors", "dump_atom_matrix"
 ]
 
 
@@ -52,15 +53,15 @@ def load_atom_scalars(filename):
     line = f.next()
     N = int(line[line.rfind(" "):])
     # read the charges
-    charges = numpy.zeros(N, float)
+    scalars = numpy.zeros(N, float)
     f.next()
     f.next()
     for i in xrange(N):
         line = f.next()
         words = line.split()
-        charges[i] = float(words[3])
+        scalars[i] = float(words[3])
     f.close()
-    return charges
+    return scalars
 
 
 def load_atom_vectors(filename):
@@ -69,52 +70,85 @@ def load_atom_vectors(filename):
     line = f.next()
     N = int(line[line.rfind(" "):])
     # read the dipoles
-    dipoles = numpy.zeros((N,3), float)
+    vectors = numpy.zeros((N,3), float)
     f.next()
     f.next()
     for i in xrange(N):
         line = f.next()
         words = line.split()
-        dipoles[i, 0] = float(words[3])
-        dipoles[i, 1] = float(words[4])
-        dipoles[i, 2] = float(words[5])
+        vectors[i, 0] = float(words[3])
+        vectors[i, 1] = float(words[4])
+        vectors[i, 2] = float(words[5])
     f.close()
-    return dipoles
+    return vectors
 
 
-def dump_atom_scalars(filename, charges, numbers=None, name="Charge"):
-    f = file(filename, "w")
-    print >> f, "number of atoms: %i" % len(charges)
-    print >> f, "  i        Z  %s" % name.rjust(10)
-    print >> f, "-----------------------------"
-    for i in xrange(len(charges)):
+def load_atom_matrix(filename):
+    f = file(filename)
+    # read the number of atoms
+    line = f.next()
+    N = int(line[line.rfind(" "):])
+    # read the dipoles
+    matrix = numpy.zeros((N,N), float)
+    f.next()
+    f.next()
+    for i in xrange(N):
+        line = f.next()
+        words = line.split()[4:]
+        for j in xrange(N):
+            matrix[i,j] = float(words[j])
+    f.close()
+    return matrix
+
+
+def _iter_symbols_numbers(numbers, N):
+    for i in xrange(N):
         if numbers is None:
             number = 0
             symbol = "?"
         else:
             number = numbers[i]
             symbol = periodic[number].symbol
+        yield i, symbol, number
+
+
+def dump_atom_scalars(filename, scalars, numbers=None, name="Charge"):
+    f = file(filename, "w")
+    print >> f, "number of atoms: %i" % len(scalars)
+    print >> f, "  i        Z  %s" % name.rjust(10)
+    print >> f, "-----------------------------"
+    for i, symbol, number in _iter_symbols_numbers(numbers, len(scalars)):
         print >> f, "% 3i  %2s  % 3i   % 10.5f" % (
-            i+1, symbol, number, charges[i]
+            i+1, symbol, number, scalars[i]
         )
     print >> f, "-----------------------------"
 
 
-def dump_atom_vectors(filename, dipoles, numbers=None, name="Dipole"):
+def dump_atom_vectors(filename, vectors, numbers=None, name="Dipole"):
     name = name.rjust(10)
     f = file(filename, "w")
-    print >> f, "number of atoms:", len(dipoles)
+    print >> f, "number of atoms:", len(vectors)
     print >> f, "  i        Z %(name)s-X %(name)s-Y %(name)s-Z  %(name)s" % {"name": name}
     print >> f, "------------------------------------------------------------------"
-    for i in xrange(len(dipoles)):
-        if numbers is None:
-            number = 0
-            symbol = "?"
-        else:
-            number = numbers[i]
-            symbol = periodic[number].symbol
+    for i, symbol, number in _iter_symbols_numbers(numbers, len(vectors)):
         print >> f, "% 3i  %2s  % 3i   % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
-            i+1, symbol, number, dipoles[i,0], dipoles[i,1],
-            dipoles[i,2], numpy.linalg.norm(dipoles[i]),
+            i+1, symbol, number, vectors[i,0], vectors[i,1],
+            vectors[i,2], numpy.linalg.norm(vectors[i]),
+        )
+    f.close()
+
+
+def dump_atom_matrix(filename, matrix, numbers=None, name="Matrix"):
+    name = name.center(15)
+    f = file(filename, "w")
+    print >> f, "number of atoms:", len(matrix)
+    print >> f, "%s | %s" % (name, " ".join(
+        "  % 3i %2s  " % (key[0]+1, key[1]) for key
+        in _iter_symbols_numbers(numbers, len(matrix))
+    ))
+    print >> f, "----------------+-"+"-"*(8+10*len(matrix))
+    for i, symbol, number in _iter_symbols_numbers(numbers, len(matrix)):
+        print >> f, "% 3i  %2s  % 3i    | %s" % (
+            i+1, symbol, number, " ".join("% 10.5f" % val for val in matrix[i])
         )
     f.close()

@@ -186,6 +186,8 @@ def check_hf_bond_orders(cache):
     }
     cache.do_bond_orders()
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
     assert(abs(cache.bond_orders.sum(axis=0) - cache.valences).max() < 1e-2)
     assert(abs(cache.bond_orders - expected_bond_orders[cache.key]).max() < 1e-3)
@@ -219,6 +221,8 @@ def check_oh1_bond_orders(cache):
     }
     cache.do_bond_orders()
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
     assert(abs(cache.bond_orders - expected_bond_orders[cache.key]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.key]).max() < 1e-3)
@@ -251,6 +255,8 @@ def check_oh2_bond_orders(cache):
     }
     cache.do_bond_orders()
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_beta_overlap.txt" % cache.prefix)))
     assert(abs(cache.bond_orders - expected_bond_orders[cache.key]).max() < 1e-3)
