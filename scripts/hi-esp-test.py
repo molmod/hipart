@@ -26,11 +26,19 @@
 
 from hipart.opts import parse_command_line
 
-usage = """%prog partitions the orbitals in atomic contributions.
+usage = """%prog test charges and dipoles on ESP grid
 
-This can be used for a partitioning of the density matrix in atomic
-contributions."""
+These atomic charges and dipoles are computed like in the hi-charges.py and
+hi-dipoles.py program. Then a ESP costfunction is constructed and it is tested
+how well the partitioned charges and dipoles reproduce the ESP."""
 
-context, cache = parse_command_line(usage)
-cache.do_atom_matrices()
+def add_extra_options(group):
+    group.add_option(
+        "-m", "--mol-lebedev", default=50, type='int',
+        help="The number of grid points for the molecular grids. "
+        "[default=%default]. See --lebedev for the supported grid sizes."
+    )
+
+context, cache = parse_command_line(usage, add_extra_options)
+cache.do_esp_test()
 context.clean()

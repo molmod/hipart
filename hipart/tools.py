@@ -31,7 +31,7 @@ import numpy, sys, os
 
 __all__ = [
     "get_atom_grid",
-    "load_charges", "load_dipoles", "dump_charges"
+    "load_atom_scalars", "load_atom_vectors", "dump_atom_scalars", "dump_atom_vectors"
 ]
 
 
@@ -46,7 +46,7 @@ def get_atom_grid(lebedev_xyz, center, radii):
     return grid_points
 
 
-def load_charges(filename):
+def load_atom_scalars(filename):
     f = file(filename)
     # read the number of atoms
     line = f.next()
@@ -63,7 +63,7 @@ def load_charges(filename):
     return charges
 
 
-def load_dipoles(filename):
+def load_atom_vectors(filename):
     f = file(filename)
     # read the number of atoms
     line = f.next()
@@ -82,10 +82,10 @@ def load_dipoles(filename):
     return dipoles
 
 
-def dump_charges(filename, charges, numbers=None):
+def dump_atom_scalars(filename, charges, numbers=None, name="Charge"):
     f = file(filename, "w")
     print >> f, "number of atoms: %i" % len(charges)
-    print >> f, "  i        Z      Charge"
+    print >> f, "  i        Z  %s" % name.rjust(10)
     print >> f, "-----------------------------"
     for i in xrange(len(charges)):
         if numbers is None:
@@ -98,3 +98,23 @@ def dump_charges(filename, charges, numbers=None):
             i+1, symbol, number, charges[i]
         )
     print >> f, "-----------------------------"
+
+
+def dump_atom_vectors(filename, dipoles, numbers=None, name="Dipole"):
+    name = name.rjust(10)
+    f = file(filename, "w")
+    print >> f, "number of atoms:", len(dipoles)
+    print >> f, "  i        Z %(name)s-X %(name)s-Y %(name)s-Z  %(name)s" % {"name": name}
+    print >> f, "------------------------------------------------------------------"
+    for i in xrange(len(dipoles)):
+        if numbers is None:
+            number = 0
+            symbol = "?"
+        else:
+            number = numbers[i]
+            symbol = periodic[number].symbol
+        print >> f, "% 3i  %2s  % 3i   % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+            i+1, symbol, number, dipoles[i,0], dipoles[i,1],
+            dipoles[i,2], numpy.linalg.norm(dipoles[i]),
+        )
+    f.close()

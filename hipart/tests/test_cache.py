@@ -314,3 +314,12 @@ def check_hf_mol_esp_cost(cache):
     assert(abs(cache.mol_esp_cost.B - expected_B).max() < 1e-4)
     assert(abs(cache.mol_esp_cost.C - expected_C) < 1e-6)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "mol_esp_cost.txt")))
+
+
+def test_hf_esp_tst():
+    for cache in iter_hf_sto3g_gaussian_caches():
+        yield check_hf_esp_tst, cache
+
+def check_hf_esp_tst(cache):
+    cache.do_esp_test()
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_esp_test.txt" % cache.prefix)))

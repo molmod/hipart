@@ -26,8 +26,8 @@
 
 from hipart.opts import parse_command_line
 
-usage = """%prog computes atomic spin charges."""
+usage = """%prog partitions the density matrix in atomic contributions."""
 
 context, cache = parse_command_line(usage)
-cache.do_spin_charges()
+cache.do_atgrids_overlap()
 context.clean()

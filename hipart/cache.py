@@ -35,7 +35,7 @@
 
 
 from hipart.log import log
-from hipart.tools import get_atom_grid, dump_charges
+from hipart.tools import get_atom_grid, dump_atom_scalars, dump_atom_vectors
 from hipart.integrate import cumul_integrate_log, integrate_log, integrate_lebedev
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid
@@ -263,12 +263,16 @@ class BaseCache(object):
         self.do_molgrid()
         self.context.wavefn.compute_potential(self.molgrid)
 
+    def _prepare_atweights(self):
+        pass
+
     @OnlyOnce("Defining atomic weight functions (each on their own atomic grid)")
     def do_atgrids_atweights(self):
         log("Trying to load weight functions")
         success = self._load_atgrid_atweights()
         if not success:
             log("Could not load all weights functions from workdir. Computing them...")
+            self._prepare_at_weights()
             self._compute_atgrid_atweights()
             log("Writing results to workdir")
             self._dump_atgrid_atweights()
@@ -298,7 +302,6 @@ class BaseCache(object):
 
     @OnlyOnce("Atomic charges")
     def do_charges(self):
-        self.do_esp_costfunction()
         charges_fn_bin = os.path.join(self.context.workdir, "%s_charges.bin" % self.prefix)
         populations_fn_bin = os.path.join(self.context.workdir, "%s_populations.bin" % self.prefix)
         molecule = self.context.wavefn.molecule
@@ -333,27 +336,9 @@ class BaseCache(object):
                 self.charges -= (self.charges.sum() - self.context.wavefn.charge)/molecule.size
             self.charges.tofile(charges_fn_bin)
 
-        # now some nice output
-        def output(filename, charges, esp_cost):
-            filename = os.path.join(self.context.outdir, filename)
-            f = file(filename, "w")
-            print >> f, "number of atoms:", molecule.size
-            print >> f, "  i        Z      Charge"
-            print >> f, "-----------------------------"
-            for i, number in enumerate(molecule.numbers):
-                print >> f, "% 3i  %2s  % 3i   % 10.5f" % (
-                    i+1, periodic[number].symbol, number, charges[i]
-                )
-            print >> f, "-----------------------------"
-            print >> f, "   Q SUM       % 10.5f" % charges.sum()
-            print >> f, "   Q RMS       % 10.5f" % numpy.sqrt((charges**2).mean())
-            print >> f, " ESP RMS         % 10.5e" % esp_cost.rms
-            print >> f, "ESP RMSD         % 10.5e" % esp_cost.rmsd(charges)
-            print >> f
-            f.close()
-            log("Written %s" % filename)
-
-        output("%s_charges.txt" % self.prefix, self.charges, self.mol_esp_cost)
+        charges_fn = os.path.join(self.context.outdir, "%s_charges.txt" % self.prefix)
+        dump_atom_scalars(charges_fn, self.charges, molecule.numbers)
+        log("Written %s" % charges_fn)
 
     @OnlyOnce("Spin charges")
     def do_spin_charges(self):
@@ -384,12 +369,11 @@ class BaseCache(object):
             self.spin_charges.tofile(spin_charges_fn_bin)
 
         spin_charges_fn = os.path.join(self.context.outdir, "%s_spin_charges.txt" % self.prefix)
-        dump_charges(spin_charges_fn, self.spin_charges, molecule.numbers)
+        dump_atom_scalars(spin_charges_fn, self.spin_charges, molecule.numbers, name="Spin charge")
+        log("Written %s" % spin_charges_fn)
 
     @OnlyOnce("Atomic dipoles")
     def do_dipoles(self):
-        self.do_esp_costfunction()
-        self.do_charges()
         dipoles_fn_bin = os.path.join(self.context.workdir, "%s_dipoles.bin" % self.prefix)
         molecule = self.context.wavefn.molecule
 
@@ -419,68 +403,64 @@ class BaseCache(object):
             self.dipoles.tofile(dipoles_fn_bin)
 
         # now some nice output
-        def output(filename, charges, dipoles, esp_cost, dipole_qm):
-            filename = os.path.join(self.context.outdir, filename)
-            f = file(filename, "w")
-            print >> f, "number of atoms:", molecule.size
-            print >> f, "  i        Z     Dipole-X     Dipole-Y     Dipole-Z      Dipole"
-            print >> f, "------------------------------------------------------------------"
-            for i, number in enumerate(molecule.numbers):
-                print >> f, "% 3i  %2s  % 3i   % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
-                    i+1, periodic[number].symbol, number, dipoles[i,0],
-                    dipoles[i,1], dipoles[i,2], numpy.linalg.norm(dipoles[i]),
-                )
-            print >> f, "------------------------------------------------------------------"
+        dipoles_fn = os.path.join(self.context.outdir, "%s_dipoles.txt" % self.prefix)
+        dump_atom_vectors(dipoles_fn, self.dipoles, molecule.numbers)
+        log("Written %s" % dipoles_fn)
 
-            dipole_q = (molecule.coordinates*charges.reshape((-1,1))).sum(axis=0)
-            dipole_p = dipoles.sum(axis=0)
-            dipole_qp = dipole_q + dipole_p
-            print >> f, "Molecular dipole due to ..."
-            print >> f, "charges (q)    % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
-                dipole_q[0], dipole_q[1], dipole_q[2], numpy.linalg.norm(dipole_q),
-            )
-            print >> f, "dipoles (p)    % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
-                dipole_p[0], dipole_p[1], dipole_p[2], numpy.linalg.norm(dipole_p),
-            )
-            print >> f, "q and p        % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
-                dipole_qp[0], dipole_qp[1], dipole_qp[2], numpy.linalg.norm(dipole_qp),
-            )
-            print >> f, "total density  % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
-                dipole_qm[0], dipole_qm[1], dipole_qm[2], numpy.linalg.norm(dipole_qm),
-            )
-            print >> f, "------------------------------------------------------------------"
+    @OnlyOnce("Testing charges and dipoles on ESP grid.")
+    def do_esp_test(self):
+        self.do_charges()
+        self.do_dipoles()
+        self.do_esp_costfunction()
 
-            print >> f, "Reproduction of the external molecular ESP ..."
-            print >> f, "                     RMSD             RMS       CORRELATION"
-            print >> f, "charges (q)      % 10.5e    % 10.5e      % 5.2f" % (
-                esp_cost.rmsd(charges),
-                esp_cost.model_rms(charges),
-                esp_cost.correlation(charges),
-            )
-            print >> f, "dipoles (p)      % 10.5e    % 10.5e      % 5.2f" % (
-                esp_cost.rmsd(None, dipoles),
-                esp_cost.model_rms(None, dipoles),
-                esp_cost.correlation(None, dipoles),
-            )
-            print >> f, "q and p          % 10.5e    % 10.5e      % 5.2f" % (
-                esp_cost.rmsd(charges, dipoles),
-                esp_cost.model_rms(charges, dipoles),
-                esp_cost.correlation(charges, dipoles),
-            )
-            print >> f, "total density                    % 10.5e" % esp_cost.rms
-            f.close()
-            log("Written %s" % filename)
+        molecule = self.context.wavefn.molecule
 
+        filename = os.path.join(self.context.outdir, "%s_esp_test.txt" % self.prefix)
+        f = file(filename, "w")
+        print >> f, "                 Dipole-X     Dipole-Y     Dipole-Z      Dipole"
+        print >> f, "------------------------------------------------------------------"
+        dipole_q = (molecule.coordinates*self.charges.reshape((-1,1))).sum(axis=0)
+        dipole_p = self.dipoles.sum(axis=0)
+        dipole_qp = dipole_q + dipole_p
         dipole_qm = self.context.wavefn.dipole
-        output(
-            "%s_dipoles.txt" % self.prefix, self.charges, self.
-            dipoles, self.mol_esp_cost, dipole_qm
+        print >> f, "Molecular dipole due to ..."
+        print >> f, "charges (q)    % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+            dipole_q[0], dipole_q[1], dipole_q[2], numpy.linalg.norm(dipole_q),
         )
+        print >> f, "dipoles (p)    % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+            dipole_p[0], dipole_p[1], dipole_p[2], numpy.linalg.norm(dipole_p),
+        )
+        print >> f, "q and p        % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+            dipole_qp[0], dipole_qp[1], dipole_qp[2], numpy.linalg.norm(dipole_qp),
+        )
+        print >> f, "total density  % 10.5f   % 10.5f   % 10.5f   % 10.5f" % (
+            dipole_qm[0], dipole_qm[1], dipole_qm[2], numpy.linalg.norm(dipole_qm),
+        )
+        print >> f, "------------------------------------------------------------------"
+        print >> f, "Reproduction of the external molecular ESP ..."
+        print >> f, "                     RMSD             RMS       CORRELATION"
+        print >> f, "charges (q)      % 10.5e    % 10.5e      % 5.2f" % (
+            self.mol_esp_cost.rmsd(self.charges),
+            self.mol_esp_cost.model_rms(self.charges),
+            self.mol_esp_cost.correlation(self.charges),
+        )
+        print >> f, "dipoles (p)      % 10.5e    % 10.5e      % 5.2f" % (
+            self.mol_esp_cost.rmsd(None, self.dipoles),
+            self.mol_esp_cost.model_rms(None, self.dipoles),
+            self.mol_esp_cost.correlation(None, self.dipoles),
+        )
+        print >> f, "q and p          % 10.5e    % 10.5e      % 5.2f" % (
+            self.mol_esp_cost.rmsd(self.charges, self.dipoles),
+            self.mol_esp_cost.model_rms(self.charges, self.dipoles),
+            self.mol_esp_cost.correlation(self.charges, self.dipoles),
+        )
+        print >> f, "total density                    % 10.5e" % self.mol_esp_cost.rms
+        f.close()
+        log("Written %s" % filename)
+
 
     @OnlyOnce("Evaluating orbitals on atomic grids")
     def do_atgrids_orbitals(self):
-        log("Warning: Only using alpha orbitals. Assuming restricted orbitals.")
-
         self.do_atgrids()
         molecule = self.context.wavefn.molecule
         num_orbitals = self.context.wavefn.num_orbitals
@@ -488,6 +468,7 @@ class BaseCache(object):
 
         pb = log.pb("Computing/Loading orbitals", molecule.size)
         for i, number_i in enumerate(molecule.numbers):
+            pb()
             self.context.wavefn.compute_orbitals(self.atgrids[i])
         pb()
 
@@ -608,9 +589,10 @@ class BaseCache(object):
     def do_atgrids_od_atweights(self):
         # od stands for off-diagonal
         self.do_atgrids_atweights()
+        self._prepare_atweights()
 
         molecule = self.context.wavefn.molecule
-        pb = log.pb("Computing weights", molecule.size**2)
+        pb = log.pb("Computing off-diagonal atom weights", molecule.size**2)
         for i in xrange(molecule.size):
             atgrid = self.atgrids[i]
             atgrid.od_atweights = []
@@ -694,8 +676,10 @@ class StockholderCache(BaseCache):
     def do_proatomfns(self):
         raise NotImplementedError
 
-    def _compute_atgrid_atweights(self):
+    def _prepare_atweights(self):
         self.do_proatomfns()
+
+    def _compute_atgrid_atweights(self):
         molecule = self.context.wavefn.molecule
         for i in xrange(molecule.size):
             self.atgrids[i].atweights = self._compute_atweights(

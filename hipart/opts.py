@@ -27,7 +27,7 @@ from hipart.lebedev_laikov import grid_fns
 from hipart.cache import cache_classes, ParseError
 from hipart.context import Context
 
-from optparse import OptionParser
+from optparse import OptionParser, OptionGroup
 
 
 __all__ = ["parse_command_line"]
@@ -41,18 +41,13 @@ Partitioning schemes:
 %s
 """
 
-def parse_command_line(script_usage):
+def parse_command_line(script_usage, add_extra_options=None):
     scheme_usage = "\n".join(cache.usage for name, cache in sorted(cache_classes.iteritems()))
     parser = OptionParser(usage_template % (script_usage, scheme_usage))
     parser.add_option(
         "-l", "--lebedev", default=110, type='int',
         help="The number of grid points for the atomic grids. "
         "[default=%default]. Select from: " + (", ".join(str(i) for i in sorted(grid_fns)))
-    )
-    parser.add_option(
-        "-m", "--mol-lebedev", default=50, type='int',
-        help="The number of grid points for the molecular grids. "
-        "[default=%default]. See --lebedev for the supported grid sizes."
     )
     parser.add_option(
         "-c", "--clean", default=1, type='int',
@@ -76,6 +71,11 @@ def parse_command_line(script_usage):
         help="Maximum number of iterations in self-consistent procedures. "
         "[default=%default]"
     )
+    if add_extra_options is not None:
+        group = OptionGroup(parser, "Specific options for this command")
+        add_extra_options(group)
+        parser.add_option_group(group)
+
     options, args = parser.parse_args()
     if len(args) < 2:
         parser.error("Expecting at least two arguments.")

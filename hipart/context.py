@@ -61,22 +61,34 @@ class Context(object):
     def check_tag(self, rs):
         """Make sure our context is compatible with the data in the workdir."""
 
-        self.tag = "contextversion=%i lebedev=%i mol_lebedev=%i r_low=%.2e r_high=%.2e r_steps=%i filename=%s" % (
-            self.version, self.num_lebedev, self.options.mol_lebedev,
-            rs.min(), rs.max(), len(rs), os.path.basename(self.wavefn.filename),
-        )
+        tag_attributes = {
+            "contextversion": "%i" % self.version,
+            "lebedev": "%i" % self.num_lebedev,
+            "r_low": "%.2e" % rs.min(),
+            "r_high": "%.2e" % rs.max(),
+            "r_steps": "%i" % len(rs),
+            "filename": "%s" % os.path.basename(self.wavefn.filename),
+        }
+        if hasattr(self.options, "mol_lebedev"):
+            tag_attributes["mol_lebedev"] = "%i" % self.options.mol_lebedev
 
         context_fn = os.path.join(self.workdir, "context")
         if os.path.isfile(context_fn):
             f = file(context_fn)
             existing_tag = ("".join(f)).strip()
             f.close()
-            if existing_tag != self.tag:
-                raise ContextError("The existing work directory contains incompatible data. Trash it!")
-        else:
-            f = file(context_fn, "w")
-            print >> f, self.tag
-            f.close()
+            existing_attributes = dict(word.split("=") for word in existing_tag.split())
+            for key, val in existing_attributes.iteritems():
+                check = tag_attributes.get(key)
+                if check is None:
+                    continue
+                if check != val:
+                    raise ContextError("The existing work directory contains incompatible data. Trash it!")
+
+        tag = " ".join("%s=%s" % (key, val) for key, val in sorted(tag_attributes.iteritems()))
+        f = file(context_fn, "w")
+        print >> f, tag
+        f.close()
 
     def clean(self):
         if self.options.clean >= 3:

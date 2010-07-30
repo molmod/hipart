@@ -31,9 +31,14 @@ __all__ = ["load_wavefunction", "FchkWaveFunction"]
 
 
 def load_wavefunction(filename):
-    if filename.endswith(".fchk") or (filename.count(":")==1 and \
-       filename.split(":")[0].endswith(".fchk")):
-        return FCHKWaveFunction(filename)
+    if filename.count(":")==1:
+        # allow for simple file-specific options
+        filename, options = filename.split(":")
+        options = options.split("'")
+    else:
+        options = []
+    if filename.endswith(".fchk"):
+        return FCHKWaveFunction(filename, options)
     else:
         raise ValueError("File extension of %s not recognized" % filename)
 
@@ -205,11 +210,13 @@ class OldFCHKWaveFunction(object):
 
 
 class FCHKWaveFunction(object):
-    def __init__(self, filename):
-        if filename.count(":") == 1:
-            filename, density_type = filename.split(":")
-        else:
+    def __init__(self, filename, options):
+        if len(options) == 1:
+            density_type = options[0]
+        elif len(options) == 0:
             density_type = None
+        else:
+            raise ValueError("Only one option is supported for the FCHKWaveFunction")
         self.filename = filename
         self.prefix = filename[:-5]
         fchk = FCHKFile(filename)
