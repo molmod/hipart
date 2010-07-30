@@ -609,6 +609,8 @@ class GaussianIntegral():
         print >> f_c, "#define MAX_SHELL %i" % max_shell
         print >> f_c, "#define NUM_SHELL_TYPES %i" % (2*max_shell+1)
         print >> f_c, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
+        print >> f_c, "#define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }"
+        print >> f_c, "#define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }"
         print >> f_c
         for st_row in self.iter_shell_types(max_shell):
             print st_row

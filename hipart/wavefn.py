@@ -315,7 +315,7 @@ class FCHKWaveFunction(object):
     def compute_density(self, grid):
         moldens = grid.load("moldens")
         if moldens is None:
-            moldens = self.basis.call_gint1(gint1_fn_dmat, self.density_matrix, grid.points)
+            moldens = self.basis.call_gint(gint1_fn_dmat, self.density_matrix, grid.points)
             grid.dump("moldens", moldens)
         grid.moldens = moldens
 
@@ -325,14 +325,14 @@ class FCHKWaveFunction(object):
             if self.spin_density_matrix is None:
                 molspindens = numpy.zeros(len(grid.points), float)
             else:
-                molspindens = self.basis.call_gint1(gint1_fn_dmat, self.spin_density_matrix, grid.points)
+                molspindens = self.basis.call_gint(gint1_fn_dmat, self.spin_density_matrix, grid.points)
             grid.dump("molspindens", molspindens)
         grid.molspindens = molspindens
 
     def compute_potential(self, grid):
         molpot = grid.load("molpot")
         if molpot is None:
-            molpot = -self.basis.call_gint1(gint2_nai_dmat, self.density_matrix, grid.points)
+            molpot = -self.basis.call_gint(gint2_nai_dmat, self.density_matrix, grid.points)
             # add the contribution from the nuclei
             for i in xrange(self.molecule.size):
                 n = self.molecule.numbers[i]
@@ -351,7 +351,7 @@ class FCHKWaveFunction(object):
             alpha_orb = grid.load(alpha_suffix)
             if alpha_orb is None:
                 weights = self.alpha_orbitals[i]
-                alpha_orb = self.basis.call_gint1(gint1_fn_basis, weights, grid.points)
+                alpha_orb = self.basis.call_gint(gint1_fn_basis, weights, grid.points)
                 grid.dump(alpha_suffix, alpha_orb)
             alpha_orbitals.append(alpha_orb)
             if self.restricted:
@@ -361,7 +361,7 @@ class FCHKWaveFunction(object):
                 beta_orb = grid.load(beta_suffix)
                 if beta_orb is None:
                     weights = self.beta_orbitals[i]
-                    beta_orb = self.basis.call_gint1(gint1_fn_basis, weights, grid.points)
+                    beta_orb = self.basis.call_gint(gint1_fn_basis, weights, grid.points)
                     grid.dump(beta_suffix, beta_orb)
                     grid.dump(beta_suffix, beta_orb)
                 beta_orbitals.append(beta_orb)

@@ -29,6 +29,7 @@ from molmod.io import FCHKFile
 from molmod import angstrom
 
 import numpy, shutil
+from nose.tools import assert_raises
 
 
 ref_data_h_sto3g_orb0 = numpy.array([
@@ -60,10 +61,16 @@ def test_orb0_h_sto3g():
     fchk = FCHKFile(fn_fchk)
     shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
+    # real test for the output
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
     points = ref_data_h_sto3g_orb0[:,:3]
-    fns = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+    fns = basis.call_gint(gint1_fn_basis, weights, points*angstrom)
     assert(abs(fns-ref_data_h_sto3g_orb0[:,3]).max() < 1e-10)
+    # test error mechanism
+    basis.shell_types[0] = 102
+    assert_raises(ValueError, basis.call_gint, gint1_fn_basis, weights, points*angstrom)
+    basis.shell_types[0] = -763
+    assert_raises(ValueError, basis.call_gint, gint1_fn_basis, weights, points*angstrom)
 
 
 ref_data_hf_sto3g_orb0 = numpy.array([
@@ -96,7 +103,7 @@ def test_orb0_hf_sto3g():
     basis = GaussianBasis.from_fchk(fchk)
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
     points = ref_data_hf_sto3g_orb0[:,:3]
-    fns = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+    fns = basis.call_gint(gint1_fn_basis, weights, points*angstrom)
     assert(abs(fns-ref_data_hf_sto3g_orb0[:,3]).max() < 1e-10)
 
 
@@ -131,7 +138,7 @@ def test_orb0_o2_cc_pvtz_cart():
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
     weights = weights[basis.g03_permutation]
     points = ref_data_o2_cc_pvtz_cart_orb0[:,:3]
-    fns = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+    fns = basis.call_gint(gint1_fn_basis, weights, points*angstrom)
     assert(abs(fns-ref_data_o2_cc_pvtz_cart_orb0[:,3]).max() < 1e-10)
 
 
@@ -166,7 +173,7 @@ def test_orb0_o2_cc_pvtz_pure():
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
     weights = weights[basis.g03_permutation]
     points = ref_data_o2_cc_pvtz_pure_orb0[:,:3]
-    fns = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+    fns = basis.call_gint(gint1_fn_basis, weights, points*angstrom)
     assert(abs(fns-ref_data_o2_cc_pvtz_pure_orb0[:,3]).max() < 1e-10)
 
 
@@ -178,11 +185,16 @@ def test_dens_h_sto3g():
     weights = fchk.fields["Alpha MO coefficients"][:basis.num_dof]
     weights = weights[basis.g03_permutation]
     points = ref_data_h_sto3g_orb0[:,:3]
-    orb0 = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+    orb0 = basis.call_gint(gint1_fn_basis, weights, points*angstrom)
     num_dmat = (basis.num_dof*(basis.num_dof+1))/2
     dmat = fchk.fields["Total SCF Density"][:num_dmat]
-    density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
+    density = basis.call_gint(gint1_fn_dmat, dmat, points*angstrom)
     assert(abs(orb0**2-density).max() < 1e-10)
+    # test error mechanism
+    basis.shell_types[0] = 102
+    assert_raises(ValueError, basis.call_gint, gint1_fn_dmat, dmat, points*angstrom)
+    basis.shell_types[0] = -763
+    assert_raises(ValueError, basis.call_gint, gint1_fn_dmat, dmat, points*angstrom)
 
 
 def test_dens_hf_sto3g():
@@ -196,7 +208,7 @@ def test_dens_hf_sto3g():
 
     dmat = fchk.fields["Total SCF Density"][:num_dmat]
     reorder_dmat(dmat, basis.g03_permutation)
-    density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
+    density = basis.call_gint(gint1_fn_dmat, dmat, points*angstrom)
 
     num_alpha = fchk.fields["Number of alpha electrons"]
     expected_density = 0.0
@@ -205,7 +217,7 @@ def test_dens_hf_sto3g():
         end = start + basis.num_dof
         weights = fchk.fields["Alpha MO coefficients"][start:end][basis.g03_permutation]
         start = end
-        orb = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+        orb = basis.call_gint(gint1_fn_basis, weights, points*angstrom)
         expected_density += 2*(orb**2)
 
     assert(abs(density-expected_density).max() < 1e-6)
@@ -222,7 +234,7 @@ def test_dens_o2_cc_pvtz_cart():
 
     dmat = fchk.fields["Total SCF Density"][:num_dmat]
     reorder_dmat(dmat, basis.g03_permutation)
-    density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
+    density = basis.call_gint(gint1_fn_dmat, dmat, points*angstrom)
 
     num_alpha = fchk.fields["Number of alpha electrons"]
     expected_density = 0.0
@@ -231,7 +243,7 @@ def test_dens_o2_cc_pvtz_cart():
         end = start + basis.num_dof
         weights = fchk.fields["Alpha MO coefficients"][start:end][basis.g03_permutation]
         start = end
-        orb = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+        orb = basis.call_gint(gint1_fn_basis, weights, points*angstrom)
         expected_density += 2*(orb**2)
 
     assert(abs(density-expected_density).max() < 1e-6)
@@ -248,7 +260,7 @@ def test_dens_o2_cc_pvtz_pure():
 
     dmat = fchk.fields["Total SCF Density"][:num_dmat]
     reorder_dmat(dmat, basis.g03_permutation)
-    density = basis.call_gint1(gint1_fn_dmat, dmat, points*angstrom)
+    density = basis.call_gint(gint1_fn_dmat, dmat, points*angstrom)
 
     num_alpha = fchk.fields["Number of alpha electrons"]
     expected_density = 0.0
@@ -257,7 +269,7 @@ def test_dens_o2_cc_pvtz_pure():
         end = start + basis.num_dof
         weights = fchk.fields["Alpha MO coefficients"][start:end][basis.g03_permutation]
         start = end
-        orb = basis.call_gint1(gint1_fn_basis, weights, points*angstrom)
+        orb = basis.call_gint(gint1_fn_basis, weights, points*angstrom)
         expected_density += 2*(orb**2)
 
     assert(abs(density-expected_density).max() < 1e-6)

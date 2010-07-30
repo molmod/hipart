@@ -26,6 +26,8 @@
 #define MAX_SHELL 3
 #define NUM_SHELL_TYPES 7
 #define MAX_SHELL_DOF 10
+#define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }
+#define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }
 
 void gint1_fn_pF(double* a, double a_a, double* p, double* out)
 {
@@ -191,7 +193,7 @@ int gint1_fn_basis(double* weights, double* fns, double* points,
   result = 0;
 
   work = malloc(MAX_SHELL_DOF*sizeof(double));
-  if (work==NULL) {result = -1; goto EXIT;}
+  CHECK_ALLOC(work);
 
   for (i_point=0; i_point<num_points; i_point++) {
     *fns = 0.0;
@@ -201,6 +203,7 @@ int gint1_fn_basis(double* weights, double* fns, double* points,
     for (shell=0; shell<num_shells; shell++) {
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
+      CHECK_SHELL(shell_type);
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
         gint1_fn_dispatch(shell_type, center, *exponent, points, work);
         //printf("shell_type=%d  primitive=%d  exponent=%f\n", shell_type, primitive, *exponent);
@@ -257,10 +260,10 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
   result = 0;
 
   work = malloc(MAX_SHELL_DOF*sizeof(double));
-  if (work==NULL) {result = -1; goto EXIT;}
+  CHECK_ALLOC(work);
   num_dof = ((int)(sqrt(1.0+8.0*num_dmat)-1.0))/2;
   basis_fns = malloc(num_dof*sizeof(double));
-  if (basis_fns==NULL) {result = -1; goto EXIT;}
+  CHECK_ALLOC(basis_fns);
 
   for (i_point=0; i_point<num_points; i_point++) {
     // A) clear the basis functions.
@@ -276,6 +279,7 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
     for (shell=0; shell<num_shells; shell++) {
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
+      CHECK_SHELL(shell_type);
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
         gint1_fn_dispatch(shell_type, center, *exponent, points, work);
         //printf("shell_type=%d  primitive=%d  exponent=%f\n", shell_type, primitive, *exponent);

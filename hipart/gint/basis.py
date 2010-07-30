@@ -160,12 +160,16 @@ class GaussianBasis(object):
 
         return result
 
-    def call_gint1(self, gint1_fn, weights, points):
+    def call_gint(self, gint1_fn, weights, points):
         fns = numpy.zeros(len(points), float)
         retcode = gint1_fn(
             weights, fns, points, self.molecule.coordinates, self.shell_types,
             self.shell_map, self.num_primitives, self.ccoeffs, self.exponents
         )
-        if retcode != 0:
-            raise RunTimeError("Something went wrong when calling %s. Got retcode=%i." % (gint1_fn, retcode))
+        if retcode == -1:
+            raise MemoryError("Out of memory while calling %s." % gint1_fn)
+        elif retcode == -2:
+            raise ValueError("Unsuported shell type when calling %s." % gint1_fn)
+        elif retcode != 0:
+            raise RuntimeError("Something went wrong when calling %s. Got retcode=%i." % (gint1_fn, retcode))
         return fns

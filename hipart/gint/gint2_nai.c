@@ -27,6 +27,8 @@
 #define MAX_SHELL 3
 #define NUM_SHELL_TYPES 7
 #define MAX_SHELL_DOF 10
+#define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }
+#define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }
 
 void gint2_nai_pF_pF(double* a, double a_a, double* b, double b_a, double* c, double* out)
 {
@@ -3316,9 +3318,9 @@ int gint2_nai_dmat(double* dmat, double* potentials, double* points,
 
   size = MAX_SHELL_DOF*MAX_SHELL_DOF;
   work = malloc(size*sizeof(double));
-  if (work==NULL) {result = -1; goto EXIT;}
+  CHECK_ALLOC(work);
   work_sum = malloc(size*sizeof(double));
-  if (work_sum==NULL) {result = -1; goto EXIT;}
+  CHECK_ALLOC(work_sum);
 
   for (i_point=0; i_point<num_points; i_point++) {
     // A) clear the result
@@ -3331,6 +3333,7 @@ int gint2_nai_dmat(double* dmat, double* potentials, double* points,
     for (shell1=0; shell1<num_shells; shell1++) {
       center1 = centers + (3*shell_map[shell1]);
       shell_type1 = shell_types[shell1];
+      CHECK_SHELL(shell_type1);
       shell_dof1 = get_shell_dof(shell_type1);
       //printf("shell1=%d  type=%d  dof=%d  offset=%d\n", shell1, shell_type1, shell_dof1, shell_offset1);
       // prep inner loop.
@@ -3340,6 +3343,7 @@ int gint2_nai_dmat(double* dmat, double* potentials, double* points,
       for (shell2=0; shell2<num_shells; shell2++) {
         center2 = centers + (3*shell_map[shell2]);
         shell_type2 = shell_types[shell2];
+        CHECK_SHELL(shell_type2);
         shell_dof2 = get_shell_dof(shell_type2);
         //printf("  shell2=%d  type=%d  dof=%d  offset=%d\n", shell2, shell_type2, shell_dof2, shell_offset2);
         // Clear the worksum
