@@ -309,6 +309,12 @@ def iter_hf_sto3g_gaussian_caches():
     yield cache_classes['isa'].new_from_args(context, [])
     shutil.rmtree(tmpdir)
 
+    tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
+    context = Context(fn_fchk, options)
+    yield cache_classes['becke'].new_from_args(context, ["3", "2e-5", "20.0", "100"])
+    yield cache_classes['becke'].new_from_args(context, ["3"])
+    shutil.rmtree(tmpdir)
+
 
 def setup_oh1_sto3g_gaussian():
     tmpdir = tempfile.mkdtemp("hipart")

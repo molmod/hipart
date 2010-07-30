@@ -59,17 +59,15 @@ class Context(object):
 
     num_lebedev = property(lambda self: len(self.lebedev_weights))
 
-    def check_tag(self, rs):
+    def check_tag(self, extra):
         """Make sure our context is compatible with the data in the workdir."""
 
         tag_attributes = {
             "contextversion": "%i" % self.version,
             "lebedev": "%i" % self.num_lebedev,
-            "r_low": "%.2e" % rs.min(),
-            "r_high": "%.2e" % rs.max(),
-            "r_steps": "%i" % len(rs),
             "filename": "%s" % os.path.basename(self.wavefn.filename),
         }
+        tag_attributes.update(extra)
         if hasattr(self.options, "mol_lebedev"):
             tag_attributes["mol_lebedev"] = "%i" % self.options.mol_lebedev
 

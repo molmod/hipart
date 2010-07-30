@@ -32,7 +32,7 @@ def test_compute_atgrid_atweights():
 
 def check_compute_atgrid_atweights(cache):
     cache.do_atgrids()
-    cache.do_proatomfns()
+    cache._prepare_atweights()
     h0 = cache._compute_atweights(cache.atgrids[0], 0)
     h1 = cache._compute_atweights(cache.atgrids[0], 1)
     error = abs(h1+h0-1).max()
@@ -48,9 +48,10 @@ def check_hf_charges(cache):
         "hirsh": numpy.array([-0.13775422, 0.13775422]),
         "hirshi": numpy.array([-0.19453209, 0.19453209]),
         "isa": numpy.array([-0.20842675, 0.20842675]),
+        "becke": numpy.array([-0.20037239, 0.20037239]),
     }
     cache.do_charges()
-    assert(abs(cache.charges - expected[cache.key]).max() < 1e-4)
+    assert(abs(cache.charges - expected[cache.prefix]).max() < 1e-4)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
 
 
@@ -65,7 +66,7 @@ def check_oh1_charges(cache):
         "isa": numpy.array([-0.19495561, 0.19495561]),
     }
     cache.do_charges()
-    assert(abs(cache.charges - expected[cache.key]).max() < 1e-3)
+    assert(abs(cache.charges - expected[cache.prefix]).max() < 1e-3)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
 
 
@@ -80,7 +81,7 @@ def check_oh2_charges(cache):
         "isa": numpy.array([-0.19463722, 0.19463722]),
     }
     cache.do_charges()
-    assert(abs(cache.charges - expected[cache.key]).max() < 1e-3)
+    assert(abs(cache.charges - expected[cache.prefix]).max() < 1e-3)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
 
 
@@ -106,7 +107,7 @@ def check_oh1_spin_charges(cache):
     }
     cache.do_spin_charges()
     assert(abs(cache.spin_charges.sum() - 1.0) < 1e-3)
-    assert(abs(cache.spin_charges - expected[cache.key]).max() < 1e-3)
+    assert(abs(cache.spin_charges - expected[cache.prefix]).max() < 1e-3)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_spin_charges.txt" % cache.prefix)))
 
 
@@ -122,7 +123,7 @@ def check_oh2_spin_charges(cache):
     }
     cache.do_spin_charges()
     assert(abs(cache.spin_charges.sum() - 1.0) < 1e-3)
-    assert(abs(cache.spin_charges - expected[cache.key]).max() < 1e-3)
+    assert(abs(cache.spin_charges - expected[cache.prefix]).max() < 1e-3)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_spin_charges.txt" % cache.prefix)))
 
 
@@ -144,9 +145,13 @@ def check_hf_dipoles(cache):
             [-4.34535236e-06,  1.78233520e-05, -5.70034272e-02],
             [-1.13215867e-05, -5.19636426e-06, -1.97794421e-02],
         ]),
+        "becke": numpy.array([
+            [-3.68237416e-05, -8.65399822e-06, -1.39946633e-01],
+            [ 1.36355238e-06,  2.55892227e-06,  4.77311556e-02],
+        ]),
     }
     cache.do_dipoles()
-    assert(abs(cache.dipoles - expected[cache.key]).max() < 1e-3)
+    assert(abs(cache.dipoles - expected[cache.prefix]).max() < 1e-3)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_dipoles.txt" % cache.prefix)))
 
 
@@ -178,11 +183,16 @@ def check_hf_bond_orders(cache):
             [0.0, 1.09701044],
             [1.09701044, 0.0],
         ]),
+        "becke": numpy.array([
+            [0.0, 1.04323287],
+            [1.04323287, 0.0],
+        ]),
     }
     expected_valences = {
         "hirsh": numpy.array([1.17377819, 1.17399224]),
         "hirshi": numpy.array([1.11407561, 1.11407691]),
-        "isa": numpy.array([[1.09685209, 1.09681649]]),
+        "isa": numpy.array([1.09685209, 1.09681649]),
+        "becke": numpy.array([1.0432785, 1.04326027]),
     }
     cache.do_bond_orders()
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
@@ -190,8 +200,9 @@ def check_hf_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
     assert(abs(cache.bond_orders.sum(axis=0) - cache.valences).max() < 1e-2)
-    assert(abs(cache.bond_orders - expected_bond_orders[cache.key]).max() < 1e-3)
-    assert(abs(cache.valences - expected_valences[cache.key]).max() < 1e-3)
+    assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
+    assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
+    assert(abs(cache.free_valences).max() < 1e-3)
 
 
 def test_oh1_bond_orders():
@@ -224,8 +235,8 @@ def check_oh1_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
-    assert(abs(cache.bond_orders - expected_bond_orders[cache.key]).max() < 1e-3)
-    assert(abs(cache.valences - expected_valences[cache.key]).max() < 1e-3)
+    assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
+    assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
 
 
 def test_oh2_bond_orders():
@@ -259,8 +270,8 @@ def check_oh2_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_beta_overlap.txt" % cache.prefix)))
-    assert(abs(cache.bond_orders - expected_bond_orders[cache.key]).max() < 1e-3)
-    assert(abs(cache.valences - expected_valences[cache.key]).max() < 1e-3)
+    assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
+    assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
 
 
 def test_hf_gross_net_populations():
@@ -281,9 +292,14 @@ def check_hf_gross_net_populations(cache):
             [8.98880362, 0.21955338],
             [0.21955338, 0.57209327],
         ]),
+        "becke": numpy.array([
+            [9.06191354, 0.13850754],
+            [0.13850754, 0.66111818],
+        ]),
+
     }
     cache.do_gross_net_populations()
-    assert(abs(cache.gross_net_populations - expected[cache.key]).max() < 1e-2)
+    assert(abs(cache.gross_net_populations - expected[cache.prefix]).max() < 1e-2)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_gross_net_populations.txt" % cache.prefix)))
 
 
@@ -385,6 +401,22 @@ def check_hf_multipoles(cache):
              -1.92112594e-04, 5.10911851e-05, -6.29398231e-05, 4.30353724e-06,
              -8.27103047e-05],
         ]),
+        "becke": numpy.array([
+            [-2.00405499e-01, -1.39878557e-01, 7.97601430e-06, -1.66742368e-05,
+             4.71749360e-01, -2.71808643e-05, 3.79557338e-05, -1.42330237e-05,
+             -3.62462997e-05, -4.08015634e-01, 8.47184812e-05, -4.13451388e-05,
+             2.40882895e-04, 3.30862111e-04, 3.88526966e-05, 1.99544087e-05,
+             7.09491154e-01, -1.41657838e-04, 1.13581113e-04, -1.93087267e-03,
+             -2.01981812e-03, -5.83155378e-05, -4.48755519e-05, 2.38971482e-04,
+             1.48753657e-05],
+            [2.00383290e-01, 4.77336964e-02, -1.07708896e-06, -2.01473416e-06,
+             7.43597856e-02, -1.92734842e-06, -5.76092145e-06, 1.02021925e-06,
+             2.60903874e-07, -2.53915134e-02, 4.01062845e-06, -1.24359990e-05,
+             1.47981662e-07, 6.00618913e-06, 1.01071425e-06, -1.06564610e-06,
+             -1.98158787e-02, 5.01886764e-05, -2.56465922e-05, -9.68329724e-06,
+             3.10097861e-05, 8.52911267e-07, -4.86396262e-06, 6.55863937e-06,
+             1.92435494e-06],
+        ])
     }
     cache.do_charges()
     cache.do_dipoles()
@@ -393,5 +425,5 @@ def check_hf_multipoles(cache):
     assert(abs(cache.dipoles[:,0] - cache.multipoles[:,2]).max() < 1e-3)
     assert(abs(cache.dipoles[:,1] - cache.multipoles[:,3]).max() < 1e-3)
     assert(abs(cache.dipoles[:,2] - cache.multipoles[:,1]).max() < 1e-3)
-    assert(abs(cache.multipoles - expected[cache.key]).max() < 1e-2)
+    assert(abs(cache.multipoles - expected[cache.prefix]).max() < 1e-2)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_multipoles.txt" % cache.prefix)))
