@@ -22,9 +22,8 @@
 
 from hipart.log import log
 from hipart.integrate import integrate_log
-from hipart.lebedev_laikov import get_grid, grid_fns
+from hipart.lebedev_laikov import get_grid, grid_fns, get_atom_grid
 from hipart.grids import Grid
-from hipart.tools import get_atom_grid
 from hipart.wavefn import FCHKWaveFunction
 
 from molmod.periodic import periodic

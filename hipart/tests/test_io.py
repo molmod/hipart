@@ -19,9 +19,8 @@
 # --
 
 
-from hipart.tools import *
+from hipart.io import *
 
-from molmod import angstrom
 import tempfile, shutil, os, numpy
 
 

@@ -23,30 +23,17 @@
 
 
 
-from molmod import angstrom, Rotation
 from molmod.periodic import periodic
 
-import numpy, sys, os
+import numpy
 
 
 __all__ = [
-    "get_atom_grid",
     "dump_atom_scalars", "load_atom_scalars",
     "dump_atom_vectors", "load_atom_vectors",
     "dump_atom_matrix", "load_atom_matrix",
     "dump_atom_fields", "load_atom_fields",
 ]
-
-
-def get_atom_grid(lebedev_xyz, center, radii):
-    num_lebedev = len(lebedev_xyz)
-    grid_points = numpy.zeros((num_lebedev*len(radii),3), float)
-    counter = 0
-    for r in radii:
-        rot = Rotation.random()
-        grid_points[counter:counter+num_lebedev] = r*numpy.dot(lebedev_xyz,rot.r)+center
-        counter += num_lebedev
-    return grid_points
 
 
 def _iter_symbols_numbers(numbers, N):

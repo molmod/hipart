@@ -34,12 +34,12 @@
 
 
 from hipart.log import log
-from hipart.tools import get_atom_grid, dump_atom_scalars, dump_atom_vectors, \
-    dump_atom_matrix, dump_atom_fields
+from hipart.io import dump_atom_scalars, dump_atom_vectors, dump_atom_matrix, \
+    dump_atom_fields
 from hipart.integrate import cumul_integrate_log, integrate_log, \
     integrate_lebedev
 from hipart.fit import ESPCostFunction
-from hipart.lebedev_laikov import get_grid
+from hipart.lebedev_laikov import get_grid, get_atom_grid
 from hipart.atoms import AtomTable, AtomFn
 from hipart.grids import Grid
 

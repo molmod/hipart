@@ -19,19 +19,14 @@
 # --
 
 
-
-
-
-
 import hipart.llext
+
+from molmod import angstrom, Rotation
+
 import numpy
 
 
-__all__ = ["Error", "grid_fns", "get_grid"]
-
-
-class Error(Exception):
-    pass
+__all__ = ["grid_fns", "get_grid", "get_atom_grid"]
 
 
 grid_fns = {}
@@ -42,9 +37,19 @@ for name in dir(hipart.llext):
 
 def get_grid(number):
     if number not in grid_fns:
-        raise Error("There is no Lebedev-Laikov grid with %i points." % number)
+        raise ValueError("There is no Lebedev-Laikov grid with %i points." % number)
     xyz = numpy.zeros((3,number), float)
     w = numpy.zeros(number, float)
     x,y,z = xyz
     grid_fns[number](x,y,z,w,0)
     return xyz.transpose(), w
+
+def get_atom_grid(lebedev_xyz, center, radii):
+    num_lebedev = len(lebedev_xyz)
+    grid_points = numpy.zeros((num_lebedev*len(radii),3), float)
+    counter = 0
+    for r in radii:
+        rot = Rotation.random()
+        grid_points[counter:counter+num_lebedev] = r*numpy.dot(lebedev_xyz,rot.r)+center
+        counter += num_lebedev
+    return grid_points
