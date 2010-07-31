@@ -43,7 +43,10 @@ class ProgressBar(object):
         if self.i % self.width == 0:
             self.f.write("\n%s" % (" "*self.indent))
         if self.i % 10 == 0 or self.i == self.n:
-            self.f.write(" %i%% " % ((100*self.i)/self.n))
+            if self.i == 0:
+                self.f.write(" 0% .")
+            else:
+                self.f.write(". %i%% " % ((100*self.i)/self.n))
         else:
             self.f.write(".")
         if self.i == self.n:
@@ -62,19 +65,19 @@ class Log(object):
         self.level = 0
 
     def begin(self, s):
-        print "%s%sBEGIN%s %s" % (" "*self.level, bright, reset, s)
+        print "%s%sBEGIN%s %s" % ("  "*self.level, bright, reset, s)
         self.level += 1
 
     def __call__(self, s):
-        print "%s%s" % (" "*self.level, s)
+        print "%s%s" % ("  "*self.level, s)
 
     def end(self, s):
         self.level -= 1
         if self.level < 0: self.level = 0
-        print "%s%sEND%s %s" % (" "*self.level, bright, reset, s)
+        print "%s%sEND%s %s" % ("  "*self.level, bright, reset, s)
 
     def pb(self, s, num):
-        return ProgressBar(s, num, indent=self.level)
+        return ProgressBar(s, num, indent=self.level*2)
 
 
 log = Log()

@@ -50,5 +50,3 @@ Overlap elements
 
 Electrostatic Potential Fitting
 -------------------------------
-
-

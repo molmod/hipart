@@ -7,4 +7,4 @@ rm -vr HiPart.egg-info
 rm -v MANIFEST
 rm -vr dist
 rm -vr build
-
+(cd doc; make clean)

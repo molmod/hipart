@@ -63,5 +63,3 @@ IO for Hipart file formats
 
 .. automodule:: hipart.io
    :members:
-
-

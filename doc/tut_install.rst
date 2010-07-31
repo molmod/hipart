@@ -21,7 +21,7 @@ academic career, you probably deserve it. Always know what you and your
 computers are doing.
 
 At some point you may think: "Hmm, this program is slow." You may be right.
-The source code focusses on readability and extensibility, not on speed. It
+The source code focuses on readability and extensibility, not on speed. It
 is mostly written in Python, with several parts in C and Fortran. I mainly
 care about the outcome, and less about the time it takes to obtain the outcome.
 
@@ -67,7 +67,7 @@ in your home directory, the following lines need to be added to your login
 scripts:
 
 * Bash users: add the following two lines to your ``~/.bashrc`` file::
-    
+
     export PYTHONPATH=$HOME/lib/python:$PYTHONPATH
     export PATH=$HOME/bin:$PATH
 
@@ -86,7 +86,7 @@ Upgrading to the latest development release
 
 In case you want to upgrade HiPart to the latests development version after a
 previous install, then execute the following commands (in the same directory)::
-    
+
     (cd molmod; git pull; rm ~/lib/python/molmod*; ./setup.py install --home=~)
     (cd hipart; git pull; rm ~/bin/hi-*.py; rm ~/lib/python/HiPart*; ./setup.py install --home=~)
 
@@ -94,14 +94,15 @@ previous install, then execute the following commands (in the same directory)::
 Testing your installation
 -------------------------
 
-For the development and testing one needs to install two additonal packages:
+For the development and testing one needs to install two additional packages:
 
  * Nosetests: http://somethingaboutorange.com/mrl/projects/nose/0.11.2/
  * Sympy: http://www.sympy.org/
+ * Sphinx: http://sphinx.pocoo.org/
 
 On Ubuntu, the following command will take care of the installation::
 
-    sudo apt-get install python-nose python-sympy
+    sudo apt-get install python-nose python-sympy python-sphinx
 
 Once these are installed go to the directory where the HiPart source code was
 downloaded and execute the following commands::

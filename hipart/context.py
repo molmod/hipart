@@ -90,13 +90,5 @@ class Context(object):
         f.close()
 
     def clean(self):
-        if self.options.clean >= 3:
-            print "Removing the entire work directory."
+        if self.options.clean:
             shutil.rmtree(self.workdir)
-            return
-        if self.options.clean >= 2:
-            print "Cleaning up binary files in work directory."
-            os.system("rm -f %s" % os.path.join(self.workdir, "*.bin"))
-        if self.options.clean >= 1:
-            print "Cleaning up text files in work directory."
-            os.system("rm -f %s" % os.path.join(self.workdir, "*.txt"))

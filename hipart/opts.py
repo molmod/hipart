@@ -36,6 +36,17 @@ usage_template = """%%prog [options] gaussian.fchk scheme [scheme parameters]
 
 %s
 
+The file gaussian.fchk is a formatted checkpoint file from a Gaussian
+computation. To obtain this file, add the following line on top of a Gaussian
+com-file (before running the job)
+
+%%chk=gaussian.chk
+
+After the Gaussian computation transform this binary checkpoint file into
+a text file with the ``formchk`` program of the Gaussian software suite:
+
+formchk gaussian.chk gaussian.fchk
+
 Partitioning schemes:
 
 %s
@@ -50,12 +61,9 @@ def parse_command_line(script_usage, add_extra_options=None):
         "[default=%default]. Select from: " + (", ".join(str(i) for i in sorted(grid_fns)))
     )
     parser.add_option(
-        "-c", "--clean", default=1, type='int',
-        help="Degree of cleaning in the workdir after the computations are done. "
-        "Files in the workdir can be reused by other scripts, which reduces the "
-        "computational cost. This should be a number from 0 to 4. "
-        "[default=%default] 0: No cleaning. 1: Remove text files. 2: Also remove "
-        "binary files. 3: Remove the entire workdir."
+        "-c", "--clean", default=False, action='store_true',
+        help="If given, the workdir with the binary data is removed when the "
+             "computation has finished."
     )
     parser.add_option(
         "-n", "--no-fix-total-charge", dest="fix_total_charge", default="True",

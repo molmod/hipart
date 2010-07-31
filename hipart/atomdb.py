@@ -97,7 +97,7 @@ class Gaussian(object):
 
     def compute_density(self, grid, dirname):
         fchk_fn = os.path.join(dirname, "gaussian.fchk")
-        wavefn = FCHKWaveFunction(fchk_fn)
+        wavefn = FCHKWaveFunction(fchk_fn, [])
         wavefn.compute_density(grid)
 
 
@@ -318,7 +318,7 @@ def parse_args():
     )
     parser.add_option(
         "--qc", default=False, action="store_true",
-        help="Specify the qc convergence scheme in gaussian input. [default=%default]"
+        help="Specify the qc convergence scheme in Gaussian input. [default=%default]"
     )
     (options, args) = parser.parse_args()
     if len(args) != 2:

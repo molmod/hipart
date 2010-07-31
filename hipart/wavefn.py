@@ -301,7 +301,8 @@ class FCHKWaveFunction(object):
                 raise ValueError("Could not find the '%s' density matrix in the fchk file." % self._density_type)
 
     def log(self):
-        log("Electronic structure read from: %s (%s)" % (self.filename, ",".join(self.options)))
+        log.begin("Electronic structure summary")
+        log("Data read from: %s (%s)" % (self.filename, ",".join(self.options)))
         log("Restricted: %s" % self.restricted)
         log("Orbitals present: %s" % (self.alpha_orbital_energies is not None))
         log("Spin density present: %s" % (self.spin_density_matrix is not None))
@@ -311,6 +312,7 @@ class FCHKWaveFunction(object):
         log("Total charge: %i" % self.charge)
         log("Number of atoms: %i" % self.molecule.size)
         log("Chemical formula: %s" % self.molecule.chemical_formula)
+        log.end("Electronic structure summary")
 
     def compute_density(self, grid):
         moldens = grid.load("moldens")

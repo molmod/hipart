@@ -26,11 +26,11 @@
 
 from hipart.opts import parse_command_line
 
-usage = """%prog computes atomic charges.
+usage = """%prog computes effective atomic charges.
 
-These atomic charges are the monopole terms in the multipole expansion of each
-atomic contribution to the density. The atomic densities are obtained from the
-'scheme' specified at the command line."""
+The effective atomic charges are the monopole terms in the multipole expansion
+of each atomic contribution to the density plus the monopole of the nucleus. The
+atomic densities are obtained from the 'scheme' specified at the command line."""
 
 context, cache = parse_command_line(usage)
 cache.do_charges()
