@@ -22,6 +22,7 @@
 from hipart.atoms import AtomTable
 from hipart.lebedev_laikov import get_grid
 from hipart.wavefn import load_wavefunction
+from hipart.log import log
 
 import os, shutil
 
@@ -44,8 +45,10 @@ class Context(object):
     version = 2
 
     def __init__(self, filename, options):
+        log.begin("Loading Electronic structure")
         self.wavefn = load_wavefunction(filename)
         self.wavefn.log()
+        log.end()
         self.options = options
 
         self.outdir = "%s.hipart" % self.wavefn.prefix

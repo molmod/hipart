@@ -62,18 +62,19 @@ reset = '\033[0m'
 
 class Log(object):
     def __init__(self):
-        self.level = 0
+        self.stack = []
+
+    level = property(lambda self: len(self.stack))
 
     def begin(self, s):
         print "%s%sBEGIN%s %s" % ("  "*self.level, bright, reset, s)
-        self.level += 1
+        self.stack.append(s)
 
     def __call__(self, s):
         print "%s%s" % ("  "*self.level, s)
 
-    def end(self, s):
-        self.level -= 1
-        if self.level < 0: self.level = 0
+    def end(self):
+        s = self.stack.pop()
         print "%s%sEND%s %s" % ("  "*self.level, bright, reset, s)
 
     def pb(self, s, num):

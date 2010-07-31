@@ -286,7 +286,7 @@ atomic populations. The screen output gives some progress information of the
 various parts of the program. This is an example screen output::
 
     toon@poony# hi-charges.py gaussian.fchk becke
-    BEGIN Electronic structure summary
+    BEGIN Loading Electronic structure
       Data read from: gaussian.fchk ()
       Restricted: True
       Orbitals present: True
@@ -297,7 +297,7 @@ various parts of the program. This is an example screen output::
       Total charge: 0
       Number of atoms: 2
       Chemical formula: FH
-    END Electronic structure summary
+    END Loading Electronic structure
     BEGIN Atomic charges
       BEGIN Atomic grids
         Computing/Loading atomic grids (and distances):
