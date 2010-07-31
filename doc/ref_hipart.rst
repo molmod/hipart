@@ -52,7 +52,7 @@ Cubic splines (radial grids)
 .. automodule:: hipart.spline
    :members:
 
-Numerical 1D integration
+Numerical integration
 ------------------------
 
 .. automodule:: hipart.integrate

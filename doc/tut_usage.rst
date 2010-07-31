@@ -448,6 +448,76 @@ the same molecule with the three other partitioning schemes::
 Atomic dipoles
 --------------
 
+Atomic dipoles are compute with the program ``hi-dipoles.py``. Like most HiPart
+scripts it takes the same arguments and options as the script ``hi-charges.py``,
+which are discussed in the previous section. The online help starts as follows::
+
+    toon@poony# hi-dipoles.py --help
+    Usage: hi-dipoles.py [options] gaussian.fchk scheme [scheme parameters]
+
+    hi-dipoles.py computes atomic charges and dipoles.
+
+    These atomic charges and dipoles are the monopole and dipole terms in the
+    multipole expansion of each atomic contribution to the density. The atomic
+    densities are obtained from the 'scheme' specified at the command line.
+    ...
+
+The screen output is also very similar. Depending on the previously executed
+scripts, e.g. ``hi-charges.py``, some intermediate results can be loaded from
+the work directory and do not have to be computed again.
+
+The dipoles in the Hirshfeld-I scheme can for example be computed as follows::
+
+    toon@poony# hi-dipoles.py gaussian.fchk hirshi atoms/densities.txt
+    BEGIN Loading Electronic structure
+      Data read from: gaussian.fchk ()
+      Restricted: True
+      Orbitals present: True
+      Spin density present: False
+      Number of alpha electrons: 5
+      Number of beta electrons: 5
+      Number of electrons: 10
+      Total charge: 0
+      Number of atoms: 2
+      Chemical formula: FH
+    END Loading Electronic structure
+    BEGIN Atomic dipoles
+      BEGIN Atomic grids
+        Computing/Loading atomic grids (and distances):
+         0% ..... 100%
+      END Atomic grids
+      BEGIN Molecular density on atomic grids
+        Computing/Loading densities:
+         0% ... 100%
+      END Molecular density on atomic grids
+      BEGIN Defining atomic weight functions (each on their own atomic grid)
+        Trying to load weight functions
+        Could not load all weight functions from workdir. Computing them...
+        BEGIN Iterative Hirshfeld
+          Iteration 000    max change = 1.37747e-01    total charge = -3.17836e-05
+          Iteration 001    max change = 3.95107e-02    total charge = -3.50733e-05
+          Iteration 002    max change = 1.19662e-02    total charge = -3.55995e-05
+          Iteration 003    max change = 3.68860e-03    total charge = -3.57148e-05
+          Iteration 004    max change = 1.14334e-03    total charge = -3.57459e-05
+          Iteration 005    max change = 3.55013e-04    total charge = -3.57552e-05
+          Iteration 006    max change = 1.10292e-04    total charge = -3.57580e-05
+          Iteration 007    max change = 3.42705e-05    total charge = -3.57589e-05
+        END Iterative Hirshfeld
+        Writing results to workdir
+      END Defining atomic weight functions (each on their own atomic grid)
+      Computing dipoles:
+       0% ... 100%
+      Written gaussian.hipart/hirshi_dipoles.txt
+    END Atomic dipoles
+    toon@poony# cat gaussian.hipart/hirshi_dipoles.txt
+    number of atoms: 2
+      i        Z      Dipole-X        Dipole-Y        Dipole-Z      Dipole-norm
+    -------------------------------------------------------------------------------
+      1   F    9  -0.000007002399  0.000004713804 -0.069590915861  0.069590916373
+      2   H    1   0.000002672409  0.000007186970 -0.033744282116  0.033744282987
+
+
+
 Testing charges and dipoles on the ESP grid
 -------------------------------------------
 

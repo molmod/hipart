@@ -19,6 +19,7 @@
 # --
 
 
+# TODO: hishfeld-i charges after becke charges fail.
 # TODO: fix free valence in non-closed-shell systems
 # TODO: Support for Gaussian/GAMESS wfn files.
 # TODO: Extend hi-atomdb.py to work with GAMESS
