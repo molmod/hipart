@@ -273,18 +273,19 @@ def parse_numbers(atom_str):
     return numbers
 
 
-usage = """%prog [options] lot atoms
+usage = """\
+%prog [options] lot atoms
 
-%prog computes a database of pro-atom densities.
+%prog computes a database of pro-atomic densities.
 
 The following arguments are mandatory:
-  * lot  --  The level of theory to be used in gaussian input notation.
+  * lot  --  The level of theory to be used in Gaussian03 input notation.
   * atoms  -- The atoms to be computed. One can specify ranges, e.g 1,2-5'
               (avoid whitespace)
 
-It is wise to run this script in a directory that is initially empty and that
-will contain nothing but the generated atom database. This script will generate
-quite a few files and subdirectories.
+It is recommended to run this script in a directory that is initially empty and
+that will contain nothing but the generated atom database. This script will
+generate quite a few files and subdirectories.
 
 Examples:
 
