@@ -31,12 +31,8 @@ import numpy, os
 
 
 __all__ = [
-    "Error", "AtomFn", "AtomProfile", "AtomTable",
+    "AtomFn", "AtomProfile", "AtomTable",
 ]
-
-
-class Error(Exception):
-    pass
 
 
 class AtomFn(object):
@@ -75,7 +71,7 @@ class AtomProfile(object):
 
     def get_atom_fn(self, charge, do_potential=None):
         if charge > self.number:
-            raise Error("A negative number of electrons is not physical")
+            raise ValueError("A negative number of electrons is not physical")
 
         max_charge = max(self.records)
         min_charge = min(self.records)
