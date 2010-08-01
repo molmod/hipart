@@ -274,11 +274,11 @@ def check_oh2_bond_orders(cache):
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
 
 
-def test_hf_gross_net_populations():
+def test_hf_net_populations():
     for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_gross_net_populations, cache
+        yield check_hf_net_populations, cache
 
-def check_hf_gross_net_populations(cache):
+def check_hf_net_populations(cache):
     expected = {
         "hirsh": numpy.array([
             [8.89564521, 0.24206497],
@@ -298,9 +298,9 @@ def check_hf_gross_net_populations(cache):
         ]),
 
     }
-    cache.do_gross_net_populations()
-    assert(abs(cache.gross_net_populations - expected[cache.prefix]).max() < 1e-2)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_gross_net_populations.txt" % cache.prefix)))
+    cache.do_net_populations()
+    assert(abs(cache.net_populations - expected[cache.prefix]).max() < 1e-2)
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_net_populations.txt" % cache.prefix)))
 
 
 def test_hf_mol_esp_cost():

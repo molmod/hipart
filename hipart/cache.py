@@ -696,20 +696,20 @@ class BaseCache(object):
     def _compute_atweights(self, grid, atom_index):
         raise NotImplementedError
 
-    @OnlyOnce("Gross & net populations")
-    def do_gross_net_populations(self):
-        gross_net_populations_fn_bin = os.path.join(self.context.workdir, "%s_gross_net_populations.bin" % self.prefix)
+    @OnlyOnce("Net populations")
+    def do_net_populations(self):
+        net_populations_fn_bin = os.path.join(self.context.workdir, "%s_net_populations.bin" % self.prefix)
         molecule = self.context.wavefn.molecule
 
-        if os.path.isfile(gross_net_populations_fn_bin):
-            log("Loading gross & net populations.")
-            self.gross_net_populations = numpy.fromfile(gross_net_populations_fn_bin, float).reshape((molecule.size,molecule.size))
+        if os.path.isfile(net_populations_fn_bin):
+            log("Loading net populations.")
+            self.net_populations = numpy.fromfile(net_populations_fn_bin, float).reshape((molecule.size,molecule.size))
         else:
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_charges()
             self.do_atgrids_od_atweights()
-            self.gross_net_populations = numpy.zeros((molecule.size, molecule.size))
+            self.net_populations = numpy.zeros((molecule.size, molecule.size))
             pb = log.pb("Integrating over products of stockholder weights", (molecule.size*(molecule.size+1))/2)
             for i, number_i in enumerate(molecule.numbers):
                 for j, number_j in enumerate(molecule.numbers[:i+1]):
@@ -740,18 +740,18 @@ class BaseCache(object):
                         radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
                         part2 = integrate_log(rs, radfun*rs**2)
                         # Add up and store
-                        self.gross_net_populations[i,j] = part1 + part2
-                        self.gross_net_populations[j,i] = part1 + part2
+                        self.net_populations[i,j] = part1 + part2
+                        self.net_populations[j,i] = part1 + part2
                     else:
                         integrand = self.atgrids[i].atweights**2*self.atgrids[i].moldens
                         radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
                         rs = self.get_rs(i, number_i)
-                        self.gross_net_populations[i,i] = integrate_log(rs, radfun*rs**2)
+                        self.net_populations[i,i] = integrate_log(rs, radfun*rs**2)
             pb()
-            self.gross_net_populations.tofile(gross_net_populations_fn_bin)
+            self.net_populations.tofile(net_populations_fn_bin)
 
-        gross_net_fn = os.path.join(self.context.outdir, "%s_gross_net_populations.txt" % self.prefix)
-        dump_atom_matrix(gross_net_fn, self.gross_net_populations, molecule.numbers, "Gross/Net")
+        net_fn = os.path.join(self.context.outdir, "%s_net_populations.txt" % self.prefix)
+        dump_atom_matrix(net_fn, self.net_populations, molecule.numbers, "Net")
 
 
 class StockholderCache(BaseCache):

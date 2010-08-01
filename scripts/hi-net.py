@@ -26,8 +26,8 @@
 
 from hipart.opts import parse_command_line
 
-usage = """%prog computes gross and net populations"""
+usage = """%prog computes net atom and bond populations"""
 
 context, cache = parse_command_line(usage)
-cache.do_gross_net_populations()
+cache.do_net_populations()
 context.clean()
