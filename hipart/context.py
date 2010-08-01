@@ -71,8 +71,6 @@ class Context(object):
             "filename": "%s" % os.path.basename(self.wavefn.filename),
         }
         tag_attributes.update(extra)
-        if hasattr(self.options, "mol_lebedev"):
-            tag_attributes["mol_lebedev"] = "%i" % self.options.mol_lebedev
 
         context_fn = os.path.join(self.workdir, "context")
         if os.path.isfile(context_fn):

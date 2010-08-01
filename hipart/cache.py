@@ -203,7 +203,7 @@ class BaseCache(object):
 
     @OnlyOnce("Molecular grid")
     def do_molgrid(self):
-        lebedev_xyz, lebedev_weights = get_grid(self.context.options.mol_lebedev)
+        lebedev_xyz, lebedev_weights = get_grid(50)
         molecule = self.context.wavefn.molecule
         workdir = self.context.workdir
 
