@@ -213,4 +213,4 @@ def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
     app.connect('autodoc-process-docstring', cut_lines(2, what=['module']))
 
-pngmath_dvipng_args = ['-gamma 1.5', '-D 150', '-bg Transparent']
+pngmath_dvipng_args = ['-gamma 1.5', '-D 120', '-bg Transparent']

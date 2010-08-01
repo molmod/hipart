@@ -13,6 +13,11 @@ References
    'Critical analysis and extension of the Hirshfeld atoms in molecules' *J.
    Chem. Phys.* **2007**, 126, no 144111. http://dx.doi.org/10.1063/1.2715563
 
+.. [Cordero2008] Cordero, B.; Gomez, V.; Platero-Prats, A. E.; Reves, M.;
+   Echeverria, J.; Cremades, E.; Barragan, F.; Alvarez, S. 'Covalent radii
+   revisited' *Dalton Trans.* **2008**, p 2832-2838.
+   http://dx.doi.org/10.1039/b801115j
+
 .. [Lillestolen2008] Lillestolen, T. C.; Wheatley, R. J. 'Redefining the atom:
    atomic charge densities produced by an iterative stockholder approach' *Chem.
    Commun.* **2008**, 45, p 5909-5911. http://dx.doi.org/10.1039/b812691g
