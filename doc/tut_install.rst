@@ -94,7 +94,7 @@ previous install, then execute the following commands (in the same directory)::
 Testing your installation
 -------------------------
 
-For the development and testing one needs to install two additional packages:
+For the development and testing one needs to install three additional packages:
 
  * Nosetests: http://somethingaboutorange.com/mrl/projects/nose/0.11.2/
  * Sympy: http://www.sympy.org/
@@ -104,7 +104,7 @@ On Ubuntu, the following command will take care of the installation::
 
     sudo apt-get install python-nose python-sympy python-sphinx
 
-Once these are installed go to the directory where the HiPart source code was
+Once these are installed, go to the directory where the HiPart source code was
 downloaded and execute the following commands::
 
     cd hipart

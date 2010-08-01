@@ -19,7 +19,7 @@
 # --
 
 
-from sympy import simplify, Symbol, cos, sin, exp, Ylm, I, sqrt, pi
+from sympy import simplify, Symbol, cos, sin, exp, Ylm, I, sqrt, pi, latex
 
 
 __all__ = ["get_solid_harmonics"]
@@ -84,3 +84,13 @@ if __name__ == "__main__":
             labels.append("(%i,%s)" % (shell, m))
     print "]"
     print "labels = %s" % labels
+
+    print
+    print "========  ", "="*150
+    for shell in xrange(5):
+        im = iter_m()
+        factor = sqrt(4*pi/(2*shell+1))
+        for poly in get_solid_harmonics(shell, xyz):
+            m = im.next()
+            print "%8s   :math:`%s`" % ("(%i,%s)" % (shell, m), latex(simplify(poly*factor)))
+    print "========  ", "="*150

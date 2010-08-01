@@ -28,7 +28,7 @@ from hipart.gint import GaussianBasis, gint1_fn_basis, gint1_fn_dmat, \
 from hipart.log import log
 
 
-__all__ = ["load_wavefunction", "FchkWaveFunction"]
+__all__ = ["load_wavefunction", "FCHKWaveFunction"]
 
 
 def load_wavefunction(filename):

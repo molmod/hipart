@@ -23,7 +23,7 @@ import sys, os
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage',
-              'sphinx.ext.inheritance_diagram']
+              'sphinx.ext.inheritance_diagram', 'sphinx.ext.pngmath']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -212,3 +212,5 @@ def setup(app):
     from sphinx.ext.autodoc import cut_lines
     app.connect("autodoc-skip-member", autodoc_skip_member)
     app.connect('autodoc-process-docstring', cut_lines(2, what=['module']))
+
+pngmath_dvipng_args = ['-gamma 1.5', '-D 150', '-bg Transparent']
