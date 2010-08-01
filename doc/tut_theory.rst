@@ -133,6 +133,14 @@ are taken from [Cordero2008]_.
 Hirshfeld scheme
 ^^^^^^^^^^^^^^^^
 
+Hirshfeld [Hirshfeld1977]_ proposed a partitioning scheme where pro-atomic
+densities are derived from computations on neutral atoms by simply averaging the
+atomic density over the angular degrees of freedom,
+
+.. math:: \rho_i^{(0)}(\mathbf{r}) = \rho_i^{(0)}(r) = \int d\Omega \rho_{i,q=0}^{\text{atom}}(r,\Omega),
+
+where :math:`\Omega` represents the angular degrees of freedom.
+
 .. _hirshfeld-i:
 
 Iterative Hirshfeld scheme
