@@ -11,9 +11,6 @@ following quantities can be computed: atomic charge, atomic dipoles, quality of
 charges and dipoles with respect to the ESP, the atomic multipole expansion, net
 populations, bond orders, spin charges and overlap matrices.
 
-Practical information
----------------------
-
 .. toctree::
    :maxdepth: 3
 
