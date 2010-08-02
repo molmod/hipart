@@ -3,16 +3,19 @@
 Theoretical background
 ======================
 
+The summary below is just a description of the methods implemented in HiPart. It
+is highly recommended to read the cited papers for a more extensive discussion.
 
 Fuzzy atom partitioning
 -----------------------
 
-One way to partition the molecular density, :math:`\rho(\mathbf{r})`, into atomic
-contributions is to define a weight function, :math:`w_i(\mathbf{r})`, for every
-atom :math:`i` in the molecule. The function value is in the range
-:math:`[0,1]`. The atomic denisty is then defined as
+One way to partition the molecular density,
+:math:`\rho_{\text{mol}}(\mathbf{r})`, into atomic contributions is to define a
+weight function, :math:`w_i(\mathbf{r})`, for every atom :math:`i` in the
+molecule. The function value is in the range :math:`[0,1]`. The atomic denisty
+is then defined as
 
-.. math:: \rho_i(\mathbf{r}) = w_i(\mathbf{r})\rho(\mathbf{r})
+.. math:: \rho_i(\mathbf{r}) = w_i(\mathbf{r})\rho_{\text{mol}}(\mathbf{r})
 
 The weight functions must satisfy the condition
 
@@ -30,11 +33,11 @@ fuzzy weights lead to atoms that have overlapping densities. All partitioning
 methods in HiPart are fuzzy-atom partitioning methods.
 
 It is common practice to introduce for each atom a so-called pro-atomic
-function, :math:`\rho_i^{(0)}(\mathbf{r})`, as an auxiliary tool to define the
+function, :math:`\rho_i^{\text{pro}}(\mathbf{r})`, as an auxiliary tool to define the
 actual weight functions. The weight functions are derived from the pro-atomic
 functions as follows:
 
-.. math:: w_i(\mathbf{r}) = \frac{\rho_i^{(0)}(\mathbf{r})}{\sum_{j=1}^N \rho_j^{(0)}(\mathbf{r})}
+.. math:: w_i(\mathbf{r}) = \frac{\rho_i^{\text{pro}}(\mathbf{r})}{\sum_{j=1}^N \rho_j^{\text{pro}}(\mathbf{r})}
 
 The denominator in this expression is called the pro-molecular density. This
 definition of the weight function always satisfies condition :eq:`completeness`
@@ -137,41 +140,111 @@ Hirshfeld [Hirshfeld1977]_ proposed a partitioning scheme where pro-atomic
 densities are derived from computations on neutral atoms by simply averaging the
 atomic density over the angular degrees of freedom,
 
-.. math:: \rho_i^{(0)}(\mathbf{r}) = \rho_i^{(0)}(r) = \int d\Omega \rho_{i,q=0}^{\text{atom}}(r,\Omega),
+.. math:: \rho_i^{\text{pro}}(|\mathbf{r} - \mathbf{r}_i|) = \rho_i^{\text{pro}}(r) = \int d\Omega \rho_{i,N=Z}^{\text{atom}}(r,\Omega),
 
-where :math:`\Omega` represents the angular degrees of freedom.
+where :math:`\Omega` represents the angular degrees of freedom. Prior to the
+application of this partitioning scheme one must setup a database of spherically
+averaged atomic densities for all elements that are present in the molecule of
+interest. For the sake of consistency, this needs to be carried out with the same
+level of theory (and basis set) that is used for the molecular computation.
 
 .. _hirshfeld-i:
 
 Iterative Hirshfeld scheme
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Itaritive Stockholder Analysis scheme
+The choice of neutral pro-atoms in the standard Hirshfeld scheme is somewhat
+arbitrary. The Iterative Hirshfeld scheme [Bultinck2007]_ is an extension of the
+original method, where one seeks for pro-atomic densities that have the same
+number of electrons as the atomic partitions in the molecule.
+
+Bultinck et al. introduce a pro-atomic function with an additional parameter,
+:math:`N_i`, ie.e the fractional number of electrons in the pro-atomic density.
+For integer values of this parameter, the pro-atomic density is just the
+spherical average of the corresponding atom in vacuum:
+
+.. math:: \rho_i^{\text{pro}}(r;N_i) = \int d\Omega \rho_{i,N=N_i}^{\text{atom}}(r,\Omega).
+
+For non-integer values of the parameter N_i, the pro-atomic density is a linear
+interpolation between the two `neighboring` integer-charged atoms:
+
+.. math:: \rho_i^{\text{pro}}(r;N_i) = (\mathrm{ceil}(N_i)-N_i)\rho_i^{\text{pro}}(r;\mathrm{floor}(N_i)) +
+                            (N_i-\mathrm{floor}(N_i))\rho_i^{\text{pro}}(r;\mathrm{ceil}(N_i))
+
+The values :math:`N_i` are obtained in an iterative procedure. Initially, they
+are all set to zero, and one computes the populations just like in the original
+Hirshfeld scheme. In the subsequent iterations the parameters :math:`N_i` are
+set to the populations from the previous iteration and one uses these pro-atoms
+to compute the population for the next iteration. This is repeated until the
+atomic populations converge, i.e. when the maximum absolute value of the
+difference in atomic populations between two iterations drops below a predefined
+threshold.
+
+Before one can use the Iterative Hirshfeld methods, one must first construct
+a database of pro-atomic densities for all the elements in the molecule under
+scrutiny. For each element one must compute different charge states.
+
+
+Iterative Stockholder Analysis scheme
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ISA scheme is another extension to the original Hirshfeld method where one
+tries to construct spherically symatric pro-atoms that are as similar as
+possible to the atomic partitions in the molecule. [Lillestolen2008]_
+
+The initial pro-atoms are constructed by taking the minimal molecular electron
+density as a function of the distance from the nucleus. For numerical reasons
+this minimal value constrained to be non-zero:
+
+.. math:: \rho_i^{\text{pro},(0)}(|\mathbf{r} - \mathbf{r}_i|) = \max(\epsilon, \min_{\Omega_i} \rho_{\text{mol}}(|\mathbf{r} - \mathbf{r}_i|,\Omega_i))
+
+where :math:`epsilon` is a small positive number and :math:`\Omega_i` are the
+angular degrees of freedom of the spherical coordinate system centered at atom
+:math:`i`. In each ISA iteration :math:`k`, the new pro-atoms are taken to be
+the spherical average of the atomic densities from the previous iteration.
+
+.. math:: \rho_i^{\text{pro},(k+1)}(|\mathbf{r} - \mathbf{r}_i|) = \int d \Omega_i w_i^{(k)}(|\mathbf{r} - \mathbf{r}_i|) \rho_{\text{mol}}(|\mathbf{r} - \mathbf{r}_i|,\Omega_i)
+
+This is again repeated until the atomic populations converge. Note that this
+scheme does not depend on a database of atomic densities.
 
 
 Atomic properties derived from the partitioned density
 ------------------------------------------------------
 
+TODO
+
 Charges, Dipoles & Multipoles
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TODO
 
 Gross versus net charges
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+TODO
 
 Atomic properties derived from the partitioned orbitals
 -------------------------------------------------------
 
+TODO
+
 Spin charges
 ^^^^^^^^^^^^
+
+TODO
 
 Bond orders
 ^^^^^^^^^^^
 
+TODO
+
 Overlap elements
 ^^^^^^^^^^^^^^^^
 
+TODO
 
 Electrostatic Potential Fitting
 -------------------------------
+
+TODO

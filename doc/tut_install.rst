@@ -81,8 +81,8 @@ that some of these lines may already be present. Now log out and log in again.
 You are ready to start using HiPart!
 
 
-Upgrading to the latest development release
--------------------------------------------
+Upgrading to the bleeding edge version of HiPart
+------------------------------------------------
 
 In case you want to upgrade HiPart to the latests development version after a
 previous install, then execute the following commands (in the same directory)::
