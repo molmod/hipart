@@ -34,6 +34,8 @@ from hipart.gint.solid_harmonics import get_solid_harmonics
 
 # TODO: More tests
 # TODO: Precompute parameters that only depend on basis sets and geometry
+# TODO: Use symmetry in interface routines
+# TODO: turn get_num_dof into a macro
 
 
 # Sympy stuff

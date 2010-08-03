@@ -24,7 +24,8 @@ from molmod import angstrom
 import os, numpy
 
 from hipart.gint import GaussianBasis, gint1_fn_basis, gint1_fn_dmat, \
-    gint2_nai_dmat, reorder_dmat, add_orbitals_to_dmat, dmat_to_full
+    gint2_nai_dmat, reorder_dmat, add_orbitals_to_dmat, dmat_to_full, \
+    gint1_fn_overlap
 from hipart.log import log
 
 
@@ -403,7 +404,7 @@ class FCHKWaveFunction(object):
     def compute_density(self, grid):
         moldens = grid.load("moldens")
         if moldens is None:
-            moldens = self.basis.call_gint(gint1_fn_dmat, self.density_matrix, grid.points)
+            moldens = self.basis.call_gint_grid(gint1_fn_dmat, self.density_matrix, grid.points)
             grid.dump("moldens", moldens)
         grid.moldens = moldens
 
@@ -413,14 +414,14 @@ class FCHKWaveFunction(object):
             if self.spin_density_matrix is None:
                 molspindens = numpy.zeros(len(grid.points), float)
             else:
-                molspindens = self.basis.call_gint(gint1_fn_dmat, self.spin_density_matrix, grid.points)
+                molspindens = self.basis.call_gint_grid(gint1_fn_dmat, self.spin_density_matrix, grid.points)
             grid.dump("molspindens", molspindens)
         grid.molspindens = molspindens
 
     def compute_potential(self, grid):
         molpot = grid.load("molpot")
         if molpot is None:
-            molpot = -self.basis.call_gint(gint2_nai_dmat, self.density_matrix, grid.points)
+            molpot = -self.basis.call_gint_grid(gint2_nai_dmat, self.density_matrix, grid.points)
             # add the contribution from the nuclei
             for i in xrange(self.molecule.size):
                 n = self.molecule.numbers[i]
@@ -439,7 +440,7 @@ class FCHKWaveFunction(object):
             alpha_orb = grid.load(alpha_suffix)
             if alpha_orb is None:
                 weights = self.alpha_orbitals[i]
-                alpha_orb = self.basis.call_gint(gint1_fn_basis, weights, grid.points)
+                alpha_orb = self.basis.call_gint_grid(gint1_fn_basis, weights, grid.points)
                 grid.dump(alpha_suffix, alpha_orb)
             alpha_orbitals.append(alpha_orb)
             if self.beta_orbitals is self.alpha_orbitals:
@@ -449,7 +450,7 @@ class FCHKWaveFunction(object):
                 beta_orb = grid.load(beta_suffix)
                 if beta_orb is None:
                     weights = self.beta_orbitals[i]
-                    beta_orb = self.basis.call_gint(gint1_fn_basis, weights, grid.points)
+                    beta_orb = self.basis.call_gint_grid(gint1_fn_basis, weights, grid.points)
                     grid.dump(beta_suffix, beta_orb)
                 beta_orbitals.append(beta_orb)
             if self.natural_orbitals is self.alpha_orbitals:
@@ -459,10 +460,20 @@ class FCHKWaveFunction(object):
                 natural_orb = grid.load(natural_suffix)
                 if natural_orb is None:
                     weights = self.natural_orbitals[i]
-                    natural_orb = self.basis.call_gint(gint1_fn_basis, weights, grid.points)
+                    natural_orb = self.basis.call_gint_grid(gint1_fn_basis, weights, grid.points)
                     grid.dump(natural_suffix, natural_orb)
                 natural_orbitals.append(natural_orb)
 
         grid.alpha_orbitals = alpha_orbitals
         grid.beta_orbitals = beta_orbitals
         grid.natural_orbitals = natural_orbitals
+
+    def compute_atomic_overlap(self, grid, weights, prefix):
+        suffix = "%s_overlap_matrix" % prefix
+        overlap = grid.load(suffix)
+        if overlap is None:
+            overlap = self.basis.call_gint_atomic_operator(gint1_fn_overlap, grid.points, weights)
+            grid.dump(suffix, overlap)
+        else:
+            overlap = overlap.reshape((self.num_orbitals, self.num_orbitals))
+        grid.overlap_matrix = overlap

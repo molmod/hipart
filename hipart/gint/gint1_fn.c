@@ -341,3 +341,99 @@ EXIT:
   free(basis_fns);
   return result;
 }
+
+int gint1_fn_overlap(double* overlap, double* points, double* weights,
+  double* centers, int* shell_types, int* shell_map, int* num_primitives,
+  double* ccoeffs, double* exponents, int num_overlap, int num_points,
+  int num_centers, int num_shells, int num_ccoeffs, int num_exponents)
+{
+  int shell, shell_type, primitive, dof1, dof2, num_dof, num_shell_dof, result, i_point;
+  double *work, *out, *center, *ccoeff, *exponent, *basis_fns, *shell_fns, *fn, *overlap_element;
+
+  result = 0;
+
+  work = malloc(MAX_SHELL_DOF*sizeof(double));
+  CHECK_ALLOC(work);
+  num_dof = (int)(sqrt(num_overlap));
+  basis_fns = malloc(num_dof*sizeof(double));
+  CHECK_ALLOC(basis_fns);
+
+  // Clear the output
+  out = overlap;
+  for (dof1=0; dof1<num_overlap; dof1++) {
+    *out = 0.0;
+    out++;
+  }
+
+  for (i_point=0; i_point<num_points; i_point++) {
+    // A) clear the basis functions.
+    fn = basis_fns;
+    for (dof1=0; dof1<num_dof; dof1++) {
+      *fn = 0.0;
+      fn++;
+    }
+    // B) evaluate the basis functions in the current point.
+    ccoeff = ccoeffs;
+    exponent = exponents;
+    shell_fns = basis_fns;
+    for (shell=0; shell<num_shells; shell++) {
+      center = centers + (3*shell_map[shell]);
+      shell_type = shell_types[shell];
+      CHECK_SHELL(shell_type);
+      for (primitive=0; primitive<num_primitives[shell]; primitive++) {
+        gint1_fn_dispatch(shell_type, center, *exponent, points, work);
+        //printf("shell_type=%d  primitive=%d  exponent=%f\n", shell_type, primitive, *exponent);
+        out = work;
+        exponent++;
+        fn = shell_fns;
+        if (shell_type==-1) {
+          *fn += (*out)*(*ccoeff);
+          //printf("out=%f  ccoeff=%f  fn=%f\n", *out, *ccoeff, (*out)*(*ccoeff));
+          fn++;
+          out++;
+          ccoeff++;
+          num_shell_dof = 3;
+        } else if (shell_type > 0) {
+          num_shell_dof = ((shell_type+1)*(shell_type+2))/2;
+        } else {
+          num_shell_dof = -2*shell_type+1;
+        }
+        for (dof1=0; dof1<num_shell_dof; dof1++) {
+          *fn += (*out)*(*ccoeff);
+          //printf("out=%f  ccoeff=%f  fn=%f\n", *out, *ccoeff, (*out)*(*ccoeff));
+          fn++;
+          out++;
+        }
+        ccoeff++;
+      }
+      if (shell_type==-1) {
+        num_shell_dof = 4;
+      } else if (shell_type > 0) {
+        num_shell_dof = ((shell_type+1)*(shell_type+2))/2;
+      } else {
+        num_shell_dof = -2*shell_type+1;
+      }
+      shell_fns += num_shell_dof;
+    }
+    //printf("\n");
+    // C) Multiply overlap elements with the wieght and add to the atomic
+    //    overlap matrix
+    overlap_element = overlap;
+    for (dof1=0; dof1<num_dof; dof1++) {
+      for (dof2=0; dof2<num_dof; dof2++) {
+        *overlap_element += (*weights)*basis_fns[dof1]*basis_fns[dof2];
+        //printf("dof1=%d  dof2=%d  basis1=%f  basis2=%f  overlap_element=%f  weight=%f\n", dof1, dof2, basis_fns[dof1], basis_fns[dof2], *overlap_element, *weight);
+        overlap_element++;
+      }
+    }
+    // D) Prepare for next iteration
+    points += 3;
+    weights++;
+    //printf("\n");
+  }
+
+EXIT:
+  free(work);
+  free(basis_fns);
+  return result;
+}

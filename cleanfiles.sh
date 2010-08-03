@@ -1,6 +1,6 @@
 #!/bin/bash
 echo Removing redundant files
-for i in `find hipart scripts  | egrep "\.pyc$|\.py~$|\.pyc~$|\.bak|\.so$"` ; do rm -v ${i}; done
+for i in `find hipart scripts  | egrep "\.pyc$|\.py~$|\.pyc~$|\.bak$|\.so$|extmodule\.c$"` ; do rm -v ${i}; done
 rm -vr python-build-stamp-* 
 rm -vr HiPart.egg-info
 

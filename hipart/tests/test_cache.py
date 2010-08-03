@@ -22,6 +22,7 @@
 from hipart.tests.utils import iter_hf_sto3g_gaussian_caches, \
     iter_oh1_sto3g_gaussian_caches, iter_oh2_sto3g_gaussian_caches, \
     iter_h_sto3g_gaussian_caches
+from hipart.gint import dmat_to_full
 
 import numpy, os
 from nose.plugins.skip import SkipTest
@@ -210,7 +211,7 @@ def check_hf_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices_orb.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_overlap_matrices.txt" % cache.prefix)))
     assert(abs(cache.bond_orders.sum(axis=0) - cache.valences).max() < 1e-2)
     assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
@@ -250,7 +251,7 @@ def check_oh1_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices_orb.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_overlap_matrices.txt" % cache.prefix)))
     assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
     assert(abs(cache.free_valences - expected_free_valences[cache.prefix]).max() < 1e-3)
@@ -289,9 +290,7 @@ def check_oh2_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices_orb.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_beta_overlap_matrices_orb.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_natural_overlap_matrices_orb.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_overlap_matrices.txt" % cache.prefix)))
     assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
     assert(abs(cache.free_valences - expected_free_valences[cache.prefix]).max() < 1e-3)
@@ -450,3 +449,26 @@ def check_hf_multipoles(cache):
     assert(abs(cache.dipoles[:,2] - cache.multipoles[:,1]).max() < 1e-3)
     assert(abs(cache.multipoles - expected[cache.prefix]).max() < 1e-2)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_multipoles.txt" % cache.prefix)))
+
+
+def test_hf_overlap_matrices():
+    for cache in iter_hf_sto3g_gaussian_caches():
+        yield check_hf_overlap_matrices, cache
+
+def check_hf_overlap_matrices(cache):
+    cache.do_charges()
+    cache.do_atgrids_overlap_matrix()
+    num_dof = cache.context.wavefn.num_orbitals
+    full = numpy.zeros((num_dof,num_dof), float)
+    dmat_to_full(cache.context.wavefn.density_matrix, full)
+    molecule = cache.context.wavefn.molecule
+    for i in xrange(molecule.size):
+        overlap = cache.atgrids[i].overlap_matrix
+        #print overlap
+        #raise Exception
+        error = abs(overlap-overlap.transpose()).max()
+        assert(error<1e-10)
+        population = (full*overlap).sum()
+        check_population = cache.populations[i]
+        error = abs(population-check_population)
+        assert(error<1e-10)

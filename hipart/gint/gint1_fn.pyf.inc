@@ -107,3 +107,23 @@
     integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)
     integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
   end function gint1_fn_dmat
+
+  integer function gint1_fn_overlap(overlap, points, weights, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_overlap, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
+    intent(c) gint1_fn_overlap
+    intent(c)
+    double precision intent(inout) :: overlap(num_overlap)
+    double precision intent(in) :: points(num_points,3)
+    double precision intent(in) :: weights(num_points)
+    double precision intent(in)  :: centers(num_centers,3)
+    integer intent(int) :: shell_types(num_shells)
+    integer intent(int) :: shell_map(num_shells)
+    integer intent(int) :: num_primitives(num_shells)
+    double precision intent(in) :: ccoeffs(num_ccoeffs)
+    double precision intent(in) :: exponents(num_exponents)
+    integer intent(hide), depend(overlap) :: num_overlap=len(overlap)
+    integer intent(hide), depend(points) :: num_points=len(points)
+    integer intent(hide), depend(centers) :: num_centers=len(centers)
+    integer intent(hide), depend(shell_types) :: num_shells=len(shell_types)
+    integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)
+    integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
+  end function gint1_fn_overlap

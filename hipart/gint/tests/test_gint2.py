@@ -65,13 +65,13 @@ def test_pot_h_sto3g():
     points = ref_data_h_sto3g_pot[:,:3]*angstrom
     radius = numpy.sqrt((points**2).sum(axis=1))
     ref_data_h_sto3g_pot[:,3] -= 1/radius
-    potential = -basis.call_gint(gint2_nai_dmat, dmat, points)
+    potential = -basis.call_gint_grid(gint2_nai_dmat, dmat, points)
     assert(abs(potential-ref_data_h_sto3g_pot[:,3]).max() < 1e-8)
     # test error mechanism
     basis.shell_types[0] = 102
-    assert_raises(ValueError, basis.call_gint, gint2_nai_dmat, dmat, points*angstrom)
+    assert_raises(ValueError, basis.call_gint_grid, gint2_nai_dmat, dmat, points*angstrom)
     basis.shell_types[0] = -763
-    assert_raises(ValueError, basis.call_gint, gint2_nai_dmat, dmat, points*angstrom)
+    assert_raises(ValueError, basis.call_gint_grid, gint2_nai_dmat, dmat, points*angstrom)
 
 
 def test_gint2_nai_S_S():
@@ -125,7 +125,7 @@ def test_pot_hf_sto3g():
         radius = numpy.sqrt(((points-center)**2).sum(axis=1))
         nuc_potential += Z/radius
     ref_potential -= nuc_potential
-    potential = -basis.call_gint(gint2_nai_dmat, dmat, points)
+    potential = -basis.call_gint_grid(gint2_nai_dmat, dmat, points)
     assert(abs(potential-ref_potential).max() < 1e-6)
 
 
@@ -168,7 +168,7 @@ def test_pot_o2_cc_pvtz_cart():
         radius = numpy.sqrt(((points-center)**2).sum(axis=1))
         nuc_potential += Z/radius
     ref_potential -= nuc_potential
-    potential = -basis.call_gint(gint2_nai_dmat, dmat, points)
+    potential = -basis.call_gint_grid(gint2_nai_dmat, dmat, points)
     assert(abs(potential-ref_potential).max() < 1e-6)
 
 
@@ -211,5 +211,5 @@ def test_pot_o2_cc_pvtz_pure():
         radius = numpy.sqrt(((points-center)**2).sum(axis=1))
         nuc_potential += Z/radius
     ref_potential -= nuc_potential
-    potential = -basis.call_gint(gint2_nai_dmat, dmat, points)
+    potential = -basis.call_gint_grid(gint2_nai_dmat, dmat, points)
     assert(abs(potential-ref_potential).max() < 1e-6)

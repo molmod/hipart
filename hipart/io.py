@@ -33,6 +33,7 @@ __all__ = [
     "dump_atom_vectors", "load_atom_vectors",
     "dump_atom_matrix", "load_atom_matrix",
     "dump_atom_fields", "load_atom_fields",
+    "dump_overlap_matrices",
 ]
 
 
@@ -182,3 +183,15 @@ def load_atom_fields(filename):
             table[i,j] = float(word)
     f.close()
     return table, labels
+
+
+def dump_overlap_matrices(filename, overlap_matrices, numbers=None):
+    f = file(filename, "w")
+    print >> f, "number of orbitals:", len(overlap_matrices[0])
+    print >> f, "number of atoms: ", len(overlap_matrices)
+    for i, symbol, number in _iter_symbols_numbers(numbers, len(overlap_matrices)):
+        print >> f, "Atom % 3i  %2s  % 3i" % (i+1, symbol, number)
+        matrix = overlap_matrices[i]
+        for row in matrix:
+            print >> f, " ".join("% 15.10e" % value for value in row)
+    f.close()

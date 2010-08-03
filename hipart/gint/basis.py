@@ -160,16 +160,30 @@ class GaussianBasis(object):
 
         return result
 
-    def call_gint(self, gint1_fn, weights, points):
-        fns = numpy.zeros(len(points), float)
-        retcode = gint1_fn(
-            weights, fns, points, self.molecule.coordinates, self.shell_types,
+    def call_gint_grid(self, gint_c_routine, weights, points):
+        result = numpy.zeros(len(points), float)
+        retcode = gint_c_routine(
+            weights, result, points, self.molecule.coordinates, self.shell_types,
             self.shell_map, self.num_primitives, self.ccoeffs, self.exponents
         )
         if retcode == -1:
-            raise MemoryError("Out of memory while calling %s." % gint1_fn)
+            raise MemoryError("Out of memory while calling %s." % gint_c_routine)
         elif retcode == -2:
-            raise ValueError("Unsuported shell type when calling %s." % gint1_fn)
+            raise ValueError("Unsuported shell type when calling %s." % gint_c_routine)
         elif retcode != 0:
-            raise RuntimeError("Something went wrong when calling %s. Got retcode=%i." % (gint1_fn, retcode))
-        return fns
+            raise RuntimeError("Something went wrong when calling %s. Got retcode=%i." % (gint_c_routine, retcode))
+        return result
+
+    def call_gint_atomic_operator(self, gint_c_routine, points, weights):
+        result = numpy.zeros((self.num_dof, self.num_dof), float)
+        retcode = gint_c_routine(
+            result, points, weights, self.molecule.coordinates, self.shell_types,
+            self.shell_map, self.num_primitives, self.ccoeffs, self.exponents
+        )
+        if retcode == -1:
+            raise MemoryError("Out of memory while calling %s." % gint_c_routine)
+        elif retcode == -2:
+            raise ValueError("Unsuported shell type when calling %s." % gint_c_routine)
+        elif retcode != 0:
+            raise RuntimeError("Something went wrong when calling %s. Got retcode=%i." % (gint_c_routine, retcode))
+        return result
