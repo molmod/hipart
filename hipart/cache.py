@@ -19,7 +19,6 @@
 # --
 
 
-# TODO: hishfeld-i charges after becke charges fail.
 # TODO: change integration routines: switch to weighted sums over grid points
 # TODO: evaluate overlap matrices in the basis of contracted gaussians instead
 # of the basis of orbitals
@@ -115,12 +114,11 @@ class BaseCache(object):
         for i, number_i in enumerate(molecule.numbers):
             prefix = os.path.join(workdir, "atom%05i" % i)
             atgrid = Grid.from_prefix(prefix)
-            if atgrid is None:
+            rs = self.get_rs(i, number_i)
+            num_points = len(self.context.lebedev_xyz.shape)*len(rs)
+            if atgrid is None or atgrid.points.shape != (num_points,3):
                 center = molecule.coordinates[i]
-                points = get_atom_grid(
-                    self.context.lebedev_xyz, center,
-                    self.get_rs(i, number_i),
-                )
+                points = get_atom_grid(self.context.lebedev_xyz, center, rs)
                 atgrid = Grid(prefix, points)
             self.atgrids.append(atgrid)
 

@@ -313,6 +313,7 @@ def iter_hf_sto3g_gaussian_caches():
     context = Context(fn_fchk, options)
     yield cache_classes['becke'].new_from_args(context, ["3", "2e-5", "20.0", "100"])
     yield cache_classes['becke'].new_from_args(context, ["3"])
+    yield cache_classes['hirshi'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
 
