@@ -88,7 +88,7 @@ class BaseCache(object):
 
     def __init__(self, context, extra_tag_attributes):
         self.context = context
-        rs = self.get_rs(0,0)
+        rs = self.get_rs(-1)
         extra_tag_attributes.update({
             "r_low": "%.2e" % rs.min(),
             "r_high": "%.2e" % rs.max(),
@@ -98,7 +98,7 @@ class BaseCache(object):
         self.context.check_tag(extra_tag_attributes)
         self._done = set([])
 
-    def get_rs(self, i, number_i):
+    def get_rs(self, i):
         raise NotImplementedError
 
     @OnlyOnce("Integration weights")
@@ -106,7 +106,7 @@ class BaseCache(object):
         self.radial_weights_map = {}
         molecule = self.context.wavefn.molecule
         for i in xrange(molecule.size):
-            rs = self.get_rs(i, molecule.numbers[i])
+            rs = self.get_rs(i)
             key = len(rs)
             if key in self.radial_weights_map:
                 continue
@@ -116,14 +116,14 @@ class BaseCache(object):
     def _radint(self, i, integrand):
         """Radial integration routine"""
         molecule = self.context.wavefn.molecule
-        rs = self.get_rs(i, molecule.numbers[i])
+        rs = self.get_rs(i)
         w = self.radial_weights_map[len(rs)]
         return numpy.dot(w, integrand*rs*rs)
 
     def _radint_cumul(self, i, integrand):
         # WARNING: this is very inaccurate, do not use for delicate computations
         molecule = self.context.wavefn.molecule
-        rs = self.get_rs(i, molecule.numbers[i])
+        rs = self.get_rs(i)
         w = self.radial_weights_map[len(rs)]
         return numpy.cumsum(w*integrand*rs*rs)
 
@@ -134,10 +134,10 @@ class BaseCache(object):
 
         self.atgrids = []
         pb = log.pb("Computing/Loading atomic grids (and distances)", molecule.size**2)
-        for i, number_i in enumerate(molecule.numbers):
+        for i in xrange(molecule.size):
             prefix = os.path.join(workdir, "atom%05i" % i)
             atgrid = Grid.from_prefix(prefix)
-            rs = self.get_rs(i, number_i)
+            rs = self.get_rs(i)
             num_points = len(self.context.lebedev_xyz.shape)*len(rs)
             if atgrid is None or atgrid.points.shape != (num_points,3):
                 center = molecule.coordinates[i]
@@ -196,7 +196,7 @@ class BaseCache(object):
                     densities = self.atgrids[i].moldens
                     radfun = integrate_lebedev(self.context.lebedev_weights, densities)
                     charge_int = self._radint_cumul(i, radfun)
-                    rs = self.get_rs(i, molecule.numbers[i])
+                    rs = self.get_rs(i)
                     j = charge_int.searchsorted([core_sizes[number_i]])[0]
                     self.noble_radii[i] = rs[j]
             self.noble_radii.tofile(noble_radii_fn_bin)
@@ -778,7 +778,7 @@ class BaseCache(object):
                         # Use Becke's integration scheme to split the integral
                         # over two atomic grids.
                         # 1) first part of the integral, using the grid on atom i
-                        rs = self.get_rs(i, molecule.numbers[i])
+                        rs = self.get_rs(i)
                         delta = (self.atgrids[i].distances[j].reshape((len(rs),-1)) - rs.reshape((-1,1))).ravel()
                         switch = delta/molecule.distance_matrix[i,j]
                         for k in xrange(3):
@@ -789,7 +789,7 @@ class BaseCache(object):
                         radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
                         part1 = self._radint(i, radfun)
                         # 2) second part of the integral
-                        rs = self.get_rs(j, molecule.numbers[j])
+                        rs = self.get_rs(j)
                         delta = (self.atgrids[j].distances[i].reshape((len(rs),-1)) - rs.reshape((-1,1))).ravel()
                         switch = delta/molecule.distance_matrix[i,j]
                         for k in xrange(3):
@@ -855,11 +855,12 @@ class TableBaseCache(StockholderCache):
         # write the rs to the workdir for plotting purposes:
         atom_table.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
 
-    def get_rs(self, i, number_i):
-        if number_i == 0:
+    def get_rs(self, i):
+        if i == -1:
             return self.atom_table.rs
         else:
-            return self.atom_table.records[number_i].rs
+            number = self.context.wavefn.molecule.numbers[i]
+            return self.atom_table.records[number].rs
 
 
 hirshfeld_usage = """ * Hirshfeld Partitioning
@@ -995,8 +996,8 @@ class ISACache(StockholderCache):
         # write the rs to the workdir for plotting purposes:
         self.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
 
-    def get_rs(self, i, number_i):
-        if number_i == 0:
+    def get_rs(self, i):
+        if i == -1:
             return self.rs
         elif hasattr(self, "proatomfns") and len(self.proatomfns) > i:
             return self.proatomfns[i].density.x
@@ -1014,11 +1015,11 @@ class ISACache(StockholderCache):
 
         log("Generating initial guess for the pro-atoms")
         self.proatomfns = []
-        for i, number_i in enumerate(molecule.numbers):
+        for i in xrange(molecule.size):
             densities = self.atgrids[i].moldens
             profile = densities.reshape((-1,self.context.num_lebedev)).min(axis=1)
             profile[profile < 1e-6] = 1e-6
-            rs = self.get_rs(i, number_i)
+            rs = self.get_rs(i)
             self.proatomfns.append(AtomFn(rs, profile))
 
         counter = 0
@@ -1112,8 +1113,8 @@ class BeckeCache(BaseCache):
         # write the rs to the workdir for plotting purposes:
         self.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
 
-    def get_rs(self, i, number_i):
-        if number_i == 0:
+    def get_rs(self, i):
+        if i == -1:
             return self.rs
         elif hasattr(self, "proatomfns") and len(self.proatomfns) > i:
             return self.proatomfns[i].density.x
