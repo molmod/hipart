@@ -33,6 +33,6 @@ hi-dipoles.py program. Then a ESP costfunction is constructed and it is tested
 how well the partitioned charges and dipoles reproduce the ESP."""
 
 
-context, cache = parse_command_line(usage, add_extra_options)
+context, cache = parse_command_line(usage)
 cache.do_esp_test()
 context.clean()
