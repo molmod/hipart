@@ -82,3 +82,16 @@ void add_orbitals_to_dmat(double* orbitals, double* dmat, int num_orbitals, int 
     orbital += num_dof;
   }
 }
+
+
+void dmat_to_full(double* dmat, double* full, int num_dof) {
+  int i, j;
+
+  for (i=0; i<num_dof; i++) {
+    for (j=0; j<=i; j++) {
+      full[i*num_dof+j] = *dmat;
+      full[j*num_dof+i] = *dmat;
+      dmat++;
+    }
+  }
+}

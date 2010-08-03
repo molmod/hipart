@@ -24,11 +24,14 @@ from molmod import angstrom
 import os, numpy
 
 from hipart.gint import GaussianBasis, gint1_fn_basis, gint1_fn_dmat, \
-    gint2_nai_dmat, reorder_dmat, add_orbitals_to_dmat
+    gint2_nai_dmat, reorder_dmat, add_orbitals_to_dmat, dmat_to_full
 from hipart.log import log
 
 
-__all__ = ["load_wavefunction", "FCHKWaveFunction"]
+__all__ = [
+    "load_wavefunction", "FCHKWaveFunction", "get_num_filled",
+    "compute_naturals"
+]
 
 
 def load_wavefunction(filename):
@@ -213,6 +216,31 @@ class OldFCHKWaveFunction(object):
         grid.beta_orbitals = beta_orbitals
 
 
+def get_num_filled(occupations):
+    # determine the number of (partially) filled orbitals
+    tmp = (abs(occupations)<1e-5).nonzero()[0]
+    if len(tmp) == 0:
+        return len(occupations)
+    else:
+        return tmp[0]
+
+
+def compute_naturals(dmat, num_dof):
+    # transform the dmat into conventional storage
+    full = numpy.zeros((num_dof, num_dof), float)
+    dmat_to_full(dmat, full)
+    # use numpy for diagonalization
+    occupations, orbitals = numpy.linalg.eigh(full)
+    # repack the arrays from the eigenvalue analysis in final order
+    occupations = numpy.array(occupations[::-1])
+    orbitals = numpy.array(orbitals.transpose()[::-1])
+    return occupations, orbitals
+    # note: the switch to conventional storage could have been avoided
+    # by calling lapack routines directly. this troubles the compilation,
+    # so for the moment I prefer to do it this way.
+
+
+
 class FCHKWaveFunction(object):
     def __init__(self, filename, options):
         if len(options) == 1:
@@ -247,6 +275,14 @@ class FCHKWaveFunction(object):
         # electronic structure data
         self.basis = GaussianBasis.from_fchk(fchk)
         # orbitals
+        self.alpha_orbital_energies = None
+        self.beta_orbital_energies = None
+        self.natural_orbitals = None
+        self.alpha_orbitals = None
+        self.beta_orbitals = None
+        self.alpha_occupations = None
+        self.beta_occupations = None
+        self.natural_occupations = None
         if density_type == "scf":
             # Load orbital stuff only for scf computations.
             self.alpha_orbital_energies = fchk.fields["Alpha Orbital Energies"]
@@ -258,12 +294,18 @@ class FCHKWaveFunction(object):
                 self.beta_orbitals = self.alpha_orbitals
             else:
                 self.beta_orbitals = self.beta_orbitals.reshape((-1,self.basis.num_dof))[:,self.basis.g03_permutation]
-        else:
-            # TODO: optionally work with natural orbitals.
-            self.alpha_orbital_energies = None
-            self.beta_orbital_energies = None
-            self.alpha_orbitals = None
-            self.beta_orbitals = None
+            self.alpha_occupations = numpy.zeros(self.num_orbitals, float)
+            self.alpha_occupations[:self.num_alpha] = 1.0
+            if self.beta_orbitals is None:
+                self.beta_occupations = self.alpha_occupations
+            else:
+                self.beta_occupations = numpy.zeros(self.num_orbitals, float)
+                self.beta_occupations[:self.num_beta] = 1.0
+            if self.restricted:
+                self.natural_orbitals = self.alpha_orbitals
+                self.natural_occupations = self.alpha_occupations + self.beta_occupations
+                self.num_natural = max(self.num_alpha, self.num_beta)
+
         # density matrices
         hack_fchk = self.restricted and (self.num_alpha != self.num_beta) and density_type == "scf"
         if hack_fchk:
@@ -312,6 +354,52 @@ class FCHKWaveFunction(object):
         log("Number of atoms: %i" % self.molecule.size)
         log("Chemical formula: %s" % self.molecule.chemical_formula)
 
+    def init_naturals(self, workdir):
+        log.begin("Natural orbitals")
+
+        def do_natural(dmat, label):
+            orb_fn_bin = os.path.join(workdir, "%s_orbitals" % label)
+            occ_fn_bin = os.path.join(workdir, "%s_occupations" % label)
+            if (os.path.isfile(orb_fn_bin) and os.path.isfile(occ_fn_bin)):
+                log("Loading the %s orbitals and occupation numbers ..." % label)
+                orbitals = numpy.fromfile(orb_fn_bin).reshape((self.num_orbitals, self.num_orbitals))
+                occupations = numpy.fromfile(occ_fn_bin)
+
+            else:
+                log("Computing the %s orbitals and occupation numbers ..." % label)
+                orbitals = numpy.zeros((self.num_orbitals, self.num_orbitals), float)
+                occupations = numpy.zeros(self.num_orbitals, float)
+                occupations, orbitals = compute_naturals(dmat, self.num_orbitals)
+                log("Dumping the %s orbitals and occupation numbers ..." % label)
+                orbitals.tofile(orb_fn_bin)
+                occupations.tofile(occ_fn_bin)
+            num = get_num_filled(occupations)
+            return num, occupations, orbitals
+
+        if self.natural_orbitals is None or self.natural_occupations is None:
+            self.num_natural, self.natural_occupations, self.natural_orbitals = \
+                do_natural(self.density_matrix, "natural")
+
+        if self.alpha_orbitals is None or self.alpha_occupations is None:
+            if self.spin_density_matrix is None:
+                self.num_alpha = self.num_natural
+                self.alpha_orbitals = self.natural_orbitals
+                self.alpha_occupations = 0.5*self.natural_occupations
+            else:
+                self.num_alpha, self.alpha_occupations, self.alpha_orbitals = \
+                    do_natural((self.density_matrix + self.spin_density_matrix)/2, "alpha")
+
+        if self.beta_orbitals is None or self.beta_occupations is None:
+            if self.spin_density_matrix is None:
+                self.num_beta = self.num_natural
+                self.beta_orbitals = self.natural_orbitals
+                self.beta_occupations = 0.5*self.natural_occupations
+            else:
+                self.num_beta, self.beta_occupations, self.beta_orbitals = \
+                    do_natural((self.density_matrix - self.spin_density_matrix)/2, "beta")
+        log.end()
+
+
     def compute_density(self, grid):
         moldens = grid.load("moldens")
         if moldens is None:
@@ -342,10 +430,12 @@ class FCHKWaveFunction(object):
         grid.molpot = molpot
 
     def compute_orbitals(self, grid):
-        if self.alpha_orbitals is None:
-            raise ValueError("The orbitals are not available.")
+        workdir = os.path.dirname(grid.prefix)
+        self.init_naturals(workdir) # construct orbitals if not present.
         alpha_orbitals = []
         beta_orbitals = []
+        natural_orbitals = []
+
         for i in xrange(self.num_orbitals):
             alpha_suffix = "alpha_orb%05i" % i
             alpha_orb = grid.load(alpha_suffix)
@@ -354,7 +444,7 @@ class FCHKWaveFunction(object):
                 alpha_orb = self.basis.call_gint(gint1_fn_basis, weights, grid.points)
                 grid.dump(alpha_suffix, alpha_orb)
             alpha_orbitals.append(alpha_orb)
-            if self.restricted:
+            if self.beta_orbitals is self.alpha_orbitals:
                 beta_orbitals.append(alpha_orb)
             else:
                 beta_suffix = "beta_orb%05i" % i
@@ -363,8 +453,18 @@ class FCHKWaveFunction(object):
                     weights = self.beta_orbitals[i]
                     beta_orb = self.basis.call_gint(gint1_fn_basis, weights, grid.points)
                     grid.dump(beta_suffix, beta_orb)
-                    grid.dump(beta_suffix, beta_orb)
                 beta_orbitals.append(beta_orb)
+            if self.natural_orbitals is self.alpha_orbitals:
+                natural_orbitals.append(alpha_orb)
+            else:
+                natural_suffix = "natural_orb%05i" % i
+                natural_orb = grid.load(natural_suffix)
+                if natural_orb is None:
+                    weights = self.natural_orbitals[i]
+                    natural_orb = self.basis.call_gint(gint1_fn_basis, weights, grid.points)
+                    grid.dump(natural_suffix, natural_orb)
+                natural_orbitals.append(natural_orb)
 
         grid.alpha_orbitals = alpha_orbitals
         grid.beta_orbitals = beta_orbitals
+        grid.natural_orbitals = natural_orbitals

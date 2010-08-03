@@ -19,7 +19,7 @@
 # --
 
 
-from hipart.gint import reorder_dmat, add_orbitals_to_dmat
+from hipart.gint import reorder_dmat, add_orbitals_to_dmat, dmat_to_full
 
 import numpy
 
@@ -73,3 +73,28 @@ def test_add_orbitals_to_dmat2():
     expected_dmat = numpy.dot(orbitals.transpose(), orbitals)
     expected_dmat = numpy.concatenate([expected_dmat[i,:i+1] for i in xrange(num_dof)])
     assert(abs(dmat - expected_dmat).max() < 1e-10)
+
+
+def test_dmat_to_full1():
+    dmat = numpy.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+    full = numpy.zeros((3,3), float)
+    dmat_to_full(dmat, full)
+    expected_full = numpy.array([[1.0, 2.0, 4.0], [2.0, 3.0, 5.0], [4.0, 5.0, 6.0]])
+    error = abs(full - expected_full).max()
+    assert(error < 1e-10)
+
+def test_dmat_to_full2():
+    num_dof = 10
+    size = (num_dof*(num_dof+1))/2
+    dmat = numpy.random.normal(0, 1, size)
+    full = numpy.zeros((num_dof,num_dof), float)
+    dmat_to_full(dmat, full)
+    expected_full = numpy.zeros((num_dof,num_dof), float)
+    counter = 0
+    for i in xrange(num_dof):
+        row = dmat[counter:counter+i+1]
+        expected_full[i,:i+1] = row
+        expected_full[:i+1,i] = row
+        counter += i+1
+    error = abs(full - expected_full).max()
+    assert(error < 1e-10)

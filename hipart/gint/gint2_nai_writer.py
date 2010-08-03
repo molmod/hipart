@@ -4,9 +4,6 @@
 from writer import *
 
 
-# TODO: gint1, gint2 and writer tests
-
-
 code_gint2_nai_dmat_c = """\
 static int get_shell_dof(int shell_type) {
   if (shell_type==-1) {

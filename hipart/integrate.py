@@ -42,6 +42,7 @@ def integrate_equi(u, g):
     generated for the integration. This means that equidistant grids are
     preferential but not mandatory.
     """
+    # TODO: this is sloooow: checks on u are repeated too often
     s = CubicSpline(u, g)
     return s.integrate()
 
@@ -61,6 +62,7 @@ def cumul_integrate_equi(u,g):
 
     See integrate_equi for more details.
     """
+    # TODO: this is sloooow: checks on u are repeated too often
     s = CubicSpline(u, g)
     return s.cumul_integrate()
 

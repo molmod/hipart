@@ -198,7 +198,7 @@ def check_hf_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices.txt" % cache.prefix)))
     assert(abs(cache.bond_orders.sum(axis=0) - cache.valences).max() < 1e-2)
     assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
@@ -206,72 +206,83 @@ def check_hf_bond_orders(cache):
 
 
 def test_oh1_bond_orders():
-    raise SkipTest("Work in progress.")
     for cache in iter_oh1_sto3g_gaussian_caches():
         yield check_oh1_bond_orders, cache
 
 def check_oh1_bond_orders(cache):
     expected_bond_orders = {
         "hirsh": numpy.array([
-            [0.0, 1.0],
-            [1.0, 0.0],
+            [0.0, 1.20357067],
+            [1.20357067, 0.0],
         ]),
         "hirshi": numpy.array([
-            [0.0, 1.0],
-            [1.0, 0.0],
+            [0.0, 1.13842368],
+            [1.13842368, 0.0],
         ]),
         "isa": numpy.array([
-            [0.0, 1.0],
-            [1.0, 0.0],
+            [0.0, 1.11859939],
+            [1.11859939, 0.0],
         ]),
     }
     expected_valences = {
-        "hirsh": numpy.array([1.0, 1.0]),
-        "hirshi": numpy.array([1.0, 1.0]),
-        "isa": numpy.array([[1.0, 1.0]]),
+        "hirsh": numpy.array([2.13744632, 1.20467815]),
+        "hirshi": numpy.array([2.08258865, 1.13920176]),
+        "isa": numpy.array([[2.06647643, 1.1193233]]),
+    }
+    expected_free_valences = {
+        "hirsh": numpy.array([0.93387566, 0.00110749]),
+        "hirshi": numpy.array([9.44164968e-01, 7.78083661e-04]),
+        "isa": numpy.array([[9.47877044e-01, 7.23917974e-04]]),
     }
     cache.do_bond_orders()
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices.txt" % cache.prefix)))
     assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
+    assert(abs(cache.free_valences - expected_free_valences[cache.prefix]).max() < 1e-3)
 
 
 def test_oh2_bond_orders():
-    raise SkipTest("Work in progress.")
     for cache in iter_oh2_sto3g_gaussian_caches():
         yield check_oh2_bond_orders, cache
 
 def check_oh2_bond_orders(cache):
     expected_bond_orders = {
         "hirsh": numpy.array([
-            [0.0, 1.0],
-            [1.0, 0.0],
+            [0.0, 1.20223341],
+            [1.20223341, 0.0],
         ]),
         "hirshi": numpy.array([
-            [0.0, 1.0],
-            [1.0, 0.0],
+            [0.0, 1.13753611],
+            [1.13753611, 0.0],
         ]),
         "isa": numpy.array([
-            [0.0, 1.0],
-            [1.0, 0.0],
+            [0.0, 1.1172814],
+            [1.1172814, 0.0],
         ]),
     }
     expected_valences = {
-        "hirsh": numpy.array([0.0, 0.0]),
-        "hirshi": numpy.array([0.0, 0.0]),
-        "isa": numpy.array([[0.0, 0.0]]),
+        "hirsh": numpy.array([2.13860969, 1.20513964]),
+        "hirshi": numpy.array([2.08410701, 1.13998475]),
+        "isa": numpy.array([[2.06796024, 1.11955637]]),
+    }
+    expected_free_valences = {
+        "hirsh": numpy.array([0.93637628, 0.00290623]),
+        "hirshi": numpy.array([0.9465709, 0.00244864]),
+        "isa": numpy.array([[0.95067885, 0.00227497]]),
     }
     cache.do_bond_orders()
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_beta_overlap.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_beta_overlap_matrices.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_natural_overlap_matrices.txt" % cache.prefix)))
     assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
+    assert(abs(cache.free_valences - expected_free_valences[cache.prefix]).max() < 1e-3)
 
 
 def test_hf_net_populations():

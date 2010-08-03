@@ -32,8 +32,11 @@ from hipart.gint.basis import get_shell_dof
 from hipart.gint.solid_harmonics import get_solid_harmonics
 
 
-# Sympy stuff
+# TODO: More tests
+# TODO: Precompute parameters that only depend on basis sets and geometry
 
+
+# Sympy stuff
 
 class Command(object):
     def __init__(self, symbol, expr, tag):
