@@ -23,18 +23,19 @@ Preparing the atomic database
 Both the :ref:`hirshfeld` and :ref:`hirshfeld-i` rely on a database of
 pro-atoms. These are spherically averaged atomic densities obtained from
 single-atom computations. The program ``hi-atomdb.py`` generates such a database
-using the Gaussian03 program. Make sure the g03 program is in the path before
-executing ``hi-atomdb.py``.
+using the Gaussian program. Make sure the g03 or g09 program is in the path
+before executing ``hi-atomdb.py``.
 
 The online help is as follows::
 
     toon@poony# hi-atomdb.py --help
-    Usage: hi-atomdb.py [options] lot atoms
+    Usage: hi-atomdb.py [options] executable lot atoms
 
     hi-atomdb.py computes a database of pro-atomic densities.
 
     The following arguments are mandatory:
-      * lot  --  The level of theory to be used in Gaussian03 input notation.
+      * executable  --  the name of the Gaussian binary (g03 or g09)
+      * lot  --  The level of theory to be used in Gaussian input notation.
       * atoms  -- The atoms to be computed. One can specify ranges, e.g 1,2-5'
                   (avoid whitespace)
 
@@ -71,44 +72,51 @@ The default settings are good enough for most levels of theory and basis sets.
 ``hi-atomdb.py`` prints some progress information on screen. A typical output
 looks like this::
 
-    toon@poony# hi-atomdb.py HF/STO-3G 1,6-10
+    toon@poony# hi-atomdb.py g03 HF/STO-3G 1,6-10
     Computing atomic database with program Gaussian (g03,qc=False)
     Creating input files:
-     0% ......... 33% ......... 66% ......... 100%
+     0% ........... 23% .......... 46% .......... 69% .......... 93% ... 100%
     Atomic computations:
-     0% ......... 14% ......... 29% ......... 44% ......... 59% ......... 74% ......... 89% ...... 100%
+     0% ........... 23% .......... 46% .......... 69% .......... 93% ... 100%
+    Some jobs failed:
+      001H/neg2/mult2
+      009F/neg2/mult2
+      010Ne/neg2/mult1
+      010Ne/neg1/mult2
+    Selecting ground states
     Density profiles:
-     0% ......... 33% ......... 66% ......... 100%
-    Total charge error:   1  H -1    1.78596e-09
-    Total charge error:   1  H +0    1.68323e-09
-    Total charge error:   6  C -2    4.43124e-09
-    Total charge error:   6  C -1    4.76319e-09
-    Total charge error:   6  C +0    5.58598e-09
-    Total charge error:   6  C +1    6.18370e-09
-    Total charge error:   6  C +2    6.41107e-09
-    Total charge error:   7  N -2    7.81641e-09
-    Total charge error:   7  N -1    8.16317e-09
-    Total charge error:   7  N +0    8.53874e-09
-    Total charge error:   7  N +1    8.58778e-09
-    Total charge error:   7  N +2    8.75891e-09
-    Total charge error:   8  O -2    -1.60109e-08
-    Total charge error:   8  O -1    -1.47804e-08
-    Total charge error:   8  O +0    -1.35640e-08
-    Total charge error:   8  O +1    -1.25001e-08
-    Total charge error:   8  O +2    -1.13051e-08
-    Total charge error:   9  F -1    -6.58516e-09
-    Total charge error:   9  F +0    -5.80743e-09
-    Total charge error:   9  F +1    -4.97888e-09
-    Total charge error:   9  F +2    -4.19043e-09
-    Total charge error:  10 Ne +0    7.07409e-09
-    Total charge error:  10 Ne +1    7.82146e-09
-    Total charge error:  10 Ne +2    8.49154e-09
+     0% ........... 33% .......... 66% .......... 100%
+    Total charge error:   1  H -1    2.32565e-09
+    Total charge error:   1  H +0    1.16282e-09
+    Total charge error:   6  C -2    4.29391e-09
+    Total charge error:   6  C -1    4.91596e-09
+    Total charge error:   6  C +0    5.53802e-09
+    Total charge error:   6  C +1    6.16007e-09
+    Total charge error:   6  C +2    6.78214e-09
+    Total charge error:   7  N -2    7.71627e-09
+    Total charge error:   7  N -1    7.96086e-09
+    Total charge error:   7  N +0    8.20544e-09
+    Total charge error:   7  N +1    8.45004e-09
+    Total charge error:   7  N +2    8.69463e-09
+    Total charge error:   8  O -2    -1.58403e-08
+    Total charge error:   8  O -1    -1.47301e-08
+    Total charge error:   8  O +0    -1.36200e-08
+    Total charge error:   8  O +1    -1.25099e-08
+    Total charge error:   8  O +2    -1.13998e-08
+    Total charge error:   9  F -1    -6.62238e-09
+    Total charge error:   9  F +0    -5.80813e-09
+    Total charge error:   9  F +1    -4.99384e-09
+    Total charge error:   9  F +2    -4.17957e-09
+    Total charge error:  10 Ne +0    7.17509e-09
+    Total charge error:  10 Ne +1    7.82638e-09
+    Total charge error:  10 Ne +2    8.47765e-09
+
 
 The program consists of three phases: (i) setup of the atomic input files for
-Gaussian03, (ii) Gaussian03 computations on every atomic input, and (iii)
+Gaussian, (ii) Gaussian computations on every atomic input, and (iii)
 derivation of the spherically averaged atomic densities. In the end a check
 is performed by integrating the total charge based on the spherically averaged
-densities. When the poor grids are used, it will be obvious from the errors in
+densities. When too poor grids are used, it will be obvious from the errors in
 this last check. In this example the errors are very small because of the
 minimal basis set.
 

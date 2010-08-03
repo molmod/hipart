@@ -31,7 +31,7 @@ from molmod.units import angstrom, electronvolt
 
 from optparse import OptionParser
 from glob import glob
-import numpy, os
+import numpy, os, sys
 
 
 __all__ = ["main"]
@@ -69,9 +69,9 @@ class Gaussian(object):
         fn_fchk = os.path.join(dirname, "gaussian.fchk")
         if not os.path.isfile(fn_fchk):
             os.system(
-                ("(cd %s; g03 < gaussian.com > gaussian.log 2> /dev/null;"
+                ("(cd %s; %s < gaussian.com > gaussian.log 2> /dev/null &&"
                 "formchk gaussian.chk gaussian.fchk > /dev/null 2> /dev/null;"
-                "rm gaussian.chk)") % dirname
+                "rm -f gaussian.chk)") % (dirname, self.executable)
             )
             if not os.path.isfile(fn_fchk):
                 return False
@@ -119,10 +119,8 @@ def label_to_charge(label):
         return int(label[3:])
 
 
-def make_inputs(program, lot, atom_numbers, max_ion):
-    pb = log.pb("Creating input files", len(atom_numbers)*(2*max_ion+1))
+def iter_states(atom_numbers, max_ion):
     noble_numbers = [0] + [atom.number for atom in periodic.atoms_by_number.itervalues() if atom.col == 18]
-
     for i in atom_numbers:
         atom = periodic[i]
         next_noble = min(n for n in noble_numbers if n >= atom.number)
@@ -137,8 +135,6 @@ def make_inputs(program, lot, atom_numbers, max_ion):
         else:
             num_states = 4
         for charge in xrange(-max_ion, max_ion+1):
-            charge_label = charge_to_label(charge)
-            pb()
             num_elec = atom.number - charge
             if num_elec <= 0: continue
             charge_num_states = max(1, min(
@@ -151,14 +147,25 @@ def make_inputs(program, lot, atom_numbers, max_ion):
             else:
                 mults = list(2*i+2 for i in xrange(charge_num_states))
             for mult in mults:
-                dirname = os.path.join("%03i%s" % (atom.number, atom.symbol), charge_label, "mult%i" % mult)
-                program.make_atom_input(dirname, atom.number, charge, mult, lot)
+                yield atom, charge, mult
+
+
+def make_inputs(program, lot, atom_numbers, max_ion):
+    states = list(iter_states(atom_numbers, max_ion))
+    pb = log.pb("Creating input files", len(states))
+    dirnames = []
+
+    for atom, charge, mult in states:
+        pb()
+        charge_label = charge_to_label(charge)
+        dirname = os.path.join("%03i%s" % (atom.number, atom.symbol), charge_label, "mult%i" % mult)
+        program.make_atom_input(dirname, atom.number, charge, mult, lot)
+        dirnames.append(dirname)
     pb()
+    return dirnames
 
 
-def run_jobs(program):
-    dirnames = glob("0*/*/*/")
-    dirnames.sort()
+def run_jobs(program, dirnames):
     pb = log.pb("Atomic computations", len(dirnames))
     failed = []
     for dirname in dirnames:
@@ -167,6 +174,9 @@ def run_jobs(program):
         if not succes:
             failed.append(dirname)
     pb()
+    if len(failed) == len(dirnames):
+        print "Could not execute any job. Giving up."
+        sys.exit(-1)
     if len(failed) > 0:
         print "Some jobs failed:"
         for dirname in failed:
@@ -174,6 +184,7 @@ def run_jobs(program):
 
 
 def select_ground_states(program, max_ion):
+    print "Selecting ground states."
     all_energies = program.get_energies()
 
     if 1 in all_energies:
@@ -274,12 +285,13 @@ def parse_numbers(atom_str):
 
 
 usage = """\
-%prog [options] lot atoms
+%prog [options] executable lot atoms
 
 %prog computes a database of pro-atomic densities.
 
 The following arguments are mandatory:
-  * lot  --  The level of theory to be used in Gaussian03 input notation.
+  * executable  --  the name of the Gaussian binary (g03 or g09)
+  * lot  --  The level of theory to be used in Gaussian input notation.
   * atoms  -- The atoms to be computed. One can specify ranges, e.g 1,2-5'
               (avoid whitespace)
 
@@ -289,8 +301,8 @@ generate quite a few files and subdirectories.
 
 Examples:
 
-%prog MP2/Aug-CC-pVDZ 1-10,17
-%prog HF/3-21G 1,6,7,8 -l 110
+%prog g03 MP2/Aug-CC-pVDZ 1-10,17
+%prog g09 HF/3-21G 1,6,7,8 -l 110
 """
 
 def parse_args():
@@ -321,18 +333,18 @@ def parse_args():
         help="Specify the qc convergence scheme in Gaussian input. [default=%default]"
     )
     (options, args) = parser.parse_args()
-    if len(args) != 2:
-        parser.error("Expecting two arguments: level of theory (+ basis set) and the atom specification.")
-    lot, atom_str = args
+    if len(args) != 3:
+        parser.error("Expecting three arguments: executable, level of theory (+ basis set) and the atom specification.")
+    executable, lot, atom_str = args
     atom_numbers = parse_numbers(atom_str)
-    return options, lot, atom_numbers
+    return options, executable, lot, atom_numbers
 
 
 def main():
-    options, lot, atom_numbers = parse_args()
-    program = Gaussian("g03", options)
-    make_inputs(program, lot, atom_numbers, options.max_ion)
-    run_jobs(program)
+    options, executable, lot, atom_numbers = parse_args()
+    program = Gaussian(executable, options)
+    dirnames = make_inputs(program, lot, atom_numbers, options.max_ion)
+    run_jobs(program, dirnames)
     select_ground_states(program, options.max_ion)
     make_density_profiles(
         program,
