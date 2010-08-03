@@ -430,8 +430,6 @@ class FCHKWaveFunction(object):
         grid.molpot = molpot
 
     def compute_orbitals(self, grid):
-        workdir = os.path.dirname(grid.prefix)
-        self.init_naturals(workdir) # construct orbitals if not present.
         alpha_orbitals = []
         beta_orbitals = []
         natural_orbitals = []

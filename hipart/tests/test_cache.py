@@ -198,7 +198,7 @@ def check_hf_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices_orb.txt" % cache.prefix)))
     assert(abs(cache.bond_orders.sum(axis=0) - cache.valences).max() < 1e-2)
     assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
@@ -238,7 +238,7 @@ def check_oh1_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices_orb.txt" % cache.prefix)))
     assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
     assert(abs(cache.free_valences - expected_free_valences[cache.prefix]).max() < 1e-3)
@@ -277,19 +277,19 @@ def check_oh2_bond_orders(cache):
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_beta_overlap_matrices.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_natural_overlap_matrices.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_alpha_overlap_matrices_orb.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_beta_overlap_matrices_orb.txt" % cache.prefix)))
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_natural_overlap_matrices_orb.txt" % cache.prefix)))
     assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
     assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
     assert(abs(cache.free_valences - expected_free_valences[cache.prefix]).max() < 1e-3)
 
 
-def test_hf_net_populations():
+def test_hf_net_overlap():
     for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_net_populations, cache
+        yield check_hf_net_overlap, cache
 
-def check_hf_net_populations(cache):
+def check_hf_net_overlap(cache):
     expected = {
         "hirsh": numpy.array([
             [8.89564521, 0.24206497],
@@ -309,9 +309,9 @@ def check_hf_net_populations(cache):
         ]),
 
     }
-    cache.do_net_populations()
-    assert(abs(cache.net_populations - expected[cache.prefix]).max() < 1e-2)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_net_populations.txt" % cache.prefix)))
+    cache.do_net_overlap()
+    assert(abs(cache.net_overlap - expected[cache.prefix]).max() < 1e-2)
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_net_overlap.txt" % cache.prefix)))
 
 
 def test_hf_mol_esp_cost():

@@ -26,8 +26,8 @@
 
 from hipart.opts import parse_command_line
 
-usage = """%prog computes net atom and bond populations"""
+usage = """%prog computes atomic overlap matrices in the basis of the orbitals."""
 
 context, cache = parse_command_line(usage)
-cache.do_net_populations()
+cache.do_atgrids_overlap_matrix_orb()
 context.clean()
