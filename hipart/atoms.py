@@ -26,13 +26,8 @@ import numpy, os
 
 
 __all__ = [
-    "AtomFn", "AtomProfile", "AtomTable",
+    "AtomProfile", "AtomTable",
 ]
-
-
-class AtomFn(object):
-    def __init__(self, rs, rhos):
-        self.density = CubicSpline(rs, rhos)
 
 
 class AtomProfile(object):
@@ -72,7 +67,7 @@ class AtomProfile(object):
             high_ref = self.records[high_charge]
             rhos = high_ref + (low_ref - high_ref)*(high_charge - charge)
 
-        result = AtomFn(self.rs, rhos)
+        result = CubicSpline(self.rs, rhos)
         #print "##Check:", -integrate(result.rs, 4*numpy.pi*result.rhos*result.rs**2)+self.number-charge, "##"
         return result
 

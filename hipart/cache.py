@@ -38,9 +38,9 @@ from hipart.io import dump_atom_scalars, dump_atom_vectors, dump_atom_matrix, \
     dump_atom_fields
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid, get_atom_grid, integrate_lebedev
-from hipart.atoms import AtomTable, AtomFn
+from hipart.atoms import AtomTable
 from hipart.grids import Grid
-from hipart.spline import get_radial_weights_log
+from hipart.spline import get_radial_weights_log, CubicSpline
 
 from molmod import Rotation, angstrom
 from molmod.periodic import periodic
@@ -823,10 +823,10 @@ class StockholderCache(BaseCache):
         """
         molecule = self.context.wavefn.molecule
         # construct the pro-atom and pro-molecule on this grid
-        pro_atom = self.proatomfns[atom_index].density(grid.distances[atom_index])
+        pro_atom = self.proatomfns[atom_index](grid.distances[atom_index])
         pro_mol = numpy.zeros(len(pro_atom), float)
         for j in xrange(molecule.size):
-            pro_mol += self.proatomfns[j].density(grid.distances[j])
+            pro_mol += self.proatomfns[j](grid.distances[j])
         # multiply the density on the grid by the weight function
         return pro_atom/pro_mol
 
@@ -990,7 +990,7 @@ class ISACache(StockholderCache):
         if i == -1:
             return self.rs
         elif hasattr(self, "proatomfns") and len(self.proatomfns) > i:
-            return self.proatomfns[i].density.x
+            return self.proatomfns[i].x
         elif hasattr(self, "atgrids") and len(self.atgrids) > i:
             num_shells = len(self.atgrids[i].points)/self.context.num_lebedev
             return self.rs[:num_shells]
@@ -1010,7 +1010,7 @@ class ISACache(StockholderCache):
             profile = densities.reshape((-1,self.context.num_lebedev)).min(axis=1)
             profile[profile < 1e-6] = 1e-6
             rs = self.get_rs(i)
-            self.proatomfns.append(AtomFn(rs, profile))
+            self.proatomfns.append(CubicSpline(rs, profile))
 
         counter = 0
         old_charges = numpy.zeros(molecule.size, float)
@@ -1024,7 +1024,7 @@ class ISACache(StockholderCache):
                 charges.append(molecule.numbers[i] - num_electrons)
                 # add negligible tails to maintain a complete partitioning
                 radfun[radfun < 1e-40] = 1e-40
-                new_proatomfn = AtomFn(rs, radfun/4*numpy.pi)
+                new_proatomfn = CubicSpline(rs, radfun/4*numpy.pi)
                 new_proatomfns.append(new_proatomfn)
 
             # ordinary blablabla ...
@@ -1107,7 +1107,7 @@ class BeckeCache(BaseCache):
         if i == -1:
             return self.rs
         elif hasattr(self, "proatomfns") and len(self.proatomfns) > i:
-            return self.proatomfns[i].density.x
+            return self.proatomfns[i].x
         elif hasattr(self, "atgrids") and len(self.atgrids) > i:
             num_shells = len(self.atgrids[i].points)/self.context.num_lebedev
             return self.rs[:num_shells]
