@@ -20,7 +20,8 @@
 
 
 from hipart.tests.utils import iter_hf_sto3g_gaussian_caches, \
-    iter_oh1_sto3g_gaussian_caches, iter_oh2_sto3g_gaussian_caches
+    iter_oh1_sto3g_gaussian_caches, iter_oh2_sto3g_gaussian_caches, \
+    iter_h_sto3g_gaussian_caches
 
 import numpy, os
 from nose.plugins.skip import SkipTest
@@ -82,6 +83,17 @@ def check_oh2_charges(cache):
     }
     cache.do_charges()
     assert(abs(cache.charges - expected[cache.prefix]).max() < 1e-3)
+    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
+
+
+def test_h_charges():
+    for cache in iter_h_sto3g_gaussian_caches():
+        yield check_h_charges, cache
+
+def check_h_charges(cache):
+    cache.do_charges()
+    assert(len(cache.charges)==1)
+    assert(abs(cache.charges[0]) < 1e-3)
     assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
 
 

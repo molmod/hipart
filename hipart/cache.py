@@ -1138,7 +1138,7 @@ class BeckeCache(BaseCache):
 
             if not success:
                 # load failed, so compute
-                grid.cell_functions = [1]*N
+                grid.cell_functions = [numpy.ones(len(grid.points), float) for i in xrange(N)]
                 for j0 in xrange(N):
                     for j1 in xrange(j0):
                         pb()

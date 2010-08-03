@@ -30,6 +30,7 @@ __all__ = [
     "setup_hf_sto3g_gaussian", "iter_hf_sto3g_gaussian_caches",
     "setup_oh1_sto3g_gaussian", "iter_oh1_sto3g_gaussian_caches",
     "setup_oh2_sto3g_gaussian", "iter_oh2_sto3g_gaussian_caches",
+    "setup_h_sto3g_gaussian", "iter_h_sto3g_gaussian_caches",
 ]
 
 
@@ -259,6 +260,61 @@ Dipole Moment                              R   N=           3
   0.00000000E+00  0.00000000E+00 -5.08603120E-01"""
 
 
+h_fchk = """\
+h
+SP        UHF                                                         STO-3G
+Number of atoms                            I                1
+Charge                                     I                0
+Multiplicity                               I                2
+Number of electrons                        I                1
+Number of alpha electrons                  I                1
+Number of beta electrons                   I                0
+Number of basis functions                  I                1
+Number of contracted shells                I                1
+Highest angular momentum                   I                0
+Largest degree of contraction              I                3
+Number of primitive shells                 I                3
+Virial Ratio                               R      1.613897736040718E+00
+SCF Energy                                 R     -4.665818503844346E-01
+Total Energy                               R     -4.665818503844346E-01
+Atomic numbers                             I   N=           1
+           1
+Nuclear charges                            R   N=           1
+  1.00000000E+00
+Current cartesian coordinates              R   N=           3
+  0.00000000E+00  0.00000000E+00  0.00000000E+00
+Integer atomic weights                     I   N=           1
+           1
+Real atomic weights                        R   N=           1
+  1.00782504E+00
+Shell types                                I   N=           1
+           0
+Number of primitives per shell             I   N=           1
+           3
+Shell to atom map                          I   N=           1
+           1
+Primitive exponents                        R   N=           3
+  3.42525091E+00  6.23913730E-01  1.68855404E-01
+Contraction coefficients                   R   N=           3
+  1.54328967E-01  5.35328142E-01  4.44634542E-01
+Coordinates of each shell                  R   N=           3
+  0.00000000E+00  0.00000000E+00  0.00000000E+00
+Alpha Orbital Energies                     R   N=           1
+ -4.66581850E-01
+Beta Orbital Energies                      R   N=           1
+  3.08024094E-01
+Alpha MO coefficients                      R   N=           1
+  1.00000000E+00
+Beta MO coefficients                       R   N=           1
+  1.00000000E+00
+Total SCF Density                          R   N=           1
+  1.00000000E+00
+Spin SCF Density                           R   N=           1
+  1.00000000E+00
+Dipole Moment                              R   N=           3
+  0.00000000E+00  0.00000000E+00  0.00000000E+00"""
+
+
 densities_txt="""\
 Radii [bohr]               3.7794523e-05 4.3454517e-05 4.9962135e-05 5.7444314e-05 6.6047002e-05 7.5938002e-05 8.7310249e-05 1.0038557e-04 1.1541901e-04 1.3270382e-04 1.5257714e-04 1.7542663e-04 2.0169800e-04 2.3190369e-04 2.6663289e-04 3.0656303e-04 3.5247298e-04 4.0525828e-04 4.6594854e-04 5.3572759e-04 6.1595655e-04 7.0820035e-04 8.1425831e-04 9.3619919e-04 1.0764016e-03 1.2376002e-03 1.4229395e-03 1.6360347e-03 1.8810423e-03 2.1627415e-03 2.4866272e-03 2.8590170e-03 3.2871748e-03 3.7794523e-03 4.3454517e-03 4.9962135e-03 5.7444314e-03 6.6047002e-03 7.5938002e-03 8.7310249e-03 1.0038557e-02 1.1541901e-02 1.3270382e-02 1.5257714e-02 1.7542663e-02 2.0169800e-02 2.3190369e-02 2.6663289e-02 3.0656303e-02 3.5247298e-02 4.0525828e-02 4.6594854e-02 5.3572759e-02 6.1595655e-02 7.0820035e-02 8.1425831e-02 9.3619919e-02 1.0764016e-01 1.2376002e-01 1.4229395e-01 1.6360347e-01 1.8810423e-01 2.1627415e-01 2.4866272e-01 2.8590170e-01 3.2871748e-01 3.7794523e-01 4.3454517e-01 4.9962135e-01 5.7444314e-01 6.6047002e-01 7.5938002e-01 8.7310249e-01 1.0038557e+00 1.1541901e+00 1.3270382e+00 1.5257714e+00 1.7542663e+00 2.0169800e+00 2.3190369e+00 2.6663289e+00 3.0656303e+00 3.5247298e+00 4.0525828e+00 4.6594854e+00 5.3572759e+00 6.1595655e+00 7.0820035e+00 8.1425831e+00 9.3619919e+00 1.0764016e+01 1.2376002e+01 1.4229395e+01 1.6360347e+01 1.8810423e+01 2.1627415e+01 2.4866272e+01 2.8590170e+01 3.2871748e+01 3.7794523e+01
 Densities   1  H -1 [a.u.] 7.8938827e-01 7.8938827e-01 7.8938827e-01 7.8938827e-01 7.8938826e-01 7.8938826e-01 7.8938826e-01 7.8938825e-01 7.8938824e-01 7.8938823e-01 7.8938821e-01 7.8938819e-01 7.8938816e-01 7.8938812e-01 7.8938807e-01 7.8938801e-01 7.8938792e-01 7.8938781e-01 7.8938766e-01 7.8938746e-01 7.8938720e-01 7.8938685e-01 7.8938639e-01 7.8938579e-01 7.8938499e-01 7.8938393e-01 7.8938253e-01 7.8938068e-01 7.8937823e-01 7.8937500e-01 7.8937072e-01 7.8936507e-01 7.8935760e-01 7.8934772e-01 7.8933467e-01 7.8931741e-01 7.8929460e-01 7.8926444e-01 7.8922458e-01 7.8917189e-01 7.8910224e-01 7.8901018e-01 7.8888851e-01 7.8872771e-01 7.8851520e-01 7.8823439e-01 7.8786338e-01 7.8737329e-01 7.8672603e-01 7.8587148e-01 7.8474370e-01 7.8325613e-01 7.8129540e-01 7.7871341e-01 7.7531755e-01 7.7085856e-01 7.6501625e-01 7.5738322e-01 7.4744792e-01 7.3457954e-01 7.1801981e-01 6.9689003e-01 6.7022649e-01 6.3706248e-01 5.9657755e-01 5.4832953e-01 4.9256132e-01 4.3052396e-01 3.6468029e-01 2.9858738e-01 2.3628804e-01 1.8126709e-01 1.3540428e-01 9.8584312e-02 6.9344194e-02 4.6169214e-02 2.8374448e-02 1.5812231e-02 7.9779437e-03 3.6998898e-03 1.6022270e-03 6.3623822e-04 2.1463809e-04 5.4569861e-05 9.1208690e-06 8.6052400e-07 3.7983000e-08 6.1400000e-10 3.0000000e-12 0.0000000e+00 0.0000000e+00 0.0000000e+00 0.0000000e+00 0.0000000e+00 0.0000000e+00 0.0000000e+00 0.0000000e+00 0.0000000e+00 0.0000000e+00 0.0000000e+00
@@ -386,4 +442,46 @@ def iter_oh2_sto3g_gaussian_caches():
     context = Context(fn_fchk, options)
     yield cache_classes['isa'].new_from_args(context, ["2e-5", "20.0", "100"])
     yield cache_classes['isa'].new_from_args(context, [])
+    shutil.rmtree(tmpdir)
+
+
+def setup_h_sto3g_gaussian():
+    tmpdir = tempfile.mkdtemp("hipart")
+    fn_fchk = os.path.join(tmpdir, "h.fchk")
+    f = open(fn_fchk, "w")
+    f.write(h_fchk)
+    f.close()
+    fn_densities = os.path.join(tmpdir, "densities.txt")
+    f = open(fn_densities, "w")
+    f.write(densities_txt)
+    f.close()
+    return tmpdir, fn_fchk, fn_densities
+
+
+def iter_h_sto3g_gaussian_caches():
+    options = FakeOptions(110, 50, 1, 1e-4, 500, True)
+
+    tmpdir, fn_fchk, fn_densities = setup_h_sto3g_gaussian()
+    context = Context(fn_fchk, options)
+    yield cache_classes['hirsh'].new_from_args(context, [fn_densities])
+    yield cache_classes['hirsh'].new_from_args(context, [fn_densities])
+    shutil.rmtree(tmpdir)
+
+    tmpdir, fn_fchk, fn_densities = setup_h_sto3g_gaussian()
+    context = Context(fn_fchk, options)
+    yield cache_classes['hirshi'].new_from_args(context, [fn_densities])
+    yield cache_classes['hirshi'].new_from_args(context, [fn_densities])
+    yield cache_classes['hirsh'].new_from_args(context, [fn_densities])
+    shutil.rmtree(tmpdir)
+
+    tmpdir, fn_fchk, fn_densities = setup_h_sto3g_gaussian()
+    context = Context(fn_fchk, options)
+    yield cache_classes['isa'].new_from_args(context, ["2e-5", "20.0", "100"])
+    yield cache_classes['isa'].new_from_args(context, [])
+    shutil.rmtree(tmpdir)
+
+    tmpdir, fn_fchk, fn_densities = setup_h_sto3g_gaussian()
+    context = Context(fn_fchk, options)
+    yield cache_classes['becke'].new_from_args(context, ["2e-5", "20.0", "100"])
+    yield cache_classes['becke'].new_from_args(context, [])
     shutil.rmtree(tmpdir)
