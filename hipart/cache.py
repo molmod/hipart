@@ -120,6 +120,10 @@ class BaseCache(object):
         w = self.radial_weights_map[len(rs)]
         return numpy.dot(w, integrand*rs*rs)
 
+    def _spherint(self, i, integrand):
+        radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+        return self._radint(i, radfun)
+
     def _radint_cumul(self, i, integrand):
         # WARNING: this is very inaccurate, do not use for delicate computations
         molecule = self.context.wavefn.molecule
@@ -357,10 +361,7 @@ class BaseCache(object):
                 w = self.atgrids[i].atweights
                 d = self.atgrids[i].moldens
                 center = molecule.coordinates[i]
-
-                integrand = d*w
-                radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                self.populations[i] = self._radint(i, radfun)
+                self.populations[i] = self._spherint(i, d*w)
                 self.charges[i] = molecule.numbers[i] - self.populations[i]
             pb()
             self.populations.tofile(populations_fn_bin)
@@ -393,10 +394,7 @@ class BaseCache(object):
                 w = self.atgrids[i].atweights
                 d = self.atgrids[i].molspindens
                 center = molecule.coordinates[i]
-
-                integrand = d*w
-                radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                self.spin_charges[i] = self._radint(i, radfun)
+                self.spin_charges[i] = self._spherint(i, d*w)
             pb()
             self.spin_charges.tofile(spin_charges_fn_bin)
 
@@ -429,8 +427,7 @@ class BaseCache(object):
 
                 for j in 0,1,2:
                     integrand = -(atgrid.points[:,j] - center[j])*d*w
-                    radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                    self.dipoles[i,j] = self._radint(i, radfun)
+                    self.dipoles[i,j] = self._spherint(i, integrand)
             pb()
             self.dipoles.tofile(dipoles_fn_bin)
 
@@ -503,9 +500,7 @@ class BaseCache(object):
                 cz = atgrid.points[:,2] - center[2]
                 for j in xrange(num_polys):
                     poly = regular_solid_harmonics[j]
-                    integrand = -poly(cx,cy,cz)*d*w
-                    radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                    self.multipoles[i,j] = self._radint(i, radfun)
+                    self.multipoles[i,j] = self._spherint(i, -poly(cx,cy,cz)*d*w)
                 self.multipoles[i,0] += molecule.numbers[i]
             pb()
             self.multipoles.tofile(multipoles_fn_bin)
@@ -631,8 +626,7 @@ class BaseCache(object):
                         for j1 in xrange(num_orbitals):
                             for j2 in xrange(j1+1):
                                 integrand = orbitals[j1]*orbitals[j2]*w
-                                radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                                value = self._radint(i, radfun)
+                                value = self._spherint(i, integrand)
                                 matrix[j1,j2] = value
                                 matrix[j2,j1] = value
                         setattr(self.atgrids[i], "%s_overlap_matrix_orb" % kind, matrix)
@@ -786,8 +780,7 @@ class BaseCache(object):
                         switch += 1
                         switch /= 2
                         integrand = switch*self.atgrids[i].od_atweights[j]*self.atgrids[i].atweights*self.atgrids[i].moldens
-                        radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                        part1 = self._radint(i, radfun)
+                        part1 = self._spherint(i, integrand)
                         # 2) second part of the integral
                         rs = self.get_rs(j)
                         delta = (self.atgrids[j].distances[i].reshape((len(rs),-1)) - rs.reshape((-1,1))).ravel()
@@ -797,15 +790,13 @@ class BaseCache(object):
                         switch += 1
                         switch /= 2
                         integrand = switch*self.atgrids[j].od_atweights[i]*self.atgrids[j].atweights*self.atgrids[j].moldens
-                        radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                        part2 = self._radint(j, radfun)
+                        part2 = self._spherint(j, integrand)
                         # Add up and store
                         self.net_overlap[i,j] = part1 + part2
                         self.net_overlap[j,i] = part1 + part2
                     else:
                         integrand = self.atgrids[i].atweights**2*self.atgrids[i].moldens
-                        radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                        self.net_overlap[i,i] = self._radint(i, radfun)
+                        self.net_overlap[i,i] = self._spherint(i, integrand)
             pb()
             self.net_overlap.tofile(net_overlap_fn_bin)
 
@@ -930,9 +921,8 @@ class HirshfeldICache(TableBaseCache):
 
             charges = []
             for i in xrange(molecule.size):
-                fn = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
-                radfun = integrate_lebedev(self.context.lebedev_weights, fn)
-                num_electrons = self._radint(i, radfun)
+                integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
+                num_electrons = self._spherint(i, integrand)
                 charges.append(molecule.numbers[i] - num_electrons)
 
             # ordinary blablabla ...
@@ -1028,8 +1018,8 @@ class ISACache(StockholderCache):
             new_proatomfns = []
             charges = []
             for i in xrange(molecule.size):
-                fn = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
-                radfun = integrate_lebedev(self.context.lebedev_weights, fn)
+                integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
+                radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
                 num_electrons = self._radint(i, radfun)
                 charges.append(molecule.numbers[i] - num_electrons)
                 # add negligible tails to maintain a complete partitioning
