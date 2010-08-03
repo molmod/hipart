@@ -44,6 +44,7 @@ def get_grid(number):
     grid_fns[number](x,y,z,w,0)
     return xyz.transpose(), w
 
+
 def get_atom_grid(lebedev_xyz, center, radii):
     num_lebedev = len(lebedev_xyz)
     grid_points = numpy.zeros((num_lebedev*len(radii),3), float)
@@ -53,3 +54,17 @@ def get_atom_grid(lebedev_xyz, center, radii):
         grid_points[counter:counter+num_lebedev] = r*numpy.dot(lebedev_xyz,rot.r)+center
         counter += num_lebedev
     return grid_points
+
+
+def integrate_lebedev(weights, f):
+    """Integrates f(phi,theta) where f is evaluated at lebedev grid points.
+
+    The argument weights is a one-dimensional array that contains the lebedev
+    weights. f is also a one-dimensional array that contains the evaluated
+    function at the corresponding grid points. f can contain data for multiple
+    spheres (just concatenated). In the latter case, an array of integrals over
+    each sphere is returned.
+    """
+    num_lebedev = len(weights)
+    f = f.reshape((-1,num_lebedev))
+    return (f*weights).sum(axis=1)*4*numpy.pi

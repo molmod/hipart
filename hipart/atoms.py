@@ -19,13 +19,8 @@
 # --
 
 
-
-
-
-
 from hipart.log import log
 from hipart.spline import CubicSpline
-from hipart.integrate import cumul_integrate_log
 
 import numpy, os
 
@@ -36,28 +31,12 @@ __all__ = [
 
 
 class AtomFn(object):
-    def __init__(self, rs, rhos, do_potential=False):
+    def __init__(self, rs, rhos):
         self.density = CubicSpline(rs, rhos)
-        if do_potential:
-            qs = -cumul_integrate_log(rs, rhos*rs**2*4*numpy.pi)
-            self.qtot = qs[-1]
-            self.charge = CubicSpline(rs, qs)
-            vs = cumul_integrate_log(1/rs[::-1], qs[::-1])[::-1]
-            vs += qs[-1]/rs[-1]-vs[-1]
-            self._potential = CubicSpline(rs, vs)
-
-    def potential(self, rs):
-        if hasattr(self, "_potential"):
-            vs = self._potential(rs)
-            mask = rs>self._potential.x[-2]
-            vs[mask] = self.qtot/rs[mask]
-            return vs
-        else:
-            raise NotImplementedError
 
 
 class AtomProfile(object):
-    def __init__(self, number, rs, records, do_potential):
+    def __init__(self, number, rs, records):
         self.number = number
 
         mask = reduce(
@@ -67,9 +46,8 @@ class AtomProfile(object):
         )
         self.rs = rs[mask]
         self.records = dict((charge, rhos[mask]) for charge, rhos in records.iteritems())
-        self.do_potential = do_potential
 
-    def get_atom_fn(self, charge, do_potential=None):
+    def get_atom_fn(self, charge):
         if charge > self.number:
             raise ValueError("A negative number of electrons is not physical")
 
@@ -94,15 +72,13 @@ class AtomProfile(object):
             high_ref = self.records[high_charge]
             rhos = high_ref + (low_ref - high_ref)*(high_charge - charge)
 
-        if do_potential is None:
-            do_potential = self.do_potential
-        result = AtomFn(self.rs, rhos, do_potential)
+        result = AtomFn(self.rs, rhos)
         #print "##Check:", -integrate(result.rs, 4*numpy.pi*result.rhos*result.rs**2)+self.number-charge, "##"
         return result
 
 
 class AtomTable(object):
-    def __init__(self, filename, do_potential=False):
+    def __init__(self, filename):
         f = file(filename)
         line = f.next()
         self.rs = numpy.array([float(word) for word in line.split()[2:]])
@@ -117,4 +93,4 @@ class AtomTable(object):
         f.close()
         self.records = {}
         for number, qmap in records.iteritems():
-            self.records[number] = AtomProfile(number, self.rs, qmap, do_potential)
+            self.records[number] = AtomProfile(number, self.rs, qmap)

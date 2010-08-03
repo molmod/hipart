@@ -21,8 +21,8 @@
 
 
 from hipart.log import log
-from hipart.integrate import integrate_log
 from hipart.lebedev_laikov import get_grid, grid_fns, get_atom_grid
+from hipart.spline import get_radial_weights_log
 from hipart.grids import Grid
 from hipart.wavefn import FCHKWaveFunction
 
@@ -239,7 +239,8 @@ def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbe
     print >> f_pro, "Radii [bohr]              ", " ".join("%12.7e" % r for r in rs)
     charges = []
 
-    # run over all directories, run cubegen, load cube data and plot
+    # run over all directories, run cubegen, load cube data
+    ws = get_radial_weights_log(rs)
     pb = log.pb("Density profiles", len(atom_numbers)*(2*max_ion+1))
     for number in atom_numbers:
         atom = periodic[number]
@@ -257,7 +258,8 @@ def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbe
             radrhos = (grid.moldens.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1) # this is averaging, i.e. integral/(4*pi)
             print >> f_pro, "Densities %3i %2s %+2i [a.u.]" % (number, symbol, charge),
             print >> f_pro, " ".join("%12.7e" % rho for rho in radrhos)
-            charges.append((number, symbol, charge, integrate_log(rs, 4*numpy.pi*rs*rs*radrhos)))
+            check = (4*numpy.pi*rs*rs*radrhos*ws).sum()
+            charges.append((number, symbol, charge, check))
 
 
     pb()
