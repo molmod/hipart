@@ -825,8 +825,9 @@ class BaseCache(object):
             pb()
             self.net_overlap.tofile(net_overlap_fn_bin)
 
-        net_fn = os.path.join(self.context.outdir, "%s_net_overlap.txt" % self.prefix)
-        dump_atom_matrix(net_fn, self.net_overlap, molecule.numbers, "Net")
+        net_overlap_fn = os.path.join(self.context.outdir, "%s_net_overlap.txt" % self.prefix)
+        dump_atom_matrix(net_overlap_fn, self.net_overlap, molecule.numbers, "Net")
+        log("Written %s" % net_overlap_fn)
 
 
 class StockholderCache(BaseCache):
