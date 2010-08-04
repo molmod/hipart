@@ -15,10 +15,11 @@ installation adventures.
 Also note that the current distribution of HiPart is not stable. You are
 supposed to simply check out the latests development version and try it out.
 There may be obvious and obscure bugs, although we try hard to get the code as
-reliable as possible. Note that this is Open Source software and that no warranty
-of any kind is implied or expressed. If the usage of this program ruins your
-academic career, you probably deserve it. Always know what you and your
-computers are doing.
+reliable as possible. HiPart is bundled with about 240 unit test routines to
+validate the code, but that does not mean bugs are impossible. Note that this is
+Open Source software and that no warranty of any kind is implied or expressed.
+If the usage of this program ruins your academic career, you probably deserve
+it. Always know what you and your computers are doing.
 
 At some point you may think: "Hmm, this program is slow." You may be right.
 The source code focuses on readability and extensibility, not on speed. It
