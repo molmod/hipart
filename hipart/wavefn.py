@@ -468,12 +468,5 @@ class FCHKWaveFunction(object):
         grid.beta_orbitals = beta_orbitals
         grid.natural_orbitals = natural_orbitals
 
-    def compute_atomic_overlap(self, grid, weights, prefix):
-        suffix = "%s_overlap_matrix" % prefix
-        overlap = grid.load(suffix)
-        if overlap is None:
-            overlap = self.basis.call_gint_atomic_operator(gint1_fn_overlap, grid.points, weights)
-            grid.dump(suffix, overlap)
-        else:
-            overlap = overlap.reshape((self.num_orbitals, self.num_orbitals))
-        grid.overlap_matrix = overlap
+    def compute_atomic_overlap(self, grid, weights):
+        return self.basis.call_gint_atomic_operator(gint1_fn_overlap, grid.points, weights)

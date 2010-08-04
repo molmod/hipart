@@ -657,15 +657,22 @@ class BaseCache(object):
         for i in xrange(molecule.size):
             pb()
             atgrid = self.atgrids[i]
-            rs = self.get_rs(i)
-            rw = self.radial_weights_map[len(rs)].copy()
-            rw *= 4*numpy.pi
-            rw *= rs
-            rw *= rs
-            weights = numpy.outer(rw, self.context.lebedev_weights).ravel()
-            weights *= atgrid.atweights
-            # = numpy.zeros((num_orbitals, num_orbitals), float)
-            self.context.wavefn.compute_atomic_overlap(atgrid, weights, self.prefix)
+            suffix = "%s_overlap_matrix" % self.prefix
+            overlap = atgrid.load(suffix)
+            if overlap is None:
+                rs = self.get_rs(i)
+                rw = self.radial_weights_map[len(rs)].copy()
+                rw *= 4*numpy.pi
+                rw *= rs
+                rw *= rs
+                weights = numpy.outer(rw, self.context.lebedev_weights).ravel()
+                weights *= atgrid.atweights
+                # = numpy.zeros((num_orbitals, num_orbitals), float)
+                overlap = self.context.wavefn.compute_atomic_overlap(atgrid, weights)
+                atgrid.dump(suffix, overlap)
+            else:
+                overlap = overlap.reshape((num_orbitals, num_orbitals))
+            atgrid.overlap_matrix = overlap
         pb()
 
         filename = os.path.join(self.context.outdir, "%s_overlap_matrices.txt" % self.prefix)
