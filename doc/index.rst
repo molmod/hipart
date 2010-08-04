@@ -5,7 +5,7 @@ HiPart documentation
 Introduction
 ------------
 
-HiPart is a program to analyse the electronic structure of molecules with
+HiPart is a program to analyze the electronic structure of molecules with
 fuzzy-atom partitioning methods. It now supports four schemes to define atomic
 partitions: the Becke scheme [Becke1988]_, The Hirshfeld scheme
 [Hirshfeld1977]_, the Iterative Hirshfeld scheme [Bultinck2007]_, and the
