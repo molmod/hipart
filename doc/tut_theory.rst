@@ -45,8 +45,8 @@ for a broad class of pro-atomic functions.
 
 .. _becke:
 
-Becke scheme
-^^^^^^^^^^^^
+Becke
+^^^^^
 
 Becke [Becke1988]_ proposed a partitioning scheme that was in the first place
 meant as an auxiliary tool to divide an integral over the entire molecular
@@ -133,8 +133,8 @@ are taken from [Cordero2008]_.
 
 .. _hirshfeld:
 
-Hirshfeld scheme
-^^^^^^^^^^^^^^^^
+Hirshfeld
+^^^^^^^^^
 
 Hirshfeld [Hirshfeld1977]_ proposed a partitioning scheme where pro-atomic
 densities are derived from computations on neutral atoms by simply averaging the
@@ -150,8 +150,8 @@ level of theory (and basis set) that is used for the molecular computation.
 
 .. _hirshfeld-i:
 
-Iterative Hirshfeld scheme
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Iterative Hirshfeld
+^^^^^^^^^^^^^^^^^^^
 
 The choice of neutral pro-atoms in the standard Hirshfeld scheme is somewhat
 arbitrary. The Iterative Hirshfeld scheme [Bultinck2007]_ is an extension of the
@@ -184,9 +184,13 @@ Before one can use the Iterative Hirshfeld methods, one must first construct
 a database of pro-atomic densities for all the elements in the molecule under
 scrutiny. For each element one must compute different charge states.
 
+This scheme is also referred to as `Hirshfeld-I`.
 
-Iterative Stockholder Analysis scheme
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _isa:
+
+Iterative Stockholder Analysis
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ISA scheme is another extension to the original Hirshfeld method where one
 tries to construct spherically symatric pro-atoms that are as similar as
@@ -219,13 +223,13 @@ Charges, Dipoles & Multipoles
 
 TODO
 
-Gross versus net charges
-^^^^^^^^^^^^^^^^^^^^^^^^
+Net and overlap populations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 TODO
 
-Atomic properties derived from the partitioned orbitals
--------------------------------------------------------
+Atomic properties derived from the partitioned density matrix
+-------------------------------------------------------------
 
 TODO
 
@@ -239,8 +243,8 @@ Bond orders
 
 TODO
 
-Overlap elements
-^^^^^^^^^^^^^^^^
+Atomic overlap matrices
+^^^^^^^^^^^^^^^^^^^^^^^
 
 TODO
 

@@ -1,6 +1,11 @@
 Partitioning code
 =================
 
+All HiPart scripts use the modules described below to perform their analysis.
+The internals of HiPart can also be used to write your own population analysis
+code.
+
+
 The context
 -----------
 
@@ -50,12 +55,6 @@ Cubic splines (radial grids)
 ----------------------------
 
 .. automodule:: hipart.spline
-   :members:
-
-Numerical integration
-------------------------
-
-.. automodule:: hipart.integrate
    :members:
 
 IO for Hipart file formats
