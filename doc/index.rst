@@ -11,7 +11,7 @@ partitions: the Becke scheme [Becke1988]_, The Hirshfeld scheme
 [Hirshfeld1977]_, the Iterative Hirshfeld scheme [Bultinck2007]_, and the
 Iterative Stockholder Analysis [Lillestolen2008]_.
 
-Within each scheme the following quantities can be computed: atomic charge,
+Within each scheme the following quantities can be computed: atomic charges,
 atomic dipoles, quality of charges and dipoles with respect to the ESP, the
 atomic multipole expansion, net and overlap populations, bond orders, spin
 charges, atomic overlap matrices in the orbital basis and in the basis of
@@ -23,7 +23,7 @@ familiar with fuzzy atom partitioning in general, and it was used to generate
 Iterative Hirshfeld charges for a benchmark study of the EEM and SQE model.
 [Verstraelen2009]_. Over the past two years, the program evolved into a more
 efficient and more user-friendly toolkit. As of August 2010 HiPart is publicly
-available as a Open Source software. To date their is no official stable release
+available as Open Source software. To date their is no official stable release
 of HiPart and it is recommend to upgrade regularly to the latest development
 release.
 
