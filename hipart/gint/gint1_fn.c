@@ -28,6 +28,7 @@
 #define MAX_SHELL_DOF 10
 #define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }
 #define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }
+#define GET_SHELL_DOF(shell_type) ((shell_type<-1)?(-2*shell_type+1):((shell_type==-1)?(4):(((shell_type+1)*(shell_type+2))/2)))
 
 void gint1_fn_pF(double* a, double a_a, double* p, double* out)
 {
@@ -187,7 +188,7 @@ int gint1_fn_basis(double* weights, double* fns, double* points,
   double* ccoeffs, double* exponents, int num_weights, int num_points,
   int num_centers, int num_shells, int num_ccoeffs, int num_exponents)
 {
-  int shell, shell_type, primitive, dof, num_dof, result, i_point;
+  int shell, shell_type, primitive, dof, num_shell_dof, result, i_point;
   double *work, *out, *center, *ccoeff, *exponent, *weight, *shell_weights;
 
   result = 0;
@@ -204,25 +205,22 @@ int gint1_fn_basis(double* weights, double* fns, double* points,
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
       CHECK_SHELL(shell_type);
+      num_shell_dof = GET_SHELL_DOF(shell_type);
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
         gint1_fn_dispatch(shell_type, center, *exponent, points, work);
         //printf("shell_type=%d  primitive=%d  exponent=%f\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
         weight = shell_weights;
+        // Take care of exceptional contraction rules for SP shells
         if (shell_type==-1) {
           *fns += (*weight)*(*out)*(*ccoeff);
           //printf("weight=%f  out=%f  ccoeff=%f  contrib=%f  fn=%f\n", *weight, *out, *ccoeff, (*weight)*(*out)*(*ccoeff), *fns);
           weight++;
           out++;
           ccoeff++;
-          num_dof = 3;
-        } else if (shell_type > 0) {
-          num_dof = ((shell_type+1)*(shell_type+2))/2;
-        } else {
-          num_dof = -2*shell_type+1;
         }
-        for (dof=0; dof<num_dof; dof++) {
+        for (dof=num_shell_dof-(shell_type==-1); dof>0; dof--) {
           *fns += (*weight)*(*out)*(*ccoeff);
           //printf("weight=%f  out=%f  ccoeff=%f  contrib=%f  fn=%f\n", *weight, *out, *ccoeff, (*weight)*(*out)*(*ccoeff), *fns);
           weight++;
@@ -230,14 +228,7 @@ int gint1_fn_basis(double* weights, double* fns, double* points,
         }
         ccoeff++;
       }
-      if (shell_type==-1) {
-        num_dof = 4;
-      } else if (shell_type > 0) {
-        num_dof = ((shell_type+1)*(shell_type+2))/2;
-      } else {
-        num_dof = -2*shell_type+1;
-      }
-      shell_weights += num_dof;
+      shell_weights += num_shell_dof;
     }
     points += 3;
     fns++;
@@ -280,38 +271,28 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
       CHECK_SHELL(shell_type);
+      num_shell_dof = GET_SHELL_DOF(shell_type);
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
         gint1_fn_dispatch(shell_type, center, *exponent, points, work);
         //printf("shell_type=%d  primitive=%d  exponent=%f\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
         fn = shell_fns;
+        // Take care of exceptional contraction rules for SP shells
         if (shell_type==-1) {
           *fn += (*out)*(*ccoeff);
           //printf("out=%f  ccoeff=%f  fn=%f\n", *out, *ccoeff, (*out)*(*ccoeff));
           fn++;
           out++;
           ccoeff++;
-          num_shell_dof = 3;
-        } else if (shell_type > 0) {
-          num_shell_dof = ((shell_type+1)*(shell_type+2))/2;
-        } else {
-          num_shell_dof = -2*shell_type+1;
         }
-        for (dof1=0; dof1<num_shell_dof; dof1++) {
+        for (dof1=num_shell_dof-(shell_type==-1); dof1>0; dof1--) {
           *fn += (*out)*(*ccoeff);
           //printf("out=%f  ccoeff=%f  fn=%f\n", *out, *ccoeff, (*out)*(*ccoeff));
           fn++;
           out++;
         }
         ccoeff++;
-      }
-      if (shell_type==-1) {
-        num_shell_dof = 4;
-      } else if (shell_type > 0) {
-        num_shell_dof = ((shell_type+1)*(shell_type+2))/2;
-      } else {
-        num_shell_dof = -2*shell_type+1;
       }
       shell_fns += num_shell_dof;
     }
@@ -380,38 +361,28 @@ int gint1_fn_overlap(double* overlap, double* points, double* weights,
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
       CHECK_SHELL(shell_type);
+      num_shell_dof = GET_SHELL_DOF(shell_type);
       for (primitive=0; primitive<num_primitives[shell]; primitive++) {
         gint1_fn_dispatch(shell_type, center, *exponent, points, work);
         //printf("shell_type=%d  primitive=%d  exponent=%f\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
         fn = shell_fns;
+        // Take care of exceptional contraction rules for SP shells
         if (shell_type==-1) {
           *fn += (*out)*(*ccoeff);
           //printf("out=%f  ccoeff=%f  fn=%f\n", *out, *ccoeff, (*out)*(*ccoeff));
           fn++;
           out++;
           ccoeff++;
-          num_shell_dof = 3;
-        } else if (shell_type > 0) {
-          num_shell_dof = ((shell_type+1)*(shell_type+2))/2;
-        } else {
-          num_shell_dof = -2*shell_type+1;
         }
-        for (dof1=0; dof1<num_shell_dof; dof1++) {
+        for (dof1=num_shell_dof-(shell_type==-1); dof1>0; dof1--) {
           *fn += (*out)*(*ccoeff);
           //printf("out=%f  ccoeff=%f  fn=%f\n", *out, *ccoeff, (*out)*(*ccoeff));
           fn++;
           out++;
         }
         ccoeff++;
-      }
-      if (shell_type==-1) {
-        num_shell_dof = 4;
-      } else if (shell_type > 0) {
-        num_shell_dof = ((shell_type+1)*(shell_type+2))/2;
-      } else {
-        num_shell_dof = -2*shell_type+1;
       }
       shell_fns += num_shell_dof;
     }

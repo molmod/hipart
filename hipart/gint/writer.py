@@ -35,7 +35,6 @@ from hipart.gint.solid_harmonics import get_solid_harmonics
 # TODO: More tests
 # TODO: Precompute parameters that only depend on basis sets and geometry
 # TODO: Use symmetry in interface routines
-# TODO: turn get_num_dof into a macro
 
 
 # Sympy stuff
@@ -616,6 +615,7 @@ class GaussianIntegral():
         print >> f_c, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
         print >> f_c, "#define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }"
         print >> f_c, "#define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }"
+        print >> f_c, "#define GET_SHELL_DOF(shell_type) ((shell_type<-1)?(-2*shell_type+1):((shell_type==-1)?(4):(((shell_type+1)*(shell_type+2))/2)))"
         print >> f_c
         for st_row in self.iter_shell_types(max_shell):
             print st_row

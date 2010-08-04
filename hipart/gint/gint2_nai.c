@@ -29,6 +29,7 @@
 #define MAX_SHELL_DOF 10
 #define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }
 #define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }
+#define GET_SHELL_DOF(shell_type) ((shell_type<-1)?(-2*shell_type+1):((shell_type==-1)?(4):(((shell_type+1)*(shell_type+2))/2)))
 
 void gint2_nai_pF_pF(double* a, double a_a, double* b, double b_a, double* c, double* out)
 {
@@ -3293,16 +3294,6 @@ static void gint2_nai_dispatch(int a_s, double* a, double a_a, int b_s, double* 
   fns[3+a_s+7*(3+b_s)](a, a_a, b, b_a, c, out);
 }
 
-static int get_shell_dof(int shell_type) {
-  if (shell_type==-1) {
-    return 4;
-  } else if (shell_type > 0) {
-    return ((shell_type+1)*(shell_type+2))/2;
-  } else {
-    return -2*shell_type+1;
-  }
-}
-
 int gint2_nai_dmat(double* dmat, double* potentials, double* points,
   double* centers, int* shell_types, int* shell_map,  int* num_primitives,
   double* ccoeffs, double* exponents, int num_dmat, int num_points,
@@ -3334,7 +3325,7 @@ int gint2_nai_dmat(double* dmat, double* potentials, double* points,
       center1 = centers + (3*shell_map[shell1]);
       shell_type1 = shell_types[shell1];
       CHECK_SHELL(shell_type1);
-      shell_dof1 = get_shell_dof(shell_type1);
+      shell_dof1 = GET_SHELL_DOF(shell_type1);
       //printf("shell1=%d  type=%d  dof=%d  offset=%d\n", shell1, shell_type1, shell_dof1, shell_offset1);
       // prep inner loop.
       shell_ccoeffs2 = ccoeffs;
@@ -3344,7 +3335,7 @@ int gint2_nai_dmat(double* dmat, double* potentials, double* points,
         center2 = centers + (3*shell_map[shell2]);
         shell_type2 = shell_types[shell2];
         CHECK_SHELL(shell_type2);
-        shell_dof2 = get_shell_dof(shell_type2);
+        shell_dof2 = GET_SHELL_DOF(shell_type2);
         //printf("  shell2=%d  type=%d  dof=%d  offset=%d\n", shell2, shell_type2, shell_dof2, shell_offset2);
         // Clear the worksum
         out_sum = work_sum;
