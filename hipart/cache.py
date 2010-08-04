@@ -678,6 +678,7 @@ class BaseCache(object):
         filename = os.path.join(self.context.outdir, "%s_overlap_matrices.txt" % self.prefix)
         overlap_matrices = [atgrid.overlap_matrix for atgrid in self.atgrids]
         dump_overlap_matrices(filename, overlap_matrices, molecule.numbers)
+        log("Written %s" % filename)
 
     @OnlyOnce("Bond orders and valences")
     def do_bond_orders(self):
