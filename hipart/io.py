@@ -55,7 +55,7 @@ def dump_atom_scalars(filename, scalars, numbers=None, name="Charge"):
     print >> f, "--------------------------------"
     for i, symbol, number in _iter_symbols_numbers(numbers, len(scalars)):
         print >> f, "% 3i  %2s  % 3i   % 15.12f" % (
-            i+1, symbol, number, scalars[i]
+            i, symbol, number, scalars[i]
         )
     print >> f, "--------------------------------"
 
@@ -90,7 +90,7 @@ def dump_atom_vectors(filename, vectors, numbers=None, name="Dipole"):
     print >> f, "-------------------------------------------------------------------------------"
     for i, symbol, number in _iter_symbols_numbers(numbers, len(vectors)):
         print >> f, "% 3i  %2s  % 3i  % 15.12f % 15.12f % 15.12f % 15.12f" % (
-            i+1, symbol, number, vectors[i,0], vectors[i,1],
+            i, symbol, number, vectors[i,0], vectors[i,1],
             vectors[i,2], numpy.linalg.norm(vectors[i]),
         )
     f.close()
@@ -120,13 +120,13 @@ def dump_atom_matrix(filename, matrix, numbers=None, name="Matrix"):
     f = file(filename, "w")
     print >> f, "number of atoms:", len(matrix)
     print >> f, "%s | %s" % (name, " ".join(
-        "    % 3i %2s     " % (key[0]+1, key[1]) for key
+        "    % 3i %2s     " % (key[0], key[1]) for key
         in _iter_symbols_numbers(numbers, len(matrix))
     ))
     print >> f, "----------------+-"+"-"*(1+16*len(matrix))
     for i, symbol, number in _iter_symbols_numbers(numbers, len(matrix)):
         print >> f, "% 3i  %2s  % 3i    | %s" % (
-            i+1, symbol, number, " ".join("% 15.12f" % val for val in matrix[i])
+            i, symbol, number, " ".join("% 15.12f" % val for val in matrix[i])
         )
     f.close()
 
@@ -158,7 +158,7 @@ def dump_atom_fields(filename, table, labels, numbers=None, name="Matrix"):
     print >> f, "----------------+-"+"-"*(1+16*len(labels))
     for i, symbol, number in _iter_symbols_numbers(numbers, len(table)):
         print >> f, "% 3i  %2s  % 3i    | %s" % (
-            i+1, symbol, number, " ".join("% 15.12f" % val for val in table[i])
+            i, symbol, number, " ".join("% 15.12f" % val for val in table[i])
         )
     f.close()
 
@@ -190,7 +190,7 @@ def dump_overlap_matrices(filename, overlap_matrices, numbers=None):
     print >> f, "number of orbitals:", len(overlap_matrices[0])
     print >> f, "number of atoms: ", len(overlap_matrices)
     for i, symbol, number in _iter_symbols_numbers(numbers, len(overlap_matrices)):
-        print >> f, "Atom % 3i  %2s  % 3i" % (i+1, symbol, number)
+        print >> f, "Atom % 3i  %2s  % 3i" % (i, symbol, number)
         matrix = overlap_matrices[i]
         for row in matrix:
             print >> f, " ".join("% 15.10e" % value for value in row)
