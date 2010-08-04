@@ -38,6 +38,13 @@ __all__ = [
 
 
 def _iter_symbols_numbers(numbers, N):
+    """Iterate over the given atom numbers and give additional info.
+
+       Arguments:
+        | ``numbers``  --  An array with atom numbers or None.
+        | ``N``  --  The total number of atoms. (This is not derived from the
+                     array with atom numbers as it may be None.)
+    """
     for i in xrange(N):
         if numbers is None:
             number = 0
@@ -49,6 +56,16 @@ def _iter_symbols_numbers(numbers, N):
 
 
 def dump_atom_scalars(filename, scalars, numbers=None, name="Charge"):
+    """Dump an array of scalar atomic quantities into a text file.
+
+       Arguments:
+        | ``filename``  --  The file to dump in.
+        | ``scalars``  --  An array of scalars, e.g. atomic charges.
+
+       Optional arguments:
+        | ``numbers``  --  An array with atomic numbers to decorate the file
+        | ``name``  --  the name of the quantity to decorate the file
+    """
     f = file(filename, "w")
     print >> f, "number of atoms: %i" % len(scalars)
     print >> f, "  i        Z  %s" % name.rjust(10)
@@ -61,6 +78,13 @@ def dump_atom_scalars(filename, scalars, numbers=None, name="Charge"):
 
 
 def load_atom_scalars(filename):
+    """Load atomic scalars written with :func:`dump_atom_scalars`.
+
+       Argument:
+        | ``filename``  --  The file to load from.
+
+       Returns the array with scalars.
+    """
     f = file(filename)
     # read the number of atoms
     line = f.next()
@@ -78,6 +102,16 @@ def load_atom_scalars(filename):
 
 
 def dump_atom_vectors(filename, vectors, numbers=None, name="Dipole"):
+    """Dump an array of atomic 3D-vector quantities into a text file.
+
+       Arguments:
+        | ``filename``  --  The file to dump in.
+        | ``vectors``  --  An array of 3D-vectors, e.g. atomic dipoles.
+
+       Optional arguments:
+        | ``numbers``  --  An array with atomic numbers to decorate the file
+        | ``name``  --  the name of the quantity to decorate the file
+    """
     names = (
         (name+"-X").center(15),
         (name+"-Y").center(15),
@@ -97,6 +131,13 @@ def dump_atom_vectors(filename, vectors, numbers=None, name="Dipole"):
 
 
 def load_atom_vectors(filename):
+    """Load atomic vectors written with :func:`dump_atom_vectors`.
+
+       Argument:
+        | ``filename``  --  The file to load from.
+
+       Returns the array with vectors.
+    """
     f = file(filename)
     # read the number of atoms
     line = f.next()
@@ -116,6 +157,17 @@ def load_atom_vectors(filename):
 
 
 def dump_atom_matrix(filename, matrix, numbers=None, name="Matrix"):
+    """Dump a 2D-array of atomic pair quantities into a text file.
+
+       Arguments:
+        | ``filename``  --  The file to dump in.
+        | ``matrix``  --  A 2D-array of atomic pair quantities, e.g. bond
+                          orders.
+
+       Optional arguments:
+        | ``numbers``  --  An array with atomic numbers to decorate the file
+        | ``name``  --  the name of the quantity to decorate the file
+    """
     name = name.center(15)
     f = file(filename, "w")
     print >> f, "number of atoms:", len(matrix)
@@ -132,6 +184,13 @@ def dump_atom_matrix(filename, matrix, numbers=None, name="Matrix"):
 
 
 def load_atom_matrix(filename):
+    """Load atomic pair quantities written with :func:`dump_atom_matrix`.
+
+       Argument:
+        | ``filename``  --  The file to load from.
+
+       Returns the square array with pair quantities.
+    """
     f = file(filename)
     # read the number of atoms
     line = f.next()
@@ -150,6 +209,23 @@ def load_atom_matrix(filename):
 
 
 def dump_atom_fields(filename, table, labels, numbers=None, name="Matrix"):
+    """Dump a table with multiple scalar atomic quantities into a text file.
+
+       Arguments:
+        | ``filename``  --  The file to dump in.
+        | ``table``  --  A 2D-array of atomic scalar quantities, e.g. the atomic
+                         multipole expansions. Each column corresponds to a
+                         quantity and each row corresponds to an atom.
+        | ``labels``  --  The labels of the atomic quantities. The number of
+                          labels and the number of columns in the table must be
+                          the same.
+
+       Optional arguments:
+        | ``numbers``  --  An array with atomic numbers to decorate the file
+        | ``name``  --  the name of the quantity to decorate the file
+    """
+    if len(labels) != table.shape[1]:
+        raise ValueError("The number of labels must be equal to the number of atoms in the table.")
     name = name.center(15)
     f = file(filename, "w")
     print >> f, "number of atoms:", len(table)
@@ -164,6 +240,14 @@ def dump_atom_fields(filename, table, labels, numbers=None, name="Matrix"):
 
 
 def load_atom_fields(filename):
+    """Load multiple atomic quantities written with :func:`dump_atom_fields`.
+
+       Argument:
+        | ``filename``  --  The file to load from.
+
+       Returns a tuple with two results: (i) the table with atomic scalar
+       quantities and (ii) the labels from the table header.
+    """
     f = file(filename)
     # read the number of atoms
     line = f.next()
@@ -186,6 +270,16 @@ def load_atom_fields(filename):
 
 
 def dump_overlap_matrices(filename, overlap_matrices, numbers=None):
+    """Dump a the atomic overlap matrices into a text file.
+
+       Arguments:
+        | ``filename``  --  The file to dump in.
+        | ``overlap_matrices``  --  A list with (square) atomic overlap
+                                    matrices.
+
+       Optional arguments:
+        | ``numbers``  --  An array with atomic numbers to decorate the file
+    """
     f = file(filename, "w")
     print >> f, "number of orbitals:", len(overlap_matrices[0])
     print >> f, "number of atoms: ", len(overlap_matrices)
