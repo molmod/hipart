@@ -55,11 +55,19 @@ popular Linux distributions:
 
     sudo apt-get install python python-dev python-numpy gfortran gcc python-setuptools git-core wget
 
+* Debian 5. You first have to become root because the sudo program is not
+  configured by default. ::
+
+    su -
+    apt-get install python python-dev python-numpy gfortran gcc python-setuptools git-core wget
+    exit
+
 * Fedora 12. You first have to become root because the sudo program is not
   configured by default. ::
 
-    su
+    su -
     pkcon install python-devel numpy numpy-f2py gcc-gfortran gcc python-setuptools git wget
+    exit
 
 * Suse 11.2::
 
@@ -121,6 +129,7 @@ Testing your installation
 
 For the development and testing one needs to install three additional packages:
 
+ * Python 2.6 or 2.7 (including the header files): http://www.python.org/doc/
  * Nosetests: http://somethingaboutorange.com/mrl/projects/nose/0.11.2/
  * Sympy, at least 0.6.7: http://www.sympy.org/
  * Sphinx: http://sphinx.pocoo.org/
@@ -134,11 +143,19 @@ other packages are installed as follows:
 
     sudo apt-get install python-nose python-sphinx python-scipy
 
+* Debian 5 does not have Python 2.6. Hipart does work on Debian 5, but some of
+  the development tools will not work and some tests do not run.
+
+    su -
+    apt-get install python-nose python-sphinx python-scipy
+    exit
+
 * Fedora 12. You first have to become root because the sudo program is not
   configured by default. ::
 
-    su
+    su -
     pkcon install python-nose sphinx scipy
+    exit
 
 * Suse 11.2. One needs to add a repository, but a recent Sympy is already present::
 
@@ -147,7 +164,7 @@ other packages are installed as follows:
 
 Sympy-0.6.7 can be installed as follows if your Linux distribution does not have recent version::
 
-    wget 'http://code.google.com/p/sympy/downloads/detail?name=sympy-0.6.7.tar.gz'
+    wget 'http://sympy.googlecode.com/files/sympy-0.6.7.tar.gz'
     tar -xzf sympy-0.6.7.tar.gz
     cd sympy-0.6.7
     ./setup.py install --home=~
