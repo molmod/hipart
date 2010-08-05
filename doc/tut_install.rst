@@ -36,18 +36,32 @@ distribution to install these dependencies.
 
 The following software must be installed for HiPart:
 
- * Python 2.5, 2.6 or 2.7 (including the header files): http://www.python.org/doc/
- * Numpy 1.0 or later: http://numpy.scipy.org/
- * A Fortran and a C compiler supported by the F2PY module in Numpy, e.g.
-   gfortran and gcc: http://gcc.gnu.org/
- * Setuptools for Python: http://pypi.python.org/pypi/setuptools
- * Git: http://git-scm.com/
+* Python 2.5, 2.6 or 2.7 (including the header files): http://www.python.org/doc/
+* Numpy 1.0 or later: http://numpy.scipy.org/
+* A Fortran and a C compiler supported by the F2PY module in Numpy, e.g.
+  gfortran and gcc: http://gcc.gnu.org/
+* Setuptools for Python: http://pypi.python.org/pypi/setuptools
+* Git: http://git-scm.com/
 
-On Ubuntu, the following command will take care of all the installation
-work::
+In the tutorial we also use the following:
 
-    sudo apt-get install python python-dev python-numpy gfortran gcc python-setuptools git-core
+* wget: http://www.gnu.org/software/wget/
 
+Most Linux distributions can install this software with just a single command
+on the command line by the administrator. They are listed below for several
+popular Linux distributions:
+
+* Ubuntu 10.4::
+
+    sudo apt-get install python python-dev python-numpy gfortran gcc python-setuptools git-core wget
+
+* Fedora 12::
+
+    sudo pkcon install python-devel numpy numpy-f2py gfortran-gcc gcc python-setuptools git wget
+
+* Suse 11.2::
+
+    sudo zypper install python-devel python-numpy gcc gcc-fortran python-setuptools git wget
 
 Installing the bleeding edge version of HiPart
 ----------------------------------------------
@@ -61,7 +75,15 @@ directory. ::
     git clone git://molmod.ugent.be/git/molmod.git
     git clone git://molmod.ugent.be/git/hipart.git
     (cd molmod; ./setup.py install --home=~)
+    (cd molmod/ext; ./setup.py install --home=~)
     (cd hipart; ./setup.py install --home=~)
+
+Note for Suse users: there seems to be something odd going on with the default
+Python configuration on Suse installations. You have to edit the file
+``/usr/lib64/python2.4/distutils/distutils.cfg`` or
+``/usr/lib32/python2.4/distutils/distutils.cfg``, depending on your
+architecture, to comment out the line ``prefix=/usr/local`` with a ``#`` symbol.
+Otherwise it impossible to install Python packages in the home directory.
 
 In order to activate the Python modules and the executable scripts installed
 in your home directory, the following lines need to be added to your login
@@ -88,8 +110,8 @@ Upgrading to the bleeding edge version of HiPart
 In case you want to upgrade HiPart to the latests development version after a
 previous install, then execute the following commands (in the same directory)::
 
-    (cd molmod; git pull; rm ~/lib/python/molmod*; ./setup.py install --home=~)
-    (cd hipart; git pull; rm ~/bin/hi-*.py; rm ~/lib/python/HiPart*; ./setup.py install --home=~)
+    (cd molmod; git pull; rm -r ~/lib/python/molmod*; ./setup.py install --home=~; cd ext; ./setup.py install --home=~)
+    (cd hipart; git pull; rm ~/bin/hi-*.py; rm -r ~/lib/python/HiPart*; ./setup.py install --home=~)
 
 
 Testing your installation
@@ -98,15 +120,36 @@ Testing your installation
 For the development and testing one needs to install three additional packages:
 
  * Nosetests: http://somethingaboutorange.com/mrl/projects/nose/0.11.2/
- * Sympy: http://www.sympy.org/
+ * Sympy, at least 0.6.7: http://www.sympy.org/
  * Sphinx: http://sphinx.pocoo.org/
+ * Scipy: http://www.scipy.org/
 
-On Ubuntu, the following command will take care of the installation::
+Most Linux distributions can install this software, except a recent version of
+Sympy, with just a single command on the command line by the administrator. The
+other packages are installed as follows:
 
-    sudo apt-get install python-nose python-sympy python-sphinx
+* Ubuntu 10.4::
 
-Once these are installed, go to the directory where the HiPart source code was
-downloaded and execute the following commands::
+    sudo apt-get install python-nose python-sphinx python-scipy
+
+* Fedora 12::
+
+    sudo pkcon install python-nose sphinx scipy
+
+* Suse 11.2. One needs to add a repository, but a recent Sympy is already present::
+
+    zypper ar http://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_11.2/devel:languages:python.repo
+    zypper install python-sympy python-scipy python-nose python-sphinx
+
+Sympy-0.6.7 can be installed as follows if your Linux distribution does not have recent version::
+
+    wget 'http://code.google.com/p/sympy/downloads/detail?name=sympy-0.6.7.tar.gz'
+    tar -xzf sympy-0.6.7.tar.gz
+    cd sympy-0.6.7
+    ./setup.py install --home=~
+
+Once these dependecies are installed, go to the directory where the HiPart
+source code was downloaded and execute the following commands::
 
     cd hipart
     ./setup.py nosetests
