@@ -55,9 +55,11 @@ popular Linux distributions:
 
     sudo apt-get install python python-dev python-numpy gfortran gcc python-setuptools git-core wget
 
-* Fedora 12::
+* Fedora 12. You first have to become root because the sudo program is not
+  configured by default. ::
 
-    sudo pkcon install python-devel numpy numpy-f2py gfortran-gcc gcc python-setuptools git wget
+    su
+    pkcon install python-devel numpy numpy-f2py gcc-gfortran gcc python-setuptools git wget
 
 * Suse 11.2::
 
@@ -132,14 +134,16 @@ other packages are installed as follows:
 
     sudo apt-get install python-nose python-sphinx python-scipy
 
-* Fedora 12::
+* Fedora 12. You first have to become root because the sudo program is not
+  configured by default. ::
 
-    sudo pkcon install python-nose sphinx scipy
+    su
+    pkcon install python-nose sphinx scipy
 
 * Suse 11.2. One needs to add a repository, but a recent Sympy is already present::
 
-    zypper ar http://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_11.2/devel:languages:python.repo
-    zypper install python-sympy python-scipy python-nose python-sphinx
+    sudo zypper ar http://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_11.2/devel:languages:python.repo
+    sudo zypper install python-sympy python-scipy python-nose python-sphinx
 
 Sympy-0.6.7 can be installed as follows if your Linux distribution does not have recent version::
 
