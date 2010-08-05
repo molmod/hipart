@@ -32,13 +32,9 @@ class Grid(object):
         if dump:
             fn_points = "%s.bin" % prefix
             if os.path.isfile(fn_points):
-                # if the file is already present, it must be overwritten and
-                # it friends must be removed. A grid object may sometimes be
-                # recreated despite the fact that some grid is present from
-                # the previous run. Not all methods use the same grid size
-                for fn in sorted(glob.glob("%s*.bin" % prefix)):
-                    os.remove(fn)
-            points.tofile(fn_points)
+                raise ValueError("The binary file is already present in the work directory.")
+            else:
+                points.tofile(fn_points)
 
     @classmethod
     def from_prefix(cls, prefix):
@@ -64,4 +60,4 @@ class Grid(object):
         if os.path.isfile(fn):
             raise ValueError("The binary file is already present in the work directory.")
         else:
-            return array.tofile(fn)
+            array.tofile(fn)

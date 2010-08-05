@@ -178,7 +178,6 @@ marks to avoid the interpretation of the round brackets by the shell.) ::
     Atomic computations:
      0% ........... 33% .......... 66% .......... 100%
     Selecting ground states.
-    Preparing radial weights (log,100) ...
     Density profiles:
      0% ........... 50% .......... 100%
     Total charge error:   1  H -2    -5.17837e-09
@@ -420,9 +419,6 @@ alanine molecule::
       Chemical formula: O2NC3H7
     END Loading Electronic structure
     BEGIN Atomic charges
-      BEGIN Integration weights
-        Preparing radial weights (log,100) ...
-      END Integration weights
       BEGIN Atomic grids
         Computing/Loading atomic grids (and distances):
          0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
@@ -713,10 +709,6 @@ molecule::
       Chemical formula: O2NC3H7
     END Loading Electronic structure
     BEGIN Atomic dipoles
-      BEGIN Integration weights
-        Preparing radial weights (log,99) ...
-        Preparing radial weights (log,100) ...
-      END Integration weights
       BEGIN Atomic grids
         Computing/Loading atomic grids (and distances):
          0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
@@ -863,10 +855,6 @@ charges and dipoles obtained with a :ref:`hirshfeld-i` partitioning::
     END Loading Electronic structure
     BEGIN Testing charges and dipoles on ESP grid.
       BEGIN Atomic charges
-        BEGIN Integration weights
-          Preparing radial weights (log,99) ...
-          Preparing radial weights (log,100) ...
-        END Integration weights
         BEGIN Atomic grids
           Computing/Loading atomic grids (and distances):
            0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
@@ -1007,9 +995,6 @@ This is an example with the :ref:`isa` ::
       Chemical formula: O2NC3H7
     END Loading Electronic structure
     BEGIN Atomic multipoles (up to hexadecapols)
-      BEGIN Integration weights
-        Preparing radial weights (log,100) ...
-      END Integration weights
       BEGIN Atomic grids
         Computing/Loading atomic grids (and distances):
          0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
@@ -1338,9 +1323,6 @@ using the :ref:`becke` scheme::
       Chemical formula: O2NC3H7
     END Loading Electronic structure
     BEGIN Net and overlap populations
-      BEGIN Integration weights
-        Preparing radial weights (log,100) ...
-      END Integration weights
       BEGIN Atomic grids
         Computing/Loading atomic grids (and distances):
          0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
@@ -1433,10 +1415,6 @@ time we use the :ref:`hirshfeld` partitioning method. ::
     END Loading Electronic structure
     BEGIN Bond orders and valences
       BEGIN Atomic charges
-        BEGIN Integration weights
-          Preparing radial weights (log,99) ...
-          Preparing radial weights (log,100) ...
-        END Integration weights
         BEGIN Atomic grids
           Computing/Loading atomic grids (and distances):
            0% ........... 6% .......... 13% .......... 20% .......... 27% .......... 34% .......... 41% .......... 48% .........
@@ -1550,10 +1528,6 @@ This example computes :ref:`hirshfeld` spin charges in the alanine radical::
       Chemical formula: O2NC3H6
     END Loading Electronic structure
     BEGIN Atomic spin charges
-      BEGIN Integration weights
-        Preparing radial weights (log,99) ...
-        Preparing radial weights (log,100) ...
-      END Integration weights
       BEGIN Atomic grids
         Computing/Loading atomic grids (and distances):
          0% ........... 6% .......... 13% .......... 20% .......... 27% .......... 34% .......... 41% .......... 48% .........
@@ -1632,10 +1606,6 @@ radical are computed as follows. ::
       Chemical formula: O2NC3H6
     END Loading Electronic structure
     BEGIN Atomic overlap matrices (in basis of contracted Gaussians)
-      BEGIN Integration weights
-        Preparing radial weights (log,99) ...
-        Preparing radial weights (log,100) ...
-      END Integration weights
       BEGIN Atomic grids
         Computing/Loading atomic grids (and distances):
          0% ........... 6% .......... 13% .......... 20% .......... 27% .......... 34% .......... 41% .......... 48% .........

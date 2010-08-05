@@ -86,11 +86,9 @@ def get_radial_weights(x, v):
     return w
 
 def get_radial_weights_equi(x):
-    log("Preparing radial weights (equi,%i) ..." % len(x))
     return get_radial_weights(x, None)
 
 def get_radial_weights_log(x):
-    log("Preparing radial weights (log,%i) ..." % len(x))
     xp = numpy.log(x)
     v = x
     return get_radial_weights(xp, v)

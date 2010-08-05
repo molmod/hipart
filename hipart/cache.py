@@ -86,9 +86,9 @@ class BaseCache(object):
     def new_from_args(cls, context, args):
         raise NotImplementedError
 
-    def __init__(self, context, extra_tag_attributes):
+    def __init__(self, context, rs, extra_tag_attributes):
         self.context = context
-        rs = self.get_rs(-1)
+        self.rs = rs
         extra_tag_attributes.update({
             "r_low": "%.2e" % rs.min(),
             "r_high": "%.2e" % rs.max(),
@@ -96,39 +96,30 @@ class BaseCache(object):
 
         })
         self.context.check_tag(extra_tag_attributes)
+        self.radial_weights_map = {}
         self._done = set([])
 
-    def get_rs(self, i):
-        raise NotImplementedError
+    def get_radial_weights(self, size):
+        weights = self.radial_weights_map.get(size)
+        if weights is None:
+            weights = get_radial_weights_log(self.rs[:size])
+            self.radial_weights_map[size] = weights
+        return weights
 
-    @OnlyOnce("Integration weights")
-    def do_integration_weights(self):
-        self.radial_weights_map = {}
-        molecule = self.context.wavefn.molecule
-        for i in xrange(molecule.size):
-            rs = self.get_rs(i)
-            key = len(rs)
-            if key in self.radial_weights_map:
-                continue
-            weights = get_radial_weights_log(rs)
-            self.radial_weights_map[key] = weights
-
-    def _radint(self, i, integrand):
+    def _radint(self, integrand):
         """Radial integration routine"""
-        molecule = self.context.wavefn.molecule
-        rs = self.get_rs(i)
-        w = self.radial_weights_map[len(rs)]
+        rs = self.rs[:len(integrand)]
+        w = self.get_radial_weights(len(integrand))
         return numpy.dot(w, integrand*rs*rs)
 
-    def _spherint(self, i, integrand):
+    def _spherint(self, integrand):
         radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-        return self._radint(i, radfun)
+        return self._radint(radfun)
 
-    def _radint_cumul(self, i, integrand):
+    def _radint_cumul(self, integrand):
         # WARNING: this is very inaccurate, do not use for delicate computations
-        molecule = self.context.wavefn.molecule
-        rs = self.get_rs(i)
-        w = self.radial_weights_map[len(rs)]
+        rs = self.rs[:len(integrand)]
+        w = self.get_radial_weights(len(integrand))
         return numpy.cumsum(w*integrand*rs*rs)
 
     @OnlyOnce("Atomic grids")
@@ -141,11 +132,9 @@ class BaseCache(object):
         for i in xrange(molecule.size):
             prefix = os.path.join(workdir, "atom%05i" % i)
             atgrid = Grid.from_prefix(prefix)
-            rs = self.get_rs(i)
-            num_points = len(self.context.lebedev_xyz)*len(rs)
-            if atgrid is None or atgrid.points.shape != (num_points,3):
+            if atgrid is None:
                 center = molecule.coordinates[i]
-                points = get_atom_grid(self.context.lebedev_xyz, center, rs)
+                points = get_atom_grid(self.context.lebedev_xyz, center, self.rs)
                 atgrid = Grid(prefix, points)
             self.atgrids.append(atgrid)
 
@@ -189,7 +178,6 @@ class BaseCache(object):
             log("Loading noble radii")
             self.noble_radii = numpy.fromfile(noble_radii_fn_bin, float)
         else:
-            self.do_integration_weights()
             self.do_atgrids_moldens()
             log("Computing noble radii")
             self.noble_radii = numpy.zeros(molecule.size, float)
@@ -199,10 +187,9 @@ class BaseCache(object):
                 else:
                     densities = self.atgrids[i].moldens
                     radfun = integrate_lebedev(self.context.lebedev_weights, densities)
-                    charge_int = self._radint_cumul(i, radfun)
-                    rs = self.get_rs(i)
+                    charge_int = self._radint_cumul(radfun)
                     j = charge_int.searchsorted([core_sizes[number_i]])[0]
-                    self.noble_radii[i] = rs[j]
+                    self.noble_radii[i] = self.rs[j]
             self.noble_radii.tofile(noble_radii_fn_bin)
 
     @OnlyOnce("Computing the ESP cost function")
@@ -348,7 +335,6 @@ class BaseCache(object):
             self.charges = numpy.fromfile(charges_fn_bin, float)
             self.populations = numpy.fromfile(populations_fn_bin, float)
         else:
-            self.do_integration_weights()
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_atgrids_atweights()
@@ -361,7 +347,7 @@ class BaseCache(object):
                 w = self.atgrids[i].atweights
                 d = self.atgrids[i].moldens
                 center = molecule.coordinates[i]
-                self.populations[i] = self._spherint(i, d*w)
+                self.populations[i] = self._spherint(d*w)
                 self.charges[i] = molecule.numbers[i] - self.populations[i]
             pb()
             self.populations.tofile(populations_fn_bin)
@@ -382,7 +368,6 @@ class BaseCache(object):
             log("Loading spin charges.")
             self.spin_charges = numpy.fromfile(spin_charges_fn_bin, float)
         else:
-            self.do_integration_weights()
             self.do_atgrids()
             self.do_atgrids_molspindens()
             self.do_atgrids_atweights()
@@ -394,7 +379,7 @@ class BaseCache(object):
                 w = self.atgrids[i].atweights
                 d = self.atgrids[i].molspindens
                 center = molecule.coordinates[i]
-                self.spin_charges[i] = self._spherint(i, d*w)
+                self.spin_charges[i] = self._spherint(d*w)
             pb()
             self.spin_charges.tofile(spin_charges_fn_bin)
 
@@ -411,7 +396,6 @@ class BaseCache(object):
             log("Loading dipoles.")
             self.dipoles = numpy.fromfile(dipoles_fn_bin, float).reshape((molecule.size,3))
         else:
-            self.do_integration_weights()
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_atgrids_atweights()
@@ -427,7 +411,7 @@ class BaseCache(object):
 
                 for j in 0,1,2:
                     integrand = -(atgrid.points[:,j] - center[j])*d*w
-                    self.dipoles[i,j] = self._spherint(i, integrand)
+                    self.dipoles[i,j] = self._spherint(integrand)
             pb()
             self.dipoles.tofile(dipoles_fn_bin)
 
@@ -480,7 +464,6 @@ class BaseCache(object):
             num_polys = len(regular_solid_harmonics)
             self.multipoles = numpy.fromfile(multipoles_fn_bin, float).reshape((molecule.size,num_polys))
         else:
-            self.do_integration_weights()
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_atgrids_atweights()
@@ -500,7 +483,7 @@ class BaseCache(object):
                 cz = atgrid.points[:,2] - center[2]
                 for j in xrange(num_polys):
                     poly = regular_solid_harmonics[j]
-                    self.multipoles[i,j] = self._spherint(i, -poly(cx,cy,cz)*d*w)
+                    self.multipoles[i,j] = self._spherint(-poly(cx,cy,cz)*d*w)
                 self.multipoles[i,0] += molecule.numbers[i]
             pb()
             self.multipoles.tofile(multipoles_fn_bin)
@@ -612,7 +595,6 @@ class BaseCache(object):
                 setattr(self.atgrids[i], "%s_overlap_matrix_orb" % kind, matrix)
 
             if some_failed:
-                self.do_integration_weights()
                 self.do_atgrids_orbitals()
                 self.do_atgrids_atweights()
 
@@ -626,7 +608,7 @@ class BaseCache(object):
                         for j1 in xrange(num_orbitals):
                             for j2 in xrange(j1+1):
                                 integrand = orbitals[j1]*orbitals[j2]*w
-                                value = self._spherint(i, integrand)
+                                value = self._spherint(integrand)
                                 matrix[j1,j2] = value
                                 matrix[j2,j1] = value
                         setattr(self.atgrids[i], "%s_overlap_matrix_orb" % kind, matrix)
@@ -647,7 +629,6 @@ class BaseCache(object):
 
     @OnlyOnce("Atomic overlap matrices (in basis of contracted Gaussians)")
     def do_atgrids_overlap_matrix(self):
-        self.do_integration_weights()
         self.do_atgrids()
         self.do_atgrids_atweights()
 
@@ -660,14 +641,12 @@ class BaseCache(object):
             suffix = "%s_overlap_matrix" % self.prefix
             overlap = atgrid.load(suffix)
             if overlap is None:
-                rs = self.get_rs(i)
-                rw = self.radial_weights_map[len(rs)].copy()
+                rw = self.get_radial_weights(len(self.rs)).copy()
                 rw *= 4*numpy.pi
-                rw *= rs
-                rw *= rs
+                rw *= self.rs
+                rw *= self.rs
                 weights = numpy.outer(rw, self.context.lebedev_weights).ravel()
                 weights *= atgrid.atweights
-                # = numpy.zeros((num_orbitals, num_orbitals), float)
                 overlap = self.context.wavefn.compute_atomic_overlap(atgrid, weights)
                 atgrid.dump(suffix, overlap)
             else:
@@ -784,7 +763,6 @@ class BaseCache(object):
             log("Loading net and overlap populations.")
             self.net_overlap = numpy.fromfile(net_overlap_fn_bin, float).reshape((molecule.size,molecule.size))
         else:
-            self.do_integration_weights()
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_charges()
@@ -798,31 +776,29 @@ class BaseCache(object):
                         # Use Becke's integration scheme to split the integral
                         # over two atomic grids.
                         # 1) first part of the integral, using the grid on atom i
-                        rs = self.get_rs(i)
-                        delta = (self.atgrids[i].distances[j].reshape((len(rs),-1)) - rs.reshape((-1,1))).ravel()
+                        delta = (self.atgrids[i].distances[j].reshape((len(self.rs),-1)) - self.rs.reshape((-1,1))).ravel()
                         switch = delta/molecule.distance_matrix[i,j]
                         for k in xrange(3):
                             switch = (3 - switch**2)*switch/2
                         switch += 1
                         switch /= 2
                         integrand = switch*self.atgrids[i].od_atweights[j]*self.atgrids[i].atweights*self.atgrids[i].moldens
-                        part1 = self._spherint(i, integrand)
+                        part1 = self._spherint(integrand)
                         # 2) second part of the integral
-                        rs = self.get_rs(j)
-                        delta = (self.atgrids[j].distances[i].reshape((len(rs),-1)) - rs.reshape((-1,1))).ravel()
+                        delta = (self.atgrids[j].distances[i].reshape((len(self.rs),-1)) - self.rs.reshape((-1,1))).ravel()
                         switch = delta/molecule.distance_matrix[i,j]
                         for k in xrange(3):
                             switch = (3 - switch**2)*switch/2
                         switch += 1
                         switch /= 2
                         integrand = switch*self.atgrids[j].od_atweights[i]*self.atgrids[j].atweights*self.atgrids[j].moldens
-                        part2 = self._spherint(j, integrand)
+                        part2 = self._spherint(integrand)
                         # Add up and store
                         self.net_overlap[i,j] = part1 + part2
                         self.net_overlap[j,i] = part1 + part2
                     else:
                         integrand = self.atgrids[i].atweights**2*self.atgrids[i].moldens
-                        self.net_overlap[i,i] = self._spherint(i, integrand)
+                        self.net_overlap[i,i] = self._spherint(integrand)
             pb()
             self.net_overlap.tofile(net_overlap_fn_bin)
 
@@ -869,16 +845,9 @@ class TableBaseCache(StockholderCache):
 
     def __init__(self, context, extra_tag_attributes, atom_table):
         self.atom_table = atom_table
-        BaseCache.__init__(self, context, extra_tag_attributes)
+        BaseCache.__init__(self, context, atom_table.rs, extra_tag_attributes)
         # write the rs to the workdir for plotting purposes:
         atom_table.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
-
-    def get_rs(self, i):
-        if i == -1:
-            return self.atom_table.rs
-        else:
-            number = self.context.wavefn.molecule.numbers[i]
-            return self.atom_table.records[number].rs
 
 
 hirshfeld_usage = """ * Hirshfeld Partitioning
@@ -934,7 +903,6 @@ class HirshfeldICache(TableBaseCache):
     @OnlyOnce("Iterative Hirshfeld")
     def do_proatomfns(self):
         molecule = self.context.wavefn.molecule
-        self.do_integration_weights()
         self.do_atgrids_moldens()
 
         counter = 0
@@ -949,7 +917,7 @@ class HirshfeldICache(TableBaseCache):
             charges = []
             for i in xrange(molecule.size):
                 integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
-                num_electrons = self._spherint(i, integrand)
+                num_electrons = self._spherint(integrand)
                 charges.append(molecule.numbers[i] - num_electrons)
 
             # ordinary blablabla ...
@@ -1008,26 +976,13 @@ class ISACache(StockholderCache):
         return cls(context, rs)
 
     def __init__(self, context, rs):
-        self.rs = rs
-        BaseCache.__init__(self, context, {})
+        BaseCache.__init__(self, context, rs, {})
         # write the rs to the workdir for plotting purposes:
         self.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
-
-    def get_rs(self, i):
-        if i == -1:
-            return self.rs
-        elif hasattr(self, "proatomfns") and len(self.proatomfns) > i:
-            return self.proatomfns[i].x
-        elif hasattr(self, "atgrids") and len(self.atgrids) > i:
-            num_shells = len(self.atgrids[i].points)/self.context.num_lebedev
-            return self.rs[:num_shells]
-        else:
-            return self.rs
 
     @OnlyOnce("Iterative Stockholder Analysis")
     def do_proatomfns(self):
         molecule = self.context.wavefn.molecule
-        self.do_integration_weights()
         self.do_atgrids_moldens()
 
         log("Generating initial guess for the pro-atoms")
@@ -1036,8 +991,7 @@ class ISACache(StockholderCache):
             densities = self.atgrids[i].moldens
             profile = densities.reshape((-1,self.context.num_lebedev)).min(axis=1)
             profile[profile < 1e-6] = 1e-6
-            rs = self.get_rs(i)
-            self.proatomfns.append(CubicSpline(rs, profile))
+            self.proatomfns.append(CubicSpline(self.rs, profile))
 
         counter = 0
         old_charges = numpy.zeros(molecule.size, float)
@@ -1047,11 +1001,11 @@ class ISACache(StockholderCache):
             for i in xrange(molecule.size):
                 integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
                 radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                num_electrons = self._radint(i, radfun)
+                num_electrons = self._radint(radfun)
                 charges.append(molecule.numbers[i] - num_electrons)
                 # add negligible tails to maintain a complete partitioning
                 radfun[radfun < 1e-40] = 1e-40
-                new_proatomfn = CubicSpline(rs, radfun/4*numpy.pi)
+                new_proatomfn = CubicSpline(self.rs, radfun/4*numpy.pi)
                 new_proatomfns.append(new_proatomfn)
 
             # ordinary blablabla ...
@@ -1125,21 +1079,9 @@ class BeckeCache(BaseCache):
 
     def __init__(self, context, k, rs):
         self.k = k
-        self.rs = rs
-        BaseCache.__init__(self, context, {"becke_k": str(k)})
+        BaseCache.__init__(self, context, rs, {"becke_k": str(k)})
         # write the rs to the workdir for plotting purposes:
         self.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
-
-    def get_rs(self, i):
-        if i == -1:
-            return self.rs
-        elif hasattr(self, "proatomfns") and len(self.proatomfns) > i:
-            return self.proatomfns[i].x
-        elif hasattr(self, "atgrids") and len(self.atgrids) > i:
-            num_shells = len(self.atgrids[i].points)/self.context.num_lebedev
-            return self.rs[:num_shells]
-        else:
-            return self.rs
 
     @OnlyOnce("Becke's Smooth Voronoi Partitioning")
     def _prepare_atweights(self):
