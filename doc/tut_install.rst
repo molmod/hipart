@@ -144,7 +144,7 @@ other packages are installed as follows:
     sudo apt-get install python-nose python-sphinx python-scipy
 
 * Debian 5 does not have Python 2.6. Hipart does work on Debian 5, but some of
-  the development tools will not work and some tests do not run.
+  the development tools will not work and some tests do not run. ::
 
     su -
     apt-get install python-nose python-sphinx python-scipy
