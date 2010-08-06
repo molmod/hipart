@@ -247,6 +247,7 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
 {
   int shell, shell_type, primitive, dof1, dof2, num_dof, num_shell_dof, result, i_point;
   double *work, *out, *center, *ccoeff, *exponent, *basis_fns, *shell_fns, *fn1, *fn2, *dmat_element;
+  double tmp;
 
   result = 0;
 
@@ -303,17 +304,20 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
     fn1 = basis_fns;
     for (dof1=0; dof1<num_dof; dof1++) {
       fn2 = basis_fns;
+      tmp = 0.0;
+      // off-diagonal times 2
       for (dof2=0; dof2<dof1; dof2++) {
-        // off-diagonal times 2
-        *density += 2*(*fn1)*(*fn2)*(*dmat_element);
+        tmp += (*fn2)*(*dmat_element);
         //printf("dof1=%d  dof2=%d  basis1=%f  basis2=%f  dmat_element=%f  density=%f\n", dof1, dof2, basis_fns[dof1], basis_fns[dof2], *dmat_element, *density);
         dmat_element++;
         fn2++;
       }
+      tmp *= 2;
       // diagonal
-      *density += (*fn1)*(*fn1)*(*dmat_element);
+      tmp += (*fn1)*(*dmat_element);
       //printf("dof1=%d  dof2=%d  basis1=%f  basis2=%f  dmat_element=%f  density=%f\n", dof1, dof2, basis_fns[dof1], basis_fns[dof2], *dmat_element, *density);
       dmat_element++;
+      *density += tmp*(*fn1);
       fn1++;
     }
     // D) Prepare for next iteration
