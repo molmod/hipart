@@ -111,7 +111,7 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
   int num_centers, int num_shells, int num_ccoeffs, int num_exponents)
 {
   int shell, shell_type, primitive, dof1, dof2, num_dof, num_shell_dof, result, i_point;
-  double *work, *out, *center, *ccoeff, *exponent, *basis_fns, *shell_fns, *fn, *dmat_element;
+  double *work, *out, *center, *ccoeff, *exponent, *basis_fns, *shell_fns, *fn1, *fn2, *dmat_element;
 
   result = 0;
 
@@ -123,10 +123,10 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
 
   for (i_point=0; i_point<num_points; i_point++) {
     // A) clear the basis functions.
-    fn = basis_fns;
+    fn1 = basis_fns;
     for (dof1=0; dof1<num_dof; dof1++) {
-      *fn = 0.0;
-      fn++;
+      *fn1 = 0.0;
+      fn1++;
     }
     // B) evaluate the basis functions in the current point.
     ccoeff = ccoeffs;
@@ -142,19 +142,19 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
         //printf("shell_type=%d  primitive=%d  exponent=%f\\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
-        fn = shell_fns;
+        fn1 = shell_fns;
         // Take care of exceptional contraction rules for SP shells
         if (shell_type==-1) {
-          *fn += (*out)*(*ccoeff);
+          *fn1 += (*out)*(*ccoeff);
           //printf("out=%f  ccoeff=%f  fn=%f\\n", *out, *ccoeff, (*out)*(*ccoeff));
-          fn++;
+          fn1++;
           out++;
           ccoeff++;
         }
         for (dof1=num_shell_dof-(shell_type==-1); dof1>0; dof1--) {
-          *fn += (*out)*(*ccoeff);
+          *fn1 += (*out)*(*ccoeff);
           //printf("out=%f  ccoeff=%f  fn=%f\\n", *out, *ccoeff, (*out)*(*ccoeff));
-          fn++;
+          fn1++;
           out++;
         }
         ccoeff++;
@@ -165,16 +165,21 @@ int gint1_fn_dmat(double* dmat, double* density, double* points,
     // C) Make dot product of basis functions with density matrix.
     *density = 0.0;
     dmat_element = dmat;
+    fn1 = basis_fns;
     for (dof1=0; dof1<num_dof; dof1++) {
-      for (dof2=0; dof2<=dof1; dof2++) {
-        if (dof1==dof2) {
-          *density += basis_fns[dof1]*basis_fns[dof2]*(*dmat_element);
-        } else {
-          *density += 2*basis_fns[dof1]*basis_fns[dof2]*(*dmat_element);
-        }
+      fn2 = basis_fns;
+      for (dof2=0; dof2<dof1; dof2++) {
+        // off-diagonal times 2
+        *density += 2*(*fn1)*(*fn2)*(*dmat_element);
         //printf("dof1=%d  dof2=%d  basis1=%f  basis2=%f  dmat_element=%f  density=%f\\n", dof1, dof2, basis_fns[dof1], basis_fns[dof2], *dmat_element, *density);
         dmat_element++;
+        fn2++;
       }
+      // diagonal
+      *density += (*fn1)*(*fn1)*(*dmat_element);
+      //printf("dof1=%d  dof2=%d  basis1=%f  basis2=%f  dmat_element=%f  density=%f\\n", dof1, dof2, basis_fns[dof1], basis_fns[dof2], *dmat_element, *density);
+      dmat_element++;
+      fn1++;
     }
     // D) Prepare for next iteration
     density++;
