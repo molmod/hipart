@@ -22,24 +22,33 @@
 #include "gint1_fn.h"
 #include "gint1_fn.inc.c" // auto-generated code
 
-int gint1_fn_basis(double* weights, double* fns, double* points,
+int gint1_fns_basis(double* weights, double* orbs, double* points,
   double* centers, int* shell_types, int* shell_map,  int* num_primitives,
-  double* ccoeffs, double* exponents, int num_weights, int num_points,
+  double* ccoeffs, double* exponents, int num_orbs, int num_dof, int num_points,
   int num_centers, int num_shells, int num_ccoeffs, int num_exponents)
 {
-  int shell, shell_type, primitive, dof, num_shell_dof, result, i_point;
-  double *work, *out, *center, *ccoeff, *exponent, *weight, *shell_weights;
+  int shell, shell_type, primitive, dof, num_shell_dof, result, i_point, i_orb;
+  double *work, *out, *center, *ccoeff, *exponent, *weight, *shell_fns, *basis_fns, *fn;
+  double tmp;
 
   result = 0;
 
   work = malloc(MAX_SHELL_DOF*sizeof(double));
   CHECK_ALLOC(work);
+  basis_fns = malloc(num_dof*sizeof(double));
+  CHECK_ALLOC(basis_fns);
 
   for (i_point=0; i_point<num_points; i_point++) {
-    *fns = 0.0;
-    shell_weights = weights;
+    // A) clear the basis functions.
+    fn = basis_fns;
+    for (dof=0; dof<num_dof; dof++) {
+      *fn = 0.0;
+      fn++;
+    }
+    // B) evaluate the basis functions in the current point.
     ccoeff = ccoeffs;
     exponent = exponents;
+    shell_fns = basis_fns;
     for (shell=0; shell<num_shells; shell++) {
       center = centers + (3*shell_map[shell]);
       shell_type = shell_types[shell];
@@ -50,32 +59,46 @@ int gint1_fn_basis(double* weights, double* fns, double* points,
         //printf("shell_type=%d  primitive=%d  exponent=%f\n", shell_type, primitive, *exponent);
         out = work;
         exponent++;
-        weight = shell_weights;
+        fn = shell_fns;
         // Take care of exceptional contraction rules for SP shells
         if (shell_type==-1) {
-          *fns += (*weight)*(*out)*(*ccoeff);
-          //printf("weight=%f  out=%f  ccoeff=%f  contrib=%f  fn=%f\n", *weight, *out, *ccoeff, (*weight)*(*out)*(*ccoeff), *fns);
-          weight++;
+          *fn += (*out)*(*ccoeff);
+          //printf("out=%f  ccoeff=%f  fn=%f\n", *out, *ccoeff, (*out)*(*ccoeff));
+          fn++;
           out++;
           ccoeff++;
         }
         for (dof=num_shell_dof-(shell_type==-1); dof>0; dof--) {
-          *fns += (*weight)*(*out)*(*ccoeff);
-          //printf("weight=%f  out=%f  ccoeff=%f  contrib=%f  fn=%f\n", *weight, *out, *ccoeff, (*weight)*(*out)*(*ccoeff), *fns);
-          weight++;
+          *fn += (*out)*(*ccoeff);
+          //printf("out=%f  ccoeff=%f  fn=%f\n", *out, *ccoeff, (*out)*(*ccoeff));
+          fn++;
           out++;
         }
         ccoeff++;
       }
-      shell_weights += num_shell_dof;
+      shell_fns += num_shell_dof;
+    }
+    //printf("\n");
+    // C) Make proper linear combinations with weights and assign to orb
+    for (i_orb=0; i_orb<num_orbs; i_orb++) {
+      tmp = 0.0;
+      fn = basis_fns;
+      weight = weights+i_orb*num_dof;
+      for (dof=0; dof<num_dof; dof++) {
+        tmp += (*fn)*(*weight);
+        fn++;
+        weight++;
+      }
+      *(orbs+i_orb*num_points) = tmp;
     }
     points += 3;
-    fns++;
+    orbs++;
     //printf("\n");
   }
 
 EXIT:
   free(work);
+  free(basis_fns);
   return result;
 }
 

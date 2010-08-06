@@ -23,7 +23,7 @@ from molmod.io import FCHKFile
 from molmod import angstrom
 import os, numpy
 
-from hipart.gint import GaussianBasis, gint1_fn_basis, gint1_fn_dmat, \
+from hipart.gint import GaussianBasis, gint1_fns_basis, gint1_fn_dmat, \
     gint2_nai_dmat, reorder_dmat, add_orbitals_to_dmat, dmat_to_full, \
     gint1_fn_overlap
 from hipart.log import log
@@ -431,38 +431,36 @@ class FCHKWaveFunction(object):
         grid.molpot = molpot
 
     def compute_orbitals(self, grid):
-        alpha_orbitals = []
-        beta_orbitals = []
-        natural_orbitals = []
-
-        for i in xrange(self.num_orbitals):
-            alpha_suffix = "alpha_orb%05i" % i
-            alpha_orb = grid.load(alpha_suffix)
-            if alpha_orb is None:
-                weights = self.alpha_orbitals[i]
-                alpha_orb = self.basis.call_gint_grid(gint1_fn_basis, weights, grid.points)
-                grid.dump(alpha_suffix, alpha_orb)
-            alpha_orbitals.append(alpha_orb)
-            if self.beta_orbitals is self.alpha_orbitals:
-                beta_orbitals.append(alpha_orb)
-            else:
-                beta_suffix = "beta_orb%05i" % i
-                beta_orb = grid.load(beta_suffix)
-                if beta_orb is None:
-                    weights = self.beta_orbitals[i]
-                    beta_orb = self.basis.call_gint_grid(gint1_fn_basis, weights, grid.points)
-                    grid.dump(beta_suffix, beta_orb)
-                beta_orbitals.append(beta_orb)
-            if self.natural_orbitals is self.alpha_orbitals:
-                natural_orbitals.append(alpha_orb)
-            else:
-                natural_suffix = "natural_orb%05i" % i
-                natural_orb = grid.load(natural_suffix)
-                if natural_orb is None:
-                    weights = self.natural_orbitals[i]
-                    natural_orb = self.basis.call_gint_grid(gint1_fn_basis, weights, grid.points)
-                    grid.dump(natural_suffix, natural_orb)
-                natural_orbitals.append(natural_orb)
+        alpha_suffix = "alpha_orbitals"
+        alpha_orbitals = grid.load(alpha_suffix)
+        if alpha_orbitals is None:
+            alpha_orbitals = self.basis.call_gint_grid(
+                gint1_fns_basis, self.alpha_orbitals,
+                grid.points, repeat=len(self.alpha_orbitals)
+            )
+            grid.dump(alpha_suffix, alpha_orbitals)
+        if self.beta_orbitals is self.alpha_orbitals:
+            beta_orbitals = alpha_orbitals
+        else:
+            beta_suffix = "beta_orbitals"
+            beta_orbitals = grid.load(beta_suffix)
+            if beta_orbitals is None:
+                beta_orbitals = self.basis.call_gint_grid(
+                    gint1_fns_basis, self.beta_orbitals,
+                    grid.points, repeat=len(self.beta_orbitals)
+                )
+                grid.dump(beta_suffix, beta_orbitals)
+        if self.natural_orbitals is self.alpha_orbitals:
+            natural_orbitals = alpha_orbitals
+        else:
+            natural_suffix = "natural_orbitals"
+            natural_orbitals = grid.load(natural_suffix)
+            if natural_orbitals is None:
+                natural_orbitals = self.basis.call_gint_grid(
+                    gint1_fns_basis, self.natural_orbitals,
+                    grid.points, repeat=len(self.natural_orbitals)
+                )
+                grid.dump(natural_suffix, natural_orbitals)
 
         grid.alpha_orbitals = alpha_orbitals
         grid.beta_orbitals = beta_orbitals

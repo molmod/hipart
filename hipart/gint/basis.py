@@ -160,8 +160,11 @@ class GaussianBasis(object):
 
         return result
 
-    def call_gint_grid(self, gint_c_routine, weights, points):
-        result = numpy.zeros(len(points), float)
+    def call_gint_grid(self, gint_c_routine, weights, points, repeat=None):
+        if repeat is None:
+            result = numpy.zeros(len(points), float)
+        else:
+            result = numpy.zeros((repeat, len(points)), float)
         retcode = gint_c_routine(
             weights, result, points, self.molecule.coordinates, self.shell_types,
             self.shell_map, self.num_primitives, self.ccoeffs, self.exponents

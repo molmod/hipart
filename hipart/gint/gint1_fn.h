@@ -19,9 +19,9 @@
 // --
 
 
-int gint1_fn_basis(double* weights, double* fns, double* points,
+int gint1_fns_basis(double* weights, double* orbs, double* points,
   double* centers, int* shell_types, int* shell_map,  int* num_primitives,
-  double* ccoeffs, double* exponents, int num_weights, int num_points,
+  double* ccoeffs, double* exponents, int num_orbs, int num_dof, int num_points,
   int num_centers, int num_shells, int num_ccoeffs, int num_exponents);
 
 int gint1_fn_dmat(double* dmat, double* density, double* points,

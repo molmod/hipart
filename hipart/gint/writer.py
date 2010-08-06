@@ -641,7 +641,7 @@ class GaussianIntegral():
             for arg in ag.args:
                 c_names.append(arg.name)
             all_c_types_names.append(ag.get_c_types_names())
-        print >> f_c, "static void %s_dispatch(%s, double* out)" % (self.name, ", ".join(all_c_types_names))
+        print >> f_c, "void %s_dispatch(%s, double* out)" % (self.name, ", ".join(all_c_types_names))
         print >> f_c, "{"
         factor = 1
         offsets = []

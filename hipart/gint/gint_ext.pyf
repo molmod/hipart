@@ -23,11 +23,11 @@ interface
 
 include 'gint1_fn.inc.pyf'
 
-  integer function gint1_fn_basis(weights, fns, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_weights, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
-    intent(c) gint1_fn_basis
+  integer function gint1_fns_basis(weights, orbs, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_orbs, num_dof, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
+    intent(c) gint1_fns_basis
     intent(c)
-    double precision intent(in) :: weights(num_weights)
-    double precision intent(inout) :: fns(num_points)
+    double precision intent(in) :: weights(num_orbs, num_dof)
+    double precision intent(inout) :: orbs(num_orbs, num_points)
     double precision intent(in) :: points(num_points,3)
     double precision intent(in)  :: centers(num_centers,3)
     integer intent(int) :: shell_types(num_shells)
@@ -35,13 +35,14 @@ include 'gint1_fn.inc.pyf'
     integer intent(int) :: num_primitives(num_shells)
     double precision intent(in) :: ccoeffs(num_ccoeffs)
     double precision intent(in) :: exponents(num_exponents)
-    integer intent(hide), depend(weights) :: num_weights=len(weights)
-    integer intent(hide), depend(points) :: num_points=len(points)
+    integer intent(hide), depend(weights) :: num_orbs=shape(weights, 0)
+    integer intent(hide), depend(weights) :: num_dof=shape(weights, 1)
+    integer intent(hide), depend(points) :: num_points=shape(points, 0)
     integer intent(hide), depend(centers) :: num_centers=len(centers)
     integer intent(hide), depend(shell_types) :: num_shells=len(shell_types)
     integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)
     integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
-  end function gint1_fn_basis
+  end function gint1_fns_basis
 
   integer function gint1_fn_dmat(dmat, density, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_dmat, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
     intent(c) gint1_fn_dmat
