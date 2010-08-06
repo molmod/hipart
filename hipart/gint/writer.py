@@ -33,7 +33,9 @@ from hipart.gint.solid_harmonics import get_solid_harmonics
 
 
 # TODO: More tests
+# TODO: Use profiler to detect the slowest parts
 # TODO: Precompute parameters that only depend on basis sets and geometry
+# TODO: Make specialized routines when two centers are identical
 # TODO: Use symmetry in interface routines
 
 
