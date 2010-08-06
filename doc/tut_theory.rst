@@ -11,15 +11,15 @@ Fuzzy atom partitioning
 
 One way to partition the molecular density,
 :math:`\rho_{\text{mol}}(\mathbf{r})`, into atomic contributions is to define a
-weight function, :math:`w_i(\mathbf{r})`, for every atom :math:`i` in the
+weight function, :math:`w_A(\mathbf{r})`, for every atom :math:`A` in the
 molecule. The function value is in the range :math:`[0,1]`. The atomic denisty
 is then defined as
 
-.. math:: \rho_i(\mathbf{r}) = w_i(\mathbf{r})\rho_{\text{mol}}(\mathbf{r})
+.. math:: \rho_A(\mathbf{r}) = w_A(\mathbf{r})\rho_{\text{mol}}(\mathbf{r})
 
 The weight functions must satisfy the condition
 
-.. math:: \sum_{i=1}^N w_i(\mathbf{r}) = 1, ~~ \forall \mathbf{r} \in \mathbb{R}^3,
+.. math:: \sum_{A=1}^N w_A(\mathbf{r}) = 1, ~~ \forall \mathbf{r} \in \mathbb{R}^3,
     :label: completeness
 
 where N is the number of atoms, to guarantee that the sum of the atomic
@@ -33,11 +33,11 @@ fuzzy weights lead to atoms that have overlapping densities. All partitioning
 methods in HiPart are fuzzy-atom partitioning methods.
 
 It is common practice to introduce for each atom a so-called pro-atomic
-function, :math:`\rho_i^{\text{pro}}(\mathbf{r})`, as an auxiliary tool to define the
+function, :math:`\rho_A^{\text{pro}}(\mathbf{r})`, as an auxiliary tool to define the
 actual weight functions. The weight functions are derived from the pro-atomic
 functions as follows:
 
-.. math:: w_i(\mathbf{r}) = \frac{\rho_i^{\text{pro}}(\mathbf{r})}{\sum_{j=1}^N \rho_j^{\text{pro}}(\mathbf{r})}
+.. math:: w_A(\mathbf{r}) = \frac{\rho_A^{\text{pro}}(\mathbf{r})}{\sum_{B=1}^N \rho_B^{\text{pro}}(\mathbf{r})}
 
 The denominator in this expression is called the pro-molecular density. This
 definition of the weight function always satisfies condition :eq:`completeness`
@@ -56,30 +56,30 @@ constructing a global molecular integration grid.
 
 The Becke weights are designed to be mathematically as simple as possible, only
 using simple polynomials of distances between atoms and grid points. Becke
-introduces so called atomic cell functions, :math:`P_i(\mathbf{r})`, which play
+introduces so called atomic cell functions, :math:`P_A(\mathbf{r})`, which play
 exactly the same role as the pro-atomic function. The weights are derived from
 the cell functions as follows:
 
-.. math:: w_i(\mathbf{r}) = \frac{P_i(\mathbf{r})}{\sum_{j=1}^N P_j(\mathbf{r})}
+.. math:: w_A(\mathbf{r}) = \frac{P_A(\mathbf{r})}{\sum_{B=1}^N P_B(\mathbf{r})}
 
 Each cell function is the product of a series of switching functions
-:math:`s_{ij}(\mathbf{r})`:
+:math:`s_{AB}(\mathbf{r})`:
 
-.. math:: P_i(\mathbf{r}) = \prod_{j\neq i} s_{ij}(\mathbf{r})
+.. math:: P_A(\mathbf{r}) = \prod_{B\neq A} s_{AB}(\mathbf{r})
 
 The switching function goes smoothly from 1 to 0 as one moves from atom
-:math:`i` to atom :math:`j`. The gradient of the switching function becomes zero
+:math:`A` to atom :math:`B`. The gradient of the switching function becomes zero
 in the vicinity of the nuclei. Now it is only a matter of constructing a simple
 switching function to complete the partitioning method.
 
 Becke proposed the following approach. He starts from one of the elliptical
 coordinates:
 
-.. math:: \mu_{ij}(\mathbf{r}) = \frac{|\mathbf{r}_i - \mathbf{r}| - |\mathbf{r}_j - \mathbf{r}|}{|\mathbf{r}_j - \mathbf{r}_i|},
+.. math:: \mu_{AB}(\mathbf{r}) = \frac{|\mathbf{r}_A - \mathbf{r}| - |\mathbf{r}_B - \mathbf{r}|}{|\mathbf{r}_B - \mathbf{r}_A|},
 
-where :math:`\mathbf{r}_i` is the position of atom :math:`i` and
-:math:`\mathbf{r}_j` is the position of atom :math:`j`. This coordinate is -1 at
-the position of atom :math:`i` and +1 at the position of atom :math:`j`. Then he
+where :math:`\mathbf{r}_A` is the position of atom :math:`A` and
+:math:`\mathbf{r}_B` is the position of atom :math:`B`. This coordinate is -1 at
+the position of atom :math:`A` and +1 at the position of atom :math:`B`. Then he
 introduces the functions :math:`f_k` as follows:
 
 .. math::
@@ -87,12 +87,12 @@ introduces the functions :math:`f_k` as follows:
 
     f_k(x) = f_1(f_{k-1}(x))
 
-The nice property of these functions :math:`f_k` is that :math:`f_k(\mu_{ij})`
+The nice property of these functions :math:`f_k` is that :math:`f_k(\mu_{AB})`
 is -1 and +1 at the respective nuclei and that the gradient of this function
 becomes zero in the vicinity of the nuclei. A simple transformation of the
 function :math:`f_3` is used to define the switching function.
 
-.. math:: s_{ij}(\mathbf{r}) = \frac{1}{2}(1-f_3(\mu_{ij}(\mathbf{r})))
+.. math:: s_{AB}(\mathbf{r}) = \frac{1}{2}(1-f_3(\mu_{AB}(\mathbf{r})))
 
 The choice of iteration order, :math:`k`, is somewhat arbitrary, but Becke
 experienced that 3 was a good trade-off between the sphericity of the atomic
@@ -101,33 +101,33 @@ the atomic densities (to limit the extent of the integration grids).
 
 The above definition of the switching functions (and hence weight functions) is
 suitable for homonuclear systems. However, for heteronuclear functions it is
-desirable to transform the elliptical coordinate, :math:`\mu_{ij}`, such that it
+desirable to transform the elliptical coordinate, :math:`\mu_{AB}`, such that it
 crosses zero around the point where the density in the bond region has a
 saddle point. Becke proposes the following transformation:
 
 .. math::
-    \nu_{ij} = \mu_{ij} + a_{ij}(1 - \mu_{ij}^2)
+    \nu_{AB} = \mu_{AB} + a_{AB}(1 - \mu_{AB}^2)
     :label: transform_hetero
 
-    s_{ij,\text{het}}(\mu_{ij}) = s_{ij}(\nu_{ij})
+    s_{AB,\text{het}}(\mu_{AB}) = s_{AB}(\nu_{AB})
 
-The parameter :math:`a_{ij}` controls the position between atoms :math:`i` and
-:math:`j` where :math:`\nu_{ij}` goes through zero, and can be used to tune
+The parameter :math:`a_{AB}` controls the position between atoms :math:`A` and
+:math:`B` where :math:`\nu_{AB}` goes through zero, and can be used to tune
 the size of the basins defined by the weight functions. Based on the covalent
-bond radii, :math:`R_i`, Becke defines
+bond radii, :math:`R_A` and :math:`R_B`, Becke defines
 
 .. math::
-    u_{ij} = \frac{R_i-R_j}{R_i+R_j}
+    u_{AB} = \frac{R_A-R_B}{R_A+R_B}
 
-    a_{ij} = \frac{u_{ij}}{u_{ij}^2-1}
+    a_{AB} = \frac{u_{AB}}{u_{AB}^2-1}
 
 This choice assigns proportionally larger basins to larger atoms in the
 molecule, which further improves the convergence of the numerical integrations
-over the atomic grids. Note that the absolute value of :math:`a_{ij}` must be
+over the atomic grids. Note that the absolute value of :math:`a_{AB}` must be
 smaller than :math:`\frac{1}{2}` to guarantee that the transform in equation
 :eq:`transform_hetero` is monotonous.
 
-In HiPart the parameter :math:`a_{ij}` is constrained to have an absolute value
+In HiPart the parameter :math:`a_{AB}` is constrained to have an absolute value
 smaller than 0.45 to suppress pristine behavior. The covalent radii for HiPart
 are taken from [Cordero2008]_.
 
@@ -140,7 +140,7 @@ Hirshfeld [Hirshfeld1977]_ proposed a partitioning scheme where pro-atomic
 densities are derived from computations on neutral atoms by simply averaging the
 atomic density over the angular degrees of freedom,
 
-.. math:: \rho_i^{\text{pro}}(|\mathbf{r} - \mathbf{r}_i|) = \rho_i^{\text{pro}}(r) = \int d\Omega \rho_{i,N=Z}^{\text{atom}}(r,\Omega),
+.. math:: \rho_A^{\text{pro}}(|\mathbf{r} - \mathbf{r}_A|) = \rho_A^{\text{pro}}(r) = \int d\Omega \rho_{A,N=Z}^{\text{atom}}(r,\Omega),
 
 where :math:`\Omega` represents the angular degrees of freedom. Prior to the
 application of this partitioning scheme one must setup a database of spherically
@@ -159,21 +159,21 @@ original method, where one seeks for pro-atomic densities that have the same
 number of electrons as the atomic partitions in the molecule.
 
 Bultinck et al. introduce a pro-atomic function with an additional parameter,
-:math:`N_i`, ie.e the fractional number of electrons in the pro-atomic density.
+:math:`N_A`, ie.e the fractional number of electrons in the pro-atomic density.
 For integer values of this parameter, the pro-atomic density is just the
 spherical average of the corresponding atom in vacuum:
 
-.. math:: \rho_i^{\text{pro}}(r;N_i) = \int d\Omega \rho_{i,N=N_i}^{\text{atom}}(r,\Omega).
+.. math:: \rho_A^{\text{pro}}(r;N_A) = \int d\Omega \rho_{A,N=N_A}^{\text{atom}}(r,\Omega).
 
-For non-integer values of the parameter N_i, the pro-atomic density is a linear
-interpolation between the two `neighboring` integer-charged atoms:
+For non-integer values of the parameter :math:`N_A`, the pro-atomic density is a
+linear interpolation between the two `neighboring` integer-charged atoms:
 
-.. math:: \rho_i^{\text{pro}}(r;N_i) = (\mathrm{ceil}(N_i)-N_i)\rho_i^{\text{pro}}(r;\mathrm{floor}(N_i)) +
-                            (N_i-\mathrm{floor}(N_i))\rho_i^{\text{pro}}(r;\mathrm{ceil}(N_i))
+.. math:: \rho_A^{\text{pro}}(r;N_A) = (\mathrm{ceil}(N_A)-N_A)\rho_A^{\text{pro}}(r;\mathrm{floor}(N_A)) +
+                            (N_A-\mathrm{floor}(N_A))\rho_A^{\text{pro}}(r;\mathrm{ceil}(N_A))
 
-The values :math:`N_i` are obtained in an iterative procedure. Initially, they
+The values :math:`N_A` are obtained in an iterative procedure. Initially, they
 are all set to zero, and one computes the populations just like in the original
-Hirshfeld scheme. In the subsequent iterations the parameters :math:`N_i` are
+Hirshfeld scheme. In the subsequent iterations the parameters :math:`N_A` are
 set to the populations from the previous iteration and one uses these pro-atoms
 to compute the population for the next iteration. This is repeated until the
 atomic populations converge, i.e. when the maximum absolute value of the
@@ -200,14 +200,14 @@ The initial pro-atoms are constructed by taking the minimal molecular electron
 density as a function of the distance from the nucleus. For numerical reasons
 this minimal value constrained to be non-zero:
 
-.. math:: \rho_i^{\text{pro},(0)}(|\mathbf{r} - \mathbf{r}_i|) = \max(\epsilon, \min_{\Omega_i} \rho_{\text{mol}}(|\mathbf{r} - \mathbf{r}_i|,\Omega_i))
+.. math:: \rho_A^{\text{pro},(0)}(|\mathbf{r} - \mathbf{r}_A|) = \max(\epsilon, \min_{\Omega_A} \rho_{\text{mol}}(|\mathbf{r} - \mathbf{r}_A|,\Omega_A))
 
-where :math:`epsilon` is a small positive number and :math:`\Omega_i` are the
+where :math:`epsilon` is a small positive number and :math:`\Omega_A` are the
 angular degrees of freedom of the spherical coordinate system centered at atom
-:math:`i`. In each ISA iteration :math:`k`, the new pro-atoms are taken to be
+:math:`A`. In each ISA iteration :math:`k`, the new pro-atoms are taken to be
 the spherical average of the atomic densities from the previous iteration.
 
-.. math:: \rho_i^{\text{pro},(k+1)}(|\mathbf{r} - \mathbf{r}_i|) = \int d \Omega_i w_i^{(k)}(|\mathbf{r} - \mathbf{r}_i|) \rho_{\text{mol}}(|\mathbf{r} - \mathbf{r}_i|,\Omega_i)
+.. math:: \rho_A^{\text{pro},(k+1)}(|\mathbf{r} - \mathbf{r}_A|) = \int d \Omega_A w_A^{(k)}(|\mathbf{r} - \mathbf{r}_A|) \rho_{\text{mol}}(|\mathbf{r} - \mathbf{r}_A|,\Omega_A)
 
 This is again repeated until the atomic populations converge. Note that this
 scheme does not depend on a database of atomic densities.
@@ -228,6 +228,9 @@ Net and overlap populations
 
 TODO
 
+Atomic properties derived from the partitioned spin density
+-----------------------------------------------------------
+
 Atomic properties derived from the partitioned density matrix
 -------------------------------------------------------------
 
@@ -243,8 +246,16 @@ Bond orders
 
 TODO
 
-Atomic overlap matrices
-^^^^^^^^^^^^^^^^^^^^^^^
+Atomic overlap matrices (in the basis of contracted Gaussians)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TODO
+
+Atomic properties derived from the partitioned orbitals
+-------------------------------------------------------
+
+Atomic overlap matrices (in the basis of the orbitals)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 TODO
 

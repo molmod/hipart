@@ -948,7 +948,7 @@ Atomic multipole expansions
 
 The multipole expansion of each atom, up to the hexadecapole, is computed with
 the script ``hi-multipoles.py``. The multipoles in the output are computed using
-the following `irregular real solid harmonics
+the following `regular real solid harmonics
 <http://en.wikipedia.org/wiki/Solid_harmonics>`_:
 
 ========   ======================================================================================================================================================
