@@ -4,148 +4,6 @@
 from writer import *
 
 
-code_gint2_nai_dmat_c = """\
-int gint2_nai_dmat(double* dmat, double* potentials, double* points,
-  double* centers, int* shell_types, int* shell_map,  int* num_primitives,
-  double* ccoeffs, double* exponents, int num_dmat, int num_points,
-  int num_centers, int num_shells, int num_ccoeffs, int num_exponents)
-{
-  int result, size, i_point, k, k1, k2, primitive1, primitive2, dof1, dof2;
-  int shell1, shell2, shell_type1, shell_type2, shell_dof1, shell_dof2, shell_offset1, shell_offset2;
-  double *work, *work_sum, *out, *out_sum, *center1, *center2;
-  double *shell_ccoeffs1, *shell_ccoeffs2, *ccoeff1, *ccoeff2, c1, c2;
-  double *shell_exponents1, *shell_exponents2, *exponent1, *exponent2;
-
-  result = 0;
-
-  size = MAX_SHELL_DOF*MAX_SHELL_DOF;
-  work = malloc(size*sizeof(double));
-  CHECK_ALLOC(work);
-  work_sum = malloc(size*sizeof(double));
-  CHECK_ALLOC(work_sum);
-
-  for (i_point=0; i_point<num_points; i_point++) {
-    // A) clear the result
-    *potentials = 0.0;
-    // B) evaluate the potential in the current point.
-    // prep inner loop.
-    shell_ccoeffs1 = ccoeffs;
-    shell_exponents1 = exponents;
-    shell_offset1 = 0;
-    for (shell1=0; shell1<num_shells; shell1++) {
-      center1 = centers + (3*shell_map[shell1]);
-      shell_type1 = shell_types[shell1];
-      CHECK_SHELL(shell_type1);
-      shell_dof1 = GET_SHELL_DOF(shell_type1);
-      //printf("shell1=%d  type=%d  dof=%d  offset=%d\\n", shell1, shell_type1, shell_dof1, shell_offset1);
-      // prep inner loop.
-      shell_ccoeffs2 = ccoeffs;
-      shell_exponents2 = exponents;
-      shell_offset2 = 0;
-      for (shell2=0; shell2<num_shells; shell2++) {
-        center2 = centers + (3*shell_map[shell2]);
-        shell_type2 = shell_types[shell2];
-        CHECK_SHELL(shell_type2);
-        shell_dof2 = GET_SHELL_DOF(shell_type2);
-        //printf("  shell2=%d  type=%d  dof=%d  offset=%d\\n", shell2, shell_type2, shell_dof2, shell_offset2);
-        // Clear the worksum
-        out_sum = work_sum;
-        for (k=0; k<size; k++) { *out_sum = 0.0; out_sum++; }
-        // Build up the worksum by combining the expectation values of the
-        // primitives into the worksum. (density matrix is not yet included).
-        // prep inner loop.
-        exponent1 = shell_exponents1;
-        ccoeff1 = shell_ccoeffs1;
-        for (primitive1=0; primitive1<num_primitives[shell1]; primitive1++) {
-          // prep inner loop.
-          //printf("    primitive1=%d  exponent1=%f\\n", primitive1, *exponent1);
-          exponent2 = shell_exponents2;
-          ccoeff2 = shell_ccoeffs2;
-          for (primitive2=0; primitive2<num_primitives[shell2]; primitive2++) {
-            //printf("      primitive2=%d  exponent2=%f\\n", primitive2, *exponent2);
-            gint2_nai_dispatch(shell_type1, center1, *exponent1, shell_type2, center2, *exponent2, points, work);
-            // add to work sum
-            out = work;
-            out_sum = work_sum;
-            for (dof1=0; dof1<shell_dof1; dof1++) {
-              c1 = ccoeff1[(shell_type1==-1)&&(dof1>0)];
-              for (dof2=0; dof2<shell_dof2; dof2++) {
-                c2 = ccoeff2[(shell_type2==-1)&&(dof2>0)];
-                *out_sum += c1*c2*(*out);
-                //printf("        dof1=%d  dof2=%d  c1=%f  c2=%f  out=%f  out_sum=%f\\n", dof1, dof2, c1, c2, *out, *out_sum);
-                out++;
-                out_sum++;
-              }
-            }
-            exponent2++;
-            ccoeff2 += 1+(shell_type2==-1);
-          }
-          exponent1++;
-          ccoeff1 += 1+(shell_type1==-1);
-        }
-        // Compute the trace of the product of the work sum and part of the
-        // density matrix that belongs to the (shell1,shell2) part
-        out_sum = work_sum;
-        for (dof1=0; dof1<shell_dof1; dof1++) {
-          for (dof2=0; dof2<shell_dof2; dof2++) {
-            k1 = dof1 + shell_offset1;
-            k2 = dof2 + shell_offset2;
-            if (k1>k2) {
-              k = (k1*(k1+1))/2+k2;
-            } else {
-              k = (k2*(k2+1))/2+k1;
-            }
-            *potentials += (*out_sum)*dmat[k];
-            //printf("++++dof1=%d  dof2=%d  k1=%d  k2=%d  k=%d  out_sum=%f  dmat[k]=%f  potential=%f\\n", dof1, dof2, k1, k2, k, *out_sum, dmat[k], *potentials);
-            out_sum++;
-          }
-        }
-        // Move on.
-        shell_exponents2 += num_primitives[shell2];
-        shell_ccoeffs2 += num_primitives[shell2]*(1+(shell_type2==-1));
-        shell_offset2 += shell_dof2;
-      }
-      // Move on.
-      shell_exponents1 += num_primitives[shell1];
-      shell_ccoeffs1 += num_primitives[shell1]*(1+(shell_type1==-1));
-      shell_offset1 += shell_dof1;
-    }
-    // C) Move on
-    points += 3;
-    potentials++;
-    //printf("\\n");
-  }
-
-EXIT:
-  free(work);
-  free(work_sum);
-  return result;
-}"""
-
-
-code_gint2_nai_dmat_pyf = """\
-  integer function gint2_nai_dmat(dmat, potentials, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_dmat, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
-    intent(c) gint2_nai_dmat
-    intent(c)
-    double precision intent(in) :: dmat(num_dmat)
-    double precision intent(inout) :: potentials(num_points)
-    double precision intent(in) :: points(num_points,3)
-    double precision intent(in)  :: centers(num_centers,3)
-    integer intent(int) :: shell_types(num_shells)
-    integer intent(int) :: shell_map(num_shells)
-    integer intent(int) :: num_primitives(num_shells)
-    double precision intent(in) :: ccoeffs(num_ccoeffs)
-    double precision intent(in) :: exponents(num_exponents)
-    integer intent(hide), depend(dmat) :: num_dmat=len(dmat)
-    integer intent(hide), depend(points) :: num_points=len(points)
-    integer intent(hide), depend(centers) :: num_centers=len(centers)
-    integer intent(hide), depend(shell_types) :: num_shells=len(shell_types)
-    integer intent(hide), depend(ccoeffs) :: num_ccoeffs=len(ccoeffs)
-    integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
-  end function gint2_nai_dmat
-"""
-
-
 class Gint2NAI(GaussianIntegral):
     def __init__(self):
         a = ShellArgGroup("a")
@@ -157,9 +15,8 @@ class Gint2NAI(GaussianIntegral):
         self.b_a = b.args[1].symbol
         self.c = c.args[0].symbols
         name = "gint2_nai"
-        interface_fns = [(code_gint2_nai_dmat_c, code_gint2_nai_dmat_pyf)]
         includes = ["gaux.h"]
-        GaussianIntegral.__init__(self, name, [a, b, c], interface_fns, includes)
+        GaussianIntegral.__init__(self, name, [a, b, c], includes)
 
     def get_SS_integral(self, routine, ab_a, ab_overlap, usq, m):
         result = 2*sqrt(ab_a/pi)*ab_overlap*C.Function("gaux")(usq, m)

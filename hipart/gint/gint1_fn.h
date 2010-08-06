@@ -19,10 +19,17 @@
 // --
 
 
-void gint1_fn_pF(double* a, double a_a, double* p, double* out);
-void gint1_fn_pD(double* a, double a_a, double* p, double* out);
-void gint1_fn_SP(double* a, double a_a, double* p, double* out);
-void gint1_fn_S(double* a, double a_a, double* p, double* out);
-void gint1_fn_P(double* a, double a_a, double* p, double* out);
-void gint1_fn_cD(double* a, double a_a, double* p, double* out);
-void gint1_fn_cF(double* a, double a_a, double* p, double* out);
+int gint1_fn_basis(double* weights, double* fns, double* points,
+  double* centers, int* shell_types, int* shell_map,  int* num_primitives,
+  double* ccoeffs, double* exponents, int num_weights, int num_points,
+  int num_centers, int num_shells, int num_ccoeffs, int num_exponents);
+
+int gint1_fn_dmat(double* dmat, double* density, double* points,
+  double* centers, int* shell_types, int* shell_map,  int* num_primitives,
+  double* ccoeffs, double* exponents, int num_dmat, int num_points,
+  int num_centers, int num_shells, int num_ccoeffs, int num_exponents);
+
+int gint1_fn_overlap(double* overlap, double* points, double* weights,
+  double* centers, int* shell_types, int* shell_map, int* num_primitives,
+  double* ccoeffs, double* exponents, int num_overlap, int num_points,
+  int num_centers, int num_shells, int num_ccoeffs, int num_exponents);
