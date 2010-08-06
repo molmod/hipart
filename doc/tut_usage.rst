@@ -947,39 +947,7 @@ Atomic multipole expansions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The multipole expansion of each atom, up to the hexadecapole, is computed with
-the script ``hi-multipoles.py``. The multipoles in the output are computed using
-the following `regular real solid harmonics
-<http://en.wikipedia.org/wiki/Solid_harmonics>`_:
-
-========   ======================================================================================================================================================
-   (0,0)   :math:`1`
-   (1,0)   :math:`z`
-  (1,1+)   :math:`x`
-  (1,1-)   :math:`y`
-   (2,0)   :math:`z^{2} - \frac{1}{2} x^{2} - \frac{1}{2} y^{2}`
-  (2,1+)   :math:`x z \sqrt{3}`
-  (2,1-)   :math:`y z \sqrt{3}`
-  (2,2+)   :math:`\frac{1}{2} \sqrt{3} x^{2} - \frac{1}{2} \sqrt{3} y^{2}`
-  (2,2-)   :math:`x y \sqrt{3}`
-   (3,0)   :math:`- \frac{3}{2} z x^{2} - \frac{3}{2} z y^{2} + z^{3}`
-  (3,1+)   :math:`x \sqrt{6} z^{2} - \frac{1}{4} x \sqrt{6} y^{2} - \frac{1}{4} \sqrt{6} x^{3}`
-  (3,1-)   :math:`y \sqrt{6} z^{2} - \frac{1}{4} y \sqrt{6} x^{2} - \frac{1}{4} \sqrt{6} y^{3}`
-  (3,2+)   :math:`\frac{1}{2} z \sqrt{15} x^{2} - \frac{1}{2} z \sqrt{15} y^{2}`
-  (3,2-)   :math:`x y z \sqrt{15}`
-  (3,3+)   :math:`- \frac{3}{4} x \sqrt{10} y^{2} + \frac{1}{4} \sqrt{10} x^{3}`
-  (3,3-)   :math:`\frac{3}{4} y \sqrt{10} x^{2} - \frac{1}{4} \sqrt{10} y^{3}`
-   (4,0)   :math:`- 3 x^{2} z^{2} - 3 y^{2} z^{2} + \frac{3}{4} x^{2} y^{2} + z^{4} + \frac{3}{8} x^{4} + \frac{3}{8} y^{4}`
-  (4,1+)   :math:`- \frac{3}{4} x z \sqrt{10} y^{2} + x \sqrt{10} z^{3} - \frac{3}{4} z \sqrt{10} x^{3}`
-  (4,1-)   :math:`- \frac{3}{4} y z \sqrt{10} x^{2} + y \sqrt{10} z^{3} - \frac{3}{4} z \sqrt{10} y^{3}`
-  (4,2+)   :math:`- \frac{3}{2} \sqrt{5} y^{2} z^{2} + \frac{3}{2} \sqrt{5} x^{2} z^{2} - \frac{1}{4} \sqrt{5} x^{4} + \frac{1}{4} \sqrt{5} y^{4}`
-  (4,2-)   :math:`3 x y \sqrt{5} z^{2} - \frac{1}{2} x \sqrt{5} y^{3} - \frac{1}{2} y \sqrt{5} x^{3}`
-  (4,3+)   :math:`- \frac{3}{4} x z \sqrt{70} y^{2} + \frac{1}{4} z \sqrt{70} x^{3}`
-  (4,3-)   :math:`\frac{3}{4} y z \sqrt{70} x^{2} - \frac{1}{4} z \sqrt{70} y^{3}`
-  (4,4+)   :math:`- \frac{3}{4} \sqrt{35} x^{2} y^{2} + \frac{1}{8} \sqrt{35} x^{4} + \frac{1}{8} \sqrt{35} y^{4}`
-  (4,4-)   :math:`\frac{1}{2} y \sqrt{35} x^{3} - \frac{1}{2} x \sqrt{35} y^{3}`
-========   ======================================================================================================================================================
-
-This is an example with the :ref:`isa` ::
+the script ``hi-multipoles.py``. This is an example with the :ref:`isa`::
 
     toon@poony ~/hipart-example/alanine> hi-multipoles gaussian.fchk isa
     BEGIN Loading Electronic structure
