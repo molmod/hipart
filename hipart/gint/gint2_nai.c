@@ -33,6 +33,7 @@ int gint2_nai_dmat(double* dmat, double* potentials, double* points,
   double *work, *work_sum, *out, *out_sum, *center1, *center2;
   double *shell_ccoeffs1, *shell_ccoeffs2, *ccoeff1, *ccoeff2, c1, c2;
   double *shell_exponents1, *shell_exponents2, *exponent1, *exponent2;
+  double tmp;
 
   result = 0;
 
@@ -60,7 +61,7 @@ int gint2_nai_dmat(double* dmat, double* potentials, double* points,
       shell_ccoeffs2 = ccoeffs;
       shell_exponents2 = exponents;
       shell_offset2 = 0;
-      for (shell2=0; shell2<num_shells; shell2++) {
+      for (shell2=0; shell2<=shell1; shell2++) {
         center2 = centers + (3*shell_map[shell2]);
         shell_type2 = shell_types[shell2];
         CHECK_SHELL(shell_type2);
@@ -104,6 +105,7 @@ int gint2_nai_dmat(double* dmat, double* potentials, double* points,
         // Compute the trace of the product of the work sum and part of the
         // density matrix that belongs to the (shell1,shell2) part
         out_sum = work_sum;
+        tmp = 0;
         for (dof1=0; dof1<shell_dof1; dof1++) {
           for (dof2=0; dof2<shell_dof2; dof2++) {
             k1 = dof1 + shell_offset1;
@@ -113,11 +115,13 @@ int gint2_nai_dmat(double* dmat, double* potentials, double* points,
             } else {
               k = (k2*(k2+1))/2+k1;
             }
-            *potentials += (*out_sum)*dmat[k];
+            tmp += (*out_sum)*dmat[k];
             //printf("++++dof1=%d  dof2=%d  k1=%d  k2=%d  k=%d  out_sum=%f  dmat[k]=%f  potential=%f\n", dof1, dof2, k1, k2, k, *out_sum, dmat[k], *potentials);
             out_sum++;
           }
         }
+        if (shell1!=shell2) tmp *= 2;
+        *potentials += tmp;
         // Move on.
         shell_exponents2 += num_primitives[shell2];
         shell_ccoeffs2 += num_primitives[shell2]*(1+(shell_type2==-1));
