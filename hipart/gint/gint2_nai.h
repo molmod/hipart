@@ -19,7 +19,12 @@
 // --
 
 
+#ifndef GINT2_NAI_H
+#define GINT2_NAI_H
+
 int gint2_nai_dmat(double* dmat, double* potentials, double* points,
   double* centers, int* shell_types, int* shell_map,  int* num_primitives,
   double* ccoeffs, double* exponents, int num_dmat, int num_points,
   int num_centers, int num_shells, int num_ccoeffs, int num_exponents);
+
+#endif

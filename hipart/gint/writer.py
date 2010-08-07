@@ -592,9 +592,9 @@ class GaussianIntegral():
 
     def write(self, max_shell=3):
         # C source code
-        f_c = open("%s.inc.c" % self.name, "w")
-        f_h = open("%s.inc.h" % self.name, "w")
-        f_pyf = open("%s.inc.pyf" % self.name, "w")
+        f_c = open("%s_auto.c" % self.name, "w")
+        f_h = open("%s_auto.h" % self.name, "w")
+        f_pyf = open("%s_auto.pyf.inc" % self.name, "w")
         f_c_header = open("../../HEADER.c")
         f_c.write(f_c_header.read())
         f_c_header.seek(0)
@@ -604,24 +604,34 @@ class GaussianIntegral():
         f_pyf.write(f_f_header.read())
         f_f_header.close()
         fn_names = []
-        print >> f_c
+
+        # top lines i C file
         print >> f_c, "#include <math.h>"
-        print >> f_c, "#include <stdlib.h>"
-        print >> f_c, "#include \"%s.inc.h\"" % self.name
+        print >> f_c, "#include \"%s_auto.h\"" % self.name
         for include in self.includes:
             print >> f_c, "#include \"%s\"" % include
-        print >> f_c, "#define MAX_SHELL %i" % max_shell
-        print >> f_c, "#define NUM_SHELL_TYPES %i" % (2*max_shell+1)
-        print >> f_c, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
-        print >> f_c, "#define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }"
-        print >> f_c, "#define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }"
-        print >> f_c, "#define GET_SHELL_DOF(shell_type) ((shell_type<-1)?(-2*shell_type+1):((shell_type==-1)?(4):(((shell_type+1)*(shell_type+2))/2)))"
         print >> f_c
+
+        # top lines in H file
+        guard_name = "%s_AUTO_H" % self.name.upper()
+        print >> f_h, "#ifndef %s" % guard_name
+        print >> f_h, "#define %s" % guard_name
+        print >> f_h
+        print >> f_h, "#define MAX_SHELL %i" % max_shell
+        print >> f_h, "#define NUM_SHELL_TYPES %i" % (2*max_shell+1)
+        print >> f_h, "#define MAX_SHELL_DOF %i" % max(get_shell_dof(shell_type) for shell_type in xrange(-max_shell, max_shell+1))
+        print >> f_h, "#define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }"
+        print >> f_h, "#define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }"
+        print >> f_h, "#define GET_SHELL_DOF(shell_type) ((shell_type<-1)?(-2*shell_type+1):((shell_type==-1)?(4):(((shell_type+1)*(shell_type+2))/2)))"
+        print >> f_h
+
+        # add all compute routines
         for st_row in self.iter_shell_types(max_shell):
             print st_row
             fn_name = self.write_routine(f_pyf, f_c, f_h, st_row)
             fn_names.append(fn_name)
-        # add some sugar
+
+        # collect all compute routines in an array
         arg_c_types = []
         for ag in self.arg_groups:
             for arg in ag.args:
@@ -629,17 +639,19 @@ class GaussianIntegral():
         print >> f_c, "typedef void (*fntype)(%s, double*);" % (", ".join(arg_c_types))
         print >> f_c, "static const fntype fns[%i] = {%s};" % (len(fn_names), ", ".join(fn_names))
         print >> f_c
+
+        # dispatch routine that takes the right function from the array
         all_c_types_names = []
-        c_names = []
         switches = []
         for ag in self.arg_groups:
             switch = ag.get_switch_name()
             if switch is not None:
                 all_c_types_names.append("int %s" % switch)
                 switches.append(switch)
-            for arg in ag.args:
-                c_names.append(arg.name)
             all_c_types_names.append(ag.get_c_types_names())
+        fn_name = "%s_dispatch" % self.name
+        c_names = self.get_c_names()
+        print >> f_h, "void %s_dispatch(%s, double* out);" % (self.name, ", ".join(all_c_types_names))
         print >> f_c, "void %s_dispatch(%s, double* out)" % (self.name, ", ".join(all_c_types_names))
         print >> f_c, "{"
         factor = 1
@@ -650,8 +662,14 @@ class GaussianIntegral():
             else:
                 offsets.append("%i*(%i+%s)" % (factor, max_shell, switch))
             factor *= 2*max_shell + 1
-        print >> f_c, "  fns[%s](%s, out);" % ("+".join(offsets), ", ".join(c_names))
+        print >> f_c, "  fns[%s](%s, out);" % ("+".join(offsets), c_names)
         print >> f_c, "}"
+
+        # close the guard
+        print >> f_h
+        print >> f_h, "#endif"
+
+        # close the files
         f_c.close()
         f_h.close()
         f_pyf.close()

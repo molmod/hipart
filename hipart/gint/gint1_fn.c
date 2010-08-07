@@ -19,8 +19,11 @@
 // --
 
 
+#include <math.h>
+#include <stdlib.h>
 #include "gint1_fn.h"
-#include "gint1_fn.inc.c" // auto-generated code
+#include "gint1_fn_auto.h" // auto-generated code
+
 
 int gint1_fns_basis(double* weights, double* orbs, double* points,
   double* centers, int* shell_types, int* shell_map,  int* num_primitives,
@@ -101,6 +104,7 @@ EXIT:
   free(basis_fns);
   return result;
 }
+
 
 int gint1_fn_dmat(double* dmat, double* density, double* points,
   double* centers, int* shell_types, int* shell_map,  int* num_primitives,
@@ -193,6 +197,7 @@ EXIT:
   free(basis_fns);
   return result;
 }
+
 
 int gint1_fn_overlap(double* overlap, double* points, double* weights,
   double* centers, int* shell_types, int* shell_map, int* num_primitives,

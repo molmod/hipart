@@ -19,6 +19,16 @@
 // --
 
 
+#ifndef GINT2_NAI_AUTO_H
+#define GINT2_NAI_AUTO_H
+
+#define MAX_SHELL 3
+#define NUM_SHELL_TYPES 7
+#define MAX_SHELL_DOF 10
+#define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }
+#define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }
+#define GET_SHELL_DOF(shell_type) ((shell_type<-1)?(-2*shell_type+1):((shell_type==-1)?(4):(((shell_type+1)*(shell_type+2))/2)))
+
 void gint2_nai_pF_pF(double* a, double a_a, double* b, double b_a, double* c, double* out);
 void gint2_nai_pD_pF(double* a, double a_a, double* b, double b_a, double* c, double* out);
 void gint2_nai_SP_pF(double* a, double a_a, double* b, double b_a, double* c, double* out);
@@ -68,3 +78,6 @@ void gint2_nai_S_cF(double* a, double a_a, double* b, double b_a, double* c, dou
 void gint2_nai_P_cF(double* a, double a_a, double* b, double b_a, double* c, double* out);
 void gint2_nai_cD_cF(double* a, double a_a, double* b, double b_a, double* c, double* out);
 void gint2_nai_cF_cF(double* a, double a_a, double* b, double b_a, double* c, double* out);
+void gint2_nai_dispatch(int a_s, double* a, double a_a, int b_s, double* b, double b_a, double* c, double* out);
+
+#endif

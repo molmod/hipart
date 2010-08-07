@@ -19,16 +19,8 @@
 // --
 
 
-
 #include <math.h>
-#include <stdlib.h>
-#include "gint1_fn.inc.h"
-#define MAX_SHELL 3
-#define NUM_SHELL_TYPES 7
-#define MAX_SHELL_DOF 10
-#define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }
-#define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }
-#define GET_SHELL_DOF(shell_type) ((shell_type<-1)?(-2*shell_type+1):((shell_type==-1)?(4):(((shell_type+1)*(shell_type+2))/2)))
+#include "gint1_fn_auto.h"
 
 void gint1_fn_pF(double* a, double a_a, double* p, double* out)
 {

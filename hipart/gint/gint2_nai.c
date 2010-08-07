@@ -19,8 +19,9 @@
 // --
 
 
+#include <stdlib.h>
 #include "gint2_nai.h"
-#include "gint2_nai.inc.c"
+#include "gint2_nai_auto.h"
 
 
 int gint2_nai_dmat(double* dmat, double* potentials, double* points,

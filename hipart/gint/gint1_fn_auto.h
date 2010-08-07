@@ -19,6 +19,16 @@
 // --
 
 
+#ifndef GINT1_FN_AUTO_H
+#define GINT1_FN_AUTO_H
+
+#define MAX_SHELL 3
+#define NUM_SHELL_TYPES 7
+#define MAX_SHELL_DOF 10
+#define CHECK_ALLOC(pointer) if (pointer==NULL) {result = -1; goto EXIT; }
+#define CHECK_SHELL(shell_type) if (abs(shell_type) > MAX_SHELL) { result = -2; goto EXIT; }
+#define GET_SHELL_DOF(shell_type) ((shell_type<-1)?(-2*shell_type+1):((shell_type==-1)?(4):(((shell_type+1)*(shell_type+2))/2)))
+
 void gint1_fn_pF(double* a, double a_a, double* p, double* out);
 void gint1_fn_pD(double* a, double a_a, double* p, double* out);
 void gint1_fn_SP(double* a, double a_a, double* p, double* out);
@@ -26,3 +36,6 @@ void gint1_fn_S(double* a, double a_a, double* p, double* out);
 void gint1_fn_P(double* a, double a_a, double* p, double* out);
 void gint1_fn_cD(double* a, double a_a, double* p, double* out);
 void gint1_fn_cF(double* a, double a_a, double* p, double* out);
+void gint1_fn_dispatch(int a_s, double* a, double a_a, double* p, double* out);
+
+#endif

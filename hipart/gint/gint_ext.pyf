@@ -21,7 +21,7 @@
 python module gint_ext
 interface
 
-include 'gint1_fn.inc.pyf'
+include 'gint1_fn_auto.pyf.inc'
 
   integer function gint1_fns_basis(weights, orbs, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_orbs, num_dof, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
     intent(c) gint1_fns_basis
@@ -84,7 +84,7 @@ include 'gint1_fn.inc.pyf'
     integer intent(hide), depend(exponents) :: num_exponents=len(exponents)
   end function gint1_fn_overlap
 
-include 'gint2_nai.inc.pyf'
+include 'gint2_nai_auto.pyf.inc'
 
   integer function gint2_nai_dmat(dmat, potentials, points, centers, shell_types, shell_map, num_primitives, ccoeffs, exponents, num_dmat, num_points, num_centers, num_shells, num_ccoeffs, num_exponents)
     intent(c) gint2_nai_dmat

@@ -36,13 +36,21 @@ setup(
     scripts=glob.glob("scripts/hi-*.py"),
     license = "GPLv3",
     ext_modules=[
-        Extension("hipart.llext", ["hipart/Lebedev-Laikov.F"]),
-        Extension("hipart.csext", ["hipart/cubic_spline_ext.c","hipart/cubic_spline_ext.pyf"]),
-        Extension("hipart.gint.gint_ext", [
-            "hipart/gint/gint1_fn.c", "hipart/gint/gint2_nai.c",
-            "hipart/gint/gaux.c", "hipart/gint/ctools.c",
-            "hipart/gint/gint_ext.pyf",
-        ]),
+        Extension(
+            "hipart.llext",
+            ["hipart/Lebedev-Laikov.F"]
+        ),
+        Extension(
+            "hipart.csext",
+            ["hipart/cubic_spline_ext.c","hipart/cubic_spline_ext.pyf"]
+        ),
+        Extension(
+            "hipart.gint.gint_ext",
+            glob.glob("hipart/gint/*.c") + ["hipart/gint/gint_ext.pyf"],
+            depends=glob.glob("hipart/gint/*.pyf.inc") +
+                    glob.glob("hipart/gint/*.h") +
+                    ["hipart/gint/gaux.inc"]
+        ),
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
