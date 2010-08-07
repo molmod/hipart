@@ -92,8 +92,8 @@ class BaseCache(object):
         self.context = context
         self.rs = rs
         extra_tag_attributes.update({
-            "r_low": "%.2e" % rs.min(),
-            "r_high": "%.2e" % rs.max(),
+            "r_low": "%.7e" % rs.min(),
+            "r_high": "%.7e" % rs.max(),
             "r_steps": "%i" % len(rs),
 
         })

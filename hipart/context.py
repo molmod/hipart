@@ -84,7 +84,13 @@ class Context(object):
                 if check is None:
                     continue
                 if check != val:
-                    raise ContextError("The existing work directory contains incompatible data. Trash it!")
+                    message = [
+                        "The existing work directory (%s) contains incompatible data." % self.workdir,
+                        "Try using the --clean option once.",
+                        "The following mismatch was detected in the work directory:",
+                        "'%s' (found in work) versus '%s' (current script) for property '%s'" % (val, check, key),
+                    ]
+                    raise ContextError(" ".join(message))
 
         tag = " ".join("%s=%s" % (key, val) for key, val in sorted(tag_attributes.iteritems()))
         f = file(context_fn, "w")

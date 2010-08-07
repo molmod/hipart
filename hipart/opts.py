@@ -25,7 +25,7 @@
 
 from hipart.lebedev_laikov import grid_fns
 from hipart.cache import cache_classes, ParseError
-from hipart.context import Context
+from hipart.context import Context, ContextError
 
 from optparse import OptionParser, OptionGroup
 
@@ -97,6 +97,8 @@ def parse_command_line(script_usage, add_extra_options=None):
     try:
         cache = CacheClass.new_from_args(context, args[2:])
     except ParseError, e:
+        parser.error(str(e))
+    except ContextError, e:
         parser.error(str(e))
 
     return context, cache
