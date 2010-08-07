@@ -59,8 +59,6 @@ class Context(object):
         if not os.path.isdir(self.workdir):
             os.mkdir(self.workdir)
 
-        self.lebedev_xyz, self.lebedev_weights = get_grid(options.lebedev)
-
     num_lebedev = property(lambda self: len(self.lebedev_weights))
 
     def check_tag(self, extra):
@@ -68,7 +66,6 @@ class Context(object):
 
         tag_attributes = {
             "contextversion": "%i" % self.version,
-            "lebedev": "%i" % self.num_lebedev,
             "filename": "%s" % os.path.basename(self.wavefn.filename),
         }
         tag_attributes.update(extra)

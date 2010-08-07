@@ -38,9 +38,9 @@ from hipart.log import log
 from hipart.io import dump_atom_scalars, dump_atom_vectors, dump_atom_matrix, \
     dump_atom_fields, dump_overlap_matrices
 from hipart.fit import ESPCostFunction
-from hipart.lebedev_laikov import get_grid, get_atom_grid, integrate_lebedev
 from hipart.atoms import AtomTable
-from hipart.grids import Grid, RLogIntGrid
+from hipart.grids import Grid, AtomicGrid, RLogIntGrid, ALebedevIntGrid
+from hipart.lebedev_laikov import get_grid as get_lebedev_grid
 from hipart.spline import CubicSpline
 from hipart.gint import dmat_to_full
 
@@ -89,16 +89,20 @@ class BaseCache(object):
         raise NotImplementedError
 
     def __init__(self, context, rgrid, extra_tag_attributes):
+        # create angular grid object
+        agrid = ALebedevIntGrid(context.options.lebedev)
         # check arguments
         extra_tag_attributes["rgrid"] = rgrid.get_description()
+        extra_tag_attributes["agrid"] = agrid.get_description()
         context.check_tag(extra_tag_attributes)
         # assign attributes
         self.context = context
         self.rgrid = rgrid
+        self.agrid = agrid
         self._done = set([])
 
     def _spherint(self, integrand):
-        radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+        radfun = self.agrid.integrate(integrand)
         rs = self.rgrid.rs[:len(integrand)]
         return self.rgrid.integrate(radfun*rs*rs)
 
@@ -111,11 +115,10 @@ class BaseCache(object):
         pb = log.pb("Computing/Loading atomic grids (and distances)", molecule.size**2)
         for i in xrange(molecule.size):
             prefix = os.path.join(workdir, "atom%05i" % i)
-            atgrid = Grid.from_prefix(prefix)
+            atgrid = AtomicGrid.from_prefix(prefix)
             if atgrid is None:
                 center = molecule.coordinates[i]
-                points = get_atom_grid(self.context.lebedev_xyz, center, self.rgrid.rs)
-                atgrid = Grid(prefix, points)
+                atgrid = AtomicGrid.from_parameters(prefix, center, self.rgrid, self.agrid)
             self.atgrids.append(atgrid)
 
             # Compute and store all the distances from these grid points to the
@@ -166,7 +169,7 @@ class BaseCache(object):
                     self.noble_radii[i] = 0.2
                 else:
                     densities = self.atgrids[i].moldens
-                    radfun = integrate_lebedev(self.context.lebedev_weights, densities)
+                    radfun = self.agrid.integrate(densities)
                     rs = self.rgrid.rs[:len(radfun)]
                     charge_int = self.rgrid.integrate_cumul(radfun*rs*rs)
                     j = charge_int.searchsorted([core_sizes[number_i]])[0]
@@ -199,7 +202,7 @@ class BaseCache(object):
 
     @OnlyOnce("Molecular grid")
     def do_molgrid(self):
-        lebedev_xyz, lebedev_weights = get_grid(50)
+        lebedev_xyz, lebedev_weights = get_lebedev_grid(50)
         molecule = self.context.wavefn.molecule
         workdir = self.context.workdir
 
@@ -626,7 +629,7 @@ class BaseCache(object):
                 rw *= 4*numpy.pi
                 rw *= self.rgrid.rs
                 rw *= self.rgrid.rs
-                weights = numpy.outer(rw, self.context.lebedev_weights).ravel()
+                weights = numpy.outer(rw, self.agrid.lebedev_weights).ravel()
                 weights *= atgrid.atweights
                 overlap = self.context.wavefn.compute_atomic_overlap(atgrid, weights)
                 atgrid.dump(suffix, overlap)
@@ -957,7 +960,7 @@ class ISACache(StockholderCache):
         self.proatomfns = []
         for i in xrange(molecule.size):
             densities = self.atgrids[i].moldens
-            profile = densities.reshape((-1,self.context.num_lebedev)).min(axis=1)
+            profile = self.agrid.minimum(densities)
             profile[profile < 1e-6] = 1e-6
             self.proatomfns.append(CubicSpline(self.rgrid.rs, profile))
 
@@ -968,7 +971,7 @@ class ISACache(StockholderCache):
             charges = []
             for i in xrange(molecule.size):
                 integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
-                radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
+                radfun = self.agrid.integrate(integrand)
                 num_electrons = self.rgrid.integrate(radfun)
                 charges.append(molecule.numbers[i] - num_electrons)
                 # add negligible tails to maintain a complete partitioning

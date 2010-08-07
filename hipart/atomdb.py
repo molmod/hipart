@@ -21,8 +21,8 @@
 
 
 from hipart.log import log
-from hipart.lebedev_laikov import get_grid, grid_fns, get_atom_grid
-from hipart.grids import Grid, RLogIntGrid
+from hipart.lebedev_laikov import get_grid, grid_fns
+from hipart.grids import AtomicGrid, RLogIntGrid, ALebedevIntGrid
 from hipart.wavefn import FCHKWaveFunction
 
 from molmod.periodic import periodic
@@ -231,6 +231,7 @@ def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbe
 
     # define radii
     rgrid = RLogIntGrid(r_low, r_high, steps)
+    agrid = ALebedevIntGrid(num_lebedev)
 
     f_pro = file("densities.txt", "w")
     print >> f_pro, rgrid.get_description()
@@ -244,16 +245,19 @@ def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbe
             charge_label = charge_to_label(charge)
             pb()
             workdir = os.path.join("%03i%s" % (number, symbol), charge_label, "gs")
+            # get the grid
             if not os.path.isdir(workdir): continue
             prefix = "%s/grid" % workdir
-            grid = Grid.from_prefix(prefix)
+            grid = AtomicGrid.from_prefix(prefix)
             if grid is None:
-                atgrid_points = get_atom_grid(lebedev_xyz, numpy.zeros(3,float), rgrid.rs)
-                grid = Grid("%s/grid" % workdir, atgrid_points)
+                center = numpy.zeros(3,float)
+                grid = AtomicGrid.from_parameters(prefix, center, rgrid, agrid)
+            # compute densities
             program.compute_density(grid, workdir)
-            radrhos = (grid.moldens.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1) # this is averaging, i.e. integral/(4*pi)
+            # this is spherical averaging, i.e. integral/(4*pi)
+            radrhos = agrid.integrate(grid.moldens)/(4*numpy.pi)
             print >> f_pro, "%3i %+2i" % (number, charge),
-            # leave out zeros to save space and time
+            # leave out near zeros to save space and time
             print >> f_pro, " ".join("%22.16e" % rho for rho in radrhos if rho > 1e-100)
             check = rgrid.integrate(4*numpy.pi*rgrid.rs*rgrid.rs*radrhos)
             charges.append((number, symbol, charge, check))

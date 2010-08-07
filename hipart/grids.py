@@ -20,13 +20,17 @@
 
 
 from hipart.csext import spline_construct, spline_int
+from hipart.lebedev_laikov import get_grid as get_lebedev_grid
+
+from molmod import Rotation
 
 import numpy, os, glob
 
 
 __all__ = [
-    "Grid",
+    "Grid", "AtomicGrid",
     "RBaseIntGrid", "RLogIntGrid", "REquiIntGrid", "get_rgrid_from_description",
+    "ABaseIntGrid", "ALebedevIntGrid"
 ]
 
 
@@ -69,6 +73,13 @@ class Grid(object):
             raise ValueError("The binary file is already present in the work directory.")
         else:
             array.tofile(fn)
+
+
+class AtomicGrid(Grid):
+    @classmethod
+    def from_parameters(cls, prefix, center, rgrid, agrid):
+        points = agrid.generate_points(center, rgrid.rs)
+        return cls(prefix, points)
 
 
 class RBaseIntGrid(object):
@@ -179,3 +190,43 @@ def get_rgrid_from_description(s):
         "RLogIntGrid": RLogIntGrid,
     }
     return Classes[name](*args)
+
+
+class ABaseIntGrid(object):
+    def generate_points(self, center, rs):
+        raise NotImplementedError
+
+    def integrate(self, integrand):
+        raise NotImplementedError
+
+    def minimum(self, function):
+        raise NotImplementedError
+
+    def get_description(self):
+        raise NotImplementedError
+
+
+class ALebedevIntGrid(ABaseIntGrid):
+    def __init__(self, num_lebedev):
+        self.num_lebedev = num_lebedev
+        self.lebedev_xyz, self.lebedev_weights = get_lebedev_grid(num_lebedev)
+
+    def generate_points(self, center, rs):
+        points = numpy.zeros((self.num_lebedev*len(rs),3), float)
+        start = 0
+        for r in rs:
+            rot = Rotation.random()
+            end = start + self.num_lebedev
+            points[start:end] = r*numpy.dot(self.lebedev_xyz,rot.r)+center
+            start = end
+        return points
+
+    def integrate(self, integrand):
+        integrand = integrand.reshape((-1,self.num_lebedev))
+        return (integrand*self.lebedev_weights).sum(axis=1)*(4*numpy.pi)
+
+    def minimum(self, function):
+        return function.reshape((-1,self.num_lebedev)).min(axis=1)
+
+    def get_description(self):
+        return "ALebedevIntGrid(%i)" % self.num_lebedev
