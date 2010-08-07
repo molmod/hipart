@@ -20,10 +20,6 @@
 # --
 
 
-
-
-
-
 from hipart.opts import parse_command_line
 
 usage = """%prog computes bond orders"""

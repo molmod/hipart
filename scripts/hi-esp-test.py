@@ -20,10 +20,6 @@
 # --
 
 
-
-
-
-
 from hipart.opts import parse_command_line
 
 usage = """%prog test charges and dipoles on ESP grid

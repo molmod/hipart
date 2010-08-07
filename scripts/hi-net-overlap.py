@@ -20,10 +20,6 @@
 # --
 
 
-
-
-
-
 from hipart.opts import parse_command_line
 
 usage = """%prog computes atomic net and overlap populations"""
