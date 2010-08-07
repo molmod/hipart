@@ -22,8 +22,7 @@
 
 from hipart.log import log
 from hipart.lebedev_laikov import get_grid, grid_fns, get_atom_grid
-from hipart.spline import RLogIntGrid
-from hipart.grids import Grid
+from hipart.grids import Grid, RLogIntGrid
 from hipart.wavefn import FCHKWaveFunction
 
 from molmod.periodic import periodic

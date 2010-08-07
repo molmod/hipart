@@ -19,16 +19,13 @@
 # --
 
 
-from hipart.csext import *
+from hipart.csext import spline_construct, spline_eval
 from hipart.log import log
 
 import numpy
 
 
-__all__ = [
-    "LinearSpline", "CubicSpline",
-    "RBaseIntGrid", "RLogIntGrid", "REquiIntGrid", "get_rgrid_from_description",
-]
+__all__ = ["LinearSpline", "CubicSpline"]
 
 
 class LinearSpline(object):
@@ -61,113 +58,3 @@ class CubicSpline(object):
         y = numpy.zeros(len(x), float)
         spline_eval(self.x,self.y,self.d,x,y)
         return y
-
-
-class RBaseIntGrid(object):
-    def __init__(self, rs):
-        self.rs = rs
-        self._weights_map = {}
-
-    def _get_weights_aux(self, us, vs):
-        ys = numpy.zeros(len(us), float)
-        ds = numpy.zeros(len(us), float)
-        ws = numpy.zeros(len(us), float)
-        for i in xrange(len(us)):
-            ys[:] = 0
-            if vs is None:
-                ys[i] = 1
-            else:
-                ys[i] = vs[i]
-            spline_construct(us,ys,ds)
-            ws[i] = spline_int(us,ys,ds)
-        return ws
-
-    def _get_weights_low(self, size):
-        raise NotImplementedError
-
-    def get_weights(self, size=None):
-        if size is None:
-            size = len(self.rs)
-        weights = self._weights_map.get(size)
-        if weights is None:
-            weights = self._get_weights_low(size)
-            self._weights_map[size] = weights
-        return weights
-
-    def get_description(self):
-        raise NotImplementedError
-
-    def integrate(self, integrand):
-        w = self.get_weights(len(integrand))
-        return numpy.dot(w, integrand)
-
-    def integrate_cumul(self, integrand):
-        # WARNING: this is very inaccurate, do not use for delicate computations
-        w = self.get_weights(len(integrand))
-        return numpy.cumsum(w*integrand)
-
-
-
-class REquiIntGrid(RBaseIntGrid):
-    def __init__(self, r_low, r_high, steps):
-        if r_low >= r_high:
-            raise ValueError("The argument r_high must be strictly larger than r_low")
-        if steps <= 0:
-            raise ValueError("The argument steps must be strictly positive")
-        self.r_low = r_low
-        self.r_high = r_high
-        self.steps = steps
-        delta = (r_high - r_low)/(steps - 1)
-        rs = delta*numpy.arange(0,steps) + r_low
-        RBaseIntGrid.__init__(self, rs)
-
-    def _get_weights_low(self, size):
-        return self._get_weights_aux(self.rs[:size], None)
-
-    def get_description(self):
-        return "REquiIntGrid(%#.16e,%#.16e,%i)" % (self.r_low,self.r_high,self.steps)
-
-
-class RLogIntGrid(RBaseIntGrid):
-    def __init__(self, r_low, r_high, steps):
-        if r_low <= 0:
-            raise ValueError("The argument r_low must be strictly positive")
-        if r_high <= 0:
-            raise ValueError("The argument r_high must be strictly positive")
-        if r_low >= r_high:
-            raise ValueError("The argument r_high must be strictly larger than r_low")
-        if steps <= 0:
-            raise ValueError("The argument steps must be strictly positive")
-        self.r_low = r_low
-        self.r_high = r_high
-        self.steps = steps
-        ratio = (r_high/r_low)**(1.0/(steps-1))
-        alpha = numpy.log(ratio)
-        rs = r_low*numpy.exp(alpha*numpy.arange(0,steps))
-        RBaseIntGrid.__init__(self, rs)
-
-    def _get_weights_low(self, size):
-        rs = self.rs[:size]
-        us = numpy.log(rs)
-        vs = rs
-        return self._get_weights_aux(us, vs)
-
-    def get_description(self):
-        return "RLogIntGrid(%#.16e,%#.16e,%i)" % (self.r_low,self.r_high,self.steps)
-
-
-def get_rgrid_from_description(s):
-    pos = s.find("(")
-    name = s[:pos]
-    arg_strs = s[pos+1:-1].split(",")
-    args = []
-    for arg in arg_strs:
-        if "." in arg:
-            args.append(float(arg))
-        else:
-            args.append(int(arg))
-    Classes = {
-        "REquiIntGrid": REquiIntGrid,
-        "RLogIntGrid": RLogIntGrid,
-    }
-    return Classes[name](*args)

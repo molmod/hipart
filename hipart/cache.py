@@ -40,8 +40,8 @@ from hipart.io import dump_atom_scalars, dump_atom_vectors, dump_atom_matrix, \
 from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid, get_atom_grid, integrate_lebedev
 from hipart.atoms import AtomTable
-from hipart.grids import Grid
-from hipart.spline import RLogIntGrid, CubicSpline
+from hipart.grids import Grid, RLogIntGrid
+from hipart.spline import CubicSpline
 from hipart.gint import dmat_to_full
 
 from molmod import Rotation, angstrom

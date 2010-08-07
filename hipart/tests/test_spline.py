@@ -19,11 +19,7 @@
 # --
 
 
-import hipart.csext
-print hipart.csext.__file__
-
 from hipart.csext import *
-from hipart.spline import *
 
 import numpy
 
@@ -52,40 +48,3 @@ def test_blind2():
     spline_eval(x,y,d,x_new,y_new)
     yint_spline = numpy.zeros(len(y), float)
     spline_cumul_int(x,y,d,yint_spline)
-
-def test_radial_integration_equi():
-    grid = REquiIntGrid(0.0,1.0,100)
-    x = grid.rs
-    weights = grid.get_weights(len(x))
-    #
-    y = numpy.sin(x)
-    int1 = numpy.dot(y,weights)
-    int2 = 1 - numpy.cos(x[-1])
-    assert(abs(int1-int2)<1e-7)
-    #
-    y = x*x
-    int1 = numpy.dot(y,weights)
-    int2 = x[-1]**3/3.0
-    assert(abs(int1-int2)<1e-7)
-    #
-    y = numpy.exp(-x)
-    int1 = numpy.dot(y,weights)
-    int2 = 1.0 - numpy.exp(-x[-1])
-    assert(abs(int1-int2)<1e-7)
-
-def test_radial_integration_log():
-    grid = RLogIntGrid(1e-5,1e2,100)
-    x = grid.rs
-    weights = grid.get_weights(len(x))
-    #
-    y = x*numpy.exp(-x)
-    int1 = numpy.dot(y,weights)
-    int2 = 1.0
-    error = abs(int1-int2)
-    assert(error<1e-10)
-    #
-    y = x*x*x*numpy.exp(-x)
-    int1 = numpy.dot(y,weights)
-    int2 = 6.0
-    error = abs(int1-int2)
-    assert(error<1e-14)

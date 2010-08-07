@@ -20,7 +20,8 @@
 
 
 from hipart.log import log
-from hipart.spline import CubicSpline, get_rgrid_from_description
+from hipart.spline import CubicSpline
+from hipart.grids import get_rgrid_from_description
 
 import numpy, os
 
