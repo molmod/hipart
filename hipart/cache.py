@@ -19,7 +19,6 @@
 # --
 
 
-# TODO: Add tests for interpolation
 # TODO: Support for Gaussian/GAMESS wfn files + make clever algo that detects
 # contractions
 # TODO: Extend hi-atomdb.py to work with GAMESS

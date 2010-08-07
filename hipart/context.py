@@ -27,7 +27,16 @@ from hipart.log import log
 import os, shutil
 
 
-__all__ = ["ContextError", "Context"]
+__all__ = ["ContextError", "Context", "Options"]
+
+
+class Options(object):
+    def __init__(self, lebedev=110, clean=False, threshold=1e-4, max_iter=500, fix_total_charge=True):
+        self.lebedev = lebedev
+        self.clean = clean
+        self.threshold = threshold
+        self.max_iter = max_iter
+        self.fix_total_charge = fix_total_charge
 
 
 class ContextError(Exception):

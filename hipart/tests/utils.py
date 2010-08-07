@@ -20,28 +20,17 @@
 
 
 from hipart.cache import cache_classes
-from hipart.context import Context
+from hipart.context import Context, Options as FakeOptions
 
 import os, tempfile, shutil
 
 
 __all__ = [
-    "FakeOptions",
     "setup_hf_sto3g_gaussian", "iter_hf_sto3g_gaussian_caches",
     "setup_oh1_sto3g_gaussian", "iter_oh1_sto3g_gaussian_caches",
     "setup_oh2_sto3g_gaussian", "iter_oh2_sto3g_gaussian_caches",
     "setup_h_sto3g_gaussian", "iter_h_sto3g_gaussian_caches",
 ]
-
-
-class FakeOptions(object):
-    def __init__(self, lebedev, mol_lebedev, clean, threshold, max_iter, fix_total_charge):
-        self.lebedev = lebedev
-        self.mol_lebedev = mol_lebedev
-        self.clean = clean
-        self.threshold = threshold
-        self.max_iter = max_iter
-        self.fix_total_charge = fix_total_charge
 
 
 hf_fchk="""\
@@ -344,7 +333,7 @@ def setup_hf_sto3g_gaussian():
 
 
 def iter_hf_sto3g_gaussian_caches():
-    options = FakeOptions(110, 50, 1, 1e-4, 500, True)
+    options = FakeOptions()
 
     tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
     context = Context(fn_fchk, options)
@@ -387,7 +376,7 @@ def setup_oh1_sto3g_gaussian():
 
 
 def iter_oh1_sto3g_gaussian_caches():
-    options = FakeOptions(110, 50, 1, 1e-4, 500, True)
+    options = FakeOptions()
 
     tmpdir, fn_fchk, fn_densities = setup_oh1_sto3g_gaussian()
     context = Context(fn_fchk, options)
@@ -423,7 +412,7 @@ def setup_oh2_sto3g_gaussian():
 
 
 def iter_oh2_sto3g_gaussian_caches():
-    options = FakeOptions(110, 50, 1, 1e-4, 500, True)
+    options = FakeOptions()
 
     tmpdir, fn_fchk, fn_densities = setup_oh2_sto3g_gaussian()
     context = Context(fn_fchk, options)
@@ -459,7 +448,7 @@ def setup_h_sto3g_gaussian():
 
 
 def iter_h_sto3g_gaussian_caches():
-    options = FakeOptions(110, 50, 1, 1e-4, 500, True)
+    options = FakeOptions()
 
     tmpdir, fn_fchk, fn_densities = setup_h_sto3g_gaussian()
     context = Context(fn_fchk, options)
