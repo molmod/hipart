@@ -44,6 +44,7 @@ def test_radial_integration_equi():
     int2 = 1.0 - numpy.exp(-x[-1])
     assert(abs(int1-int2)<1e-7)
 
+
 def test_radial_integration_log():
     grid = RLogIntGrid(1e-5,1e2,100)
     x = grid.rs
@@ -60,3 +61,20 @@ def test_radial_integration_log():
     int2 = 6.0
     error = abs(int1-int2)
     assert(error<1e-14)
+
+
+def test_rgrid_from_description():
+    grid1 = RLogIntGrid(3.7794522678425048e-05,3.7794522678425039e+01,100)
+    grid2 = get_rgrid_from_description("RLogIntGrid(3.7794522678425048e-05,3.7794522678425039e+01,100)")
+    error = abs(grid1.rs - grid2.rs).max()
+    assert(error<1e-12)
+
+def test_rgrid_sanity():
+    grid = REquiIntGrid(0.0,1.0,100)
+    assert(grid.rs[0] == 0.0)
+    assert(grid.rs[-1] == 1.0)
+    assert(len(grid.rs) == 100)
+    grid = RLogIntGrid(1e-5,1e2,100)
+    assert(grid.rs[0] == 1e-5)
+    assert(abs(grid.rs[-1] - 1e2) < 1e-10)
+    assert(len(grid.rs) == 100)

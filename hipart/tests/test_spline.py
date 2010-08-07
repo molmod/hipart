@@ -19,7 +19,8 @@
 # --
 
 
-from hipart.csext import *
+from hipart.csext import spline_construct, spline_eval, spline_cumul_int
+from hipart.spline import CubicSpline
 
 import numpy
 
@@ -36,11 +37,11 @@ def test_blind1():
     yint = numpy.zeros(len(y), float)
     spline_cumul_int(x,y,d,yint)
 
+
 def test_blind2():
+    # see whether we get segfaults or not.
     x = numpy.arange(0, 1.005, 0.1)*numpy.pi*2
     y = numpy.sin(x)
-    yint = -numpy.cos(x)
-    yint -= yint[0]
     d = numpy.zeros(len(x), float)
     spline_construct(x,y,d)
     x_new = numpy.arange(0,1.0005, 0.01)*numpy.pi*2
@@ -48,3 +49,13 @@ def test_blind2():
     spline_eval(x,y,d,x_new,y_new)
     yint_spline = numpy.zeros(len(y), float)
     spline_cumul_int(x,y,d,yint_spline)
+
+
+def test_interpolate_cubic():
+    x = numpy.arange(0, 1.005, 0.1)*numpy.pi*2
+    y = numpy.sin(x)
+    spline = CubicSpline(x, y)
+    newx = numpy.arange(0,1.0005, 0.01)*numpy.pi*2
+    newy = spline(newx)
+    error = abs(newy - numpy.sin(newx)).max()
+    assert(error<1e-3)
