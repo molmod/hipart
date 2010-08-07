@@ -24,7 +24,7 @@ import hipart.llext
 import numpy
 
 
-__all__ = ["grid_fns", "get_grid", "get_atom_grid"]
+__all__ = ["grid_fns", "get_grid"]
 
 
 grid_fns = {}
