@@ -308,7 +308,7 @@ Examples:
 %prog g09 HF/3-21G 1,6,7,8 -l 110
 """
 
-def parse_args():
+def parse_args(args):
     parser = OptionParser(usage)
     parser.add_option(
         "-l", "--lebedev", default=350, type='int',
@@ -335,7 +335,7 @@ def parse_args():
         "--qc", default=False, action="store_true",
         help="Specify the qc convergence scheme in Gaussian input. [default=%default]"
     )
-    (options, args) = parser.parse_args()
+    (options, args) = parser.parse_args(args)
     if len(args) != 3:
         parser.error("Expecting three arguments: executable, level of theory (+ basis set) and the atom specification.")
     executable, lot, atom_str = args
@@ -343,8 +343,8 @@ def parse_args():
     return options, executable, lot, atom_numbers
 
 
-def main():
-    options, executable, lot, atom_numbers = parse_args()
+def main(args=None):
+    options, executable, lot, atom_numbers = parse_args(args=None)
     program = Gaussian(executable, options)
     dirnames = make_inputs(program, lot, atom_numbers, options.max_ion)
     run_jobs(program, dirnames)
