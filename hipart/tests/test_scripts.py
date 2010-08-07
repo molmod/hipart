@@ -52,8 +52,11 @@ def check_script(fn_script, scheme):
 
 
 def run(args):
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    f = file(args[0], "r")
+    mod_args = ("/usr/bin/env", "python", "-") + args[1:]
+    proc = subprocess.Popen(mod_args, stdin=f, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=os.getcwd())
     outdata, errdata = proc.communicate()
+    f.close()
     print outdata
     print errdata
     return proc.returncode
