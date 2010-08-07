@@ -22,7 +22,7 @@
 
 from hipart.log import log
 from hipart.lebedev_laikov import get_grid, grid_fns, get_atom_grid
-from hipart.spline import get_radial_weights_log
+from hipart.spline import RLogIntGrid
 from hipart.grids import Grid
 from hipart.wavefn import FCHKWaveFunction
 
@@ -231,20 +231,16 @@ def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbe
     lebedev_xyz, lebedev_weights = get_grid(num_lebedev)
 
     # define radii
-    ratio = (r_high/r_low)**(1.0/(steps-1))
-    alpha = numpy.log(ratio)
-    rs = r_low*numpy.exp(alpha*numpy.arange(0,steps))
+    rgrid = RLogIntGrid(r_low, r_high, steps)
 
     f_pro = file("densities.txt", "w")
-    print >> f_pro, "Radii [bohr]              ", " ".join("%12.7e" % r for r in rs)
+    print >> f_pro, rgrid.get_description()
     charges = []
 
     # run over all directories, run cubegen, load cube data
-    ws = get_radial_weights_log(rs)
     pb = log.pb("Density profiles", len(atom_numbers)*(2*max_ion+1))
     for number in atom_numbers:
-        atom = periodic[number]
-        symbol = atom.symbol
+        symbol = periodic[number].symbol
         for charge in xrange(-max_ion, max_ion+1):
             charge_label = charge_to_label(charge)
             pb()
@@ -253,12 +249,14 @@ def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbe
             prefix = "%s/grid" % workdir
             grid = Grid.from_prefix(prefix)
             if grid is None:
-                grid = Grid("%s/grid" % workdir, get_atom_grid(lebedev_xyz, numpy.zeros(3,float), rs))
+                atgrid_points = get_atom_grid(lebedev_xyz, numpy.zeros(3,float), rgrid.rs)
+                grid = Grid("%s/grid" % workdir, atgrid_points)
             program.compute_density(grid, workdir)
             radrhos = (grid.moldens.reshape((-1,num_lebedev))*lebedev_weights).sum(axis=1) # this is averaging, i.e. integral/(4*pi)
-            print >> f_pro, "Densities %3i %2s %+2i [a.u.]" % (number, symbol, charge),
-            print >> f_pro, " ".join("%12.7e" % rho for rho in radrhos)
-            check = (4*numpy.pi*rs*rs*radrhos*ws).sum()
+            print >> f_pro, "%3i %+2i" % (number, charge),
+            # leave out zeros to save space and time
+            print >> f_pro, " ".join("%22.16e" % rho for rho in radrhos if rho > 1e-100)
+            check = rgrid.integrate(4*numpy.pi*rgrid.rs*rgrid.rs*radrhos)
             charges.append((number, symbol, charge, check))
 
 

@@ -41,7 +41,7 @@ from hipart.fit import ESPCostFunction
 from hipart.lebedev_laikov import get_grid, get_atom_grid, integrate_lebedev
 from hipart.atoms import AtomTable
 from hipart.grids import Grid
-from hipart.spline import get_radial_weights_log, CubicSpline
+from hipart.spline import RLogIntGrid, CubicSpline
 from hipart.gint import dmat_to_full
 
 from molmod import Rotation, angstrom
@@ -88,41 +88,19 @@ class BaseCache(object):
     def new_from_args(cls, context, args):
         raise NotImplementedError
 
-    def __init__(self, context, rs, extra_tag_attributes):
+    def __init__(self, context, rgrid, extra_tag_attributes):
+        # check arguments
+        extra_tag_attributes["rgrid"] = rgrid.get_description()
+        context.check_tag(extra_tag_attributes)
+        # assign attributes
         self.context = context
-        self.rs = rs
-        extra_tag_attributes.update({
-            "r_low": "%.7e" % rs.min(),
-            "r_high": "%.7e" % rs.max(),
-            "r_steps": "%i" % len(rs),
-
-        })
-        self.context.check_tag(extra_tag_attributes)
-        self.radial_weights_map = {}
+        self.rgrid = rgrid
         self._done = set([])
-
-    def get_radial_weights(self, size):
-        weights = self.radial_weights_map.get(size)
-        if weights is None:
-            weights = get_radial_weights_log(self.rs[:size])
-            self.radial_weights_map[size] = weights
-        return weights
-
-    def _radint(self, integrand):
-        """Radial integration routine"""
-        rs = self.rs[:len(integrand)]
-        w = self.get_radial_weights(len(integrand))
-        return numpy.dot(w, integrand*rs*rs)
 
     def _spherint(self, integrand):
         radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-        return self._radint(radfun)
-
-    def _radint_cumul(self, integrand):
-        # WARNING: this is very inaccurate, do not use for delicate computations
-        rs = self.rs[:len(integrand)]
-        w = self.get_radial_weights(len(integrand))
-        return numpy.cumsum(w*integrand*rs*rs)
+        rs = self.rgrid.rs[:len(integrand)]
+        return self.rgrid.integrate(radfun*rs*rs)
 
     @OnlyOnce("Atomic grids")
     def do_atgrids(self):
@@ -136,7 +114,7 @@ class BaseCache(object):
             atgrid = Grid.from_prefix(prefix)
             if atgrid is None:
                 center = molecule.coordinates[i]
-                points = get_atom_grid(self.context.lebedev_xyz, center, self.rs)
+                points = get_atom_grid(self.context.lebedev_xyz, center, self.rgrid.rs)
                 atgrid = Grid(prefix, points)
             self.atgrids.append(atgrid)
 
@@ -189,9 +167,10 @@ class BaseCache(object):
                 else:
                     densities = self.atgrids[i].moldens
                     radfun = integrate_lebedev(self.context.lebedev_weights, densities)
-                    charge_int = self._radint_cumul(radfun)
+                    rs = self.rgrid.rs[:len(radfun)]
+                    charge_int = self.rgrid.integrate_cumul(radfun*rs*rs)
                     j = charge_int.searchsorted([core_sizes[number_i]])[0]
-                    self.noble_radii[i] = self.rs[j]
+                    self.noble_radii[i] = self.rgrid.rs[j]
             self.noble_radii.tofile(noble_radii_fn_bin)
 
     @OnlyOnce("Computing the ESP cost function")
@@ -643,10 +622,10 @@ class BaseCache(object):
             suffix = "%s_overlap_matrix" % self.prefix
             overlap = atgrid.load(suffix)
             if overlap is None:
-                rw = self.get_radial_weights(len(self.rs)).copy()
+                rw = self.rgrid.get_weights().copy()
                 rw *= 4*numpy.pi
-                rw *= self.rs
-                rw *= self.rs
+                rw *= self.rgrid.rs
+                rw *= self.rgrid.rs
                 weights = numpy.outer(rw, self.context.lebedev_weights).ravel()
                 weights *= atgrid.atweights
                 overlap = self.context.wavefn.compute_atomic_overlap(atgrid, weights)
@@ -778,7 +757,7 @@ class BaseCache(object):
                         # Use Becke's integration scheme to split the integral
                         # over two atomic grids.
                         # 1) first part of the integral, using the grid on atom i
-                        delta = (self.atgrids[i].distances[j].reshape((len(self.rs),-1)) - self.rs.reshape((-1,1))).ravel()
+                        delta = (self.atgrids[i].distances[j].reshape((len(self.rgrid.rs),-1)) - self.rgrid.rs.reshape((-1,1))).ravel()
                         switch = delta/molecule.distance_matrix[i,j]
                         for k in xrange(3):
                             switch = (3 - switch**2)*switch/2
@@ -787,7 +766,7 @@ class BaseCache(object):
                         integrand = switch*self.atgrids[i].od_atweights[j]*self.atgrids[i].atweights*self.atgrids[i].moldens
                         part1 = self._spherint(integrand)
                         # 2) second part of the integral
-                        delta = (self.atgrids[j].distances[i].reshape((len(self.rs),-1)) - self.rs.reshape((-1,1))).ravel()
+                        delta = (self.atgrids[j].distances[i].reshape((len(self.rgrid.rs),-1)) - self.rgrid.rs.reshape((-1,1))).ravel()
                         switch = delta/molecule.distance_matrix[i,j]
                         for k in xrange(3):
                             switch = (3 - switch**2)*switch/2
@@ -847,9 +826,7 @@ class TableBaseCache(StockholderCache):
 
     def __init__(self, context, extra_tag_attributes, atom_table):
         self.atom_table = atom_table
-        BaseCache.__init__(self, context, atom_table.rs, extra_tag_attributes)
-        # write the rs to the workdir for plotting purposes:
-        atom_table.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
+        BaseCache.__init__(self, context, atom_table.rgrid, extra_tag_attributes)
 
 
 hirshfeld_usage = """ * Hirshfeld Partitioning
@@ -877,8 +854,8 @@ class HirshfeldCache(TableBaseCache):
         self.do_atgrids()
         molecule = self.context.wavefn.molecule
         self.proatomfns = []
-        for i, number_i in enumerate(molecule.numbers):
-            self.proatomfns.append(self.atom_table.records[number_i].get_atom_fn(0.0))
+        for number in molecule.numbers:
+            self.proatomfns.append(self.atom_table.records[number].get_atom_fn())
 
 
 hirshfeld_i_usage = """ * Hirshfeld-I Partitioning
@@ -908,32 +885,31 @@ class HirshfeldICache(TableBaseCache):
         self.do_atgrids_moldens()
 
         counter = 0
-        old_charges = numpy.zeros(molecule.size, float)
+        old_populations = molecule.numbers.astype(float)
         while True:
             # construct the pro-atom density functions, using the densities
             # from the previous iteration.
             self.proatomfns = []
             for i, number_i in enumerate(molecule.numbers):
-                self.proatomfns.append(self.atom_table.records[number_i].get_atom_fn(old_charges[i]))
+                self.proatomfns.append(self.atom_table.records[number_i].get_atom_fn(old_populations[i]))
 
-            charges = []
+            populations = numpy.zeros(molecule.size, float)
             for i in xrange(molecule.size):
                 integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
-                num_electrons = self._spherint(integrand)
-                charges.append(molecule.numbers[i] - num_electrons)
+                population = self._spherint(integrand)
+                populations[i] = population
 
             # ordinary blablabla ...
-            charges = numpy.array(charges)
-            max_change = abs(charges-old_charges).max()
+            max_change = abs(populations-old_populations).max()
             log("Iteration %03i    max change = %10.5e    total charge = %10.5e" % (
-                counter, max_change, charges.sum()
+                counter, max_change, molecule.numbers.sum() - populations.sum()
             ))
             if max_change < self.context.options.threshold:
                 break
             counter += 1
             if counter > self.context.options.max_iter:
                 raise RuntimeError("Iterative Hirshfeld failed to converge.")
-            old_charges = charges
+            old_populations = populations
 
 
 isa_usage = """ * Iterative Stockholder Partitioning
@@ -956,31 +932,21 @@ class ISACache(StockholderCache):
 
     @classmethod
     def new_from_args(cls, context, args):
-        rs_fn_bin = os.path.join(context.workdir, "rs.bin")
-        if os.path.isfile(rs_fn_bin):
-            rs = numpy.fromfile(rs_fn_bin)
-            if len(args) != 0:
-                raise ParseError("The ISA scheme requires no arguments when a file rs.bin is present in the work directory.")
+        r_low = 2.0e-5*angstrom
+        r_high = 20.0*angstrom
+        steps = 100
+        if len(args) == 0:
+            pass
+        elif len(args) == 3:
+            r_low = float(args[0])*angstrom
+            r_high = float(args[1])*angstrom
+            steps = float(args[2])
         else:
-            if len(args) == 3:
-                r_low = float(args[0])*angstrom
-                r_high = float(args[1])*angstrom
-                steps = float(args[2])
-            elif len(args) == 0:
-                r_low = 2.0e-5*angstrom
-                r_high = 20.0*angstrom
-                steps = 100
-            else:
-                raise ParseError("The ISA scheme requires zero or three scheme arguments.")
-            ratio = (r_high/r_low)**(1.0/(steps-1))
-            alpha = numpy.log(ratio)
-            rs = r_low*numpy.exp(alpha*numpy.arange(0,steps))
-        return cls(context, rs)
+            raise ParseError("The ISA scheme requires zero or three scheme arguments.")
+        return cls(context, RLogIntGrid(r_low, r_high, steps))
 
-    def __init__(self, context, rs):
-        BaseCache.__init__(self, context, rs, {})
-        # write the rs to the workdir for plotting purposes:
-        self.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
+    def __init__(self, context, rgrid):
+        BaseCache.__init__(self, context, rgrid, {})
 
     @OnlyOnce("Iterative Stockholder Analysis")
     def do_proatomfns(self):
@@ -993,7 +959,7 @@ class ISACache(StockholderCache):
             densities = self.atgrids[i].moldens
             profile = densities.reshape((-1,self.context.num_lebedev)).min(axis=1)
             profile[profile < 1e-6] = 1e-6
-            self.proatomfns.append(CubicSpline(self.rs, profile))
+            self.proatomfns.append(CubicSpline(self.rgrid.rs, profile))
 
         counter = 0
         old_charges = numpy.zeros(molecule.size, float)
@@ -1003,11 +969,11 @@ class ISACache(StockholderCache):
             for i in xrange(molecule.size):
                 integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
                 radfun = integrate_lebedev(self.context.lebedev_weights, integrand)
-                num_electrons = self._radint(radfun)
+                num_electrons = self.rgrid.integrate(radfun)
                 charges.append(molecule.numbers[i] - num_electrons)
                 # add negligible tails to maintain a complete partitioning
                 radfun[radfun < 1e-40] = 1e-40
-                new_proatomfn = CubicSpline(self.rs, radfun/4*numpy.pi)
+                new_proatomfn = CubicSpline(self.rgrid.rs, radfun/4*numpy.pi)
                 new_proatomfns.append(new_proatomfn)
 
             # ordinary blablabla ...
@@ -1048,42 +1014,32 @@ class BeckeCache(BaseCache):
 
     @classmethod
     def new_from_args(cls, context, args):
-        rs_fn_bin = os.path.join(context.workdir, "rs.bin")
-        if os.path.isfile(rs_fn_bin):
-            rs = numpy.fromfile(rs_fn_bin)
-            if len(args) == 0:
-                k = 3
-            elif len(args) == 1:
-                k = int(args[0])
-            else:
-                raise ParseError("The Becke scheme requires zero or one argument(s) when a file rs.bin is present in the work directory.")
+        k = 3
+        r_low = 2.0e-5*angstrom
+        r_high = 20.0*angstrom
+        steps = 100
+        if len(args) == 0:
+            pass
+        elif len(args) == 1:
+            k = int(args[0])
+        elif len(args) == 3:
+            r_low = float(args[0])*angstrom
+            r_high = float(args[1])*angstrom
+            steps = float(args[2])
+        elif len(args) == 4:
+            k = int(args[0])
+            r_low = float(args[1])*angstrom
+            r_high = float(args[2])*angstrom
+            steps = float(args[3])
         else:
-            if len(args) == 3 or len(args) == 4:
-                r_low = float(args[-3])*angstrom
-                r_high = float(args[-2])*angstrom
-                steps = float(args[-1])
-            elif len(args) == 0 or len(args) == 1:
-                r_low = 2.0e-5*angstrom
-                r_high = 20.0*angstrom
-                steps = 100
-            else:
-                raise ParseError("The ISA scheme requires zero or three scheme arguments.")
-            if len(args) == 1 or len(args)==4:
-                k = int(args[0])
-            else:
-                k = 3
-            ratio = (r_high/r_low)**(1.0/(steps-1))
-            alpha = numpy.log(ratio)
-            rs = r_low*numpy.exp(alpha*numpy.arange(0,steps))
+            raise ParseError("The becke scheme requires zero, one, three or four scheme arguments.")
+        return cls(context, k, RLogIntGrid(r_low, r_high, steps))
+
+    def __init__(self, context, k, rgrid):
         if k <= 0:
             raise ValueError("The parameter k must be strictly positive.")
-        return cls(context, k, rs)
-
-    def __init__(self, context, k, rs):
         self.k = k
-        BaseCache.__init__(self, context, rs, {"becke_k": str(k)})
-        # write the rs to the workdir for plotting purposes:
-        self.rs.tofile(os.path.join(self.context.workdir, "rs.bin"))
+        BaseCache.__init__(self, context, rgrid, {"becke_k": str(k)})
 
     @OnlyOnce("Becke's Smooth Voronoi Partitioning")
     def _prepare_atweights(self):

@@ -19,13 +19,16 @@
 # --
 
 
+import hipart.csext
+print hipart.csext.__file__
+
 from hipart.csext import *
 from hipart.spline import *
 
 import numpy
 
 
-def test_blind():
+def test_blind1():
     # see whether we get segfaults or not.
     x = numpy.arange(0,1,0.1)
     y = numpy.random.normal(0,1,len(x))
@@ -37,7 +40,7 @@ def test_blind():
     yint = numpy.zeros(len(y), float)
     spline_cumul_int(x,y,d,yint)
 
-def test_plot1():
+def test_blind2():
     x = numpy.arange(0, 1.005, 0.1)*numpy.pi*2
     y = numpy.sin(x)
     yint = -numpy.cos(x)
@@ -51,8 +54,9 @@ def test_plot1():
     spline_cumul_int(x,y,d,yint_spline)
 
 def test_radial_integration_equi():
-    x = numpy.arange(0.0,1.0001,0.01)
-    weights = get_radial_weights_equi(x)
+    grid = REquiIntGrid(0.0,1.0,100)
+    x = grid.rs
+    weights = grid.get_weights(len(x))
     #
     y = numpy.sin(x)
     int1 = numpy.dot(y,weights)
@@ -70,21 +74,18 @@ def test_radial_integration_equi():
     assert(abs(int1-int2)<1e-7)
 
 def test_radial_integration_log():
-    low = 1e-5
-    high = 1e2
-    steps = 100
-    alpha = (high/low)**(1.0/(steps-1))
-    x = low*alpha**numpy.arange(steps)
-    weights = get_radial_weights_log(x)
-    #print x
-    #print weights
+    grid = RLogIntGrid(1e-5,1e2,100)
+    x = grid.rs
+    weights = grid.get_weights(len(x))
     #
     y = x*numpy.exp(-x)
     int1 = numpy.dot(y,weights)
     int2 = 1.0
-    assert(abs(int1-int2)<1e-10)
+    error = abs(int1-int2)
+    assert(error<1e-10)
     #
     y = x*x*x*numpy.exp(-x)
     int1 = numpy.dot(y,weights)
     int2 = 6.0
-    assert(abs(int1-int2)<1e-14)
+    error = abs(int1-int2)
+    assert(error<1e-14)

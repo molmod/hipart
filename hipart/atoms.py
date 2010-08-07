@@ -20,7 +20,7 @@
 
 
 from hipart.log import log
-from hipart.spline import CubicSpline
+from hipart.spline import CubicSpline, get_rgrid_from_description
 
 import numpy, os
 
@@ -31,44 +31,46 @@ __all__ = [
 
 
 class AtomProfile(object):
-    def __init__(self, number, rs, records):
+    def __init__(self, number, rgrid, records):
         self.number = number
+        self.rgrid = rgrid
+        self.records = records
+        self.max_population = max(self.records)
+        self.min_population = min(self.records)
 
-        mask = reduce(
-            (lambda x,y: x|y),
-            (rhos > 0 for rhos in records.itervalues()),
-            False
-        )
-        self.rs = rs[mask]
-        self.records = dict((charge, rhos[mask]) for charge, rhos in records.iteritems())
-
-    def get_atom_fn(self, charge):
-        if charge > self.number:
+    def get_atom_fn(self, population=None):
+        if population is None:
+            population = float(self.number)
+        else:
+            population = float(population)
+        if population < 0:
             raise ValueError("A negative number of electrons is not physical")
 
-        max_charge = max(self.records)
-        min_charge = min(self.records)
-        if charge >= max_charge:
-            if self.number > 1 and charge < 1:
-                log("Warning: unsafe extrapolation (pos), number=%i, charge=%f" % (self.number, charge))
-            num_elec = self.number - charge
-            ref_elec = self.number - max_charge
-            rhos = (self.records[max_charge]*num_elec)/ref_elec
-        elif charge <= min_charge:
-            log("Warning: unsafe extrapolation (neg), number=%i, charge=%f" % (self.number, charge))
-            rhos = self.records[min_charge] + \
-                (self.records[min_charge] - self.records[min_charge+1])*(min_charge-charge)
+        if population < self.min_population:
+            if self.number > 1 and population < self.min_population:
+                log("Warning: unsafe extrapolation (below), number=%i, population=%f" % (self.number, population))
+            ratio = population/self.min_population
+            rhos = self.records[self.min_population]*ratio
+        elif population > self.max_population:
+            log("Warning: unsafe extrapolation (above), number=%i, population=%f" % (self.number, population))
+            ratio = population/self.max_population
+            rhos = self.records[self.max_population]*ratio
         else:
-            high_charge = int(numpy.ceil(charge))
-            low_charge = int(numpy.floor(charge))
-            if low_charge == high_charge:
-                low_charge -= 1
-            low_ref = self.records[low_charge]
-            high_ref = self.records[high_charge]
-            rhos = high_ref + (low_ref - high_ref)*(high_charge - charge)
+            high_population = int(numpy.ceil(population))
+            low_population = int(numpy.floor(population))
+            if low_population == high_population:
+                rhos = self.records[low_population]
+            else:
+                low_ref = self.records[low_population]
+                high_ref = self.records[high_population]
+                if len(high_ref) > len(low_ref):
+                    rhos = high_ref*(population - low_population)
+                    rhos[:len(low_ref)] += low_ref*(high_population - population)
+                else:
+                    rhos = low_ref*(high_population - population)
+                    rhos[:len(high_ref)] += high_ref*(population - low_population)
 
-        result = CubicSpline(self.rs, rhos)
-        #print "##Check:", -integrate(result.rs, 4*numpy.pi*result.rhos*result.rs**2)+self.number-charge, "##"
+        result = CubicSpline(self.rgrid.rs[:len(rhos)], rhos)
         return result
 
 
@@ -76,16 +78,17 @@ class AtomTable(object):
     def __init__(self, filename):
         f = file(filename)
         line = f.next()
-        self.rs = numpy.array([float(word) for word in line.split()[2:]])
+        self.rgrid = get_rgrid_from_description(line.strip())
         records = {}
         for line in f:
             words = line.split()
-            number = int(words[1])
-            charge = int(words[3])
-            atom_rhos = numpy.array([float(word) for word in words[5:]])
-            qmap = records.setdefault(number, {})
-            qmap[charge] = atom_rhos
+            number = int(words[0])
+            charge = int(words[1])
+            population = number - charge
+            atom_rhos = numpy.array([float(word) for word in words[2:]])
+            nmap = records.setdefault(number, {})
+            nmap[population] = atom_rhos
         f.close()
         self.records = {}
-        for number, qmap in records.iteritems():
-            self.records[number] = AtomProfile(number, self.rs, qmap)
+        for number, nmap in records.iteritems():
+            self.records[number] = AtomProfile(number, self.rgrid, nmap)

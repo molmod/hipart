@@ -464,8 +464,6 @@ def check_hf_overlap_matrices(cache):
     molecule = cache.context.wavefn.molecule
     for i in xrange(molecule.size):
         overlap = cache.atgrids[i].overlap_matrix
-        #print overlap
-        #raise Exception
         error = abs(overlap-overlap.transpose()).max()
         assert(error<1e-10)
         population = (full*overlap).sum()
