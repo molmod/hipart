@@ -62,8 +62,8 @@ def parse_command_line(script_usage, add_extra_options=None):
     )
     parser.add_option(
         "-c", "--clean", default=False, action='store_true',
-        help="If given, the workdir with the binary data is removed when the "
-             "computation has finished."
+        help="If given, the workdir with the binary data is removed before and "
+             "after the computation."
     )
     parser.add_option(
         "-n", "--no-fix-total-charge", dest="fix_total_charge", default="True",

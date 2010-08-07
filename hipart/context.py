@@ -55,6 +55,7 @@ class Context(object):
         if not os.path.isdir(self.outdir):
             os.mkdir(self.outdir)
         self.workdir = os.path.join(self.outdir, "work")
+        self.clean()
         if not os.path.isdir(self.workdir):
             os.mkdir(self.workdir)
 
@@ -91,5 +92,5 @@ class Context(object):
         f.close()
 
     def clean(self):
-        if self.options.clean:
+        if self.options.clean and os.path.isdir(self.workdir):
             shutil.rmtree(self.workdir)
