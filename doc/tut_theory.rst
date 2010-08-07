@@ -216,7 +216,24 @@ scheme does not depend on a database of atomic densities.
 Atomic properties derived from the partitioned density
 ------------------------------------------------------
 
-TODO
+In this section we discuss the properties derived from the atomic electron
+densities:
+
+.. math:: \rho_A(\mathbf{r}) = w_A(\mathbf{r})\rho_{\text{mol}}(\mathbf{r}),
+
+where :math:`w_A(\mathbf{r})` is the atomic weight function of atom :math:`A`
+obtained with some partitioning scheme and :math:`\rho_{\text{mol}}` is the
+molecular electron density.
+
+It may be interesting to see how the molecular density is derived from the
+density matrix obtained with a quantum chemical ground state computation. First
+the basis functions, :math:`B_m` are evaluated in the point :math:`\mathbf{r}`,
+where :math:`m` runs from 1 to the number of basis functions. In matrix notation
+the molecular density is then computed as follows:
+
+.. math:: \rho_{\text{mol}}(\mathbf{r}) = (B(\mathbf{r}))^T D B(\mathbf{r}),
+
+where :math:`D` is the density matrix.
 
 Charges, Dipoles & Multipoles
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -224,7 +241,7 @@ Charges, Dipoles & Multipoles
 The multipole expansion of an atomic density with respect to its nucleus is
 defined as follows:
 
-.. math:: Q_l^m = \int d\mathbf{r} (-\rho_A(\mathbf{r})) R_l^m(\mathbf{r}-\mathbf{r}_A)
+.. math:: Q_l^m = \int (-\rho_A(\mathbf{r})) R_l^m(\mathbf{r}-\mathbf{r}_A) d\mathbf{r}
     :label: multipole
 
 where :math:`R_l^m` is the regular solid harmonic. This multipole expansion
@@ -246,7 +263,7 @@ as follows:
 In HiPart we use the real valued variants of these functions and we replace the
 integrals :eq:`multipole` by their real counterparts:
 
-.. math:: \tilde{Q}_l^m = \int d\mathbf{r} (-\rho_A(\mathbf{r})) \tilde{R}_l^m(\mathbf{r}-\mathbf{r}_A),
+.. math:: \tilde{Q}_l^m = \int (-\rho_A(\mathbf{r})) \tilde{R}_l^m(\mathbf{r}-\mathbf{r}_A) d\mathbf{r},
     :label: multipole-real
 
 with
@@ -296,18 +313,37 @@ three rows correspond to the components of the atomic dipole, and so on.
 Net and overlap populations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TODO
+The net and overlap populations are obtained by inserting the weight function
+twice in the integral over the molecular density:
+
+.. math:: N^{\text{no}}_{AB} = \int w_A(\mathbf{r}) w_B(\mathbf{r}) \rho_{\text{mol}}(\mathbf{r}) d\mathbf{r}
+
+The diagonal elements are the net populations. One can interpret the net
+population of an atom as the amount of electrons that is associated only with
+that atom. The overlap populations, i.e. off-diagonal elements, can be
+interpreted as the amount of electrons that are shared between two atoms.
+
+These quantities are certainly not convenient as measures for atomic valence and
+bond order, although one can expect that there must be some correlation between
+the overlap population and the bond order. The main issue is that these numbers
+are not even close to the integer values that one would expect for atomic
+valences and bond orders. In the case of binary weight functions, the overlap
+populations would be zero and the net charges would be the regular atomic
+populations.
+
 
 Atomic properties derived from the partitioned spin density
 -----------------------------------------------------------
-
-Atomic properties derived from the partitioned density matrix
--------------------------------------------------------------
 
 TODO
 
 Spin charges
 ^^^^^^^^^^^^
+
+TODO
+
+Atomic properties derived from the partitioned density matrix
+-------------------------------------------------------------
 
 TODO
 
