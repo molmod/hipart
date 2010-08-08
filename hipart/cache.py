@@ -1060,7 +1060,7 @@ class BeckeCache(BaseCache):
 
             if grid.cell_functions is None:
                 # load failed, so compute
-                grid.cell_functions = numpy.ones((N, len(grid.points)), float)
+                grid.cell_functions = numpy.ones((N, grid.size), float)
                 for j0 in xrange(N):
                     for j1 in xrange(j0):
                         pb()

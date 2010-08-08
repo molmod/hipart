@@ -48,6 +48,8 @@ class Grid(object):
             else:
                 points.tofile(fn_points)
 
+    size = property(lambda self: len(self.points))
+
     @classmethod
     def from_prefix(cls, prefix):
         fn = "%s.bin" % prefix

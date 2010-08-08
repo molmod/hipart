@@ -128,7 +128,7 @@ class OldFCHKWaveFunction(object):
                     os.system("cubegen 0 fdensity=%s %s %s -5 < %s" % (
                         self._density_type, self.filename, den_fn, points_fn
                     ))
-                moldens = self._load_cube(den_fn, len(grid.points))
+                moldens = self._load_cube(den_fn, grid.size)
             grid.dump("moldens", moldens)
         grid.moldens = moldens
 
@@ -155,7 +155,7 @@ class OldFCHKWaveFunction(object):
                     os.system("cubegen 0 spin=%s %s %s -5 < %s" % (
                         self._density_type, self.filename, sden_fn, points_fn
                     ))
-                molspindens = self._load_cube(sden_fn, len(grid.points))
+                molspindens = self._load_cube(sden_fn, grid.size)
             grid.dump("molspindens", molspindens)
         grid.molspindens = molspindens
 
@@ -171,7 +171,7 @@ class OldFCHKWaveFunction(object):
                 os.system("cubegen 0 potential=%s %s %s -5 < %s" % (
                     self._density_type, self.filename, pot_fn, points_fn,
                 ))
-            molpot = self._load_cube(pot_fn, len(grid.points))
+            molpot = self._load_cube(pot_fn, grid.size)
             grid.dump("molpot", molpot)
         grid.molpot = molpot
 
@@ -191,7 +191,7 @@ class OldFCHKWaveFunction(object):
                     os.system("cubegen 0 AMO=%i %s %s -5 < %s" % (
                         i+1, self.filename, alpha_orb_fn, points_fn,
                     ))
-                alpha_orb = self._load_cube(alpha_orb_fn, len(grid.points))
+                alpha_orb = self._load_cube(alpha_orb_fn, grid.size)
                 grid.dump(alpha_suffix, alpha_orb)
             alpha_orbitals.append(alpha_orb)
             if self.restricted:
@@ -209,7 +209,7 @@ class OldFCHKWaveFunction(object):
                         os.system("cubegen 0 BMO=%i %s %s -5 < %s" % (
                             i+1, self.filename, beta_orb_fn, points_fn,
                         ))
-                    beta_orb = self._load_cube(beta_orb_fn, len(grid.points))
+                    beta_orb = self._load_cube(beta_orb_fn, grid.size)
                     grid.dump(beta_suffix, beta_orb)
                 beta_orbitals.append(beta_orb)
 
@@ -412,7 +412,7 @@ class FCHKWaveFunction(object):
         molspindens = grid.load("molspindens")
         if molspindens is None:
             if self.spin_density_matrix is None:
-                molspindens = numpy.zeros(len(grid.points), float)
+                molspindens = numpy.zeros(grid.size, float)
             else:
                 molspindens = self.basis.call_gint_grid(gint1_fn_dmat, self.spin_density_matrix, grid.points)
             grid.dump("molspindens", molspindens)
