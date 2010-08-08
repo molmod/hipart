@@ -305,7 +305,7 @@ class BaseCache(object):
     def _dump_atgrid_atweights(self):
         molecule = self.context.wavefn.molecule
         for i in xrange(molecule.size):
-            self.atgrids[i].dump("%s_atweights" % self.prefix, self.atgrids[i].atweights)
+            self.atgrids[i].dump("%s_atweights" % self.prefix, self.atgrids[i].atweights, ignore=True)
 
     @OnlyOnce("Atomic charges")
     def do_charges(self):

@@ -67,10 +67,11 @@ class Grid(object):
         else:
             return None
 
-    def dump(self, suffix, array):
+    def dump(self, suffix, array, ignore=False):
         fn = self.get_fn(suffix)
         if os.path.isfile(fn):
-            raise ValueError("The binary file is already present in the work directory.")
+            if not ignore:
+                raise ValueError("The binary file is already present in the work directory.")
         else:
             array.tofile(fn)
 
