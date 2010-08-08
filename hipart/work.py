@@ -19,7 +19,7 @@
 # --
 
 
-import os, numpy
+import os, numpy, shutil
 
 
 __all__ = ["Work"]
@@ -29,6 +29,7 @@ class Work(object):
     def __init__(self, directory=None, do_clean=True):
         self.directory = directory
         self.do_clean = do_clean
+        self.clean()
         if self.active and not os.path.isdir(self.directory):
             os.makedirs(self.directory)
 
@@ -46,12 +47,8 @@ class Work(object):
     def dump(self, name, array, ignore=False):
         if self.active:
             filename = os.path.join(self.directory, name + ".bin")
-            if os.path.isfile(filename):
-                if not ignore:
-                    raise ValueError("The binary file is already present in the work directory.")
-            else:
-                array.tofile(filename)
+            array.tofile(filename)
 
     def clean(self):
-        if self.do_clean and self.active and os.path.isdir(self.workdir):
-            shutil.rmtree(self.workdir)
+        if self.do_clean and self.active and os.path.isdir(self.directory):
+            shutil.rmtree(self.directory)
