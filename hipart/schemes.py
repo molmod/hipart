@@ -49,7 +49,7 @@ from molmod.periodic import periodic
 import os, numpy
 
 
-__all__ = ["ComputeError", "ParseError", "cache_classes"]
+__all__ = ["ComputeError", "ParseError", "scheme_classes"]
 
 
 noble_numbers = numpy.array([0,2,10,18,36,54,86,118])
@@ -79,7 +79,7 @@ class OnlyOnce(object):
         return wrapper
 
 
-class BaseCache(object):
+class BaseScheme(object):
     prefix = None
     usage = None
 
@@ -790,7 +790,7 @@ class BaseCache(object):
         log("Written %s" % net_overlap_fn)
 
 
-class StockholderCache(BaseCache):
+class StockholderScheme(BaseScheme):
     def do_proatomfns(self):
         raise NotImplementedError
 
@@ -817,7 +817,7 @@ class StockholderCache(BaseCache):
         return pro_atom/pro_mol
 
 
-class TableBaseCache(StockholderCache):
+class TableBaseScheme(StockholderScheme):
     @classmethod
     def new_from_args(cls, context, args):
         if len(args) == 1:
@@ -828,7 +828,7 @@ class TableBaseCache(StockholderCache):
 
     def __init__(self, context, extra_tag_attributes, atom_table):
         self.atom_table = atom_table
-        BaseCache.__init__(self, context, atom_table.rgrid, extra_tag_attributes)
+        BaseScheme.__init__(self, context, atom_table.rgrid, extra_tag_attributes)
 
 
 hirshfeld_usage = """ * Hirshfeld Partitioning
@@ -844,12 +844,12 @@ hirshfeld_usage = """ * Hirshfeld Partitioning
      http://dx.doi.org/10.1007/BF00549096
 """
 
-class HirshfeldCache(TableBaseCache):
+class HirshfeldScheme(TableBaseScheme):
     prefix = "hirsh"
     usage = hirshfeld_usage
 
     def __init__(self, context, atom_table):
-        TableBaseCache.__init__(self, context, {}, atom_table)
+        TableBaseScheme.__init__(self, context, {}, atom_table)
 
     @OnlyOnce("Conventional Hirshfeld (with neutral pro-atoms)")
     def do_proatomfns(self):
@@ -874,12 +874,12 @@ hirshfeld_i_usage = """ * Hirshfeld-I Partitioning
      http://dx.doi.org/10.1063/1.2715563
 """
 
-class HirshfeldICache(TableBaseCache):
+class HirshfeldIScheme(TableBaseScheme):
     prefix = "hirshi"
     usage = hirshfeld_i_usage
 
     def __init__(self, context, atom_table):
-        TableBaseCache.__init__(self, context, {}, atom_table)
+        TableBaseScheme.__init__(self, context, {}, atom_table)
 
     @OnlyOnce("Iterative Hirshfeld")
     def do_proatomfns(self):
@@ -928,7 +928,7 @@ isa_usage = """ * Iterative Stockholder Partitioning
      http://dx.doi.org/10.1039/b812691g
 """
 
-class ISACache(StockholderCache):
+class ISAScheme(StockholderScheme):
     prefix = "isa"
     usage = isa_usage
 
@@ -948,7 +948,7 @@ class ISACache(StockholderCache):
         return cls(context, RLogIntGrid(r_low, r_high, steps))
 
     def __init__(self, context, rgrid):
-        BaseCache.__init__(self, context, rgrid, {})
+        BaseScheme.__init__(self, context, rgrid, {})
 
     @OnlyOnce("Iterative Stockholder Analysis")
     def do_proatomfns(self):
@@ -1010,7 +1010,7 @@ becke_usage = """ * Becke's Smooth Voronoi Partitioning
      http://dx.doi.org/10.1063/1.454033
 """
 
-class BeckeCache(BaseCache):
+class BeckeScheme(BaseScheme):
     prefix = "becke"
     usage = becke_usage
 
@@ -1041,7 +1041,7 @@ class BeckeCache(BaseCache):
         if k <= 0:
             raise ValueError("The parameter k must be strictly positive.")
         self.k = k
-        BaseCache.__init__(self, context, rgrid, {"becke_k": str(k)})
+        BaseScheme.__init__(self, context, rgrid, {"becke_k": str(k)})
 
     @OnlyOnce("Becke's Smooth Voronoi Partitioning")
     def _prepare_atweights(self):
@@ -1101,8 +1101,8 @@ class BeckeCache(BaseCache):
         return grid.cell_functions[atom_index]/grid.cell_sum
 
 
-# find all usable Cache classes
-cache_classes = {}
+# find all usable Scheme classes
+scheme_classes = {}
 for x in globals().values():
-    if isinstance(x, type) and issubclass(x, BaseCache) and x.prefix is not None:
-        cache_classes[x.prefix] = x
+    if isinstance(x, type) and issubclass(x, BaseScheme) and x.prefix is not None:
+        scheme_classes[x.prefix] = x

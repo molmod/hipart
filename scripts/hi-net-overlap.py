@@ -24,6 +24,6 @@ from hipart.opts import parse_command_line
 
 usage = """%prog computes atomic net and overlap populations"""
 
-context, cache = parse_command_line(usage)
-cache.do_net_overlap()
+context, scheme = parse_command_line(usage)
+scheme.do_net_overlap()
 context.clean()

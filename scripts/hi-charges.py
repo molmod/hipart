@@ -28,6 +28,6 @@ The effective atomic charges are the monopole terms in the multipole expansion
 of each atomic contribution to the density plus the monopole of the nucleus. The
 atomic densities are obtained from the 'scheme' specified at the command line."""
 
-context, cache = parse_command_line(usage)
-cache.do_charges()
+context, scheme = parse_command_line(usage)
+scheme.do_charges()
 context.clean()

@@ -12,10 +12,10 @@ The context
 .. automodule:: hipart.context
    :members:
 
-The cache
----------
+Schemes
+-------
 
-.. automodule:: hipart.cache
+.. automodule:: hipart.schemes
    :members:
 
 Electronic structure representation

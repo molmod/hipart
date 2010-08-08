@@ -24,6 +24,6 @@ from hipart.opts import parse_command_line
 
 usage = """%prog computes atomic multipoles."""
 
-context, cache = parse_command_line(usage)
-cache.do_multipoles()
+context, scheme = parse_command_line(usage)
+scheme.do_multipoles()
 context.clean()

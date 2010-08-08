@@ -28,6 +28,6 @@ These atomic charges and dipoles are the monopole and dipole terms in the
 multipole expansion of each atomic contribution to the density. The atomic
 densities are obtained from the 'scheme' specified at the command line."""
 
-context, cache = parse_command_line(usage)
-cache.do_dipoles()
+context, scheme = parse_command_line(usage)
+scheme.do_dipoles()
 context.clean()

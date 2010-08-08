@@ -24,7 +24,7 @@
 
 
 from hipart.lebedev_laikov import grid_fns
-from hipart.cache import cache_classes, ParseError
+from hipart.schemes import scheme_classes, ParseError
 from hipart.context import Context, ContextError
 
 from optparse import OptionParser, OptionGroup
@@ -53,7 +53,7 @@ Partitioning schemes:
 """
 
 def parse_command_line(script_usage, add_extra_options=None):
-    scheme_usage = "\n".join(cache.usage for name, cache in sorted(cache_classes.iteritems()))
+    scheme_usage = "\n".join(scheme.usage for name, scheme in sorted(scheme_classes.iteritems()))
     parser = OptionParser(usage_template % (script_usage, scheme_usage))
     parser.add_option(
         "-l", "--lebedev", default=110, type='int',
@@ -91,14 +91,14 @@ def parse_command_line(script_usage, add_extra_options=None):
 
     context = Context(fchk_fn, options)
 
-    CacheClass = cache_classes.get(scheme_name)
-    if CacheClass is None:
-        parser.error("The scheme must be one of: %s" % (" ".join(sorted(cache_classes))))
+    SchemeClass = scheme_classes.get(scheme_name)
+    if SchemeClass is None:
+        parser.error("The scheme must be one of: %s" % (" ".join(sorted(scheme_classes))))
     try:
-        cache = CacheClass.new_from_args(context, args[2:])
+        scheme = SchemeClass.new_from_args(context, args[2:])
     except ParseError, e:
         parser.error(str(e))
     except ContextError, e:
         parser.error(str(e))
 
-    return context, cache
+    return context, scheme

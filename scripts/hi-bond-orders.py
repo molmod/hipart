@@ -24,6 +24,6 @@ from hipart.opts import parse_command_line
 
 usage = """%prog computes bond orders"""
 
-context, cache = parse_command_line(usage)
-cache.do_bond_orders()
+context, scheme = parse_command_line(usage)
+scheme.do_bond_orders()
 context.clean()

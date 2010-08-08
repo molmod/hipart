@@ -24,6 +24,6 @@ from hipart.opts import parse_command_line
 
 usage = """%prog computes atomic overlap matrices in the basis of the orbitals."""
 
-context, cache = parse_command_line(usage)
-cache.do_atgrids_overlap_matrix()
+context, scheme = parse_command_line(usage)
+scheme.do_atgrids_overlap_matrix()
 context.clean()

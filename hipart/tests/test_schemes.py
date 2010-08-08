@@ -19,9 +19,9 @@
 # --
 
 
-from hipart.tests.utils import iter_hf_sto3g_gaussian_caches, \
-    iter_oh1_sto3g_gaussian_caches, iter_oh2_sto3g_gaussian_caches, \
-    iter_h_sto3g_gaussian_caches
+from hipart.tests.utils import iter_hf_sto3g_gaussian_schemes, \
+    iter_oh1_sto3g_gaussian_schemes, iter_oh2_sto3g_gaussian_schemes, \
+    iter_h_sto3g_gaussian_schemes
 from hipart.gint import dmat_to_full
 
 import numpy, os
@@ -29,122 +29,122 @@ from nose.plugins.skip import SkipTest
 
 
 def test_compute_atgrid_atweights():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_compute_atgrid_atweights, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_compute_atgrid_atweights, scheme
 
-def check_compute_atgrid_atweights(cache):
-    cache.do_atgrids()
-    cache._prepare_atweights()
-    h0 = cache._compute_atweights(cache.atgrids[0], 0)
-    h1 = cache._compute_atweights(cache.atgrids[0], 1)
+def check_compute_atgrid_atweights(scheme):
+    scheme.do_atgrids()
+    scheme._prepare_atweights()
+    h0 = scheme._compute_atweights(scheme.atgrids[0], 0)
+    h1 = scheme._compute_atweights(scheme.atgrids[0], 1)
     error = abs(h1+h0-1).max()
     assert(error < 1e-10)
 
 
 def test_hf_charges():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_charges, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_charges, scheme
 
-def check_hf_charges(cache):
+def check_hf_charges(scheme):
     expected = {
         "hirsh": numpy.array([-0.13775422, 0.13775422]),
         "hirshi": numpy.array([-0.19453209, 0.19453209]),
         "isa": numpy.array([-0.20842675, 0.20842675]),
         "becke": numpy.array([-0.20037239, 0.20037239]),
     }
-    cache.do_charges()
-    assert(abs(cache.charges - expected[cache.prefix]).max() < 1e-4)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
+    scheme.do_charges()
+    assert(abs(scheme.charges - expected[scheme.prefix]).max() < 1e-4)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_charges.txt" % scheme.prefix)))
 
 
 def test_oh1_charges():
-    for cache in iter_oh1_sto3g_gaussian_caches():
-        yield check_oh1_charges, cache
+    for scheme in iter_oh1_sto3g_gaussian_schemes():
+        yield check_oh1_charges, scheme
 
-def check_oh1_charges(cache):
+def check_oh1_charges(scheme):
     expected = {
         "hirsh": numpy.array([-0.11261, 0.11261]),
         "hirshi": numpy.array([-0.17905023, 0.17905023]),
         "isa": numpy.array([-0.19495561, 0.19495561]),
     }
-    cache.do_charges()
-    assert(abs(cache.charges - expected[cache.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
+    scheme.do_charges()
+    assert(abs(scheme.charges - expected[scheme.prefix]).max() < 1e-3)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_charges.txt" % scheme.prefix)))
 
 
 def test_oh2_charges():
-    for cache in iter_oh2_sto3g_gaussian_caches():
-        yield check_oh2_charges, cache
+    for scheme in iter_oh2_sto3g_gaussian_schemes():
+        yield check_oh2_charges, scheme
 
-def check_oh2_charges(cache):
+def check_oh2_charges(scheme):
     expected = {
         "hirsh": numpy.array([-0.11247028, 0.11247028]),
         "hirshi": numpy.array([-0.17877806, 0.17877806]),
         "isa": numpy.array([-0.19463722, 0.19463722]),
     }
-    cache.do_charges()
-    assert(abs(cache.charges - expected[cache.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
+    scheme.do_charges()
+    assert(abs(scheme.charges - expected[scheme.prefix]).max() < 1e-3)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_charges.txt" % scheme.prefix)))
 
 
 def test_h_charges():
-    for cache in iter_h_sto3g_gaussian_caches():
-        yield check_h_charges, cache
+    for scheme in iter_h_sto3g_gaussian_schemes():
+        yield check_h_charges, scheme
 
-def check_h_charges(cache):
-    cache.do_charges()
-    assert(len(cache.charges)==1)
-    assert(abs(cache.charges[0]) < 1e-3)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_charges.txt" % cache.prefix)))
+def check_h_charges(scheme):
+    scheme.do_charges()
+    assert(len(scheme.charges)==1)
+    assert(abs(scheme.charges[0]) < 1e-3)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_charges.txt" % scheme.prefix)))
 
 
 def test_hf_spin_charges():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_spin_charges, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_spin_charges, scheme
 
-def check_hf_spin_charges(cache):
-    cache.do_spin_charges()
-    assert(abs(cache.spin_charges).max() < 1e-4)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_spin_charges.txt" % cache.prefix)))
+def check_hf_spin_charges(scheme):
+    scheme.do_spin_charges()
+    assert(abs(scheme.spin_charges).max() < 1e-4)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_spin_charges.txt" % scheme.prefix)))
 
 
 def test_oh1_spin_charges():
-    for cache in iter_oh1_sto3g_gaussian_caches():
-        yield check_oh1_spin_charges, cache
+    for scheme in iter_oh1_sto3g_gaussian_schemes():
+        yield check_oh1_spin_charges, scheme
 
-def check_oh1_spin_charges(cache):
+def check_oh1_spin_charges(scheme):
     expected = {
         "hirsh": numpy.array([0.96630257, 0.03366921]),
         "hirshi": numpy.array([0.97163764, 0.0283441]),
         "isa": numpy.array([0.97359927, 0.02639019]),
     }
-    cache.do_spin_charges()
-    assert(abs(cache.spin_charges.sum() - 1.0) < 1e-3)
-    assert(abs(cache.spin_charges - expected[cache.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_spin_charges.txt" % cache.prefix)))
+    scheme.do_spin_charges()
+    assert(abs(scheme.spin_charges.sum() - 1.0) < 1e-3)
+    assert(abs(scheme.spin_charges - expected[scheme.prefix]).max() < 1e-3)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_spin_charges.txt" % scheme.prefix)))
 
 
 def test_oh2_spin_charges():
-    for cache in iter_oh2_sto3g_gaussian_caches():
-        yield check_oh2_spin_charges, cache
+    for scheme in iter_oh2_sto3g_gaussian_schemes():
+        yield check_oh2_spin_charges, scheme
 
-def check_oh2_spin_charges(cache):
+def check_oh2_spin_charges(scheme):
     expected = {
         "hirsh": numpy.array([1.00267536, -0.00270729]),
         "hirshi": numpy.array([1.00719451, -0.00721775]),
         "isa": numpy.array([1.00897117, -0.00899064]),
     }
-    cache.do_spin_charges()
-    assert(abs(cache.spin_charges.sum() - 1.0) < 1e-3)
-    assert(abs(cache.spin_charges - expected[cache.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_spin_charges.txt" % cache.prefix)))
+    scheme.do_spin_charges()
+    assert(abs(scheme.spin_charges.sum() - 1.0) < 1e-3)
+    assert(abs(scheme.spin_charges - expected[scheme.prefix]).max() < 1e-3)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_spin_charges.txt" % scheme.prefix)))
 
 
 def test_hf_dipoles():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_dipoles, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_dipoles, scheme
 
-def check_hf_dipoles(cache):
+def check_hf_dipoles(scheme):
     expected = {
         "hirsh": numpy.array([
             [ 7.33577068e-06,  4.21284970e-06, -1.30711487e-01],
@@ -163,26 +163,26 @@ def check_hf_dipoles(cache):
             [ 1.36355238e-06,  2.55892227e-06,  4.77311556e-02],
         ]),
     }
-    cache.do_dipoles()
-    assert(abs(cache.dipoles - expected[cache.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_dipoles.txt" % cache.prefix)))
+    scheme.do_dipoles()
+    assert(abs(scheme.dipoles - expected[scheme.prefix]).max() < 1e-3)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_dipoles.txt" % scheme.prefix)))
 
 
 def test_hf_noble_radii():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_noble_radii, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_noble_radii, scheme
 
-def check_hf_noble_radii(cache):
+def check_hf_noble_radii(scheme):
     expected = numpy.array([0.32871748, 0.2])
-    cache.do_noble_radii()
-    assert(abs(cache.noble_radii - expected).max() < 1e-3)
+    scheme.do_noble_radii()
+    assert(abs(scheme.noble_radii - expected).max() < 1e-3)
 
 
 def test_hf_bond_orders():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_bond_orders, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_bond_orders, scheme
 
-def check_hf_bond_orders(cache):
+def check_hf_bond_orders(scheme):
     expected_bond_orders = {
         "hirsh": numpy.array([
             [0.0, 1.17375318],
@@ -207,22 +207,22 @@ def check_hf_bond_orders(cache):
         "isa": numpy.array([1.09685209, 1.09681649]),
         "becke": numpy.array([1.0432785, 1.04326027]),
     }
-    cache.do_bond_orders()
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_overlap_matrices.txt" % cache.prefix)))
-    assert(abs(cache.bond_orders.sum(axis=0) - cache.valences).max() < 1e-2)
-    assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
-    assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
-    assert(abs(cache.free_valences).max() < 1e-3)
+    scheme.do_bond_orders()
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_bond_orders.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_free_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_overlap_matrices.txt" % scheme.prefix)))
+    assert(abs(scheme.bond_orders.sum(axis=0) - scheme.valences).max() < 1e-2)
+    assert(abs(scheme.bond_orders - expected_bond_orders[scheme.prefix]).max() < 1e-3)
+    assert(abs(scheme.valences - expected_valences[scheme.prefix]).max() < 1e-3)
+    assert(abs(scheme.free_valences).max() < 1e-3)
 
 
 def test_oh1_bond_orders():
-    for cache in iter_oh1_sto3g_gaussian_caches():
-        yield check_oh1_bond_orders, cache
+    for scheme in iter_oh1_sto3g_gaussian_schemes():
+        yield check_oh1_bond_orders, scheme
 
-def check_oh1_bond_orders(cache):
+def check_oh1_bond_orders(scheme):
     expected_bond_orders = {
         "hirsh": numpy.array([
             [0.0, 1.20357067],
@@ -247,21 +247,21 @@ def check_oh1_bond_orders(cache):
         "hirshi": numpy.array([9.44164968e-01, 7.78083661e-04]),
         "isa": numpy.array([[9.47877044e-01, 7.23917974e-04]]),
     }
-    cache.do_bond_orders()
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_overlap_matrices.txt" % cache.prefix)))
-    assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
-    assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
-    assert(abs(cache.free_valences - expected_free_valences[cache.prefix]).max() < 1e-3)
+    scheme.do_bond_orders()
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_bond_orders.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_free_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_overlap_matrices.txt" % scheme.prefix)))
+    assert(abs(scheme.bond_orders - expected_bond_orders[scheme.prefix]).max() < 1e-3)
+    assert(abs(scheme.valences - expected_valences[scheme.prefix]).max() < 1e-3)
+    assert(abs(scheme.free_valences - expected_free_valences[scheme.prefix]).max() < 1e-3)
 
 
 def test_oh2_bond_orders():
-    for cache in iter_oh2_sto3g_gaussian_caches():
-        yield check_oh2_bond_orders, cache
+    for scheme in iter_oh2_sto3g_gaussian_schemes():
+        yield check_oh2_bond_orders, scheme
 
-def check_oh2_bond_orders(cache):
+def check_oh2_bond_orders(scheme):
     expected_bond_orders = {
         "hirsh": numpy.array([
             [0.0, 1.20223341],
@@ -286,21 +286,21 @@ def check_oh2_bond_orders(cache):
         "hirshi": numpy.array([0.9465709, 0.00244864]),
         "isa": numpy.array([[0.95067885, 0.00227497]]),
     }
-    cache.do_bond_orders()
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_bond_orders.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_free_valences.txt" % cache.prefix)))
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_overlap_matrices.txt" % cache.prefix)))
-    assert(abs(cache.bond_orders - expected_bond_orders[cache.prefix]).max() < 1e-3)
-    assert(abs(cache.valences - expected_valences[cache.prefix]).max() < 1e-3)
-    assert(abs(cache.free_valences - expected_free_valences[cache.prefix]).max() < 1e-3)
+    scheme.do_bond_orders()
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_bond_orders.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_free_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_overlap_matrices.txt" % scheme.prefix)))
+    assert(abs(scheme.bond_orders - expected_bond_orders[scheme.prefix]).max() < 1e-3)
+    assert(abs(scheme.valences - expected_valences[scheme.prefix]).max() < 1e-3)
+    assert(abs(scheme.free_valences - expected_free_valences[scheme.prefix]).max() < 1e-3)
 
 
 def test_hf_net_overlap():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_net_overlap, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_net_overlap, scheme
 
-def check_hf_net_overlap(cache):
+def check_hf_net_overlap(scheme):
     expected = {
         "hirsh": numpy.array([
             [8.89564521, 0.24206497],
@@ -320,16 +320,16 @@ def check_hf_net_overlap(cache):
         ]),
 
     }
-    cache.do_net_overlap()
-    assert(abs(cache.net_overlap - expected[cache.prefix]).max() < 1e-2)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_net_overlap.txt" % cache.prefix)))
+    scheme.do_net_overlap()
+    assert(abs(scheme.net_overlap - expected[scheme.prefix]).max() < 1e-2)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_net_overlap.txt" % scheme.prefix)))
 
 
 def test_hf_mol_esp_cost():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_mol_esp_cost, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_mol_esp_cost, scheme
 
-def check_hf_mol_esp_cost(cache):
+def check_hf_mol_esp_cost(scheme):
     expected_A = numpy.array([
         [6.48538806e-03, 6.01517359e-03, 1.84842712e-06, -1.13002199e-06,
          2.42079860e-04, 5.24182736e-07, -1.97722198e-06, 2.45763010e-04],
@@ -353,27 +353,27 @@ def check_hf_mol_esp_cost(cache):
         -3.11187068e-05, -4.36903490e-09, -3.49417636e-09, -2.78998269e-05
     ])
     expected_C = 1.4012993451e-05
-    cache.do_esp_costfunction()
-    assert(abs(cache.mol_esp_cost.A - expected_A).max() < 1e-4)
-    assert(abs(cache.mol_esp_cost.B - expected_B).max() < 1e-4)
-    assert(abs(cache.mol_esp_cost.C - expected_C) < 1e-6)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "mol_esp_cost.txt")))
+    scheme.do_esp_costfunction()
+    assert(abs(scheme.mol_esp_cost.A - expected_A).max() < 1e-4)
+    assert(abs(scheme.mol_esp_cost.B - expected_B).max() < 1e-4)
+    assert(abs(scheme.mol_esp_cost.C - expected_C) < 1e-6)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "mol_esp_cost.txt")))
 
 
 def test_hf_esp_tst():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_esp_tst, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_esp_tst, scheme
 
-def check_hf_esp_tst(cache):
-    cache.do_esp_test()
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_esp_test.txt" % cache.prefix)))
+def check_hf_esp_tst(scheme):
+    scheme.do_esp_test()
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_esp_test.txt" % scheme.prefix)))
 
 
 def test_hf_multipoles():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_multipoles, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_multipoles, scheme
 
-def check_hf_multipoles(cache):
+def check_hf_multipoles(scheme):
     expected = {
         "hirsh": numpy.array([
             [-1.37746685e-01, -1.30701945e-01, 8.57183561e-07, 7.68314867e-07,
@@ -440,33 +440,33 @@ def check_hf_multipoles(cache):
              1.92435494e-06],
         ])
     }
-    cache.do_charges()
-    cache.do_dipoles()
-    cache.do_multipoles()
-    assert(abs(cache.charges - cache.multipoles[:,0]).max() < 1e-3)
-    assert(abs(cache.dipoles[:,0] - cache.multipoles[:,2]).max() < 1e-3)
-    assert(abs(cache.dipoles[:,1] - cache.multipoles[:,3]).max() < 1e-3)
-    assert(abs(cache.dipoles[:,2] - cache.multipoles[:,1]).max() < 1e-3)
-    assert(abs(cache.multipoles - expected[cache.prefix]).max() < 1e-2)
-    assert(os.path.isfile(os.path.join(cache.context.outdir, "%s_multipoles.txt" % cache.prefix)))
+    scheme.do_charges()
+    scheme.do_dipoles()
+    scheme.do_multipoles()
+    assert(abs(scheme.charges - scheme.multipoles[:,0]).max() < 1e-3)
+    assert(abs(scheme.dipoles[:,0] - scheme.multipoles[:,2]).max() < 1e-3)
+    assert(abs(scheme.dipoles[:,1] - scheme.multipoles[:,3]).max() < 1e-3)
+    assert(abs(scheme.dipoles[:,2] - scheme.multipoles[:,1]).max() < 1e-3)
+    assert(abs(scheme.multipoles - expected[scheme.prefix]).max() < 1e-2)
+    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_multipoles.txt" % scheme.prefix)))
 
 
 def test_hf_overlap_matrices():
-    for cache in iter_hf_sto3g_gaussian_caches():
-        yield check_hf_overlap_matrices, cache
+    for scheme in iter_hf_sto3g_gaussian_schemes():
+        yield check_hf_overlap_matrices, scheme
 
-def check_hf_overlap_matrices(cache):
-    cache.do_charges()
-    cache.do_atgrids_overlap_matrix()
-    num_dof = cache.context.wavefn.num_orbitals
+def check_hf_overlap_matrices(scheme):
+    scheme.do_charges()
+    scheme.do_atgrids_overlap_matrix()
+    num_dof = scheme.context.wavefn.num_orbitals
     full = numpy.zeros((num_dof,num_dof), float)
-    dmat_to_full(cache.context.wavefn.density_matrix, full)
-    molecule = cache.context.wavefn.molecule
+    dmat_to_full(scheme.context.wavefn.density_matrix, full)
+    molecule = scheme.context.wavefn.molecule
     for i in xrange(molecule.size):
-        overlap = cache.atgrids[i].overlap_matrix
+        overlap = scheme.atgrids[i].overlap_matrix
         error = abs(overlap-overlap.transpose()).max()
         assert(error<1e-10)
         population = (full*overlap).sum()
-        check_population = cache.populations[i]
+        check_population = scheme.populations[i]
         error = abs(population-check_population)
         assert(error<1e-10)
