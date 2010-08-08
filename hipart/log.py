@@ -40,21 +40,20 @@ class ProgressBar(object):
         self.f.flush()
 
     def __call__(self, inc=1):
-        if self.i % self.width == 0:
-            self.f.write("\n%s" % (" "*self.indent))
-        if self.i % 10 == 0 or self.i == self.n:
-            if self.i == 0:
-                self.f.write(" 0% .")
+        for counter in xrange(inc):
+            if self.i % self.width == 0:
+                self.f.write("\n%s" % (" "*self.indent))
+            if self.i % 10 == 0 or self.i == self.n:
+                if self.i == 0:
+                    self.f.write(" 0% .")
+                else:
+                    self.f.write(". %i%% " % ((100*self.i)/self.n))
             else:
-                self.f.write(". %i%% " % ((100*self.i)/self.n))
-        else:
-            self.f.write(".")
-        if self.i == self.n:
-            self.f.write("\n")
-        self.f.flush()
-        self.i += 1
-        if inc > 1:
-            self(inc-1)
+                self.f.write(".")
+            if self.i == self.n:
+                self.f.write("\n")
+            self.f.flush()
+            self.i += 1
 
 
 bright = '\033[1;33m'
