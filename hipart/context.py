@@ -21,8 +21,9 @@
 
 from hipart.atoms import AtomTable
 from hipart.lebedev_laikov import get_grid
-from hipart.wavefn import load_wavefunction
 from hipart.log import log
+from hipart.wavefn import load_wavefunction
+from hipart.work import Work
 
 import os, shutil
 
@@ -63,10 +64,8 @@ class Context(object):
         self.outdir = "%s.hipart" % self.wavefn.prefix
         if not os.path.isdir(self.outdir):
             os.mkdir(self.outdir)
-        self.workdir = os.path.join(self.outdir, "work")
-        self.clean()
-        if not os.path.isdir(self.workdir):
-            os.mkdir(self.workdir)
+        self.work = Work(os.path.join(self.outdir, "work"), do_clean=options.clean)
+        self.work.clean()
 
     num_lebedev = property(lambda self: len(self.lebedev_weights))
 
@@ -79,7 +78,7 @@ class Context(object):
         }
         tag_attributes.update(extra)
 
-        context_fn = os.path.join(self.workdir, "context")
+        context_fn = os.path.join(self.work.directory, "context")
         if os.path.isfile(context_fn):
             f = file(context_fn)
             existing_tag = ("".join(f)).strip()
@@ -91,7 +90,7 @@ class Context(object):
                     continue
                 if check != val:
                     message = [
-                        "The existing work directory (%s) contains incompatible data." % self.workdir,
+                        "The existing work directory (%s) contains incompatible data." % self.work.directory,
                         "Try using the --clean option once.",
                         "The following mismatch was detected in the work directory:",
                         "'%s' (found in work) versus '%s' (current script) for property '%s'" % (val, check, key),
@@ -102,7 +101,3 @@ class Context(object):
         f = file(context_fn, "w")
         print >> f, tag
         f.close()
-
-    def clean(self):
-        if self.options.clean and os.path.isdir(self.workdir):
-            shutil.rmtree(self.workdir)

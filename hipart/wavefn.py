@@ -355,25 +355,19 @@ class FCHKWaveFunction(object):
         log("Number of atoms: %i" % self.molecule.size)
         log("Chemical formula: %s" % self.molecule.chemical_formula)
 
-    def init_naturals(self, workdir):
+    def init_naturals(self, work):
         log.begin("Natural orbitals")
 
         def do_natural(dmat, label):
-            orb_fn_bin = os.path.join(workdir, "%s_orbitals" % label)
-            occ_fn_bin = os.path.join(workdir, "%s_occupations" % label)
-            if (os.path.isfile(orb_fn_bin) and os.path.isfile(occ_fn_bin)):
-                log("Loading the %s orbitals and occupation numbers ..." % label)
-                orbitals = numpy.fromfile(orb_fn_bin).reshape((self.num_orbitals, self.num_orbitals))
-                occupations = numpy.fromfile(occ_fn_bin)
-
-            else:
+            orbitals_name = "%s_orbitals" % label
+            occupations_name = "%s_occupations" % label
+            orbitals = work.load(orbitals_name, (self.num_orbitals, self.num_orbitals))
+            occupations = work.load(occupations_name)
+            if orbitals is None or occupations is None:
                 log("Computing the %s orbitals and occupation numbers ..." % label)
-                orbitals = numpy.zeros((self.num_orbitals, self.num_orbitals), float)
-                occupations = numpy.zeros(self.num_orbitals, float)
                 occupations, orbitals = compute_naturals(dmat, self.num_orbitals)
-                log("Dumping the %s orbitals and occupation numbers ..." % label)
-                orbitals.tofile(orb_fn_bin)
-                occupations.tofile(occ_fn_bin)
+                work.dump(orbitals_name, orbitals)
+                work.dump(occupations_name, occupations)
             num = get_num_filled(occupations)
             return num, occupations, orbitals
 

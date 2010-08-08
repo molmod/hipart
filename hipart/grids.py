@@ -35,54 +35,38 @@ __all__ = [
 
 
 class Grid(object):
-    def __init__(self, prefix, points, dump=True):
+    def __init__(self, prefix, work, points, dump=True):
         # check arguments
         if len(points.shape) != 2 or points.shape[1] != 3:
             raise TypeError("The points argument must be an array with 3D coordinates, i.e. shape (n,3)")
         self.prefix = prefix
         self.points = points
+        self.work = work
         if dump:
-            fn_points = "%s.bin" % prefix
-            if os.path.isfile(fn_points):
-                raise ValueError("The binary file is already present in the work directory.")
-            else:
-                points.tofile(fn_points)
+            work.dump(prefix, points)
 
     size = property(lambda self: len(self.points))
 
     @classmethod
-    def from_prefix(cls, prefix):
-        fn = "%s.bin" % prefix
-        if os.path.isfile(fn):
-            points = numpy.fromfile(fn).reshape((-1,3))
-            return cls(prefix, points, False)
+    def from_prefix(cls, prefix, work):
+        points = work.load(prefix, (-1,3))
+        if points is not None:
+            return cls(prefix, work, points, False)
         else:
             return None
 
-    def get_fn(self, suffix, ext="bin"):
-        return "%s_%s.%s" % (self.prefix, suffix, ext)
-
-    def load(self, suffix):
-        fn = self.get_fn(suffix)
-        if os.path.isfile(fn):
-            return numpy.fromfile(fn)
-        else:
-            return None
+    def load(self, suffix, shape=None):
+        return self.work.load("%s_%s" % (self.prefix, suffix), shape)
 
     def dump(self, suffix, array, ignore=False):
-        fn = self.get_fn(suffix)
-        if os.path.isfile(fn):
-            if not ignore:
-                raise ValueError("The binary file is already present in the work directory.")
-        else:
-            array.tofile(fn)
+        self.work.dump("%s_%s" % (self.prefix, suffix), array, ignore)
 
 
 class AtomicGrid(Grid):
     @classmethod
-    def from_parameters(cls, prefix, center, rgrid, agrid):
+    def from_parameters(cls, prefix, work, center, rgrid, agrid):
         points = agrid.generate_points(center, rgrid.rs)
-        return cls(prefix, points)
+        return cls(prefix, work, points)
 
 
 class RBaseIntGrid(object):

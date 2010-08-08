@@ -31,4 +31,4 @@ how well the partitioned charges and dipoles reproduce the ESP."""
 
 context, scheme = parse_command_line(usage)
 scheme.do_esp_test()
-context.clean()
+context.work.clean()

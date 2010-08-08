@@ -26,4 +26,4 @@ usage = """%prog computes bond orders"""
 
 context, scheme = parse_command_line(usage)
 scheme.do_bond_orders()
-context.clean()
+context.work.clean()

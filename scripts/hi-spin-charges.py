@@ -26,4 +26,4 @@ usage = """%prog computes atomic spin charges."""
 
 context, scheme = parse_command_line(usage)
 scheme.do_spin_charges()
-context.clean()
+context.work.clean()

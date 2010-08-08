@@ -26,4 +26,4 @@ usage = """%prog computes atomic overlap matrices in the basis of the orbitals."
 
 context, scheme = parse_command_line(usage)
 scheme.do_atgrids_overlap_matrix()
-context.clean()
+context.work.clean()

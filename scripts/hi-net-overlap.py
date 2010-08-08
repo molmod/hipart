@@ -26,4 +26,4 @@ usage = """%prog computes atomic net and overlap populations"""
 
 context, scheme = parse_command_line(usage)
 scheme.do_net_overlap()
-context.clean()
+context.work.clean()

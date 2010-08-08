@@ -30,4 +30,4 @@ densities are obtained from the 'scheme' specified at the command line."""
 
 context, scheme = parse_command_line(usage)
 scheme.do_dipoles()
-context.clean()
+context.work.clean()

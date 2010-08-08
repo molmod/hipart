@@ -26,4 +26,4 @@ usage = """%prog computes atomic multipoles."""
 
 context, scheme = parse_command_line(usage)
 scheme.do_multipoles()
-context.clean()
+context.work.clean()

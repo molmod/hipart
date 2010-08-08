@@ -30,4 +30,4 @@ atomic densities are obtained from the 'scheme' specified at the command line.""
 
 context, scheme = parse_command_line(usage)
 scheme.do_charges()
-context.clean()
+context.work.clean()

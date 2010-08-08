@@ -99,6 +99,8 @@ class BaseScheme(object):
         self.rgrid = rgrid
         self.agrid = agrid
         self._done = set([])
+        # clone attributes from context
+        self.work = context.work
 
     def _spherint(self, integrand):
         radfun = self.agrid.integrate(integrand)
@@ -108,16 +110,15 @@ class BaseScheme(object):
     @OnlyOnce("Atomic grids")
     def do_atgrids(self):
         molecule = self.context.wavefn.molecule
-        workdir = self.context.workdir
 
         self.atgrids = []
         pb = log.pb("Computing/Loading atomic grids (and distances)", molecule.size**2)
         for i in xrange(molecule.size):
-            prefix = os.path.join(workdir, "atom%05i" % i)
-            atgrid = AtomicGrid.from_prefix(prefix)
+            name = "atom%05i" % i
+            atgrid = AtomicGrid.from_prefix(name, self.work)
             if atgrid is None:
                 center = molecule.coordinates[i]
-                atgrid = AtomicGrid.from_parameters(prefix, center, self.rgrid, self.agrid)
+                atgrid = AtomicGrid.from_parameters(name, self.work, center, self.rgrid, self.agrid)
             self.atgrids.append(atgrid)
 
             # Compute and store all the distances from these grid points to the
@@ -152,16 +153,10 @@ class BaseScheme(object):
 
     @OnlyOnce("Estimating noble gas core radii")
     def do_noble_radii(self):
-        molecule = self.context.wavefn.molecule
-        workdir = self.context.workdir
-
-        noble_radii_fn_bin = os.path.join(workdir, "noble_radii.bin")
-        if os.path.isfile(noble_radii_fn_bin):
-            log("Loading noble radii")
-            self.noble_radii = numpy.fromfile(noble_radii_fn_bin, float)
-        else:
+        self.noble_radii = self.work.load("noble_radii")
+        if self.noble_radii is None:
+            molecule = self.context.wavefn.molecule
             self.do_atgrids_moldens()
-            log("Computing noble radii")
             self.noble_radii = numpy.zeros(molecule.size, float)
             for i, number_i in enumerate(molecule.numbers):
                 if number_i < 3:
@@ -173,7 +168,7 @@ class BaseScheme(object):
                     charge_int = self.rgrid.integrate_cumul(radfun*rs*rs)
                     j = charge_int.searchsorted([core_sizes[number_i]])[0]
                     self.noble_radii[i] = self.rgrid.rs[j]
-            self.noble_radii.tofile(noble_radii_fn_bin)
+            self.work.dump("noble_radii", self.noble_radii)
 
     @OnlyOnce("Computing the ESP cost function")
     def do_esp_costfunction(self):
@@ -201,14 +196,7 @@ class BaseScheme(object):
 
     @OnlyOnce("Molecular grid")
     def do_molgrid(self):
-        lebedev_xyz, lebedev_weights = get_lebedev_grid(50)
-        molecule = self.context.wavefn.molecule
-        workdir = self.context.workdir
-
-        prefix = os.path.join(workdir, "molecule")
-        self.do_noble_radii()
-
-        self.molgrid = Grid.from_prefix(prefix)
+        self.molgrid = Grid.from_prefix("molecule", self.work)
         if self.molgrid is not None:
             self.molgrid.weights = self.molgrid.load("weights")
         else:
@@ -229,6 +217,10 @@ class BaseScheme(object):
             #    with a density larger than a threshold, i.e. 1e-5 a.u. A
             #    gradual transition between included and discarded points around
             #    this threshold will improve the quality of the fit.
+
+            lebedev_xyz, lebedev_weights = get_lebedev_grid(50)
+            molecule = self.context.wavefn.molecule
+            self.do_noble_radii()
 
             scale_min = 1.5
             scale_max = 30.0
@@ -255,7 +247,7 @@ class BaseScheme(object):
             points = numpy.array(points)
             weights = numpy.array(weights)
 
-            self.molgrid = Grid(prefix, points)
+            self.molgrid = Grid("molecule", self.work, points)
             self.molgrid.weights = weights
             self.molgrid.dump("weights", weights)
 
@@ -309,15 +301,13 @@ class BaseScheme(object):
 
     @OnlyOnce("Atomic charges")
     def do_charges(self):
-        charges_fn_bin = os.path.join(self.context.workdir, "%s_charges.bin" % self.prefix)
-        populations_fn_bin = os.path.join(self.context.workdir, "%s_populations.bin" % self.prefix)
+        charges_name = "%s_charges" % self.prefix
+        populations_name = "%s_populations" % self.prefix
+        self.charges = self.work.load(charges_name)
+        self.populations = self.work.load(populations_name)
         molecule = self.context.wavefn.molecule
 
-        if os.path.isfile(charges_fn_bin) and os.path.isfile(populations_fn_bin):
-            log("Loading charges.")
-            self.charges = numpy.fromfile(charges_fn_bin, float)
-            self.populations = numpy.fromfile(populations_fn_bin, float)
-        else:
+        if self.charges is None or self.populations is None:
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_atgrids_atweights()
@@ -333,10 +323,10 @@ class BaseScheme(object):
                 self.populations[i] = self._spherint(d*w)
                 self.charges[i] = molecule.numbers[i] - self.populations[i]
             pb()
-            self.populations.tofile(populations_fn_bin)
             if self.context.options.fix_total_charge:
                 self.charges -= (self.charges.sum() - self.context.wavefn.charge)/molecule.size
-            self.charges.tofile(charges_fn_bin)
+            self.work.dump(charges_name, self.charges)
+            self.work.dump(populations_name, self.populations)
 
         charges_fn = os.path.join(self.context.outdir, "%s_charges.txt" % self.prefix)
         dump_atom_scalars(charges_fn, self.charges, molecule.numbers)
@@ -344,13 +334,11 @@ class BaseScheme(object):
 
     @OnlyOnce("Atomic spin charges")
     def do_spin_charges(self):
-        spin_charges_fn_bin = os.path.join(self.context.workdir, "%s_spin_charges.bin" % self.prefix)
+        spin_charges_name = "%s_spin_charges" % self.prefix
+        self.spin_charges = self.work.load(spin_charges_name)
         molecule = self.context.wavefn.molecule
 
-        if os.path.isfile(spin_charges_fn_bin):
-            log("Loading spin charges.")
-            self.spin_charges = numpy.fromfile(spin_charges_fn_bin, float)
-        else:
+        if self.spin_charges is None:
             self.do_atgrids()
             self.do_atgrids_molspindens()
             self.do_atgrids_atweights()
@@ -364,7 +352,7 @@ class BaseScheme(object):
                 center = molecule.coordinates[i]
                 self.spin_charges[i] = self._spherint(d*w)
             pb()
-            self.spin_charges.tofile(spin_charges_fn_bin)
+            self.work.dump(spin_charges_name, self.spin_charges)
 
         spin_charges_fn = os.path.join(self.context.outdir, "%s_spin_charges.txt" % self.prefix)
         dump_atom_scalars(spin_charges_fn, self.spin_charges, molecule.numbers, name="Spin charge")
@@ -372,13 +360,11 @@ class BaseScheme(object):
 
     @OnlyOnce("Atomic dipoles")
     def do_dipoles(self):
-        dipoles_fn_bin = os.path.join(self.context.workdir, "%s_dipoles.bin" % self.prefix)
+        dipoles_name = "%s_dipoles" % self.prefix
+        self.dipoles = self.work.load(dipoles_name, (-1,3))
         molecule = self.context.wavefn.molecule
 
-        if os.path.isfile(dipoles_fn_bin):
-            log("Loading dipoles.")
-            self.dipoles = numpy.fromfile(dipoles_fn_bin, float).reshape((molecule.size,3))
-        else:
+        if self.dipoles is None:
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_atgrids_atweights()
@@ -396,7 +382,7 @@ class BaseScheme(object):
                     integrand = -(atgrid.points[:,j] - center[j])*d*w
                     self.dipoles[i,j] = self._spherint(integrand)
             pb()
-            self.dipoles.tofile(dipoles_fn_bin)
+            self.work.dump(dipoles_name, self.dipoles)
 
         # now some nice output
         dipoles_fn = os.path.join(self.context.outdir, "%s_dipoles.txt" % self.prefix)
@@ -439,21 +425,20 @@ class BaseScheme(object):
             '(4,3+)', '(4,3-)', '(4,4+)', '(4,4-)'
         ]
 
-        multipoles_fn_bin = os.path.join(self.context.workdir, "%s_multipoles.bin" % self.prefix)
+        multipoles_name = "%s_multipoles.bin" % self.prefix
         molecule = self.context.wavefn.molecule
+        num_polys = len(regular_solid_harmonics)
+        shape = (molecule.size,num_polys)
+        self.multipoles = self.work.load(multipoles_name, shape)
 
-        if os.path.isfile(multipoles_fn_bin):
-            log("Loading multipoles.")
-            num_polys = len(regular_solid_harmonics)
-            self.multipoles = numpy.fromfile(multipoles_fn_bin, float).reshape((molecule.size,num_polys))
-        else:
+        if self.multipoles is None:
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_atgrids_atweights()
 
             pb = log.pb("Computing multipoles", molecule.size)
             num_polys = len(regular_solid_harmonics)
-            self.multipoles = numpy.zeros((molecule.size,num_polys), float)
+            self.multipoles = numpy.zeros(shape, float)
             for i in xrange(molecule.size):
                 pb()
                 atgrid = self.atgrids[i]
@@ -469,7 +454,7 @@ class BaseScheme(object):
                     self.multipoles[i,j] = self._spherint(-poly(cx,cy,cz)*d*w)
                 self.multipoles[i,0] += molecule.numbers[i]
             pb()
-            self.multipoles.tofile(multipoles_fn_bin)
+            self.work.dump(multipoles_name, self.multipoles)
 
         # now some nice output
         multipoles_fn = os.path.join(self.context.outdir, "%s_multipoles.txt" % self.prefix)
@@ -538,10 +523,7 @@ class BaseScheme(object):
     def do_atgrids_orbitals(self):
         self.do_atgrids()
         molecule = self.context.wavefn.molecule
-        num_orbitals = self.context.wavefn.num_orbitals
-        workdir = self.context.workdir
-
-        self.context.wavefn.init_naturals(workdir)
+        self.context.wavefn.init_naturals(self.work)
         pb = log.pb("Computing/Loading orbitals", molecule.size)
         for i in xrange(molecule.size):
             pb()
@@ -645,13 +627,13 @@ class BaseScheme(object):
     @OnlyOnce("Bond orders and valences")
     def do_bond_orders(self):
         # first try to load the results from the work dir
-        bond_orders_fn_bin = os.path.join(self.context.workdir, "%s_bond_orders.bin" % self.prefix)
-        valences_fn_bin = os.path.join(self.context.workdir, "%s_valences.bin" % self.prefix)
+        bond_orders_name = "%s_bond_orders" % self.prefix
+        valences_name = "%s_valences" % self.prefix
         molecule = self.context.wavefn.molecule
-        if os.path.isfile(bond_orders_fn_bin) and os.path.isfile(valences_fn_bin):
-            self.bond_orders = numpy.fromfile(bond_orders_fn_bin).reshape((molecule.size, molecule.size))
-            self.valences = numpy.fromfile(valences_fn_bin)
-        else:
+        self.bond_orders = self.work.load(bond_orders_name, (molecule.size, molecule.size))
+        self.valences = self.work.load(valences_name)
+
+        if self.bond_orders is None or self.valences is None:
             self.do_charges()
             self.do_atgrids_overlap_matrix()
 
@@ -701,8 +683,8 @@ class BaseScheme(object):
                         self.bond_orders[i,j] = bo
                         self.bond_orders[j,i] = bo
             pb()
-            self.bond_orders.tofile(bond_orders_fn_bin)
-            self.valences.tofile(valences_fn_bin)
+            self.work.dump(bond_orders_name, self.bond_orders)
+            self.work.dump(valences_name, self.valences)
 
         bond_orders_fn = os.path.join(self.context.outdir, "%s_bond_orders.txt" % self.prefix)
         dump_atom_matrix(bond_orders_fn, self.bond_orders, molecule.numbers, "Bond order")
@@ -739,13 +721,11 @@ class BaseScheme(object):
 
     @OnlyOnce("Net and overlap populations")
     def do_net_overlap(self):
-        net_overlap_fn_bin = os.path.join(self.context.workdir, "%s_net_overlap.bin" % self.prefix)
+        net_overlap_name = "%s_net_overlap.bin" % self.prefix
         molecule = self.context.wavefn.molecule
+        self.net_overlap = self.work.load(net_overlap_name, (molecule.size,molecule.size))
 
-        if os.path.isfile(net_overlap_fn_bin):
-            log("Loading net and overlap populations.")
-            self.net_overlap = numpy.fromfile(net_overlap_fn_bin, float).reshape((molecule.size,molecule.size))
-        else:
+        if self.net_overlap is None:
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_charges()
@@ -783,7 +763,7 @@ class BaseScheme(object):
                         integrand = self.atgrids[i].atweights**2*self.atgrids[i].moldens
                         self.net_overlap[i,i] = self._spherint(integrand)
             pb()
-            self.net_overlap.tofile(net_overlap_fn_bin)
+            self.work.dump(net_overlap_name, self.net_overlap)
 
         net_overlap_fn = os.path.join(self.context.outdir, "%s_net_overlap.txt" % self.prefix)
         dump_atom_matrix(net_overlap_fn, self.net_overlap, molecule.numbers, "Net")
