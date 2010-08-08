@@ -24,6 +24,7 @@ from hipart.log import log
 from hipart.lebedev_laikov import get_grid, grid_fns
 from hipart.grids import AtomicGrid, RLogIntGrid, ALebedevIntGrid
 from hipart.wavefn import FCHKWaveFunction
+from hipart.work import Work
 
 from molmod.periodic import periodic
 from molmod.units import angstrom, electronvolt
@@ -225,7 +226,7 @@ def select_ground_states(program, max_ion):
     f_ev.close()
 
 
-def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbers, max_ion):
+def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbers, max_ion, do_work):
     # generate lebedev grid
     lebedev_xyz, lebedev_weights = get_grid(num_lebedev)
 
@@ -244,16 +245,19 @@ def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbe
         for charge in xrange(-max_ion, max_ion+1):
             charge_label = charge_to_label(charge)
             pb()
-            workdir = os.path.join("%03i%s" % (number, symbol), charge_label, "gs")
+            dirname = os.path.join("%03i%s" % (number, symbol), charge_label, "gs")
             # get the grid
-            if not os.path.isdir(workdir): continue
-            prefix = "%s/grid" % workdir
-            grid = AtomicGrid.from_prefix(prefix)
+            if not os.path.isdir(dirname): continue
+            if do_work:
+                work = Work(dirname)
+            else:
+                work = Work()
+            grid = AtomicGrid.from_prefix("grid", work)
             if grid is None:
                 center = numpy.zeros(3,float)
-                grid = AtomicGrid.from_parameters(prefix, center, rgrid, agrid)
+                grid = AtomicGrid.from_parameters("grid", work, center, rgrid, agrid)
             # compute densities
-            program.compute_density(grid, workdir)
+            program.compute_density(grid, dirname)
             # this is spherical averaging, i.e. integral/(4*pi)
             radrhos = agrid.integrate(grid.moldens)/(4*numpy.pi)
             print >> f_pro, "%3i %+2i" % (number, charge),
@@ -335,6 +339,10 @@ def parse_args(args):
         "--qc", default=False, action="store_true",
         help="Specify the qc convergence scheme in Gaussian input. [default=%default]"
     )
+    parser.add_option(
+        "--no-work", default=True, action='store_false', dest='do_work',
+        help="Do not save intermediate results in work directory for later reuse."
+    )
     (options, args) = parser.parse_args(args)
     if len(args) != 3:
         parser.error("Expecting three arguments: executable, level of theory (+ basis set) and the atom specification.")
@@ -352,5 +360,5 @@ def main(args=None):
     make_density_profiles(
         program,
         options.lebedev, options.rlow*angstrom, options.rhigh*angstrom,
-        options.num_steps, atom_numbers, options.max_ion
+        options.num_steps, atom_numbers, options.max_ion, options.do_work
     )

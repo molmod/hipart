@@ -61,9 +61,13 @@ def parse_command_line(script_usage, add_extra_options=None):
         "[default=%default]. Select from: " + (", ".join(str(i) for i in sorted(grid_fns)))
     )
     parser.add_option(
-        "-c", "--clean", default=False, action='store_true',
+        "-c", "--clean", default=False, action='store_true', dest='do_clean',
         help="If given, the workdir with the binary data is removed before and "
              "after the computation."
+    )
+    parser.add_option(
+        "--no-work", default=True, action='store_false', dest='do_work',
+        help="Do not save intermediate results in work directory for later reuse."
     )
     parser.add_option(
         "-n", "--no-fix-total-charge", dest="fix_total_charge", default="True",

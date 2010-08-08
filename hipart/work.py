@@ -26,12 +26,13 @@ __all__ = ["Work"]
 
 
 class Work(object):
-    def __init__(self, directory, active=True, do_clean=True):
+    def __init__(self, directory=None, do_clean=True):
         self.directory = directory
-        self.active = active
         self.do_clean = do_clean
         if self.active and not os.path.isdir(self.directory):
             os.makedirs(self.directory)
+
+    active = property(lambda self: self.directory is not None)
 
     def load(self, name, shape=None):
         if self.active:

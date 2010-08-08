@@ -162,6 +162,8 @@ The online help is as follows::
       --max-ion=MAX_ION     The maximum ionization to consider. [default=2]
       --qc                  Specify the qc convergence scheme in Gaussian input.
                             [default=False]
+      --no-work             Do not save intermediate results in work directory for
+                            later reuse.
 
 
 The default settings are good enough for most levels of theory and basis sets.
@@ -393,6 +395,8 @@ as follows::
                             3890, 4334, 4802, 5294, 5810
       -c, --clean           If given, the workdir with the binary data is removed
                             when the computation has finished.
+      --no-work             Do not save intermediate results in work directory for
+                            later reuse.
       -n, --no-fix-total-charge
                             Do not correct the total charge.
       -t THRESHOLD, --threshold=THRESHOLD
