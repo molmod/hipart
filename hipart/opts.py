@@ -52,7 +52,7 @@ Partitioning schemes:
 %s
 """
 
-def parse_command_line(script_usage, add_extra_options=None):
+def parse_command_line(script_usage):
     scheme_usage = "\n".join(scheme.usage for name, scheme in sorted(scheme_classes.iteritems()))
     parser = OptionParser(usage_template % (script_usage, scheme_usage))
     parser.add_option(
@@ -80,20 +80,18 @@ def parse_command_line(script_usage, add_extra_options=None):
         "-n", "--no-fix-total-charge", dest="fix_total_charge", default="True",
         action="store_false", help="Do not correct the total charge."
     )
-    parser.add_option(
+    group = OptionGroup(parser, "Specific options for the iterative partitioning schemes")
+    group.add_option(
         "-t", "--threshold", default=1e-4, type='float',
         help="When the maximum change in the charges drops below this threshold "
         "value, the iteration stops. [default=%default]"
     )
-    parser.add_option(
+    group.add_option(
         "--max-iter", default=500, type='int',
         help="Maximum number of iterations in self-consistent procedures. "
         "[default=%default]"
     )
-    if add_extra_options is not None:
-        group = OptionGroup(parser, "Specific options for this command")
-        add_extra_options(group)
-        parser.add_option_group(group)
+    parser.add_option_group(group)
 
     options, args = parser.parse_args()
     if len(args) < 2:
