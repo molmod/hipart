@@ -70,6 +70,10 @@ def parse_command_line(script_usage, add_extra_options=None):
         help="Do not save intermediate results in work directory for later reuse."
     )
     parser.add_option(
+        "--no-output", default=True, action='store_false', dest='do_output',
+        help="Do not write any output to text files."
+    )
+    parser.add_option(
         "-n", "--no-fix-total-charge", dest="fix_total_charge", default="True",
         action="store_false", help="Do not correct the total charge."
     )

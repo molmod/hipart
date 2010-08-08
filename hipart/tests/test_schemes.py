@@ -53,8 +53,9 @@ def check_hf_charges(scheme):
         "becke": numpy.array([-0.20037239, 0.20037239]),
     }
     scheme.do_charges()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.charges - expected[scheme.prefix]).max() < 1e-4)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_charges.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_charges.txt" % scheme.prefix)))
 
 
 def test_oh1_charges():
@@ -68,8 +69,9 @@ def check_oh1_charges(scheme):
         "isa": numpy.array([-0.19495561, 0.19495561]),
     }
     scheme.do_charges()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.charges - expected[scheme.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_charges.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_charges.txt" % scheme.prefix)))
 
 
 def test_oh2_charges():
@@ -83,8 +85,9 @@ def check_oh2_charges(scheme):
         "isa": numpy.array([-0.19463722, 0.19463722]),
     }
     scheme.do_charges()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.charges - expected[scheme.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_charges.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_charges.txt" % scheme.prefix)))
 
 
 def test_h_charges():
@@ -93,9 +96,10 @@ def test_h_charges():
 
 def check_h_charges(scheme):
     scheme.do_charges()
+    outdir = scheme.context.output.directory
     assert(len(scheme.charges)==1)
     assert(abs(scheme.charges[0]) < 1e-3)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_charges.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_charges.txt" % scheme.prefix)))
 
 
 def test_hf_spin_charges():
@@ -104,8 +108,9 @@ def test_hf_spin_charges():
 
 def check_hf_spin_charges(scheme):
     scheme.do_spin_charges()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.spin_charges).max() < 1e-4)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_spin_charges.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_spin_charges.txt" % scheme.prefix)))
 
 
 def test_oh1_spin_charges():
@@ -119,9 +124,10 @@ def check_oh1_spin_charges(scheme):
         "isa": numpy.array([0.97359927, 0.02639019]),
     }
     scheme.do_spin_charges()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.spin_charges.sum() - 1.0) < 1e-3)
     assert(abs(scheme.spin_charges - expected[scheme.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_spin_charges.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_spin_charges.txt" % scheme.prefix)))
 
 
 def test_oh2_spin_charges():
@@ -135,9 +141,10 @@ def check_oh2_spin_charges(scheme):
         "isa": numpy.array([1.00897117, -0.00899064]),
     }
     scheme.do_spin_charges()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.spin_charges.sum() - 1.0) < 1e-3)
     assert(abs(scheme.spin_charges - expected[scheme.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_spin_charges.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_spin_charges.txt" % scheme.prefix)))
 
 
 def test_hf_dipoles():
@@ -164,8 +171,9 @@ def check_hf_dipoles(scheme):
         ]),
     }
     scheme.do_dipoles()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.dipoles - expected[scheme.prefix]).max() < 1e-3)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_dipoles.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_dipoles.txt" % scheme.prefix)))
 
 
 def test_hf_noble_radii():
@@ -208,10 +216,11 @@ def check_hf_bond_orders(scheme):
         "becke": numpy.array([1.0432785, 1.04326027]),
     }
     scheme.do_bond_orders()
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_bond_orders.txt" % scheme.prefix)))
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_valences.txt" % scheme.prefix)))
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_free_valences.txt" % scheme.prefix)))
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_overlap_matrices.txt" % scheme.prefix)))
+    outdir = scheme.context.output.directory
+    assert(os.path.isfile(os.path.join(outdir, "%s_bond_orders.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_free_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_overlap_matrices.txt" % scheme.prefix)))
     assert(abs(scheme.bond_orders.sum(axis=0) - scheme.valences).max() < 1e-2)
     assert(abs(scheme.bond_orders - expected_bond_orders[scheme.prefix]).max() < 1e-3)
     assert(abs(scheme.valences - expected_valences[scheme.prefix]).max() < 1e-3)
@@ -248,10 +257,11 @@ def check_oh1_bond_orders(scheme):
         "isa": numpy.array([[9.47877044e-01, 7.23917974e-04]]),
     }
     scheme.do_bond_orders()
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_bond_orders.txt" % scheme.prefix)))
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_valences.txt" % scheme.prefix)))
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_free_valences.txt" % scheme.prefix)))
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_overlap_matrices.txt" % scheme.prefix)))
+    outdir = scheme.context.output.directory
+    assert(os.path.isfile(os.path.join(outdir, "%s_bond_orders.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_free_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_overlap_matrices.txt" % scheme.prefix)))
     assert(abs(scheme.bond_orders - expected_bond_orders[scheme.prefix]).max() < 1e-3)
     assert(abs(scheme.valences - expected_valences[scheme.prefix]).max() < 1e-3)
     assert(abs(scheme.free_valences - expected_free_valences[scheme.prefix]).max() < 1e-3)
@@ -287,10 +297,11 @@ def check_oh2_bond_orders(scheme):
         "isa": numpy.array([[0.95067885, 0.00227497]]),
     }
     scheme.do_bond_orders()
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_bond_orders.txt" % scheme.prefix)))
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_valences.txt" % scheme.prefix)))
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_free_valences.txt" % scheme.prefix)))
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_overlap_matrices.txt" % scheme.prefix)))
+    outdir = scheme.context.output.directory
+    assert(os.path.isfile(os.path.join(outdir, "%s_bond_orders.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_free_valences.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_overlap_matrices.txt" % scheme.prefix)))
     assert(abs(scheme.bond_orders - expected_bond_orders[scheme.prefix]).max() < 1e-3)
     assert(abs(scheme.valences - expected_valences[scheme.prefix]).max() < 1e-3)
     assert(abs(scheme.free_valences - expected_free_valences[scheme.prefix]).max() < 1e-3)
@@ -321,8 +332,9 @@ def check_hf_net_overlap(scheme):
 
     }
     scheme.do_net_overlap()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.net_overlap - expected[scheme.prefix]).max() < 1e-2)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_net_overlap.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_net_overlap.txt" % scheme.prefix)))
 
 
 def test_hf_mol_esp_cost():
@@ -354,10 +366,11 @@ def check_hf_mol_esp_cost(scheme):
     ])
     expected_C = 1.4012993451e-05
     scheme.do_esp_costfunction()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.mol_esp_cost.A - expected_A).max() < 1e-4)
     assert(abs(scheme.mol_esp_cost.B - expected_B).max() < 1e-4)
     assert(abs(scheme.mol_esp_cost.C - expected_C) < 1e-6)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "mol_esp_cost.txt")))
+    assert(os.path.isfile(os.path.join(outdir, "mol_esp_cost.txt")))
 
 
 def test_hf_esp_tst():
@@ -366,7 +379,8 @@ def test_hf_esp_tst():
 
 def check_hf_esp_tst(scheme):
     scheme.do_esp_test()
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_esp_test.txt" % scheme.prefix)))
+    outdir = scheme.context.output.directory
+    assert(os.path.isfile(os.path.join(outdir, "%s_esp_test.txt" % scheme.prefix)))
 
 
 def test_hf_multipoles():
@@ -443,12 +457,13 @@ def check_hf_multipoles(scheme):
     scheme.do_charges()
     scheme.do_dipoles()
     scheme.do_multipoles()
+    outdir = scheme.context.output.directory
     assert(abs(scheme.charges - scheme.multipoles[:,0]).max() < 1e-3)
     assert(abs(scheme.dipoles[:,0] - scheme.multipoles[:,2]).max() < 1e-3)
     assert(abs(scheme.dipoles[:,1] - scheme.multipoles[:,3]).max() < 1e-3)
     assert(abs(scheme.dipoles[:,2] - scheme.multipoles[:,1]).max() < 1e-3)
     assert(abs(scheme.multipoles - expected[scheme.prefix]).max() < 1e-2)
-    assert(os.path.isfile(os.path.join(scheme.context.outdir, "%s_multipoles.txt" % scheme.prefix)))
+    assert(os.path.isfile(os.path.join(outdir, "%s_multipoles.txt" % scheme.prefix)))
 
 
 def test_hf_overlap_matrices():

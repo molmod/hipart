@@ -19,22 +19,73 @@
 # --
 
 
-
-
-
+from hipart.log import log
 
 from molmod.periodic import periodic
 
-import numpy
+import numpy, os
 
 
 __all__ = [
+    "Output",
     "dump_atom_scalars", "load_atom_scalars",
     "dump_atom_vectors", "load_atom_vectors",
     "dump_atom_matrix", "load_atom_matrix",
     "dump_atom_fields", "load_atom_fields",
     "dump_overlap_matrices",
 ]
+
+
+class Output(object):
+    def __init__(self, directory=None, numbers=None):
+        self.directory = directory
+        self.numbers = numbers
+        if self.active and not os.path.isdir(directory):
+            os.makedirs(directory)
+
+    active = property(lambda self: self.directory is not None)
+
+    def dump_atom_scalars(self, filename, scalars, name):
+        if self.active:
+            filename = os.path.join(self.directory, filename)
+            dump_atom_scalars(filename, scalars, name, self.numbers)
+            log("Written %s" % filename)
+
+    def dump_atom_vectors(self, filename, vectors, name):
+        if self.active:
+            filename = os.path.join(self.directory, filename)
+            dump_atom_vectors(filename, vectors, name, self.numbers)
+            log("Written %s" % filename)
+
+    def dump_atom_matrix(self, filename, matrix, name):
+        if self.active:
+            filename = os.path.join(self.directory, filename)
+            dump_atom_matrix(filename, matrix, name, self.numbers)
+            log("Written %s" % filename)
+
+    def dump_atom_fields(self, filename, table, labels, name):
+        if self.active:
+            filename = os.path.join(self.directory, filename)
+            dump_atom_fields(filename, table, labels, name, self.numbers)
+            log("Written %s" % filename)
+
+    def dump_overlap_matrices(self, filename, overlap_matrices):
+        if self.active:
+            filename = os.path.join(self.directory, filename)
+            dump_overlap_matrices(filename, overlap_matrices, self.numbers)
+            log("Written %s" % filename)
+
+    def dump_esp_test(self, filename, dipole_q, dipole_p, dipole_qp, dipole_qm, mol_esp_cost, charges, dipoles):
+        if self.active:
+            filename = os.path.join(self.directory, filename)
+            dump_esp_test(filename, dipole_q, dipole_p, dipole_qp, dipole_qm, mol_esp_cost, charges, dipoles)
+            log("Written %s" % filename)
+
+    def dump_esp_cost(self, filename, esp_cost):
+        if self.active:
+            filename = os.path.join(self.directory, filename)
+            esp_cost.write_to_file(filename)
+            log("Written %s" % filename)
 
 
 def _iter_symbols_numbers(numbers, N):
@@ -55,7 +106,7 @@ def _iter_symbols_numbers(numbers, N):
         yield i, symbol, number
 
 
-def dump_atom_scalars(filename, scalars, numbers=None, name="Charge"):
+def dump_atom_scalars(filename, scalars, name, numbers=None):
     """Dump an array of scalar atomic quantities into a text file.
 
        Arguments:
@@ -101,7 +152,7 @@ def load_atom_scalars(filename):
     return scalars
 
 
-def dump_atom_vectors(filename, vectors, numbers=None, name="Dipole"):
+def dump_atom_vectors(filename, vectors, name, numbers=None):
     """Dump an array of atomic 3D-vector quantities into a text file.
 
        Arguments:
@@ -156,7 +207,7 @@ def load_atom_vectors(filename):
     return vectors
 
 
-def dump_atom_matrix(filename, matrix, numbers=None, name="Matrix"):
+def dump_atom_matrix(filename, matrix, name, numbers=None):
     """Dump a 2D-array of atomic pair quantities into a text file.
 
        Arguments:
@@ -208,7 +259,7 @@ def load_atom_matrix(filename):
     return matrix
 
 
-def dump_atom_fields(filename, table, labels, numbers=None, name="Matrix"):
+def dump_atom_fields(filename, table, labels, name, numbers=None):
     """Dump a table with multiple scalar atomic quantities into a text file.
 
        Arguments:
@@ -289,3 +340,48 @@ def dump_overlap_matrices(filename, overlap_matrices, numbers=None):
         for row in matrix:
             print >> f, " ".join("% 15.10e" % value for value in row)
     f.close()
+
+
+def dump_esp_test(filename, dipole_q, dipole_p, dipole_qp, dipole_qm, mol_esp_cost, charges, dipoles):
+    f = file(filename, "w")
+    print >> f, "Reproduction of the molecular dipole"
+    print >> f, "-------------------------------------------------------------------------------"
+    print >> f, "                  Dipole-X        Dipole-Y        Dipole-Z       Dipole-norm"
+    print >> f, "-------------------------------------------------------------------------------"
+    print >> f, "charges (q)   % 15.12f % 15.12f % 15.12f % 15.12f" % (
+        dipole_q[0], dipole_q[1], dipole_q[2], numpy.linalg.norm(dipole_q),
+    )
+    print >> f, "dipoles (p)   % 15.12f % 15.12f % 15.12f % 15.12f" % (
+        dipole_p[0], dipole_p[1], dipole_p[2], numpy.linalg.norm(dipole_p),
+    )
+    print >> f, "q and p       % 15.12f % 15.12f % 15.12f % 15.12f" % (
+        dipole_qp[0], dipole_qp[1], dipole_qp[2], numpy.linalg.norm(dipole_qp),
+    )
+    print >> f, "total density % 15.12f % 15.12f % 15.12f % 15.12f" % (
+        dipole_qm[0], dipole_qm[1], dipole_qm[2], numpy.linalg.norm(dipole_qm),
+    )
+    print >> f, "-------------------------------------------------------------------------------"
+    print >> f
+    print >> f, "Reproduction of the external molecular ESP"
+    print >> f, "-------------------------------------------------------------"
+    print >> f, "                     RMSD             RMS       CORRELATION"
+    print >> f, "-------------------------------------------------------------"
+    print >> f, "charges (q)      % 10.5e    % 10.5e      % 5.2f" % (
+        mol_esp_cost.rmsd(charges),
+        mol_esp_cost.model_rms(charges),
+        mol_esp_cost.correlation(charges),
+    )
+    print >> f, "dipoles (p)      % 10.5e    % 10.5e      % 5.2f" % (
+        mol_esp_cost.rmsd(None, dipoles),
+        mol_esp_cost.model_rms(None, dipoles),
+        mol_esp_cost.correlation(None, dipoles),
+    )
+    print >> f, "q and p          % 10.5e    % 10.5e      % 5.2f" % (
+        mol_esp_cost.rmsd(charges, dipoles),
+        mol_esp_cost.model_rms(charges, dipoles),
+        mol_esp_cost.correlation(charges, dipoles),
+    )
+    print >> f, "total density                    % 10.5e" % mol_esp_cost.rms
+    print >> f, "-------------------------------------------------------------"
+    f.close()
+    log("Written %s" % filename)

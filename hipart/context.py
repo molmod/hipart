@@ -24,6 +24,7 @@ from hipart.lebedev_laikov import get_grid
 from hipart.log import log
 from hipart.wavefn import load_wavefunction
 from hipart.work import Work
+from hipart.io import Output
 
 import os, shutil
 
@@ -32,10 +33,11 @@ __all__ = ["ContextError", "Context", "Options"]
 
 
 class Options(object):
-    def __init__(self, lebedev=110, do_clean=False, do_work=True, threshold=1e-4, max_iter=500, fix_total_charge=True):
+    def __init__(self, lebedev=110, do_clean=False, do_work=True, do_output=True, threshold=1e-4, max_iter=500, fix_total_charge=True):
         self.lebedev = lebedev
         self.do_clean = do_clean
         self.do_work = do_work
+        self.do_output = do_output
         self.threshold = threshold
         self.max_iter = max_iter
         self.fix_total_charge = fix_total_charge
@@ -62,12 +64,14 @@ class Context(object):
         log.end()
         self.options = options
 
-        self.outdir = "%s.hipart" % self.wavefn.prefix
-        if not os.path.isdir(self.outdir):
-            os.mkdir(self.outdir)
+        outdir = "%s.hipart" % self.wavefn.prefix
+        if options.do_output:
+            self.output = Output(outdir, self.wavefn.molecule.numbers)
+        else:
+            self.output = Output()
 
         if options.do_work:
-            workdir = os.path.join(self.outdir, "work")
+            workdir = os.path.join(outdir, "work")
         else:
             workdir = None
         self.work = Work(workdir, do_clean=options.do_clean)

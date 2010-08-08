@@ -101,6 +101,7 @@ class BaseScheme(object):
         self._done = set([])
         # clone attributes from context
         self.work = context.work
+        self.output = context.output
 
     def _spherint(self, integrand):
         radfun = self.agrid.integrate(integrand)
@@ -190,9 +191,7 @@ class BaseScheme(object):
             coordinates, self.molgrid.points, self.molgrid.weights,
             self.molgrid.moldens, self.molgrid.molpot, total_charge,
         )
-        outfn = os.path.join(self.context.outdir, "mol_esp_cost.txt")
-        self.mol_esp_cost.write_to_file(outfn)
-        log("Written %s" % outfn)
+        self.output.dump_esp_cost("mol_esp_cost.txt", self.mol_esp_cost)
 
     @OnlyOnce("Molecular grid")
     def do_molgrid(self):
@@ -328,9 +327,7 @@ class BaseScheme(object):
             self.work.dump(charges_name, self.charges)
             self.work.dump(populations_name, self.populations)
 
-        charges_fn = os.path.join(self.context.outdir, "%s_charges.txt" % self.prefix)
-        dump_atom_scalars(charges_fn, self.charges, molecule.numbers)
-        log("Written %s" % charges_fn)
+        self.output.dump_atom_scalars("%s_charges.txt" % self.prefix, self.charges, "Charge")
 
     @OnlyOnce("Atomic spin charges")
     def do_spin_charges(self):
@@ -354,9 +351,7 @@ class BaseScheme(object):
             pb()
             self.work.dump(spin_charges_name, self.spin_charges)
 
-        spin_charges_fn = os.path.join(self.context.outdir, "%s_spin_charges.txt" % self.prefix)
-        dump_atom_scalars(spin_charges_fn, self.spin_charges, molecule.numbers, name="Spin charge")
-        log("Written %s" % spin_charges_fn)
+        self.output.dump_atom_scalars("%s_spin_charges.txt" % self.prefix, self.spin_charges, "Spin charge")
 
     @OnlyOnce("Atomic dipoles")
     def do_dipoles(self):
@@ -384,10 +379,7 @@ class BaseScheme(object):
             pb()
             self.work.dump(dipoles_name, self.dipoles)
 
-        # now some nice output
-        dipoles_fn = os.path.join(self.context.outdir, "%s_dipoles.txt" % self.prefix)
-        dump_atom_vectors(dipoles_fn, self.dipoles, molecule.numbers)
-        log("Written %s" % dipoles_fn)
+        self.output.dump_atom_vectors("%s_dipoles.txt" % self.prefix, self.dipoles, "Dipoles")
 
     @OnlyOnce("Atomic multipoles (up to hexadecapols)")
     def do_multipoles(self):
@@ -456,11 +448,7 @@ class BaseScheme(object):
             pb()
             self.work.dump(multipoles_name, self.multipoles)
 
-        # now some nice output
-        multipoles_fn = os.path.join(self.context.outdir, "%s_multipoles.txt" % self.prefix)
-        dump_atom_fields(multipoles_fn, self.multipoles, labels, molecule.numbers, "Multipoles")
-        log("Written %s" % multipoles_fn)
-
+        self.output.dump_atom_fields("%s_multipoles.txt" % self.prefix, self.multipoles, labels, "Multipoles")
 
     @OnlyOnce("Testing charges and dipoles on ESP grid.")
     def do_esp_test(self):
@@ -469,55 +457,15 @@ class BaseScheme(object):
         self.do_esp_costfunction()
 
         molecule = self.context.wavefn.molecule
-
-        filename = os.path.join(self.context.outdir, "%s_esp_test.txt" % self.prefix)
-        f = file(filename, "w")
-        print >> f, "Reproduction of the molecular dipole"
-        print >> f, "-------------------------------------------------------------------------------"
-        print >> f, "                  Dipole-X        Dipole-Y        Dipole-Z       Dipole-norm"
-        print >> f, "-------------------------------------------------------------------------------"
         dipole_q = (molecule.coordinates*self.charges.reshape((-1,1))).sum(axis=0)
         dipole_p = self.dipoles.sum(axis=0)
         dipole_qp = dipole_q + dipole_p
         dipole_qm = self.context.wavefn.dipole
-        print >> f, "charges (q)   % 15.12f % 15.12f % 15.12f % 15.12f" % (
-            dipole_q[0], dipole_q[1], dipole_q[2], numpy.linalg.norm(dipole_q),
-        )
-        print >> f, "dipoles (p)   % 15.12f % 15.12f % 15.12f % 15.12f" % (
-            dipole_p[0], dipole_p[1], dipole_p[2], numpy.linalg.norm(dipole_p),
-        )
-        print >> f, "q and p       % 15.12f % 15.12f % 15.12f % 15.12f" % (
-            dipole_qp[0], dipole_qp[1], dipole_qp[2], numpy.linalg.norm(dipole_qp),
-        )
-        print >> f, "total density % 15.12f % 15.12f % 15.12f % 15.12f" % (
-            dipole_qm[0], dipole_qm[1], dipole_qm[2], numpy.linalg.norm(dipole_qm),
-        )
-        print >> f, "-------------------------------------------------------------------------------"
-        print >> f
-        print >> f, "Reproduction of the external molecular ESP"
-        print >> f, "-------------------------------------------------------------"
-        print >> f, "                     RMSD             RMS       CORRELATION"
-        print >> f, "-------------------------------------------------------------"
-        print >> f, "charges (q)      % 10.5e    % 10.5e      % 5.2f" % (
-            self.mol_esp_cost.rmsd(self.charges),
-            self.mol_esp_cost.model_rms(self.charges),
-            self.mol_esp_cost.correlation(self.charges),
-        )
-        print >> f, "dipoles (p)      % 10.5e    % 10.5e      % 5.2f" % (
-            self.mol_esp_cost.rmsd(None, self.dipoles),
-            self.mol_esp_cost.model_rms(None, self.dipoles),
-            self.mol_esp_cost.correlation(None, self.dipoles),
-        )
-        print >> f, "q and p          % 10.5e    % 10.5e      % 5.2f" % (
-            self.mol_esp_cost.rmsd(self.charges, self.dipoles),
-            self.mol_esp_cost.model_rms(self.charges, self.dipoles),
-            self.mol_esp_cost.correlation(self.charges, self.dipoles),
-        )
-        print >> f, "total density                    % 10.5e" % self.mol_esp_cost.rms
-        print >> f, "-------------------------------------------------------------"
-        f.close()
-        log("Written %s" % filename)
 
+        self.output.dump_esp_test(
+            "%s_esp_test.txt" % self.prefix, dipole_q, dipole_p, dipole_qp,
+            dipole_qm, self.mol_esp_cost, self.charges, self.dipoles
+        )
 
     @OnlyOnce("Evaluating orbitals on atomic grids")
     def do_atgrids_orbitals(self):
@@ -580,13 +528,12 @@ class BaseScheme(object):
                         self.atgrids[i].dump("%s_%s_overlap_matrix_orb" % (self.prefix, kind), matrix)
                 pb()
 
-            filename = os.path.join(self.context.outdir, "%s_%s_overlap_matrices_orb.txt" % (self.prefix, kind))
+            filename = "%s_%s_overlap_matrices_orb.txt" % (self.prefix, kind)
             overlap_matrices = [
                 getattr(grid, "%s_overlap_matrix_orb" % kind)
                 for grid in self.atgrids
             ]
-            dump_overlap_matrices(filename, overlap_matrices, molecule.numbers)
-            log("Written %s" % filename)
+            self.output.dump_overlap_matrices(filename, overlap_matrices)
 
         do_one_kind("alpha")
         do_one_kind("beta")
@@ -619,10 +566,9 @@ class BaseScheme(object):
             atgrid.overlap_matrix = overlap
         pb()
 
-        filename = os.path.join(self.context.outdir, "%s_overlap_matrices.txt" % self.prefix)
+        filename = "%s_overlap_matrices.txt" % self.prefix
         overlap_matrices = [atgrid.overlap_matrix for atgrid in self.atgrids]
-        dump_overlap_matrices(filename, overlap_matrices, molecule.numbers)
-        log("Written %s" % filename)
+        self.output.dump_overlap_matrices(filename, overlap_matrices)
 
     @OnlyOnce("Bond orders and valences")
     def do_bond_orders(self):
@@ -685,19 +631,11 @@ class BaseScheme(object):
             pb()
             self.work.dump(bond_orders_name, self.bond_orders)
             self.work.dump(valences_name, self.valences)
-
-        bond_orders_fn = os.path.join(self.context.outdir, "%s_bond_orders.txt" % self.prefix)
-        dump_atom_matrix(bond_orders_fn, self.bond_orders, molecule.numbers, "Bond order")
-        log("Written %s" % bond_orders_fn)
-
-        valences_fn = os.path.join(self.context.outdir, "%s_valences.txt" % self.prefix)
-        dump_atom_scalars(valences_fn, self.valences, molecule.numbers, "Valences")
-        log("Written %s" % valences_fn)
-
-        free_valences_fn = os.path.join(self.context.outdir, "%s_free_valences.txt" % self.prefix)
         self.free_valences = self.valences - self.bond_orders.sum(axis=1)
-        dump_atom_scalars(free_valences_fn, self.free_valences, molecule.numbers, "Free valences")
-        log("Written %s" % free_valences_fn)
+
+        self.output.dump_atom_matrix("%s_bond_orders.txt" % self.prefix, self.bond_orders, "Bond order")
+        self.output.dump_atom_scalars("%s_valences.txt" % self.prefix, self.valences, "Valences")
+        self.output.dump_atom_scalars("%s_free_valences.txt" % self.prefix, self.free_valences, "Free valences")
 
     @OnlyOnce("Atomic weights on other atoms' grids.")
     def do_atgrids_od_atweights(self):
@@ -765,9 +703,7 @@ class BaseScheme(object):
             pb()
             self.work.dump(net_overlap_name, self.net_overlap)
 
-        net_overlap_fn = os.path.join(self.context.outdir, "%s_net_overlap.txt" % self.prefix)
-        dump_atom_matrix(net_overlap_fn, self.net_overlap, molecule.numbers, "Net")
-        log("Written %s" % net_overlap_fn)
+        self.output.dump_atom_matrix("%s_net_overlap.txt" % self.prefix, self.net_overlap, "Net/Overlap")
 
 
 class StockholderScheme(BaseScheme):
