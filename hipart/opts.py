@@ -62,8 +62,7 @@ def parse_command_line(script_usage, add_extra_options=None):
     )
     parser.add_option(
         "-c", "--clean", default=False, action='store_true', dest='do_clean',
-        help="If given, the workdir with the binary data is removed before and "
-             "after the computation."
+        help="Remove the workdir before and after the computation."
     )
     parser.add_option(
         "--no-work", default=True, action='store_false', dest='do_work',
@@ -72,6 +71,10 @@ def parse_command_line(script_usage, add_extra_options=None):
     parser.add_option(
         "--no-output", default=True, action='store_false', dest='do_output',
         help="Do not write any output to text files."
+    )
+    parser.add_option(
+        "-q", "--quiet", default=True, action='store_false', dest='verbose',
+        help="Do not write any screen output."
     )
     parser.add_option(
         "-n", "--no-fix-total-charge", dest="fix_total_charge", default="True",

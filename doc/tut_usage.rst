@@ -164,6 +164,7 @@ The online help is as follows::
                             [default=False]
       --no-work             Do not save intermediate results in work directory for
                             later reuse.
+      -q, --quiet           Do not write any screen output.
 
 
 The default settings are good enough for most levels of theory and basis sets.
@@ -393,10 +394,11 @@ as follows::
                             110, 146, 170, 194, 230, 266, 302, 350, 434, 590, 770,
                             974, 1202, 1454, 1730, 2030, 2354, 2702, 3074, 3470,
                             3890, 4334, 4802, 5294, 5810
-      -c, --clean           If given, the workdir with the binary data is removed
-                            when the computation has finished.
+      -c, --clean           Remove the workdir before and after the computation.
       --no-work             Do not save intermediate results in work directory for
                             later reuse.
+      --no-output           Do not write any output to text files.
+      -q, --quiet           Do not write any screen output.
       -n, --no-fix-total-charge
                             Do not correct the total charge.
       -t THRESHOLD, --threshold=THRESHOLD

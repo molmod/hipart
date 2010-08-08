@@ -33,11 +33,12 @@ __all__ = ["ContextError", "Context", "Options"]
 
 
 class Options(object):
-    def __init__(self, lebedev=110, do_clean=False, do_work=True, do_output=True, threshold=1e-4, max_iter=500, fix_total_charge=True):
+    def __init__(self, lebedev=110, do_clean=False, do_work=True, do_output=True, verbose=True, threshold=1e-4, max_iter=500, fix_total_charge=True):
         self.lebedev = lebedev
         self.do_clean = do_clean
         self.do_work = do_work
         self.do_output = do_output
+        self.verbose = verbose
         self.threshold = threshold
         self.max_iter = max_iter
         self.fix_total_charge = fix_total_charge
@@ -58,6 +59,7 @@ class Context(object):
     version = 2
 
     def __init__(self, filename, options):
+        log.verbose = options.verbose
         log.begin("Loading Electronic structure")
         self.wavefn = load_wavefunction(filename)
         self.wavefn.log()

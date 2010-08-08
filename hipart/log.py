@@ -30,29 +30,32 @@ __all__ = ["ProgressBar", "Log", "log"]
 
 
 class ProgressBar(object):
-    def __init__(self, label, n, f=sys.stdout, indent=0, width=80):
+    def __init__(self, label, n, indent=0, width=80, verbose=True):
         self.i = 0
         self.n = n
-        self.f = f
         self.indent = indent
         self.width = width
-        self.f.write("%s%s: " % (" "*indent, label))
-        self.f.flush()
+        self.verbose = verbose
+        if self.verbose:
+            sys.stdout.write("%s%s: " % (" "*indent, label))
+            sys.stdout.flush()
 
     def __call__(self, inc=1):
+        if not self.verbose:
+            return
         for counter in xrange(inc):
             if self.i % self.width == 0:
-                self.f.write("\n%s" % (" "*self.indent))
+                sys.stdout.write("\n%s" % (" "*self.indent))
             if self.i % 10 == 0 or self.i == self.n:
                 if self.i == 0:
-                    self.f.write(" 0% .")
+                    sys.stdout.write(" 0% .")
                 else:
-                    self.f.write(". %i%% " % ((100*self.i)/self.n))
+                    sys.stdout.write(". %i%% " % ((100*self.i)/self.n))
             else:
-                self.f.write(".")
+                sys.stdout.write(".")
             if self.i == self.n:
-                self.f.write("\n")
-            self.f.flush()
+                sys.stdout.write("\n")
+            sys.stdout.flush()
             self.i += 1
 
 
@@ -62,22 +65,26 @@ reset = '\033[0m'
 class Log(object):
     def __init__(self):
         self.stack = []
+        self.verbose = True
 
     level = property(lambda self: len(self.stack))
 
     def begin(self, s):
-        print "%s%sBEGIN%s %s" % ("  "*self.level, bright, reset, s)
+        if self.verbose:
+            print "%s%sBEGIN%s %s" % ("  "*self.level, bright, reset, s)
         self.stack.append(s)
 
     def __call__(self, s):
-        print "%s%s" % ("  "*self.level, s)
+        if self.verbose:
+            print "%s%s" % ("  "*self.level, s)
 
     def end(self):
         s = self.stack.pop()
-        print "%s%sEND%s %s" % ("  "*self.level, bright, reset, s)
+        if self.verbose:
+            print "%s%sEND%s %s" % ("  "*self.level, bright, reset, s)
 
     def pb(self, s, num):
-        return ProgressBar(s, num, indent=self.level*2)
+        return ProgressBar(s, num, self.level*2, 80-self.level*2, self.verbose)
 
 
 log = Log()

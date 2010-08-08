@@ -20,11 +20,11 @@
 # --
 
 
-from hipart.log import log
 from hipart.lebedev_laikov import get_grid, grid_fns
 from hipart.grids import AtomicGrid, RLogIntGrid, ALebedevIntGrid
 from hipart.wavefn import FCHKWaveFunction
 from hipart.work import Work
+from hipart.log import log
 
 from molmod.periodic import periodic
 from molmod.units import angstrom, electronvolt
@@ -41,7 +41,7 @@ class Gaussian(object):
     def __init__(self, executable, options):
         self.executable = executable
         self.qc = options.qc
-        print "Computing atomic database with program Gaussian (%s,qc=%s)" % (self.executable,self.qc)
+        log("Computing atomic database with program Gaussian (%s,qc=%s)" % (self.executable,self.qc))
 
     def make_atom_input(self, dirname, number, charge, mult, lot):
         command = "sp guess=indo density=current"
@@ -175,16 +175,16 @@ def run_jobs(program, dirnames):
             failed.append(dirname)
     pb()
     if len(failed) == len(dirnames):
-        print "Could not execute any job. Giving up."
+        log("Could not execute any job. Giving up.")
         sys.exit(-1)
     if len(failed) > 0:
-        print "Some jobs failed:"
+        log("Some jobs failed:")
         for dirname in failed:
-            print "  %s" % dirname
+            log("  %s" % dirname)
 
 
 def select_ground_states(program, max_ion):
-    print "Selecting ground states."
+    log("Selecting ground states.")
     all_energies = program.get_energies()
 
     if 1 in all_energies:
@@ -343,6 +343,10 @@ def parse_args(args):
         "--no-work", default=True, action='store_false', dest='do_work',
         help="Do not save intermediate results in work directory for later reuse."
     )
+    parser.add_option(
+        "-q", "--quiet", default=True, action='store_false', dest='verbose',
+        help="Do not write any screen output."
+    )
     (options, args) = parser.parse_args(args)
     if len(args) != 3:
         parser.error("Expecting three arguments: executable, level of theory (+ basis set) and the atom specification.")
@@ -353,6 +357,7 @@ def parse_args(args):
 
 def main(args=None):
     options, executable, lot, atom_numbers = parse_args(args=None)
+    log.verbose = options.verbose
     program = Gaussian(executable, options)
     dirnames = make_inputs(program, lot, atom_numbers, options.max_ion)
     run_jobs(program, dirnames)
