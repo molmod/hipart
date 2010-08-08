@@ -372,6 +372,16 @@ density.
 .. math:: N^{\text{spin}}_{A} = \int w_A(\mathbf{r}) \rho^{\text{spin}}_{\text{mol}}(\mathbf{r}) d\mathbf{r}
 
 
+Atomic properties derived from the basis set
+--------------------------------------------
+
+TODO
+
+Atomic overlap matrices (in the basis of contracted Gaussians)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TODO
+
 Atomic properties derived from the partitioned density matrix
 -------------------------------------------------------------
 
@@ -379,11 +389,6 @@ TODO
 
 Bond orders
 ^^^^^^^^^^^
-
-TODO
-
-Atomic overlap matrices (in the basis of contracted Gaussians)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 TODO
 
