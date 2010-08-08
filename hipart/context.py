@@ -26,7 +26,7 @@ from hipart.wavefn import load_wavefunction
 from hipart.work import Work
 from hipart.io import Output
 
-import os, shutil
+import os
 
 
 __all__ = ["ContextError", "Context", "Options"]
@@ -77,7 +77,6 @@ class Context(object):
         else:
             workdir = None
         self.work = Work(workdir, do_clean=options.do_clean)
-        self.work.clean()
 
     num_lebedev = property(lambda self: len(self.lebedev_weights))
 

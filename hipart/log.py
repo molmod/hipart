@@ -36,27 +36,42 @@ class ProgressBar(object):
         self.indent = indent
         self.width = width
         self.verbose = verbose
+        self.pos = 0
         if self.verbose:
-            sys.stdout.write("%s%s: " % (" "*indent, label))
-            sys.stdout.flush()
+            self.dump(label + ": ")
+
+    def dump(self, s):
+        if len(s) > self.width - self.pos:
+            part1 = s[:self.width - self.pos]
+            part2 = s[self.width - self.pos:]
+            self.dump(part1)
+            self.dump(part2)
+            return
+        if self.pos == 0:
+            sys.stdout.write(" "*self.indent)
+        sys.stdout.write(s)
+        self.pos = (self.pos + len(s)) % self.width
+        if self.pos == 0:
+            sys.stdout.write("\n")
+        sys.stdout.flush()
 
     def __call__(self, inc=1):
         if not self.verbose:
             return
+        line = []
         for counter in xrange(inc):
-            if self.i % self.width == 0:
-                sys.stdout.write("\n%s" % (" "*self.indent))
             if self.i % 10 == 0 or self.i == self.n:
-                if self.i == 0:
-                    sys.stdout.write(" 0% .")
+                if self.n == 0:
+                    pct = 100
                 else:
-                    sys.stdout.write(". %i%% " % ((100*self.i)/self.n))
+                    pct = (100*self.i)/self.n
+                line.append("%i%%" % pct)
             else:
-                sys.stdout.write(".")
+                line.append(".")
             if self.i == self.n:
-                sys.stdout.write("\n")
-            sys.stdout.flush()
+                line.append("\n")
             self.i += 1
+        self.dump("".join(line))
 
 
 bright = '\033[1;33m'
