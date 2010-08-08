@@ -771,7 +771,11 @@ class HirshfeldIScheme(TableBaseScheme):
     usage = hirshfeld_i_usage
 
     def __init__(self, context, atom_table):
-        TableBaseScheme.__init__(self, context, {}, atom_table)
+        extra_tag_attributes = {
+            "max_iter": str(context.options.max_iter),
+            "threshold": "%.5e" % context.options.threshold,
+        }
+        TableBaseScheme.__init__(self, context, extra_tag_attributes, atom_table)
 
     @OnlyOnce("Iterative Hirshfeld")
     def do_proatomfns(self):
@@ -840,6 +844,10 @@ class ISAScheme(StockholderScheme):
         return cls(context, RLogIntGrid(r_low, r_high, steps))
 
     def __init__(self, context, rgrid):
+        extra_tag_attributes = {
+            "max_iter": str(context.options.max_iter),
+            "threshold": "%.5e" % context.options.threshold,
+        }
         BaseScheme.__init__(self, context, rgrid, {})
 
     @OnlyOnce("Iterative Stockholder Analysis")
