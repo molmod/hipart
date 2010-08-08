@@ -73,6 +73,14 @@ popular Linux distributions:
 
     sudo zypper install python-devel python-numpy gcc gcc-fortran python-setuptools git wget
 
+  There seems to be something odd going on with the default Python configuration
+  on Suse installations. You have to edit the file
+  ``/usr/lib64/python2.4/distutils/distutils.cfg`` or
+  ``/usr/lib32/python2.4/distutils/distutils.cfg``, depending on the CPU
+  architecture, to comment out the line ``prefix=/usr/local`` with a ``#``
+  symbol. Otherwise it is impossible to install Python packages in the home
+  directory, as we will do below.
+
 Installing the bleeding edge version of HiPart
 ----------------------------------------------
 
@@ -87,13 +95,6 @@ directory. ::
     (cd molmod; ./setup.py install --home=~)
     (cd molmod/ext; ./setup.py install --home=~)
     (cd hipart; ./setup.py install --home=~)
-
-Note for Suse users: there seems to be something odd going on with the default
-Python configuration on Suse installations. You have to edit the file
-``/usr/lib64/python2.4/distutils/distutils.cfg`` or
-``/usr/lib32/python2.4/distutils/distutils.cfg``, depending on your
-architecture, to comment out the line ``prefix=/usr/local`` with a ``#`` symbol.
-Otherwise it impossible to install Python packages in the home directory.
 
 In order to activate the Python modules and the executable scripts installed
 in your home directory, the following lines need to be added to your login
@@ -176,4 +177,5 @@ source code was downloaded and execute the following commands::
     ./setup.py nosetests
 
 This will run a series of tests to check the validity of the outcomes generated
-by HiPart. If some tests fail, post the output of the tests on the mailing list.
+by HiPart. If some tests fail, post the output of the tests on the `mailing list
+<http://molmod.ugent.be/code/wiki/HiPart/MailingList>`_.
