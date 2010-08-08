@@ -23,7 +23,7 @@
 
 
 
-import sys
+import sys, time
 
 
 __all__ = ["ProgressBar", "Log", "log"]
@@ -81,25 +81,44 @@ class Log(object):
     def __init__(self):
         self.stack = []
         self.verbose = True
+        self.start = time.clock()
+        if self.verbose:
+            print "---TIME--- "+"-"*33+"LOG"+"-"*33
 
     level = property(lambda self: len(self.stack))
 
+    def _section(self, key, s):
+        space = 69-self.level*2
+        line = "%s%s%s %s" % (bright, key, reset, s)
+        prefix = "%10.2f" % (time.clock() - self.start)
+        start = 0
+        rows = (len(line) - len(bright) + len(reset))/space+1
+        for i in xrange(rows):
+            end = start + space
+            if i==0:
+                end += len(bright) + len(reset)
+            print "%s %s%s" % (prefix, "  "*self.level, line[start:end])
+            prefix = "          "
+            start = end
+
     def begin(self, s):
         if self.verbose:
-            print "%s%sBEGIN%s %s" % ("  "*self.level, bright, reset, s)
+            self._section("BEGIN", s)
         self.stack.append(s)
 
     def __call__(self, s):
         if self.verbose:
-            print "%s%s" % ("  "*self.level, s)
+            now = time.clock() - self.start
+            print "%10.2f %s%s" % (now, "  "*self.level, s)
 
     def end(self):
         s = self.stack.pop()
         if self.verbose:
-            print "%s%sEND%s %s" % ("  "*self.level, bright, reset, s)
+            self._section("END", s)
 
     def pb(self, s, num):
-        return ProgressBar(s, num, self.level*2, 80-self.level*2, self.verbose)
+        indent = self.level*2+11
+        return ProgressBar(s, num, indent, 80-indent, self.verbose)
 
 
 log = Log()

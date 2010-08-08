@@ -113,7 +113,7 @@ class BaseScheme(object):
     @OnlyOnce("Atomic grids")
     def do_atgrids(self):
         self.atgrids = []
-        pb = log.pb("Computing/Loading atomic grids (and distances)", self.molecule.size**2)
+        pb = log.pb("Computing/Loading atomic grids and distances", self.molecule.size**2)
         for i in xrange(self.molecule.size):
             name = "atom%05i" % i
             atgrid = AtomicGrid.from_prefix(name, self.work)
@@ -257,12 +257,12 @@ class BaseScheme(object):
     def _prepare_atweights(self):
         pass
 
-    @OnlyOnce("Defining atomic weight functions (each on their own atomic grid)")
+    @OnlyOnce("Defining atomic weight functions (own atomic grid)")
     def do_atgrids_atweights(self):
         log("Trying to load weight functions")
         success = self._load_atgrid_atweights()
         if not success:
-            log("Could not load all weight functions from workdir. Computing them...")
+            log("Could not load all weight functions from workdir. Computing them.")
             self._prepare_atweights()
             self._compute_atgrid_atweights()
             log("Writing results to workdir")
@@ -462,7 +462,7 @@ class BaseScheme(object):
             self.wavefn.compute_orbitals(self.atgrids[i])
         pb()
 
-    @OnlyOnce("Atomic overlap matrices (in orbital basis)")
+    @OnlyOnce("Atomic overlap matrices (orbitals)")
     def do_atgrids_overlap_matrix_orb(self):
         # Note that the overlap matrices are computed in the basis of the
         # orbitals. Each kind of overlap matrix is thus computed in the basis
@@ -522,7 +522,7 @@ class BaseScheme(object):
         do_one_kind("beta")
         do_one_kind("natural")
 
-    @OnlyOnce("Atomic overlap matrices (in basis of contracted Gaussians)")
+    @OnlyOnce("Atomic overlap matrices (contracted Gaussians)")
     def do_atgrids_overlap_matrix(self):
         self.do_atgrids()
         self.do_atgrids_atweights()
@@ -779,6 +779,7 @@ class HirshfeldIScheme(TableBaseScheme):
 
         counter = 0
         old_populations = self.molecule.numbers.astype(float)
+        log("Iteration   Max change   Total charge")
         while True:
             # construct the pro-atom density functions, using the densities
             # from the previous iteration.
@@ -794,7 +795,7 @@ class HirshfeldIScheme(TableBaseScheme):
 
             # ordinary blablabla ...
             max_change = abs(populations-old_populations).max()
-            log("Iteration %03i    max change = %10.5e    total charge = %10.5e" % (
+            log("%5i     % 10.5e   % 10.5e" % (
                 counter, max_change, self.molecule.numbers.sum() - populations.sum()
             ))
             if max_change < self.context.options.threshold:
@@ -854,32 +855,32 @@ class ISAScheme(StockholderScheme):
             self.proatomfns.append(CubicSpline(self.rgrid.rs, profile))
 
         counter = 0
-        old_charges = numpy.zeros(self.molecule.size, float)
+        old_populations = self.molecule.numbers.copy()
+        log("Iteration   Max change   Total charge")
         while True:
             new_proatomfns = []
-            charges = []
+            populations = numpy.zeros(self.molecule.size, float)
             for i in xrange(self.molecule.size):
                 integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
                 radfun = self.agrid.integrate(integrand)
-                num_electrons = self.rgrid.integrate(radfun)
-                charges.append(self.molecule.numbers[i] - num_electrons)
+                rs = self.rgrid.rs[:len(radfun)]
+                populations[i] = self.rgrid.integrate(radfun*rs*rs)
                 # add negligible tails to maintain a complete partitioning
                 radfun[radfun < 1e-40] = 1e-40
                 new_proatomfn = CubicSpline(self.rgrid.rs, radfun/4*numpy.pi)
                 new_proatomfns.append(new_proatomfn)
 
             # ordinary blablabla ...
-            charges = numpy.array(charges)
-            max_change = abs(charges-old_charges).max()
-            log("Iteration %03i    max change = %10.5e    total charge = %10.5e" % (
-                counter, max_change, charges.sum()
+            max_change = abs(populations-old_populations).max()
+            log("%5i     % 10.5e   % 10.5e" % (
+                counter, max_change, self.molecule.numbers.sum() - populations.sum()
             ))
             if max_change < self.context.options.threshold:
                 break
             counter += 1
             if counter > self.context.options.max_iter:
                 raise RuntimeError("Iterative Stockholder Analysis failed to converge.")
-            old_charges = charges
+            old_populations = populations
             self.proatomfns = new_proatomfns
 
 
