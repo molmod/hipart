@@ -476,8 +476,7 @@ def check_hf_overlap_matrices(scheme):
     num_dof = scheme.context.wavefn.num_orbitals
     full = numpy.zeros((num_dof,num_dof), float)
     dmat_to_full(scheme.context.wavefn.density_matrix, full)
-    molecule = scheme.context.wavefn.molecule
-    for i in xrange(molecule.size):
+    for i in xrange(scheme.molecule.size):
         overlap = scheme.atgrids[i].overlap_matrix
         error = abs(overlap-overlap.transpose()).max()
         assert(error<1e-10)

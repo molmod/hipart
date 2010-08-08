@@ -102,6 +102,8 @@ class BaseScheme(object):
         # clone attributes from context
         self.work = context.work
         self.output = context.output
+        self.wavefn = context.wavefn
+        self.molecule = context.wavefn.molecule
 
     def _spherint(self, integrand):
         radfun = self.agrid.integrate(integrand)
@@ -110,24 +112,22 @@ class BaseScheme(object):
 
     @OnlyOnce("Atomic grids")
     def do_atgrids(self):
-        molecule = self.context.wavefn.molecule
-
         self.atgrids = []
-        pb = log.pb("Computing/Loading atomic grids (and distances)", molecule.size**2)
-        for i in xrange(molecule.size):
+        pb = log.pb("Computing/Loading atomic grids (and distances)", self.molecule.size**2)
+        for i in xrange(self.molecule.size):
             name = "atom%05i" % i
             atgrid = AtomicGrid.from_prefix(name, self.work)
             if atgrid is None:
-                center = molecule.coordinates[i]
+                center = self.molecule.coordinates[i]
                 atgrid = AtomicGrid.from_parameters(name, self.work, center, self.rgrid, self.agrid)
             self.atgrids.append(atgrid)
 
             # Compute and store all the distances from these grid points to the
             # nuclei.
             atgrid.distances = []
-            for j in xrange(molecule.size):
+            for j in xrange(self.molecule.size):
                 pb()
-                distances = numpy.sqrt(((atgrid.points - molecule.coordinates[j])**2).sum(axis=1))
+                distances = numpy.sqrt(((atgrid.points - self.molecule.coordinates[j])**2).sum(axis=1))
                 # distances from grid points of atom i to atom j.
                 atgrid.distances.append(distances)
         pb()
@@ -135,31 +135,28 @@ class BaseScheme(object):
     @OnlyOnce("Molecular density on atomic grids")
     def do_atgrids_moldens(self):
         self.do_atgrids()
-        molecule = self.context.wavefn.molecule
-        pb = log.pb("Computing/Loading densities", molecule.size)
-        for i in xrange(molecule.size):
+        pb = log.pb("Computing/Loading densities", self.molecule.size)
+        for i in xrange(self.molecule.size):
             pb()
-            self.context.wavefn.compute_density(self.atgrids[i])
+            self.wavefn.compute_density(self.atgrids[i])
         pb()
 
     @OnlyOnce("Molecular spin density on atomic grids")
     def do_atgrids_molspindens(self):
         self.do_atgrids()
-        molecule = self.context.wavefn.molecule
-        pb = log.pb("Computing/Loading spin densities", molecule.size)
-        for i in xrange(molecule.size):
+        pb = log.pb("Computing/Loading spin densities", self.molecule.size)
+        for i in xrange(self.molecule.size):
             pb()
-            self.context.wavefn.compute_spin_density(self.atgrids[i])
+            self.wavefn.compute_spin_density(self.atgrids[i])
         pb()
 
     @OnlyOnce("Estimating noble gas core radii")
     def do_noble_radii(self):
         self.noble_radii = self.work.load("noble_radii")
         if self.noble_radii is None:
-            molecule = self.context.wavefn.molecule
             self.do_atgrids_moldens()
-            self.noble_radii = numpy.zeros(molecule.size, float)
-            for i, number_i in enumerate(molecule.numbers):
+            self.noble_radii = numpy.zeros(self.molecule.size, float)
+            for i, number_i in enumerate(self.molecule.numbers):
                 if number_i < 3:
                     self.noble_radii[i] = 0.2
                 else:
@@ -184,12 +181,9 @@ class BaseScheme(object):
         # TODO: output ESP charges in the same way as the stockholder charges.
         self.do_molgrid_moldens()
         self.do_molgrid_molpot()
-
-        total_charge = self.context.wavefn.charge
-        coordinates = self.context.wavefn.molecule.coordinates
         self.mol_esp_cost = ESPCostFunction(
-            coordinates, self.molgrid.points, self.molgrid.weights,
-            self.molgrid.moldens, self.molgrid.molpot, total_charge,
+            self.molecule.coordinates, self.molgrid.points, self.molgrid.weights,
+            self.molgrid.moldens, self.molgrid.molpot, self.wavefn.charge,
         )
         self.output.dump_esp_cost("mol_esp_cost.txt", self.mol_esp_cost)
 
@@ -218,7 +212,6 @@ class BaseScheme(object):
             #    this threshold will improve the quality of the fit.
 
             lebedev_xyz, lebedev_weights = get_lebedev_grid(50)
-            molecule = self.context.wavefn.molecule
             self.do_noble_radii()
 
             scale_min = 1.5
@@ -233,11 +226,11 @@ class BaseScheme(object):
             for scale in scales:
                 pb()
                 radii = scale*self.noble_radii
-                for i in xrange(molecule.size):
+                for i in xrange(self.molecule.size):
                     rot = Rotation.random()
                     for j in xrange(len(lebedev_xyz)):
-                        my_point = radii[i]*numpy.dot(rot.r, lebedev_xyz[j]) + molecule.coordinates[i]
-                        distances = numpy.sqrt(((molecule.coordinates - my_point)**2).sum(axis=1))
+                        my_point = radii[i]*numpy.dot(rot.r, lebedev_xyz[j]) + self.molecule.coordinates[i]
+                        distances = numpy.sqrt(((self.molecule.coordinates - my_point)**2).sum(axis=1))
                         if (distances < scales[0]*self.noble_radii).any():
                             continue
                         points.append(my_point)
@@ -253,13 +246,13 @@ class BaseScheme(object):
     @OnlyOnce("Molecular density on the molecular grid")
     def do_molgrid_moldens(self):
         self.do_molgrid()
-        self.context.wavefn.compute_density(self.molgrid)
+        self.wavefn.compute_density(self.molgrid)
 
     @OnlyOnce("Molecular potential on the molecular grid")
     def do_molgrid_molpot(self):
         self.do_molgrid()
         log("This may take a minute. Hang on.")
-        self.context.wavefn.compute_potential(self.molgrid)
+        self.wavefn.compute_potential(self.molgrid)
 
     def _prepare_atweights(self):
         pass
@@ -276,17 +269,15 @@ class BaseScheme(object):
             self._dump_atgrid_atweights()
 
     def _load_atgrid_atweights(self):
-        molecule = self.context.wavefn.molecule
-
         ws = []
-        for i in xrange(molecule.size):
+        for i in xrange(self.molecule.size):
             w = self.atgrids[i].load("%s_atweights" % self.prefix)
             if w is None:
                 return False
             else:
                 ws.append(w)
 
-        for i in xrange(molecule.size):
+        for i in xrange(self.molecule.size):
             self.atgrids[i].atweights = ws[i]
         return True
 
@@ -294,8 +285,7 @@ class BaseScheme(object):
         raise NotImplementedError
 
     def _dump_atgrid_atweights(self):
-        molecule = self.context.wavefn.molecule
-        for i in xrange(molecule.size):
+        for i in xrange(self.molecule.size):
             self.atgrids[i].dump("%s_atweights" % self.prefix, self.atgrids[i].atweights, ignore=True)
 
     @OnlyOnce("Atomic charges")
@@ -304,26 +294,25 @@ class BaseScheme(object):
         populations_name = "%s_populations" % self.prefix
         self.charges = self.work.load(charges_name)
         self.populations = self.work.load(populations_name)
-        molecule = self.context.wavefn.molecule
 
         if self.charges is None or self.populations is None:
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_atgrids_atweights()
 
-            pb = log.pb("Computing charges", molecule.size)
-            self.populations = numpy.zeros(molecule.size, float)
-            self.charges = numpy.zeros(molecule.size, float)
-            for i in xrange(molecule.size):
+            pb = log.pb("Computing charges", self.molecule.size)
+            self.populations = numpy.zeros(self.molecule.size, float)
+            self.charges = numpy.zeros(self.molecule.size, float)
+            for i in xrange(self.molecule.size):
                 pb()
                 w = self.atgrids[i].atweights
                 d = self.atgrids[i].moldens
-                center = molecule.coordinates[i]
+                center = self.molecule.coordinates[i]
                 self.populations[i] = self._spherint(d*w)
-                self.charges[i] = molecule.numbers[i] - self.populations[i]
+                self.charges[i] = self.molecule.numbers[i] - self.populations[i]
             pb()
             if self.context.options.fix_total_charge:
-                self.charges -= (self.charges.sum() - self.context.wavefn.charge)/molecule.size
+                self.charges -= (self.charges.sum() - self.wavefn.charge)/self.molecule.size
             self.work.dump(charges_name, self.charges)
             self.work.dump(populations_name, self.populations)
 
@@ -333,20 +322,19 @@ class BaseScheme(object):
     def do_spin_charges(self):
         spin_charges_name = "%s_spin_charges" % self.prefix
         self.spin_charges = self.work.load(spin_charges_name)
-        molecule = self.context.wavefn.molecule
 
         if self.spin_charges is None:
             self.do_atgrids()
             self.do_atgrids_molspindens()
             self.do_atgrids_atweights()
 
-            pb = log.pb("Computing spin charges", molecule.size)
-            self.spin_charges = numpy.zeros(molecule.size, float)
-            for i in xrange(molecule.size):
+            pb = log.pb("Computing spin charges", self.molecule.size)
+            self.spin_charges = numpy.zeros(self.molecule.size, float)
+            for i in xrange(self.molecule.size):
                 pb()
                 w = self.atgrids[i].atweights
                 d = self.atgrids[i].molspindens
-                center = molecule.coordinates[i]
+                center = self.molecule.coordinates[i]
                 self.spin_charges[i] = self._spherint(d*w)
             pb()
             self.work.dump(spin_charges_name, self.spin_charges)
@@ -357,21 +345,20 @@ class BaseScheme(object):
     def do_dipoles(self):
         dipoles_name = "%s_dipoles" % self.prefix
         self.dipoles = self.work.load(dipoles_name, (-1,3))
-        molecule = self.context.wavefn.molecule
 
         if self.dipoles is None:
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_atgrids_atweights()
 
-            pb = log.pb("Computing dipoles", molecule.size)
-            self.dipoles = numpy.zeros((molecule.size,3), float)
-            for i in xrange(molecule.size):
+            pb = log.pb("Computing dipoles", self.molecule.size)
+            self.dipoles = numpy.zeros((self.molecule.size,3), float)
+            for i in xrange(self.molecule.size):
                 pb()
                 atgrid = self.atgrids[i]
                 w = atgrid.atweights
                 d = atgrid.moldens
-                center = molecule.coordinates[i]
+                center = self.molecule.coordinates[i]
 
                 for j in 0,1,2:
                     integrand = -(atgrid.points[:,j] - center[j])*d*w
@@ -418,9 +405,8 @@ class BaseScheme(object):
         ]
 
         multipoles_name = "%s_multipoles.bin" % self.prefix
-        molecule = self.context.wavefn.molecule
         num_polys = len(regular_solid_harmonics)
-        shape = (molecule.size,num_polys)
+        shape = (self.molecule.size,num_polys)
         self.multipoles = self.work.load(multipoles_name, shape)
 
         if self.multipoles is None:
@@ -428,15 +414,15 @@ class BaseScheme(object):
             self.do_atgrids_moldens()
             self.do_atgrids_atweights()
 
-            pb = log.pb("Computing multipoles", molecule.size)
+            pb = log.pb("Computing multipoles", self.molecule.size)
             num_polys = len(regular_solid_harmonics)
             self.multipoles = numpy.zeros(shape, float)
-            for i in xrange(molecule.size):
+            for i in xrange(self.molecule.size):
                 pb()
                 atgrid = self.atgrids[i]
                 w = atgrid.atweights
                 d = atgrid.moldens
-                center = molecule.coordinates[i]
+                center = self.molecule.coordinates[i]
 
                 cx = atgrid.points[:,0] - center[0]
                 cy = atgrid.points[:,1] - center[1]
@@ -444,7 +430,7 @@ class BaseScheme(object):
                 for j in xrange(num_polys):
                     poly = regular_solid_harmonics[j]
                     self.multipoles[i,j] = self._spherint(-poly(cx,cy,cz)*d*w)
-                self.multipoles[i,0] += molecule.numbers[i]
+                self.multipoles[i,0] += self.molecule.numbers[i]
             pb()
             self.work.dump(multipoles_name, self.multipoles)
 
@@ -456,11 +442,10 @@ class BaseScheme(object):
         self.do_dipoles()
         self.do_esp_costfunction()
 
-        molecule = self.context.wavefn.molecule
-        dipole_q = (molecule.coordinates*self.charges.reshape((-1,1))).sum(axis=0)
+        dipole_q = numpy.dot(self.charges, self.molecule.coordinates)
         dipole_p = self.dipoles.sum(axis=0)
         dipole_qp = dipole_q + dipole_p
-        dipole_qm = self.context.wavefn.dipole
+        dipole_qm = self.wavefn.dipole
 
         self.output.dump_esp_test(
             "%s_esp_test.txt" % self.prefix, dipole_q, dipole_p, dipole_qp,
@@ -470,12 +455,11 @@ class BaseScheme(object):
     @OnlyOnce("Evaluating orbitals on atomic grids")
     def do_atgrids_orbitals(self):
         self.do_atgrids()
-        molecule = self.context.wavefn.molecule
-        self.context.wavefn.init_naturals(self.work)
-        pb = log.pb("Computing/Loading orbitals", molecule.size)
-        for i in xrange(molecule.size):
+        self.wavefn.init_naturals(self.work)
+        pb = log.pb("Computing/Loading orbitals", self.molecule.size)
+        for i in xrange(self.molecule.size):
             pb()
-            self.context.wavefn.compute_orbitals(self.atgrids[i])
+            self.wavefn.compute_orbitals(self.atgrids[i])
         pb()
 
     @OnlyOnce("Atomic overlap matrices (in orbital basis)")
@@ -487,19 +471,18 @@ class BaseScheme(object):
 
         def do_one_kind(kind):
             # first check for restricted
-            molecule = self.context.wavefn.molecule
-            orbitals = getattr(self.context.wavefn, "%s_orbitals" % kind)
-            if kind!="alpha" and self.context.wavefn.alpha_orbitals is orbitals:
+            orbitals = getattr(self.wavefn, "%s_orbitals" % kind)
+            if kind!="alpha" and self.wavefn.alpha_orbitals is orbitals:
                 # simply make references to alpha data and return
                 log("Cloning alpha results (%s)" % kind)
-                for i in xrange(molecule.size):
+                for i in xrange(self.molecule.size):
                     setattr(self.atgrids[i], "%s_overlap_matrix_orb" % kind, self.atgrids[i].alpha_overlap_matrix_orb)
                 return
 
             # then try to load the matrices
             some_failed = False
-            num_orbitals = self.context.wavefn.num_orbitals
-            for i in xrange(molecule.size):
+            num_orbitals = self.wavefn.num_orbitals
+            for i in xrange(self.molecule.size):
                 matrix = self.atgrids[i].load("%s_%s_overlap_matrix_orb" % (self.prefix, kind))
                 if matrix is None:
                     some_failed = True
@@ -511,8 +494,8 @@ class BaseScheme(object):
                 self.do_atgrids_orbitals()
                 self.do_atgrids_atweights()
 
-                pb = log.pb("Computing atomic overlap matrices (%s)" % kind, molecule.size)
-                for i in xrange(molecule.size):
+                pb = log.pb("Computing atomic overlap matrices (%s)" % kind, self.molecule.size)
+                for i in xrange(self.molecule.size):
                     pb()
                     if getattr(self.atgrids[i], "%s_overlap_matrix_orb" % kind) is None:
                         orbitals = getattr(self.atgrids[i], "%s_orbitals" % kind)
@@ -544,10 +527,9 @@ class BaseScheme(object):
         self.do_atgrids()
         self.do_atgrids_atweights()
 
-        molecule = self.context.wavefn.molecule
-        num_orbitals = self.context.wavefn.num_orbitals
-        pb = log.pb("Computing matrices", molecule.size)
-        for i in xrange(molecule.size):
+        num_orbitals = self.wavefn.num_orbitals
+        pb = log.pb("Computing matrices", self.molecule.size)
+        for i in xrange(self.molecule.size):
             pb()
             atgrid = self.atgrids[i]
             suffix = "%s_overlap_matrix" % self.prefix
@@ -559,7 +541,7 @@ class BaseScheme(object):
                 rw *= self.rgrid.rs
                 weights = numpy.outer(rw, self.agrid.lebedev_weights).ravel()
                 weights *= atgrid.atweights
-                overlap = self.context.wavefn.compute_atomic_overlap(atgrid, weights)
+                overlap = self.wavefn.compute_atomic_overlap(atgrid, weights)
                 atgrid.dump(suffix, overlap)
             else:
                 overlap = overlap.reshape((num_orbitals, num_orbitals))
@@ -575,37 +557,36 @@ class BaseScheme(object):
         # first try to load the results from the work dir
         bond_orders_name = "%s_bond_orders" % self.prefix
         valences_name = "%s_valences" % self.prefix
-        molecule = self.context.wavefn.molecule
-        self.bond_orders = self.work.load(bond_orders_name, (molecule.size, molecule.size))
+        self.bond_orders = self.work.load(bond_orders_name, (self.molecule.size, self.molecule.size))
         self.valences = self.work.load(valences_name)
 
         if self.bond_orders is None or self.valences is None:
             self.do_charges()
             self.do_atgrids_overlap_matrix()
 
-            self.bond_orders = numpy.zeros((molecule.size, molecule.size))
-            self.valences = numpy.zeros(molecule.size)
-            num_dof = self.context.wavefn.num_orbitals
+            self.bond_orders = numpy.zeros((self.molecule.size, self.molecule.size))
+            self.valences = numpy.zeros(self.molecule.size)
+            num_dof = self.wavefn.num_orbitals
 
             full = numpy.zeros((num_dof, num_dof), float)
-            dmat_to_full(self.context.wavefn.density_matrix, full)
-            if self.context.wavefn.spin_density_matrix is None:
+            dmat_to_full(self.wavefn.density_matrix, full)
+            if self.wavefn.spin_density_matrix is None:
                 full_alpha = 0.5*full
                 full_beta = full_alpha
             else:
                 full_alpha = numpy.zeros((num_dof, num_dof), float)
                 full_beta = numpy.zeros((num_dof, num_dof), float)
                 dmat_to_full(
-                    0.5*(self.context.wavefn.density_matrix +
-                    self.context.wavefn.spin_density_matrix), full_alpha
+                    0.5*(self.wavefn.density_matrix +
+                    self.wavefn.spin_density_matrix), full_alpha
                 )
                 dmat_to_full(
-                    0.5*(self.context.wavefn.density_matrix -
-                    self.context.wavefn.spin_density_matrix), full_beta
+                    0.5*(self.wavefn.density_matrix -
+                    self.wavefn.spin_density_matrix), full_beta
                 )
 
-            pb = log.pb("Computing bond orders", (molecule.size*(molecule.size+1))/2)
-            for i in xrange(molecule.size):
+            pb = log.pb("Computing bond orders", (self.molecule.size*(self.molecule.size+1))/2)
+            for i in xrange(self.molecule.size):
                 for j in xrange(i+1):
                     pb()
                     if i==j:
@@ -643,12 +624,11 @@ class BaseScheme(object):
         self.do_atgrids_atweights()
         self._prepare_atweights()
 
-        molecule = self.context.wavefn.molecule
-        pb = log.pb("Computing off-diagonal atom weights", molecule.size**2)
-        for i in xrange(molecule.size):
+        pb = log.pb("Computing off-diagonal atom weights", self.molecule.size**2)
+        for i in xrange(self.molecule.size):
             atgrid = self.atgrids[i]
             atgrid.od_atweights = []
-            for j in xrange(molecule.size):
+            for j in xrange(self.molecule.size):
                 pb()
                 w = self._compute_atweights(atgrid, j)
                 atgrid.od_atweights.append(w)
@@ -660,17 +640,16 @@ class BaseScheme(object):
     @OnlyOnce("Net and overlap populations")
     def do_net_overlap(self):
         net_overlap_name = "%s_net_overlap.bin" % self.prefix
-        molecule = self.context.wavefn.molecule
-        self.net_overlap = self.work.load(net_overlap_name, (molecule.size,molecule.size))
+        self.net_overlap = self.work.load(net_overlap_name, (self.molecule.size,self.molecule.size))
 
         if self.net_overlap is None:
             self.do_atgrids()
             self.do_atgrids_moldens()
             self.do_charges()
             self.do_atgrids_od_atweights()
-            self.net_overlap = numpy.zeros((molecule.size, molecule.size))
-            pb = log.pb("Integrating over products of stockholder weights", (molecule.size*(molecule.size+1))/2)
-            for i in xrange(molecule.size):
+            self.net_overlap = numpy.zeros((self.molecule.size, self.molecule.size))
+            pb = log.pb("Integrating over products of stockholder weights", (self.molecule.size*(self.molecule.size+1))/2)
+            for i in xrange(self.molecule.size):
                 for j in xrange(i+1):
                     pb()
                     if i != j:
@@ -678,7 +657,7 @@ class BaseScheme(object):
                         # over two atomic grids.
                         # 1) first part of the integral, using the grid on atom i
                         delta = (self.atgrids[i].distances[j].reshape((len(self.rgrid.rs),-1)) - self.rgrid.rs.reshape((-1,1))).ravel()
-                        switch = delta/molecule.distance_matrix[i,j]
+                        switch = delta/self.molecule.distance_matrix[i,j]
                         for k in xrange(3):
                             switch = (3 - switch**2)*switch/2
                         switch += 1
@@ -687,7 +666,7 @@ class BaseScheme(object):
                         part1 = self._spherint(integrand)
                         # 2) second part of the integral
                         delta = (self.atgrids[j].distances[i].reshape((len(self.rgrid.rs),-1)) - self.rgrid.rs.reshape((-1,1))).ravel()
-                        switch = delta/molecule.distance_matrix[i,j]
+                        switch = delta/self.molecule.distance_matrix[i,j]
                         for k in xrange(3):
                             switch = (3 - switch**2)*switch/2
                         switch += 1
@@ -714,8 +693,7 @@ class StockholderScheme(BaseScheme):
         self.do_proatomfns()
 
     def _compute_atgrid_atweights(self):
-        molecule = self.context.wavefn.molecule
-        for i in xrange(molecule.size):
+        for i in xrange(self.molecule.size):
             self.atgrids[i].atweights = self._compute_atweights(
                 self.atgrids[i], i
             )
@@ -723,11 +701,10 @@ class StockholderScheme(BaseScheme):
     def _compute_atweights(self, grid, atom_index):
         """Return the weight of atom with given index in the given grid points
         """
-        molecule = self.context.wavefn.molecule
         # construct the pro-atom and pro-molecule on this grid
         pro_atom = self.proatomfns[atom_index](grid.distances[atom_index])
         pro_mol = numpy.zeros(len(pro_atom), float)
-        for j in xrange(molecule.size):
+        for j in xrange(self.molecule.size):
             pro_mol += self.proatomfns[j](grid.distances[j])
         # multiply the density on the grid by the weight function
         return pro_atom/pro_mol
@@ -770,9 +747,8 @@ class HirshfeldScheme(TableBaseScheme):
     @OnlyOnce("Conventional Hirshfeld (with neutral pro-atoms)")
     def do_proatomfns(self):
         self.do_atgrids()
-        molecule = self.context.wavefn.molecule
         self.proatomfns = []
-        for number in molecule.numbers:
+        for number in self.molecule.numbers:
             self.proatomfns.append(self.atom_table.records[number].get_atom_fn())
 
 
@@ -799,20 +775,19 @@ class HirshfeldIScheme(TableBaseScheme):
 
     @OnlyOnce("Iterative Hirshfeld")
     def do_proatomfns(self):
-        molecule = self.context.wavefn.molecule
         self.do_atgrids_moldens()
 
         counter = 0
-        old_populations = molecule.numbers.astype(float)
+        old_populations = self.molecule.numbers.astype(float)
         while True:
             # construct the pro-atom density functions, using the densities
             # from the previous iteration.
             self.proatomfns = []
-            for i, number_i in enumerate(molecule.numbers):
+            for i, number_i in enumerate(self.molecule.numbers):
                 self.proatomfns.append(self.atom_table.records[number_i].get_atom_fn(old_populations[i]))
 
-            populations = numpy.zeros(molecule.size, float)
-            for i in xrange(molecule.size):
+            populations = numpy.zeros(self.molecule.size, float)
+            for i in xrange(self.molecule.size):
                 integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
                 population = self._spherint(integrand)
                 populations[i] = population
@@ -820,7 +795,7 @@ class HirshfeldIScheme(TableBaseScheme):
             # ordinary blablabla ...
             max_change = abs(populations-old_populations).max()
             log("Iteration %03i    max change = %10.5e    total charge = %10.5e" % (
-                counter, max_change, molecule.numbers.sum() - populations.sum()
+                counter, max_change, self.molecule.numbers.sum() - populations.sum()
             ))
             if max_change < self.context.options.threshold:
                 break
@@ -868,27 +843,26 @@ class ISAScheme(StockholderScheme):
 
     @OnlyOnce("Iterative Stockholder Analysis")
     def do_proatomfns(self):
-        molecule = self.context.wavefn.molecule
         self.do_atgrids_moldens()
 
         log("Generating initial guess for the pro-atoms")
         self.proatomfns = []
-        for i in xrange(molecule.size):
+        for i in xrange(self.molecule.size):
             densities = self.atgrids[i].moldens
             profile = self.agrid.minimum(densities)
             profile[profile < 1e-6] = 1e-6
             self.proatomfns.append(CubicSpline(self.rgrid.rs, profile))
 
         counter = 0
-        old_charges = numpy.zeros(molecule.size, float)
+        old_charges = numpy.zeros(self.molecule.size, float)
         while True:
             new_proatomfns = []
             charges = []
-            for i in xrange(molecule.size):
+            for i in xrange(self.molecule.size):
                 integrand = self.atgrids[i].moldens*self._compute_atweights(self.atgrids[i], i)
                 radfun = self.agrid.integrate(integrand)
                 num_electrons = self.rgrid.integrate(radfun)
-                charges.append(molecule.numbers[i] - num_electrons)
+                charges.append(self.molecule.numbers[i] - num_electrons)
                 # add negligible tails to maintain a complete partitioning
                 radfun[radfun < 1e-40] = 1e-40
                 new_proatomfn = CubicSpline(self.rgrid.rs, radfun/4*numpy.pi)
@@ -963,9 +937,8 @@ class BeckeScheme(BaseScheme):
     def _prepare_atweights(self):
         # Compute the cell functions on all grids
         self.do_atgrids()
-        molecule = self.context.wavefn.molecule
-        radii = numpy.array([periodic[n].covalent_radius for n in molecule.numbers])
-        N = molecule.size
+        radii = numpy.array([periodic[n].covalent_radius for n in self.molecule.numbers])
+        N = self.molecule.size
         pb = log.pb("Computing/Loading cell functions", (N*N*(N-1))/2)
         for i in xrange(N):
             # working in the grid of atom i
@@ -983,7 +956,7 @@ class BeckeScheme(BaseScheme):
                         # working on the contribution from atom pair j0,j1
                         # determine the displacement of the cell boundary with
                         # respect to the center based on covalent radii
-                        d = molecule.distance_matrix[j0,j1]
+                        d = self.molecule.distance_matrix[j0,j1]
                         u = (radii[j0]-radii[j1])/(radii[j1]+radii[j0])
                         a = u/(u**2-1)
                         if a < -0.45: a = -0.45
@@ -1006,8 +979,7 @@ class BeckeScheme(BaseScheme):
         pb()
 
     def _compute_atgrid_atweights(self):
-        molecule = self.context.wavefn.molecule
-        for i in xrange(molecule.size):
+        for i in xrange(self.molecule.size):
             grid = self.atgrids[i]
             grid.atweights = grid.cell_functions[i]/grid.cell_sum
 
