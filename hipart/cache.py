@@ -1056,18 +1056,11 @@ class BeckeCache(BaseCache):
             grid = self.atgrids[i]
 
             # first try to load. if it fails then compute.
-            success = True
-            grid.cell_functions = []
-            for j in xrange(N):
-                cell_function = grid.load("cell%05i" % j)
-                if cell_function is None:
-                    success = False
-                    break
-                grid.cell_functions.append(cell_function)
+            grid.cell_functions = grid.load("cell_functions")
 
-            if not success:
+            if grid.cell_functions is None:
                 # load failed, so compute
-                grid.cell_functions = [numpy.ones(len(grid.points), float) for i in xrange(N)]
+                grid.cell_functions = numpy.ones((N, len(grid.points)), float)
                 for j0 in xrange(N):
                     for j1 in xrange(j0):
                         pb()
@@ -1089,9 +1082,9 @@ class BeckeCache(BaseCache):
                         grid.cell_functions[j0] *= 1-switch
                         grid.cell_functions[j1] *= switch
                 # dump cell functions
-                for j in xrange(N):
-                    grid.dump("cell%05i" % j, grid.cell_functions[j])
+                grid.dump("cell_functions", grid.cell_functions)
             else:
+                grid.cell_functions = grid.cell_functions.reshape((N, -1))
                 pb((N*(N-1))/2)
             grid.cell_sum = sum(grid.cell_functions)
         pb()

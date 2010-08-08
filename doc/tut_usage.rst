@@ -485,77 +485,35 @@ option it is automatically removed at the end of the script. In this example the
 ``work`` directory contains the following files::
 
     toon@poony ~/hipart-example/alanine> ls gaussian.hipart/work/
-    atom00000_becke_atweights.bin  atom00004_cell00005.bin        atom00008_cell00012.bin
-    atom00000.bin                  atom00004_cell00006.bin        atom00008_moldens.bin
-    atom00000_cell00000.bin        atom00004_cell00007.bin        atom00009_becke_atweights.bin
-    atom00000_cell00001.bin        atom00004_cell00008.bin        atom00009.bin
-    atom00000_cell00002.bin        atom00004_cell00009.bin        atom00009_cell00000.bin
-    atom00000_cell00003.bin        atom00004_cell00010.bin        atom00009_cell00001.bin
-    atom00000_cell00004.bin        atom00004_cell00011.bin        atom00009_cell00002.bin
-    atom00000_cell00005.bin        atom00004_cell00012.bin        atom00009_cell00003.bin
-    atom00000_cell00006.bin        atom00004_moldens.bin          atom00009_cell00004.bin
-    atom00000_cell00007.bin        atom00005_becke_atweights.bin  atom00009_cell00005.bin
-    atom00000_cell00008.bin        atom00005.bin                  atom00009_cell00006.bin
-    atom00000_cell00009.bin        atom00005_cell00000.bin        atom00009_cell00007.bin
-    atom00000_cell00010.bin        atom00005_cell00001.bin        atom00009_cell00008.bin
-    atom00000_cell00011.bin        atom00005_cell00002.bin        atom00009_cell00009.bin
-    atom00000_cell00012.bin        atom00005_cell00003.bin        atom00009_cell00010.bin
-    atom00000_moldens.bin          atom00005_cell00004.bin        atom00009_cell00011.bin
-    atom00001_becke_atweights.bin  atom00005_cell00005.bin        atom00009_cell00012.bin
-    atom00001.bin                  atom00005_cell00006.bin        atom00009_moldens.bin
-    atom00001_cell00000.bin        atom00005_cell00007.bin        atom00010_becke_atweights.bin
-    atom00001_cell00001.bin        atom00005_cell00008.bin        atom00010.bin
-    atom00001_cell00002.bin        atom00005_cell00009.bin        atom00010_cell00000.bin
-    atom00001_cell00003.bin        atom00005_cell00010.bin        atom00010_cell00001.bin
-    atom00001_cell00004.bin        atom00005_cell00011.bin        atom00010_cell00002.bin
-    atom00001_cell00005.bin        atom00005_cell00012.bin        atom00010_cell00003.bin
-    atom00001_cell00006.bin        atom00005_moldens.bin          atom00010_cell00004.bin
-    atom00001_cell00007.bin        atom00006_becke_atweights.bin  atom00010_cell00005.bin
-    atom00001_cell00008.bin        atom00006.bin                  atom00010_cell00006.bin
-    atom00001_cell00009.bin        atom00006_cell00000.bin        atom00010_cell00007.bin
-    atom00001_cell00010.bin        atom00006_cell00001.bin        atom00010_cell00008.bin
-    atom00001_cell00011.bin        atom00006_cell00002.bin        atom00010_cell00009.bin
-    atom00001_cell00012.bin        atom00006_cell00003.bin        atom00010_cell00010.bin
-    atom00001_moldens.bin          atom00006_cell00004.bin        atom00010_cell00011.bin
-    atom00002_becke_atweights.bin  atom00006_cell00005.bin        atom00010_cell00012.bin
-    atom00002.bin                  atom00006_cell00006.bin        atom00010_moldens.bin
-    atom00002_cell00000.bin        atom00006_cell00007.bin        atom00011_becke_atweights.bin
-    atom00002_cell00001.bin        atom00006_cell00008.bin        atom00011.bin
-    atom00002_cell00002.bin        atom00006_cell00009.bin        atom00011_cell00000.bin
-    atom00002_cell00003.bin        atom00006_cell00010.bin        atom00011_cell00001.bin
-    atom00002_cell00004.bin        atom00006_cell00011.bin        atom00011_cell00002.bin
-    atom00002_cell00005.bin        atom00006_cell00012.bin        atom00011_cell00003.bin
-    atom00002_cell00006.bin        atom00006_moldens.bin          atom00011_cell00004.bin
-    atom00002_cell00007.bin        atom00007_becke_atweights.bin  atom00011_cell00005.bin
-    atom00002_cell00008.bin        atom00007.bin                  atom00011_cell00006.bin
-    atom00002_cell00009.bin        atom00007_cell00000.bin        atom00011_cell00007.bin
-    atom00002_cell00010.bin        atom00007_cell00001.bin        atom00011_cell00008.bin
-    atom00002_cell00011.bin        atom00007_cell00002.bin        atom00011_cell00009.bin
-    atom00002_cell00012.bin        atom00007_cell00003.bin        atom00011_cell00010.bin
-    atom00002_moldens.bin          atom00007_cell00004.bin        atom00011_cell00011.bin
-    atom00003_becke_atweights.bin  atom00007_cell00005.bin        atom00011_cell00012.bin
-    atom00003.bin                  atom00007_cell00006.bin        atom00011_moldens.bin
-    atom00003_cell00000.bin        atom00007_cell00007.bin        atom00012_becke_atweights.bin
-    atom00003_cell00001.bin        atom00007_cell00008.bin        atom00012.bin
-    atom00003_cell00002.bin        atom00007_cell00009.bin        atom00012_cell00000.bin
-    atom00003_cell00003.bin        atom00007_cell00010.bin        atom00012_cell00001.bin
-    atom00003_cell00004.bin        atom00007_cell00011.bin        atom00012_cell00002.bin
-    atom00003_cell00005.bin        atom00007_cell00012.bin        atom00012_cell00003.bin
-    atom00003_cell00006.bin        atom00007_moldens.bin          atom00012_cell00004.bin
-    atom00003_cell00007.bin        atom00008_becke_atweights.bin  atom00012_cell00005.bin
-    atom00003_cell00008.bin        atom00008.bin                  atom00012_cell00006.bin
-    atom00003_cell00009.bin        atom00008_cell00000.bin        atom00012_cell00007.bin
-    atom00003_cell00010.bin        atom00008_cell00001.bin        atom00012_cell00008.bin
-    atom00003_cell00011.bin        atom00008_cell00002.bin        atom00012_cell00009.bin
-    atom00003_cell00012.bin        atom00008_cell00003.bin        atom00012_cell00010.bin
-    atom00003_moldens.bin          atom00008_cell00004.bin        atom00012_cell00011.bin
-    atom00004_becke_atweights.bin  atom00008_cell00005.bin        atom00012_cell00012.bin
-    atom00004.bin                  atom00008_cell00006.bin        atom00012_moldens.bin
-    atom00004_cell00000.bin        atom00008_cell00007.bin        becke_charges.bin
-    atom00004_cell00001.bin        atom00008_cell00008.bin        becke_populations.bin
-    atom00004_cell00002.bin        atom00008_cell00009.bin        context
-    atom00004_cell00003.bin        atom00008_cell00010.bin        rs.bin
-    atom00004_cell00004.bin        atom00008_cell00011.bin
+    atom00000_becke_atweights.bin  atom00007_becke_atweights.bin
+    atom00000.bin                  atom00007.bin
+    atom00000_cell_functions.bin   atom00007_cell_functions.bin
+    atom00000_moldens.bin          atom00007_moldens.bin
+    atom00001_becke_atweights.bin  atom00008_becke_atweights.bin
+    atom00001.bin                  atom00008.bin
+    atom00001_cell_functions.bin   atom00008_cell_functions.bin
+    atom00001_moldens.bin          atom00008_moldens.bin
+    atom00002_becke_atweights.bin  atom00009_becke_atweights.bin
+    atom00002.bin                  atom00009.bin
+    atom00002_cell_functions.bin   atom00009_cell_functions.bin
+    atom00002_moldens.bin          atom00009_moldens.bin
+    atom00003_becke_atweights.bin  atom00010_becke_atweights.bin
+    atom00003.bin                  atom00010.bin
+    atom00003_cell_functions.bin   atom00010_cell_functions.bin
+    atom00003_moldens.bin          atom00010_moldens.bin
+    atom00004_becke_atweights.bin  atom00011_becke_atweights.bin
+    atom00004.bin                  atom00011.bin
+    atom00004_cell_functions.bin   atom00011_cell_functions.bin
+    atom00004_moldens.bin          atom00011_moldens.bin
+    atom00005_becke_atweights.bin  atom00012_becke_atweights.bin
+    atom00005.bin                  atom00012.bin
+    atom00005_cell_functions.bin   atom00012_cell_functions.bin
+    atom00005_moldens.bin          atom00012_moldens.bin
+    atom00006_becke_atweights.bin  becke_charges.bin
+    atom00006.bin                  becke_populations.bin
+    atom00006_cell_functions.bin   context
+    atom00006_moldens.bin
+
 
 Certain choices (grids and some other options) affect the contents of the files
 in the work directory. When different grids are used in a second run, the work
