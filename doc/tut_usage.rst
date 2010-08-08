@@ -33,26 +33,24 @@ depicted in the figure below:
 .. image:: alanine_small.png
 
 All computations are carried out at the B3LYP/6-31G(d) level with Gaussian03.
-A ``tar.gz``-archive with all the files needed to run the examples below can be
-downloaded `here <http://molmod.ugent.be/code/static/hipart-example.tar.gz>`_.
-The archive can be downloaded and unpacked on your Linux box as follows::
+The Gaussian03 files for these test molecules example can be found with the
+source code. If you have not already done so, check out the latest version of
+the source code::
 
-    toon@poony ~> wget http://molmod.ugent.be/code/static/hipart-example.tar.gz
-    toon@poony ~> tar -xzf hipart-example.tar.gz
+    toon@poony ~> git clone git://molmod.ugent.be/git/hipart.git
 
-The is directory of the archive::
+These are the output files you should have now::
 
-    toon@poony ~> find hipart-example | sort
-    hipart-example
-    hipart-example/alanine
-    hipart-example/alanine/gaussian.com
-    hipart-example/alanine/gaussian.fchk
-    hipart-example/alanine/gaussian.log
-    hipart-example/alanine-radical
-    hipart-example/alanine-radical/gaussian.com
-    hipart-example/alanine-radical/gaussian.fchk
-    hipart-example/alanine-radical/gaussian.log
-    hipart-example/atoms
+    toon@poony ~> cd hipart/examples/001-usage
+    toon@poony ~/hipart/examples/001-usage> find | sort
+    ./alanine
+    ./alanine/gaussian.com
+    ./alanine/gaussian.fchk
+    ./alanine/gaussian.log
+    ./alanine-radical
+    ./alanine-radical/gaussian.com
+    ./alanine-radical/gaussian.fchk
+    ./alanine-radical/gaussian.log
 
 
 Running proper Gaussian jobs
@@ -61,7 +59,7 @@ Running proper Gaussian jobs
 In order to run a decent analysis of the wavefunction, one first needs a decent
 wavefunction to start with. Our alanine input file looks like::
 
-    toon@poony ~> cat hipart-example/alanine/gaussian.com
+    toon@poony ~/hipart/examples/001-usage> cat alanine/gaussian.com
     %mem=500MB
     %chk=gaussian.chk
     %nproc=1
@@ -85,7 +83,7 @@ wavefunction to start with. Our alanine input file looks like::
      H  2.530514260  0.486012629 -0.137289368
 
 
-    toon@poony ~>
+    toon@poony ~/hipart/examples/001-usage>
 
 The line ``%chk=gaussian.chk`` is mandatory to process the Gaussian output with
 HiPart. After the job is completed, one must convert the binary checkpoint file
@@ -113,6 +111,7 @@ there are also some technical details to take into account:
   only the density matrix of the preceding HF computation is written to the
   checkpoint file, and not the post-HF density matrix.
 
+
 Preparing the atomic database
 -----------------------------
 
@@ -124,7 +123,7 @@ in the path before executing ``hi-atomdb.py``.
 
 The online help is as follows::
 
-    toon@poony ~> hi-atomdb.py --help
+    toon@poony ~/hipart/examples/001-usage> hi-atomdb.py --help
     Usage: hi-atomdb.py [options] executable lot atoms
 
     hi-atomdb.py computes a database of pro-atomic densities.
@@ -173,34 +172,44 @@ we need pro-atoms Hydrogen, Carbon, Nitrogen and Oxygen. The database of
 pro-atoms is generated as follows. (The level of theory is put between quotation
 marks to avoid the interpretation of the round brackets by the shell.) ::
 
-    toon@poony ~> cd ~/hipart-example/atoms
-    toon@poony ~/hipart-example/atoms> hi-atomdb.py g03 'B3LYP/6-31G(d)' 1,6-8
-    Computing atomic database with program Gaussian (g03,qc=False)
-    Creating input files:
-     0% ........... 33% .......... 66% .......... 100%
-    Atomic computations:
-     0% ........... 33% .......... 66% .......... 100%
-    Selecting ground states.
-    Density profiles:
-     0% ........... 50% .......... 100%
-    Total charge error:   1  H -2    -5.17837e-09
-    Total charge error:   1  H -1    2.39259e-09
-    Total charge error:   1  H +0    -9.13307e-10
-    Total charge error:   6  C -2    7.36470e-09
-    Total charge error:   6  C -1    2.21719e-09
-    Total charge error:   6  C +0    3.42406e-09
-    Total charge error:   6  C +1    -3.71427e-09
-    Total charge error:   6  C +2    -1.65750e-09
-    Total charge error:   7  N -2    -7.98667e-09
-    Total charge error:   7  N -1    -8.17507e-09
-    Total charge error:   7  N +0    -7.18856e-09
-    Total charge error:   7  N +1    -5.77149e-09
-    Total charge error:   7  N +2    -1.27853e-08
-    Total charge error:   8  O -2    -3.74776e-09
-    Total charge error:   8  O -1    -2.72562e-09
-    Total charge error:   8  O +0    -7.53968e-09
-    Total charge error:   8  O +1    -1.21337e-08
-    Total charge error:   8  O +2    -1.03187e-08
+    toon@poony ~/hipart/examples/001-usage> mkdir atoms
+    toon@poony ~/hipart/examples/001-usage> cd atoms
+    toon@poony ~/hipart/examples/001-usage/atoms> hi-atomdb.py g03 'B3LYP/6-31G(d)' 1,6-8
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.01 Computing atomic database with program Gaussian (g03,qc=False)
+               Creating input files: 0%.........33%.........66%.........100%
+               Atomic computations: 0%.........33%.........66%.........100%
+          0.05 Could not execute any job. Is g03 in the PATH?
+
+This is what one gets when the ``g03`` binary is not in the path. You probably
+need to load a ``g03.profile`` first. ::
+
+    toon@poony ~/hipart/examples/001-usage/atoms> . ~/g03.profile
+    toon@poony ~/hipart/examples/001-usage/atoms> hi-atomdb.py g03 'B3LYP/6-31G(d)' 1,6-8
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.01 Computing atomic database with program Gaussian (g03,qc=False)
+               Creating input files: 0%.........33%.........66%.........100%
+               Atomic computations: 0%.........33%.........66%.........100%
+        139.45 Selecting ground states.
+               Density profiles: 0%.........50%.........100%
+        141.29 Total charge error:   1  H -2    -5.17837e-09
+        141.29 Total charge error:   1  H -1     2.39259e-09
+        141.29 Total charge error:   1  H +0    -9.13307e-10
+        141.29 Total charge error:   6  C -2     7.36471e-09
+        141.29 Total charge error:   6  C -1     2.21719e-09
+        141.29 Total charge error:   6  C +0     3.42406e-09
+        141.29 Total charge error:   6  C +1    -3.71426e-09
+        141.29 Total charge error:   6  C +2    -1.65750e-09
+        141.29 Total charge error:   7  N -2    -7.98666e-09
+        141.29 Total charge error:   7  N -1    -8.17507e-09
+        141.29 Total charge error:   7  N +0    -7.18856e-09
+        141.29 Total charge error:   7  N +1    -5.77149e-09
+        141.29 Total charge error:   7  N +2    -1.27853e-08
+        141.29 Total charge error:   8  O -2    -3.74776e-09
+        141.29 Total charge error:   8  O -1    -2.72562e-09
+        141.29 Total charge error:   8  O +0    -7.53968e-09
+        141.29 Total charge error:   8  O +1    -1.21337e-08
+        141.29 Total charge error:   8  O +2    -1.03187e-08
 
 The script ``hi-atomdb.py`` consists of three major phases: (i) setup of the
 atomic input files for Gaussian, (ii) Gaussian computations on every atomic
@@ -219,7 +228,7 @@ atoms or large basis sets, one may want to tune the radial grid.
 
 Once the program is finished, the following files are generated::
 
-    toon@poony# find | sort
+    toon@poony ~/hipart/examples/001-usage/atoms> find | sort
     ./001H
     ./001H/neg1
     ./001H/neg1/gs
@@ -292,7 +301,7 @@ Partitioning tools
 
 All other scripts besides ``hi-atomdb.py`` have the same usage description::
 
-    toon@poony# hi-some-script.py --help
+    toon@poony ~/hipart/examples/001-usage/atoms> hi-some-script.py --help
     Usage: hi-some-script.py [options] gaussian.fchk scheme [scheme parameters]
     ...
 
@@ -308,7 +317,8 @@ Atomic charges
 Effective atomic charges are computed with ``hi-charges.py``. The online help is
 as follows::
 
-    toon@poony# hi-charges.py --help
+    toon@poony ~/hipart/examples/001-usage/atoms> cd ../alanine
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py --help
     Usage: hi-charges.py [options] gaussian.fchk scheme [scheme parameters]
 
     hi-charges.py computes effective atomic charges.
@@ -409,61 +419,65 @@ as follows::
                             procedures. [default=500]
 
 
-We will first compute the :ref:`becke` charges, as this is the simplest of the
-four partitioning methods. The screen output gives some progress information of
-the various parts of the program. This is screen output in the case of the
-alanine molecule::
+We will first compute the :ref:`becke` charges, as the :ref:`becke` scheme is
+the simplest of the four partitioning methods. The screen output gives some
+progress information of the various parts of the program. This is screen output
+in the case of the alanine molecule::
 
-    toon@poony ~> cd ~/hipart-example/alanine
-    toon@poony ~/hipart-example/alanine> hi-charges.py gaussian.fchk becke
-    BEGIN Loading Electronic structure
-      Data read from: gaussian.fchk ()
-      Restricted: True
-      Orbitals present: True
-      Spin density present: False
-      Number of alpha electrons: 24
-      Number of beta electrons: 24
-      Number of electrons: 48
-      Total charge: 0
-      Number of atoms: 13
-      Chemical formula: O2NC3H7
-    END Loading Electronic structure
-    BEGIN Atomic charges
-      BEGIN Atomic grids
-        Computing/Loading atomic grids (and distances):
-         0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
-        . 47% .......... 53% .......... 59% .......... 65% .......... 71% .......... 76% .......... 82% .......... 88% .........
-        . 94% ......... 100%
-      END Atomic grids
-      BEGIN Molecular density on atomic grids
-        Computing/Loading densities:
-         0% ........... 76% ... 100%
-      END Molecular density on atomic grids
-      BEGIN Defining atomic weight functions (each on their own atomic grid)
-        Trying to load weight functions
-        Could not load all weight functions from workdir. Computing them...
-        BEGIN Becke's Smooth Voronoi Partitioning
-          Computing/Loading cell functions:
-           0% ........... 0% .......... 1% .......... 2% .......... 3% .......... 4% .......... 5% .......... 6% .........
-          . 7% .......... 8% .......... 9% .......... 10% .......... 11% .......... 12% .......... 13% .......... 14% .........
-          . 15% .......... 16% .......... 17% .......... 18% .......... 19% .......... 20% .......... 21% .......... 22% .........
-          . 23% .......... 24% .......... 25% .......... 26% .......... 27% .......... 28% .......... 29% .......... 30% .........
-          . 31% .......... 32% .......... 33% .......... 34% .......... 35% .......... 36% .......... 37% .......... 38% .........
-          . 39% .......... 40% .......... 41% .......... 42% .......... 43% .......... 44% .......... 45% .......... 46% .........
-          . 47% .......... 48% .......... 49% .......... 50% .......... 51% .......... 52% .......... 53% .......... 54% .........
-          . 55% .......... 56% .......... 57% .......... 58% .......... 59% .......... 60% .......... 61% .......... 62% .........
-          . 63% .......... 64% .......... 65% .......... 66% .......... 67% .......... 68% .......... 69% .......... 70% .........
-          . 71% .......... 71% .......... 72% .......... 73% .......... 74% .......... 75% .......... 76% .......... 77% .........
-          . 78% .......... 79% .......... 80% .......... 81% .......... 82% .......... 83% .......... 84% .......... 85% .........
-          . 86% .......... 87% .......... 88% .......... 89% .......... 90% .......... 91% .......... 92% .......... 93% .........
-          . 94% .......... 95% .......... 96% .......... 97% .......... 98% .......... 99% .... 100%
-        END Becke's Smooth Voronoi Partitioning
-        Writing results to workdir
-      END Defining atomic weight functions (each on their own atomic grid)
-      Computing charges:
-       0% ........... 76% ... 100%
-      Written gaussian.hipart/becke_charges.txt
-    END Atomic charges
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk becke
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.02 BEGIN Loading Electronic structure
+          0.05   Data read from: gaussian.fchk ()
+          0.05   Restricted: True
+          0.05   Orbitals present: True
+          0.05   Spin density present: False
+          0.05   Number of alpha electrons: 24
+          0.05   Number of beta electrons: 24
+          0.05   Number of electrons: 48
+          0.05   Total charge: 0
+          0.05   Number of atoms: 13
+          0.05   Chemical formula: O2NC3H7
+          0.05 END Loading Electronic structure
+          0.05 BEGIN Atomic charges
+          0.05   BEGIN Atomic grids
+                   Computing/Loading atomic grids and distances: 0%.........5%......
+                   ...11%.........17%.........23%.........29%.........35%.........41
+                   %.........47%.........53%.........59%.........65%.........71%....
+                   .....76%.........82%.........88%.........94%........100%
+          0.47   END Atomic grids
+          0.47   BEGIN Molecular density on atomic grids
+                   Computing/Loading densities: 0%.........76%..100%
+          4.33   END Molecular density on atomic grids
+          4.33   BEGIN Defining atomic weight functions (own atomic grid)
+          4.33     Trying to load weight functions
+          4.33     Could not load all weight functions from workdir. Computing them.
+          4.33     BEGIN Becke's Smooth Voronoi Partitioning
+                     Computing/Loading cell functions: 0%.........0%.........1%.....
+                     ....2%.........3%.........4%.........5%.........6%.........7%..
+                     .......8%.........9%.........10%.........11%.........12%.......
+                     ..13%.........14%.........15%.........16%.........17%.........1
+                     8%.........19%.........20%.........21%.........22%.........23%.
+                     ........24%.........25%.........26%.........27%.........28%....
+                     .....29%.........30%.........31%.........32%.........33%.......
+                     ..34%.........35%.........36%.........37%.........38%.........3
+                     9%.........40%.........41%.........42%.........43%.........44%.
+                     ........45%.........46%.........47%.........48%.........49%....
+                     .....50%.........51%.........52%.........53%.........54%.......
+                     ..55%.........56%.........57%.........58%.........59%.........6
+                     0%.........61%.........62%.........63%.........64%.........65%.
+                     ........66%.........67%.........68%.........69%.........70%....
+                     .....71%.........71%.........72%.........73%.........74%.......
+                     ..75%.........76%.........77%.........78%.........79%.........8
+                     0%.........81%.........82%.........83%.........84%.........85%.
+                     ........86%.........87%.........88%.........89%.........90%....
+                     .....91%.........92%.........93%.........94%.........95%.......
+                     ..96%.........97%.........98%.........99%...100%
+          4.96     END Becke's Smooth Voronoi Partitioning
+          4.96     Writing results to workdir
+          4.96   END Defining atomic weight functions (own atomic grid)
+                 Computing charges: 0%.........76%..100%
+          4.97   Written gaussian.hipart/becke_charges.txt
+          4.97 END Atomic charges
 
 The entire screen output is conceived as a call graph that shows in which part
 of Hipart the program is currently active. The order of the routines is
@@ -478,7 +492,7 @@ checkpoint file is ``gaussian.fchk``, then the output directory is
 ``gaussian.hipart``. In this example the following output files can be found in
 ``gaussian.hipart``::
 
-    toon@poony ~/hipart-example/alanine> ls gaussian.hipart/
+    toon@poony ~/hipart/examples/001-usage/alanine> ls gaussian.hipart/
     becke_charges.txt
     work
 
@@ -490,7 +504,7 @@ executed afterwards. It can always be removed manually, or with the ``--clean``
 option it is automatically removed at the end of the script. In this example the
 ``work`` directory contains the following files::
 
-    toon@poony ~/hipart-example/alanine> ls gaussian.hipart/work/
+    toon@poony ~/hipart/examples/001-usage/alanine> ls gaussian.hipart/work/
     atom00000_becke_atweights.bin  atom00007_becke_atweights.bin
     atom00000.bin                  atom00007.bin
     atom00000_cell_functions.bin   atom00007_cell_functions.bin
@@ -522,50 +536,35 @@ option it is automatically removed at the end of the script. In this example the
 
 
 Certain choices (grids and some other options) affect the contents of the files
-in the work directory. When different grids are used in a second run, the work
-directory is no longer usable. In the following example we try to use a
-different Lebedev grid, which causes an error message::
+in the work directory. For example, when different grids are used in a second
+run, the work directory is no longer usable. In the following example we try to
+use a different Lebedev grid, which causes an error message::
 
-    toon@poony ~/hipart-example/alanine> hi-charges.py gaussian.fchk becke -l14
-    BEGIN Electronic structure summary
-      Data read from: gaussian.fchk ()
-      Restricted: True
-      Orbitals present: True
-      Spin density present: False
-      Number of alpha electrons: 5
-      Number of beta electrons: 5
-      Number of electrons: 10
-      Total charge: 0
-      Number of atoms: 2
-      Chemical formula: FH
-    END Electronic structure summary
-    Traceback (most recent call last):
-      File "/home/toon/bin/hi-charges.py", line 5, in <module>
-        pkg_resources.run_script('HiPart==0.004', 'hi-charges.py')
-      File "/usr/lib/python2.6/dist-packages/pkg_resources.py", line 461, in run_script
-        self.require(requires)[0].run_script(script_name, ns)
-      File "/usr/lib/python2.6/dist-packages/pkg_resources.py", line 1194, in run_script
-        execfile(script_filename, namespace, namespace)
-      File "/home/toon/lib/python/HiPart-0.004-py2.6-linux-x86_64.egg/EGG-INFO/scripts/hi-charges.py", line 35, in <module>
-        context, cache = parse_command_line(usage)
-      File "/home/toon/lib/python/HiPart-0.004-py2.6-linux-x86_64.egg/hipart/opts.py", line 98, in parse_command_line
-        cache = CacheClass.new_from_args(context, args[2:])
-      File "/home/toon/lib/python/HiPart-0.004-py2.6-linux-x86_64.egg/hipart/cache.py", line 1046, in new_from_args
-        return cls(context, k, rs)
-      File "/home/toon/lib/python/HiPart-0.004-py2.6-linux-x86_64.egg/hipart/cache.py", line 1051, in __init__
-        BaseCache.__init__(self, context, {"becke_k": str(k)})
-      File "/home/toon/lib/python/HiPart-0.004-py2.6-linux-x86_64.egg/hipart/cache.py", line 99, in __init__
-        self.context.check_tag(extra_tag_attributes)
-      File "/home/toon/lib/python/HiPart-0.004-py2.6-linux-x86_64.egg/hipart/context.py", line 85, in check_tag
-        raise ContextError("The existing work directory contains incompatible data. Trash it!")
-    hipart.context.ContextError: The existing work directory contains incompatible data. Trash it!
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk becke -l14
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.03 BEGIN Loading Electronic structure
+          0.05   Data read from: gaussian.fchk ()
+          0.05   Restricted: True
+          0.05   Orbitals present: True
+          0.05   Spin density present: False
+          0.05   Number of alpha electrons: 24
+          0.05   Number of beta electrons: 24
+          0.05   Number of electrons: 48
+          0.05   Total charge: 0
+          0.05   Number of atoms: 13
+          0.05   Chemical formula: O2NC3H7
+          0.05 END Loading Electronic structure
+    The existing work directory (gaussian.hipart/work) contains incompatible data.
+    Try using the --clean option once.
+    The following mismatch was detected in the work directory:
+    'ALebedevIntGrid(110)' (found in work) versus 'ALebedevIntGrid(14)' (current script) for property 'agrid'
 
-Either remove the entire work directory, or stick to the options used in the
-first execution of a HiPart script.
+Either use the ``--clean`` option, or stick to the options used in the first
+execution of a HiPart script.
 
 The output file ``becke_charges.txt`` has the following contents::
 
-    toon@poony ~/hipart-example/alanine> cat gaussian.hipart/becke_charges.txt
+    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/becke_charges.txt
     number of atoms: 13
       i        Z      Charge
     --------------------------------
@@ -599,10 +598,10 @@ precision of the numbers in the formatted checkpoint file.
 Even a second run of the program (after removing the work directory) will result
 in slightly different numbers::
 
-    toon@poony ~/hipart-example/alanine> rm -r gaussian.hipart
-    toon@poony ~/hipart-example/alanine> hi-charges.py gaussian.fchk becke
+    toon@poony ~/hipart/examples/001-usage/alanine> rm -r gaussian.hipart
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk becke
     <output omitted>
-    toon@poony ~/hipart-example/alanine> cat gaussian.hipart/becke_charges.txt
+    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/becke_charges.txt
     number of atoms: 13
       i        Z      Charge
     --------------------------------
@@ -634,9 +633,9 @@ several advantages:
 For the sake of completeness, these are the commands to compute the charges on
 the same molecule with the three other partitioning schemes::
 
-    toon@poony ~/hipart-example/alanine> hi-charges.py gaussian.fchk hirsh ../atoms/densities.txt
-    toon@poony ~/hipart-example/alanine> hi-charges.py gaussian.fchk hirshi ../atoms/densities.txt
-    toon@poony ~/hipart-example/alanine> hi-charges.py gaussian.fchk isa
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk hirsh ../atoms/densities.txt
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk hirshi ../atoms/densities.txt
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk isa
 
 
 Atomic dipoles
@@ -646,7 +645,7 @@ Atomic dipoles are compute with the program ``hi-dipoles.py``. Like most HiPart
 scripts it takes the same arguments and options as the script ``hi-charges.py``,
 which are discussed in the previous section. The online help starts as follows::
 
-    toon@poony# hi-dipoles.py --help
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-dipoles.py --help
     Usage: hi-dipoles.py [options] gaussian.fchk scheme [scheme parameters]
 
     hi-dipoles.py computes atomic charges and dipoles.
@@ -660,80 +659,80 @@ The screen output is also very similar. Depending on the previously executed
 scripts, e.g. ``hi-charges.py``, some intermediate results can be loaded from
 the work directory and do not have to be computed again.
 
-The following example computes the atomic :ref:`hirshfeld-i` dipoles in the alanine
-molecule::
+The following example computes the atomic :ref:`hirshfeld-i` dipoles in the
+alanine molecule::
 
-    toon@poony ~/hipart-example/alanine> hi-dipoles.py gaussian.fchk hirshi ../atoms/densities.txt
-    BEGIN Loading Electronic structure
-      Data read from: gaussian.fchk ()
-      Restricted: True
-      Orbitals present: True
-      Spin density present: False
-      Number of alpha electrons: 24
-      Number of beta electrons: 24
-      Number of electrons: 48
-      Total charge: 0
-      Number of atoms: 13
-      Chemical formula: O2NC3H7
-    END Loading Electronic structure
-    BEGIN Atomic dipoles
-      BEGIN Atomic grids
-        Computing/Loading atomic grids (and distances):
-         0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
-        . 47% .......... 53% .......... 59% .......... 65% .......... 71% .......... 76% .......... 82% .......... 88% .........
-        . 94% ......... 100%
-      END Atomic grids
-      BEGIN Molecular density on atomic grids
-        Computing/Loading densities:
-         0% ........... 76% ... 100%
-      END Molecular density on atomic grids
-      BEGIN Defining atomic weight functions (each on their own atomic grid)
-        Trying to load weight functions
-        Could not load all weight functions from workdir. Computing them...
-        BEGIN Iterative Hirshfeld
-          Iteration 000    max change = 2.75536e-01    total charge = 5.17260e-04
-          Iteration 001    max change = 1.74610e-01    total charge = 5.80338e-04
-          Iteration 002    max change = 1.22219e-01    total charge = 6.16888e-04
-          Iteration 003    max change = 8.35438e-02    total charge = 6.38461e-04
-          Iteration 004    max change = 5.68211e-02    total charge = 6.51979e-04
-          Iteration 005    max change = 3.96255e-02    total charge = 6.60918e-04
-          Iteration 006    max change = 2.83372e-02    total charge = 6.67054e-04
-          Iteration 007    max change = 2.03973e-02    total charge = 6.71377e-04
-          Iteration 008    max change = 1.47667e-02    total charge = 6.74489e-04
-          Iteration 009    max change = 1.16109e-02    total charge = 6.76756e-04
-          Iteration 010    max change = 9.20412e-03    total charge = 6.78432e-04
-          Iteration 011    max change = 7.30506e-03    total charge = 6.79682e-04
-          Iteration 012    max change = 5.80444e-03    total charge = 6.80623e-04
-          Iteration 013    max change = 4.61697e-03    total charge = 6.81337e-04
-          Iteration 014    max change = 3.67600e-03    total charge = 6.81883e-04
-          Iteration 015    max change = 2.92941e-03    total charge = 6.82302e-04
-          Iteration 016    max change = 2.33632e-03    total charge = 6.82625e-04
-          Iteration 017    max change = 1.86465e-03    total charge = 6.82876e-04
-          Iteration 018    max change = 1.48917e-03    total charge = 6.83071e-04
-          Iteration 019    max change = 1.18998e-03    total charge = 6.83224e-04
-          Iteration 020    max change = 9.51378e-04    total charge = 6.83344e-04
-          Iteration 021    max change = 7.60959e-04    total charge = 6.83438e-04
-          Iteration 022    max change = 6.08891e-04    total charge = 6.83512e-04
-          Iteration 023    max change = 4.87379e-04    total charge = 6.83571e-04
-          Iteration 024    max change = 3.90232e-04    total charge = 6.83617e-04
-          Iteration 025    max change = 3.12530e-04    total charge = 6.83654e-04
-          Iteration 026    max change = 2.50356e-04    total charge = 6.83683e-04
-          Iteration 027    max change = 2.00589e-04    total charge = 6.83706e-04
-          Iteration 028    max change = 1.60741e-04    total charge = 6.83725e-04
-          Iteration 029    max change = 1.28828e-04    total charge = 6.83739e-04
-          Iteration 030    max change = 1.03263e-04    total charge = 6.83751e-04
-          Iteration 031    max change = 8.27801e-05    total charge = 6.83760e-04
-        END Iterative Hirshfeld
-        Writing results to workdir
-      END Defining atomic weight functions (each on their own atomic grid)
-      Computing dipoles:
-       0% ........... 76% ... 100%
-      Written gaussian.hipart/hirshi_dipoles.txt
-    END Atomic dipoles
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-dipoles.py gaussian.fchk hirshi ../atoms/densities.txt
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.02 BEGIN Loading Electronic structure
+          0.05   Data read from: gaussian.fchk ()
+          0.05   Restricted: True
+          0.05   Orbitals present: True
+          0.05   Spin density present: False
+          0.05   Number of alpha electrons: 24
+          0.05   Number of beta electrons: 24
+          0.05   Number of electrons: 48
+          0.05   Total charge: 0
+          0.05   Number of atoms: 13
+          0.05   Chemical formula: O2NC3H7
+          0.05 END Loading Electronic structure
+          0.05 BEGIN Atomic dipoles
+          0.05   BEGIN Atomic grids
+                   Computing/Loading atomic grids and distances: 0%.........5%......
+                   ...11%.........17%.........23%.........29%.........35%.........41
+                   %.........47%.........53%.........59%.........65%.........71%....
+                   .....76%.........82%.........88%.........94%........100%
+          0.23   END Atomic grids
+          0.23   BEGIN Molecular density on atomic grids
+                   Computing/Loading densities: 0%.........76%..100%
+          0.24   END Molecular density on atomic grids
+          0.24   BEGIN Defining atomic weight functions (own atomic grid)
+          0.24     Trying to load weight functions
+          0.24     Could not load all weight functions from workdir. Computing them.
+          0.24     BEGIN Iterative Hirshfeld
+          0.24       Iteration   Max change   Total charge
+          0.35           0      2.75474e-01    8.08195e-04
+          0.46           1      1.74579e-01    8.27390e-04
+          0.57           2      1.22188e-01    8.17670e-04
+          0.67           3      8.35207e-02    8.05282e-04
+          0.78           4      5.68051e-02    7.94794e-04
+          0.89           5      3.95991e-02    7.86665e-04
+          1.00           6      2.83158e-02    7.80534e-04
+          1.10           7      2.03801e-02    7.75934e-04
+          1.21           8      1.47532e-02    7.72484e-04
+          1.32           9      1.16319e-02    7.69893e-04
+          1.43          10      9.22139e-03    7.67926e-04
+          1.53          11      7.31924e-03    7.66432e-04
+          1.64          12      5.81607e-03    7.65289e-04
+          1.75          13      4.62651e-03    7.64410e-04
+          1.86          14      3.68384e-03    7.63730e-04
+          1.96          15      2.93585e-03    7.63203e-04
+          2.07          16      2.34162e-03    7.62792e-04
+          2.18          17      1.86901e-03    7.62470e-04
+          2.29          18      1.49276e-03    7.62217e-04
+          2.39          19      1.19293e-03    7.62018e-04
+          2.50          20      9.53810e-04    7.61860e-04
+          2.61          21      7.62963e-04    7.61736e-04
+          2.72          22      6.10542e-04    7.61637e-04
+          2.82          23      4.88738e-04    7.61558e-04
+          2.93          24      3.91352e-04    7.61495e-04
+          3.04          25      3.13453e-04    7.61446e-04
+          3.15          26      2.51116e-04    7.61406e-04
+          3.25          27      2.01215e-04    7.61374e-04
+          3.36          28      1.61257e-04    7.61348e-04
+          3.47          29      1.29253e-04    7.61328e-04
+          3.58          30      1.03613e-04    7.61312e-04
+          3.68          31      8.30677e-05    7.61299e-04
+          3.68     END Iterative Hirshfeld
+          3.79     Writing results to workdir
+          3.79   END Defining atomic weight functions (own atomic grid)
+                 Computing dipoles: 0%.........76%..100%
+          3.80   Written gaussian.hipart/hirshi_dipoles.txt
+          3.80 END Atomic dipoles
 
 The output is stored in the file ``gaussian.hipart/hirshi_dipoles.txt``. ::
 
-    toon@poony ~/hipart-example/alanine> cat gaussian.hipart/hirshi_dipoles.txt
+    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/hirshi_dipoles.txt
     number of atoms: 13
       i        Z      Dipole-X        Dipole-Y        Dipole-Z      Dipole-norm
     -------------------------------------------------------------------------------
@@ -807,67 +806,65 @@ Again, the script is executed in the same style as all other scripts. See the
 documentation of ``hi-charges.py`` for more details. The example below tests the
 charges and dipoles obtained with a :ref:`hirshfeld-i` partitioning::
 
-    toon@poony ~/hipart-example/alanine> hi-esp-test.py gaussian.fchk hirshi ../atoms/densities.txt
-    hi-esp-test.py gaussian.fchk hirshi ../atoms/densities.txt
-    BEGIN Loading Electronic structure
-      Data read from: gaussian.fchk ()
-      Restricted: True
-      Orbitals present: True
-      Spin density present: False
-      Number of alpha electrons: 24
-      Number of beta electrons: 24
-      Number of electrons: 48
-      Total charge: 0
-      Number of atoms: 13
-      Chemical formula: O2NC3H7
-    END Loading Electronic structure
-    BEGIN Testing charges and dipoles on ESP grid.
-      BEGIN Atomic charges
-        BEGIN Atomic grids
-          Computing/Loading atomic grids (and distances):
-           0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
-          . 47% .......... 53% .......... 59% .......... 65% .......... 71% .......... 76% .......... 82% .......... 88% .........
-          . 94% ......... 100%
-        END Atomic grids
-        BEGIN Molecular density on atomic grids
-          Computing/Loading densities:
-           0% ........... 76% ... 100%
-        END Molecular density on atomic grids
-        BEGIN Defining atomic weight functions (each on their own atomic grid)
-          Trying to load weight functions
-        END Defining atomic weight functions (each on their own atomic grid)
-        Computing charges:
-         0% ........... 76% ... 100%
-        Written gaussian.hipart/hirshi_charges.txt
-      END Atomic charges
-      BEGIN Atomic dipoles
-        Loading dipoles.
-        Written gaussian.hipart/hirshi_dipoles.txt
-      END Atomic dipoles
-      BEGIN Computing the ESP cost function
-        BEGIN Molecular density on the molecular grid
-          BEGIN Molecular grid
-            BEGIN Estimating noble gas core radii
-              Computing noble radii
-            END Estimating noble gas core radii
-            Constructing molecular grid:
-             0% ........... 33% .......... 66% .......... 100%
-          END Molecular grid
-        END Molecular density on the molecular grid
-        BEGIN Molecular potential on the molecular grid
-          This may take a minute. Hang on.
-        END Molecular potential on the molecular grid
-        Written gaussian.hipart/mol_esp_cost.txt
-      END Computing the ESP cost function
-      Written gaussian.hipart/hirshi_esp_test.txt
-    END Testing charges and dipoles on ESP grid.
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-esp-test.py gaussian.fchk hirshi ../atoms/densities.txt
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.02 BEGIN Loading Electronic structure
+          0.05   Data read from: gaussian.fchk ()
+          0.05   Restricted: True
+          0.05   Orbitals present: True
+          0.05   Spin density present: False
+          0.05   Number of alpha electrons: 24
+          0.05   Number of beta electrons: 24
+          0.05   Number of electrons: 48
+          0.05   Total charge: 0
+          0.05   Number of atoms: 13
+          0.05   Chemical formula: O2NC3H7
+          0.05 END Loading Electronic structure
+          0.05 BEGIN Testing charges and dipoles on ESP grid.
+          0.05   BEGIN Atomic charges
+          0.05     BEGIN Atomic grids
+                     Computing/Loading atomic grids and distances: 0%.........5%....
+                     .....11%.........17%.........23%.........29%.........35%.......
+                     ..41%.........47%.........53%.........59%.........65%.........7
+                     1%.........76%.........82%.........88%.........94%........100%
+
+          0.23     END Atomic grids
+          0.23     BEGIN Molecular density on atomic grids
+                     Computing/Loading densities: 0%.........76%..100%
+          0.23     END Molecular density on atomic grids
+          0.23     BEGIN Defining atomic weight functions (own atomic grid)
+          0.23       Trying to load weight functions
+          0.24     END Defining atomic weight functions (own atomic grid)
+                   Computing charges: 0%.........76%..100%
+          0.24     Written gaussian.hipart/hirshi_charges.txt
+          0.24   END Atomic charges
+          0.24   BEGIN Atomic dipoles
+          0.24     Written gaussian.hipart/hirshi_dipoles.txt
+          0.24   END Atomic dipoles
+          0.24   BEGIN Computing the ESP cost function
+          0.24     BEGIN Molecular density on the molecular grid
+          0.24       BEGIN Molecular grid
+          0.24         BEGIN Estimating noble gas core radii
+          0.24         END Estimating noble gas core radii
+                       Constructing molecular grid: 0%.........33%.........66%......
+                       ...100%
+          1.20       END Molecular grid
+          1.70     END Molecular density on the molecular grid
+          1.70     BEGIN Molecular potential on the molecular grid
+          1.70       This may take a minute. Hang on.
+         41.90     END Molecular potential on the molecular grid
+         42.11     Written gaussian.hipart/mol_esp_cost.txt
+         42.11   END Computing the ESP cost function
+         42.11   Written gaussian.hipart/hirshi_esp_test.txt
+         42.11   Written gaussian.hipart/hirshi_esp_test.txt
+         42.11 END Testing charges and dipoles on ESP grid.
 
 This script computes the charges and dipoles with the given scheme if they are
 not present yet. Then the matrix representation of the cost function is
 constructed and stored in the file ``mol_esp_cost.txt``. The results of the
 test are written in ``hirsh_esp_test.txt``. The output in this example is::
 
-    toon@poony ~/hipart-example/alanine> cat gaussian.hipart/hirshi_esp_test.txt
+    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/hirshi_esp_test.txt
     Reproduction of the molecular dipole
     -------------------------------------------------------------------------------
                       Dipole-X        Dipole-Y        Dipole-Z       Dipole-norm
@@ -917,308 +914,316 @@ Atomic multipole expansions
 The multipole expansion of each atom, up to the hexadecapole, is computed with
 the script ``hi-multipoles.py``. This is an example with the :ref:`isa`::
 
-    toon@poony ~/hipart-example/alanine> hi-multipoles gaussian.fchk isa
-    BEGIN Loading Electronic structure
-      Data read from: gaussian.fchk ()
-      Restricted: True
-      Orbitals present: True
-      Spin density present: False
-      Number of alpha electrons: 24
-      Number of beta electrons: 24
-      Number of electrons: 48
-      Total charge: 0
-      Number of atoms: 13
-      Chemical formula: O2NC3H7
-    END Loading Electronic structure
-    BEGIN Atomic multipoles (up to hexadecapols)
-      BEGIN Atomic grids
-        Computing/Loading atomic grids (and distances):
-         0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
-        . 47% .......... 53% .......... 59% .......... 65% .......... 71% .......... 76% .......... 82% .......... 88% .........
-        . 94% ......... 100%
-      END Atomic grids
-      BEGIN Molecular density on atomic grids
-        Computing/Loading densities:
-         0% ........... 76% ... 100%
-      END Molecular density on atomic grids
-      BEGIN Defining atomic weight functions (each on their own atomic grid)
-        Trying to load weight functions
-        Could not load all weight functions from workdir. Computing them...
-        BEGIN Iterative Stockholder Analysis
-          Generating initial guess for the pro-atoms
-          Iteration 000    max change = 6.33205e-01    total charge = 7.34678e-04
-          Iteration 001    max change = 6.26729e-02    total charge = 4.74203e-04
-          Iteration 002    max change = 4.83609e-02    total charge = 3.39329e-04
-          Iteration 003    max change = 3.92149e-02    total charge = 2.77369e-04
-          Iteration 004    max change = 3.22129e-02    total charge = 2.51642e-04
-          Iteration 005    max change = 2.69339e-02    total charge = 2.42697e-04
-          Iteration 006    max change = 2.29472e-02    total charge = 2.35508e-04
-          Iteration 007    max change = 1.98865e-02    total charge = 2.45061e-04
-          Iteration 008    max change = 1.74853e-02    total charge = 2.47726e-04
-          Iteration 009    max change = 1.55616e-02    total charge = 2.53196e-04
-          Iteration 010    max change = 1.39891e-02    total charge = 2.54505e-04
-          Iteration 011    max change = 1.26819e-02    total charge = 2.63769e-04
-          Iteration 012    max change = 1.15783e-02    total charge = 2.68536e-04
-          Iteration 013    max change = 1.06355e-02    total charge = 2.73108e-04
-          Iteration 014    max change = 9.82059e-03    total charge = 2.77213e-04
-          Iteration 015    max change = 9.10960e-03    total charge = 2.81606e-04
-          Iteration 016    max change = 8.48407e-03    total charge = 2.93004e-04
-          Iteration 017    max change = 7.92955e-03    total charge = 2.78440e-04
-          Iteration 018    max change = 7.43584e-03    total charge = 2.85530e-04
-          Iteration 019    max change = 6.99149e-03    total charge = 2.85568e-04
-          Iteration 020    max change = 6.59133e-03    total charge = 2.87712e-04
-          Iteration 021    max change = 6.22833e-03    total charge = 2.86723e-04
-          Iteration 022    max change = 5.89866e-03    total charge = 2.87608e-04
-          Iteration 023    max change = 5.59702e-03    total charge = 2.87997e-04
-          Iteration 024    max change = 5.32045e-03    total charge = 2.88167e-04
-          Iteration 025    max change = 5.05918e-03    total charge = 2.81648e-04
-          Iteration 026    max change = 4.83243e-03    total charge = 2.89346e-04
-          Iteration 027    max change = 4.61457e-03    total charge = 2.89445e-04
-          Iteration 028    max change = 4.41282e-03    total charge = 2.89155e-04
-          Iteration 029    max change = 4.22595e-03    total charge = 2.89796e-04
-          Iteration 030    max change = 4.05130e-03    total charge = 2.90014e-04
-          Iteration 031    max change = 3.88862e-03    total charge = 2.90647e-04
-          Iteration 032    max change = 3.73607e-03    total charge = 2.90979e-04
-          Iteration 033    max change = 3.59329e-03    total charge = 2.91544e-04
-          Iteration 034    max change = 3.45906e-03    total charge = 2.91988e-04
-          Iteration 035    max change = 3.33287e-03    total charge = 2.92517e-04
-          Iteration 036    max change = 3.21393e-03    total charge = 2.93004e-04
-          Iteration 037    max change = 3.10172e-03    total charge = 2.93520e-04
-          Iteration 038    max change = 2.99567e-03    total charge = 2.94031e-04
-          Iteration 039    max change = 2.89533e-03    total charge = 2.94546e-04
-          Iteration 040    max change = 2.80026e-03    total charge = 2.95053e-04
-          Iteration 041    max change = 2.71008e-03    total charge = 2.95564e-04
-          Iteration 042    max change = 2.62443e-03    total charge = 2.96074e-04
-          Iteration 043    max change = 2.54300e-03    total charge = 2.96569e-04
-          Iteration 044    max change = 2.46549e-03    total charge = 2.97061e-04
-          Iteration 045    max change = 2.39163e-03    total charge = 2.97514e-04
-          Iteration 046    max change = 2.32120e-03    total charge = 2.98004e-04
-          Iteration 047    max change = 2.25396e-03    total charge = 2.98446e-04
-          Iteration 048    max change = 2.18972e-03    total charge = 2.98926e-04
-          Iteration 049    max change = 2.12829e-03    total charge = 2.99372e-04
-          Iteration 050    max change = 2.06949e-03    total charge = 2.99734e-04
-          Iteration 051    max change = 2.01316e-03    total charge = 3.00235e-04
-          Iteration 052    max change = 1.95919e-03    total charge = 3.00610e-04
-          Iteration 053    max change = 1.90738e-03    total charge = 3.00993e-04
-          Iteration 054    max change = 1.85769e-03    total charge = 3.01383e-04
-          Iteration 055    max change = 1.80990e-03    total charge = 3.01741e-04
-          Iteration 056    max change = 1.76401e-03    total charge = 3.02117e-04
-          Iteration 057    max change = 1.71983e-03    total charge = 3.02442e-04
-          Iteration 058    max change = 1.67735e-03    total charge = 3.02798e-04
-          Iteration 059    max change = 1.63640e-03    total charge = 3.03099e-04
-          Iteration 060    max change = 1.59698e-03    total charge = 3.03428e-04
-          Iteration 061    max change = 1.55893e-03    total charge = 3.03703e-04
-          Iteration 062    max change = 1.52227e-03    total charge = 3.04008e-04
-          Iteration 063    max change = 1.48685e-03    total charge = 3.04256e-04
-          Iteration 064    max change = 1.45268e-03    total charge = 3.04541e-04
-          Iteration 065    max change = 1.41963e-03    total charge = 3.04757e-04
-          Iteration 066    max change = 1.38773e-03    total charge = 3.05034e-04
-          Iteration 067    max change = 1.35683e-03    total charge = 3.05204e-04
-          Iteration 068    max change = 1.32701e-03    total charge = 3.05490e-04
-          Iteration 069    max change = 1.29805e-03    total charge = 3.05579e-04
-          Iteration 070    max change = 1.27014e-03    total charge = 3.05922e-04
-          Iteration 071    max change = 1.24292e-03    total charge = 3.05833e-04
-          Iteration 072    max change = 1.21683e-03    total charge = 3.06432e-04
-          Iteration 073    max change = 1.19108e-03    total charge = 3.05873e-04
-          Iteration 074    max change = 1.16683e-03    total charge = 3.07237e-04
-          Iteration 075    max change = 1.14207e-03    total charge = 3.05038e-04
-          Iteration 076    max change = 1.12002e-03    total charge = 3.08641e-04
-          Iteration 077    max change = 1.09572e-03    total charge = 3.02772e-04
-          Iteration 078    max change = 1.07594e-03    total charge = 3.09582e-04
-          Iteration 079    max change = 1.05309e-03    total charge = 3.07516e-04
-          Iteration 080    max change = 1.03329e-03    total charge = 3.07460e-04
-          Iteration 081    max change = 1.01196e-03    total charge = 3.06466e-04
-          Iteration 082    max change = 9.94132e-04    total charge = 3.10109e-04
-          Iteration 083    max change = 9.73446e-04    total charge = 3.03335e-04
-          Iteration 084    max change = 9.56719e-04    total charge = 3.12534e-04
-          Iteration 085    max change = 9.36208e-04    total charge = 3.07849e-04
-          Iteration 086    max change = 9.21266e-04    total charge = 3.10605e-04
-          Iteration 087    max change = 9.03183e-04    total charge = 2.96867e-04
-          Iteration 088    max change = 8.84028e-04    total charge = 3.08716e-04
-          Iteration 089    max change = 8.71551e-04    total charge = 3.13506e-04
-          Iteration 090    max change = 8.55399e-04    total charge = 3.10947e-04
-          Iteration 091    max change = 8.37726e-04    total charge = 3.33100e-04
-          Iteration 092    max change = 8.24622e-04    total charge = 3.12684e-04
-          Iteration 093    max change = 8.10768e-04    total charge = 3.14685e-04
-          Iteration 094    max change = 7.94384e-04    total charge = 3.12903e-04
-          Iteration 095    max change = 7.81844e-04    total charge = 3.14497e-04
-          Iteration 096    max change = 7.72065e-04    total charge = 3.18444e-04
-          Iteration 097    max change = 7.54829e-04    total charge = 3.13910e-04
-          Iteration 098    max change = 7.42443e-04    total charge = 3.15840e-04
-          Iteration 099    max change = 7.29230e-04    total charge = 3.15607e-04
-          Iteration 100    max change = 7.15854e-04    total charge = 3.14752e-04
-          Iteration 101    max change = 7.05365e-04    total charge = 3.16508e-04
-          Iteration 102    max change = 6.93285e-04    total charge = 3.16249e-04
-          Iteration 103    max change = 6.82546e-04    total charge = 3.17115e-04
-          Iteration 104    max change = 6.70539e-04    total charge = 3.16470e-04
-          Iteration 105    max change = 6.59578e-04    total charge = 3.16785e-04
-          Iteration 106    max change = 6.48790e-04    total charge = 3.16957e-04
-          Iteration 107    max change = 6.38271e-04    total charge = 3.17106e-04
-          Iteration 108    max change = 6.27989e-04    total charge = 3.17250e-04
-          Iteration 109    max change = 6.17935e-04    total charge = 3.17390e-04
-          Iteration 110    max change = 6.08099e-04    total charge = 3.17528e-04
-          Iteration 111    max change = 5.98476e-04    total charge = 3.17663e-04
-          Iteration 112    max change = 5.89059e-04    total charge = 3.17793e-04
-          Iteration 113    max change = 5.79841e-04    total charge = 3.17892e-04
-          Iteration 114    max change = 5.70819e-04    total charge = 3.17962e-04
-          Iteration 115    max change = 5.61985e-04    total charge = 3.18094e-04
-          Iteration 116    max change = 5.53330e-04    total charge = 3.18247e-04
-          Iteration 117    max change = 5.44854e-04    total charge = 3.18390e-04
-          Iteration 118    max change = 5.36552e-04    total charge = 3.18513e-04
-          Iteration 119    max change = 5.28417e-04    total charge = 3.18626e-04
-          Iteration 120    max change = 5.20434e-04    total charge = 3.18727e-04
-          Iteration 121    max change = 5.12539e-04    total charge = 3.18756e-04
-          Iteration 122    max change = 5.04966e-04    total charge = 3.18957e-04
-          Iteration 123    max change = 4.97346e-04    total charge = 3.18939e-04
-          Iteration 124    max change = 4.90160e-04    total charge = 3.19213e-04
-          Iteration 125    max change = 4.82836e-04    total charge = 3.19195e-04
-          Iteration 126    max change = 4.75868e-04    total charge = 3.19391e-04
-          Iteration 127    max change = 4.68801e-04    total charge = 3.19377e-04
-          Iteration 128    max change = 4.62181e-04    total charge = 3.19645e-04
-          Iteration 129    max change = 4.55347e-04    total charge = 3.19592e-04
-          Iteration 130    max change = 4.48977e-04    total charge = 3.19845e-04
-          Iteration 131    max change = 4.42348e-04    total charge = 3.19767e-04
-          Iteration 132    max change = 4.36295e-04    total charge = 3.20079e-04
-          Iteration 133    max change = 4.29935e-04    total charge = 3.20048e-04
-          Iteration 134    max change = 4.24014e-04    total charge = 3.20221e-04
-          Iteration 135    max change = 4.17793e-04    total charge = 3.20154e-04
-          Iteration 136    max change = 4.12291e-04    total charge = 3.20493e-04
-          Iteration 137    max change = 4.06417e-04    total charge = 3.20582e-04
-          Iteration 138    max change = 4.00639e-04    total charge = 3.20341e-04
-          Iteration 139    max change = 3.95389e-04    total charge = 3.21001e-04
-          Iteration 140    max change = 3.89151e-04    total charge = 3.19984e-04
-          Iteration 141    max change = 3.84774e-04    total charge = 3.21424e-04
-          Iteration 142    max change = 3.79397e-04    total charge = 3.20966e-04
-          Iteration 143    max change = 3.74225e-04    total charge = 3.21308e-04
-          Iteration 144    max change = 3.35813e-04    total charge = 2.87776e-04
-          Iteration 145    max change = 3.72536e-04    total charge = 3.27485e-04
-          Iteration 146    max change = 3.63262e-04    total charge = 3.24967e-04
-          Iteration 147    max change = 3.57989e-04    total charge = 2.76173e-04
-          Iteration 148    max change = 3.55355e-04    total charge = 3.29259e-04
-          Iteration 149    max change = 3.46221e-04    total charge = 3.34826e-04
-          Iteration 150    max change = 3.41835e-04    total charge = 3.27780e-04
-          Iteration 151    max change = 3.37350e-04    total charge = 3.35437e-04
-          Iteration 152    max change = 3.31991e-04    total charge = 3.39611e-04
-          Iteration 153    max change = 3.27742e-04    total charge = 3.30966e-04
-          Iteration 154    max change = 3.23045e-04    total charge = 3.30193e-04
-          Iteration 155    max change = 3.22159e-04    total charge = 3.34122e-04
-          Iteration 156    max change = 3.14289e-04    total charge = 3.30974e-04
-          Iteration 157    max change = 3.10397e-04    total charge = 3.31483e-04
-          Iteration 158    max change = 3.06311e-04    total charge = 3.31802e-04
-          Iteration 159    max change = 3.02369e-04    total charge = 3.32048e-04
-          Iteration 160    max change = 2.98504e-04    total charge = 3.32263e-04
-          Iteration 161    max change = 2.94701e-04    total charge = 3.32429e-04
-          Iteration 162    max change = 2.90958e-04    total charge = 3.32613e-04
-          Iteration 163    max change = 2.87270e-04    total charge = 3.32789e-04
-          Iteration 164    max change = 2.83641e-04    total charge = 3.32947e-04
-          Iteration 165    max change = 2.80070e-04    total charge = 3.33099e-04
-          Iteration 166    max change = 2.76555e-04    total charge = 3.33244e-04
-          Iteration 167    max change = 2.73095e-04    total charge = 3.33384e-04
-          Iteration 168    max change = 2.69689e-04    total charge = 3.33519e-04
-          Iteration 169    max change = 2.66337e-04    total charge = 3.33721e-04
-          Iteration 170    max change = 2.63037e-04    total charge = 3.33778e-04
-          Iteration 171    max change = 2.59788e-04    total charge = 3.33902e-04
-          Iteration 172    max change = 2.56588e-04    total charge = 3.34023e-04
-          Iteration 173    max change = 2.53438e-04    total charge = 3.34141e-04
-          Iteration 174    max change = 2.50336e-04    total charge = 3.34287e-04
-          Iteration 175    max change = 2.47280e-04    total charge = 3.34370e-04
-          Iteration 176    max change = 2.44272e-04    total charge = 3.34481e-04
-          Iteration 177    max change = 2.41308e-04    total charge = 3.34589e-04
-          Iteration 178    max change = 2.38389e-04    total charge = 3.34696e-04
-          Iteration 179    max change = 2.35513e-04    total charge = 3.34800e-04
-          Iteration 180    max change = 2.32680e-04    total charge = 3.34903e-04
-          Iteration 181    max change = 2.29889e-04    total charge = 3.35004e-04
-          Iteration 182    max change = 2.27139e-04    total charge = 3.35103e-04
-          Iteration 183    max change = 2.24429e-04    total charge = 3.35200e-04
-          Iteration 184    max change = 2.21756e-04    total charge = 3.35293e-04
-          Iteration 185    max change = 2.19114e-04    total charge = 3.35375e-04
-          Iteration 186    max change = 2.16521e-04    total charge = 3.35466e-04
-          Iteration 187    max change = 2.13969e-04    total charge = 3.35561e-04
-          Iteration 188    max change = 2.11452e-04    total charge = 3.35631e-04
-          Iteration 189    max change = 2.08972e-04    total charge = 3.35982e-04
-          Iteration 190    max change = 2.06521e-04    total charge = 3.35852e-04
-          Iteration 191    max change = 2.04115e-04    total charge = 3.35939e-04
-          Iteration 192    max change = 2.01738e-04    total charge = 3.36024e-04
-          Iteration 193    max change = 1.99396e-04    total charge = 3.36108e-04
-          Iteration 194    max change = 1.97086e-04    total charge = 3.36191e-04
-          Iteration 195    max change = 1.94809e-04    total charge = 3.36273e-04
-          Iteration 196    max change = 1.92563e-04    total charge = 3.36354e-04
-          Iteration 197    max change = 1.90349e-04    total charge = 3.36434e-04
-          Iteration 198    max change = 1.88166e-04    total charge = 3.36512e-04
-          Iteration 199    max change = 1.86013e-04    total charge = 3.36590e-04
-          Iteration 200    max change = 1.83890e-04    total charge = 3.36667e-04
-          Iteration 201    max change = 1.81796e-04    total charge = 3.36743e-04
-          Iteration 202    max change = 1.79731e-04    total charge = 3.36818e-04
-          Iteration 203    max change = 1.77694e-04    total charge = 3.36892e-04
-          Iteration 204    max change = 1.75685e-04    total charge = 3.36965e-04
-          Iteration 205    max change = 1.73703e-04    total charge = 3.37037e-04
-          Iteration 206    max change = 1.71748e-04    total charge = 3.37109e-04
-          Iteration 207    max change = 1.69819e-04    total charge = 3.37179e-04
-          Iteration 208    max change = 1.67916e-04    total charge = 3.37249e-04
-          Iteration 209    max change = 1.66039e-04    total charge = 3.37318e-04
-          Iteration 210    max change = 1.64187e-04    total charge = 3.37386e-04
-          Iteration 211    max change = 1.62359e-04    total charge = 3.37453e-04
-          Iteration 212    max change = 1.60556e-04    total charge = 3.37520e-04
-          Iteration 213    max change = 1.58776e-04    total charge = 3.37586e-04
-          Iteration 214    max change = 1.57020e-04    total charge = 3.37651e-04
-          Iteration 215    max change = 1.55287e-04    total charge = 3.37715e-04
-          Iteration 216    max change = 1.53577e-04    total charge = 3.37779e-04
-          Iteration 217    max change = 1.51889e-04    total charge = 3.37842e-04
-          Iteration 218    max change = 1.50223e-04    total charge = 3.37904e-04
-          Iteration 219    max change = 1.48578e-04    total charge = 3.37965e-04
-          Iteration 220    max change = 1.46955e-04    total charge = 3.38025e-04
-          Iteration 221    max change = 1.45354e-04    total charge = 3.38082e-04
-          Iteration 222    max change = 1.43773e-04    total charge = 3.38134e-04
-          Iteration 223    max change = 1.42215e-04    total charge = 3.38176e-04
-          Iteration 224    max change = 1.40679e-04    total charge = 3.38206e-04
-          Iteration 225    max change = 1.39162e-04    total charge = 3.38222e-04
-          Iteration 226    max change = 1.37666e-04    total charge = 3.38233e-04
-          Iteration 227    max change = 1.36184e-04    total charge = 3.38243e-04
-          Iteration 228    max change = 1.34719e-04    total charge = 3.38261e-04
-          Iteration 229    max change = 1.33270e-04    total charge = 3.38288e-04
-          Iteration 230    max change = 1.31836e-04    total charge = 3.38320e-04
-          Iteration 231    max change = 1.30423e-04    total charge = 3.38366e-04
-          Iteration 232    max change = 1.29024e-04    total charge = 3.38414e-04
-          Iteration 233    max change = 1.27648e-04    total charge = 3.38473e-04
-          Iteration 234    max change = 1.26284e-04    total charge = 3.38529e-04
-          Iteration 235    max change = 1.24946e-04    total charge = 3.38599e-04
-          Iteration 236    max change = 1.23613e-04    total charge = 3.38651e-04
-          Iteration 237    max change = 1.22317e-04    total charge = 3.38733e-04
-          Iteration 238    max change = 1.21005e-04    total charge = 3.38769e-04
-          Iteration 239    max change = 1.19759e-04    total charge = 3.38871e-04
-          Iteration 240    max change = 1.18456e-04    total charge = 3.38875e-04
-          Iteration 241    max change = 1.17268e-04    total charge = 3.39008e-04
-          Iteration 242    max change = 1.15974e-04    total charge = 3.38979e-04
-          Iteration 243    max change = 1.14830e-04    total charge = 3.39125e-04
-          Iteration 244    max change = 1.13576e-04    total charge = 3.39102e-04
-          Iteration 245    max change = 1.12434e-04    total charge = 3.39201e-04
-          Iteration 246    max change = 1.11241e-04    total charge = 3.39208e-04
-          Iteration 247    max change = 1.10097e-04    total charge = 3.39256e-04
-          Iteration 248    max change = 1.08952e-04    total charge = 3.39277e-04
-          Iteration 249    max change = 1.07824e-04    total charge = 3.39298e-04
-          Iteration 250    max change = 1.06707e-04    total charge = 3.39312e-04
-          Iteration 251    max change = 1.05603e-04    total charge = 3.39325e-04
-          Iteration 252    max change = 1.04510e-04    total charge = 3.39340e-04
-          Iteration 253    max change = 1.03429e-04    total charge = 3.39359e-04
-          Iteration 254    max change = 1.02361e-04    total charge = 3.39383e-04
-          Iteration 255    max change = 1.01305e-04    total charge = 3.39412e-04
-          Iteration 256    max change = 1.00262e-04    total charge = 3.39445e-04
-          Iteration 257    max change = 9.92317e-05    total charge = 3.39481e-04
-        END Iterative Stockholder Analysis
-        Writing results to workdir
-      END Defining atomic weight functions (each on their own atomic grid)
-      Computing multipoles:
-       0% ........... 76% ... 100%
-      Written gaussian.hipart/isa_multipoles.txt
-    END Atomic multipoles (up to hexadecapols)
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-multipoles.py gaussian.fchk isa
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.02 BEGIN Loading Electronic structure
+          0.05   Data read from: gaussian.fchk ()
+          0.05   Restricted: True
+          0.05   Orbitals present: True
+          0.05   Spin density present: False
+          0.05   Number of alpha electrons: 24
+          0.05   Number of beta electrons: 24
+          0.05   Number of electrons: 48
+          0.05   Total charge: 0
+          0.05   Number of atoms: 13
+          0.05   Chemical formula: O2NC3H7
+          0.05 END Loading Electronic structure
+          0.05 BEGIN Atomic multipoles (up to hexadecapols)
+          0.05   BEGIN Atomic grids
+                   Computing/Loading atomic grids and distances: 0%.........5%......
+                   ...11%.........17%.........23%.........29%.........35%.........41
+                   %.........47%.........53%.........59%.........65%.........71%....
+                   .....76%.........82%.........88%.........94%........100%
+          0.23   END Atomic grids
+          0.23   BEGIN Molecular density on atomic grids
+                   Computing/Loading densities: 0%.........76%..100%
+          0.23   END Molecular density on atomic grids
+          0.23   BEGIN Defining atomic weight functions (own atomic grid)
+          0.23     Trying to load weight functions
+          0.23     Could not load all weight functions from workdir. Computing them.
+          0.23     BEGIN Iterative Stockholder Analysis
+          0.23       Generating initial guess for the pro-atoms
+          0.24       Iteration   Max change   Total charge
+          0.34           0      6.31430e-01    1.91522e-04
+          0.45           1      6.20743e-02    2.32913e-04
+          0.56           2      4.84612e-02    2.85275e-04
+          0.67           3      3.93967e-02    3.26740e-04
+          0.78           4      3.23312e-02    3.34675e-04
+          0.89           5      2.69850e-02    3.19180e-04
+          1.00           6      2.29579e-02    3.03944e-04
+          1.11           7      1.98811e-02    2.59226e-04
+          1.21           8      1.74820e-02    2.28101e-04
+          1.32           9      1.55679e-02    2.36177e-04
+          1.43          10      1.40073e-02    2.22602e-04
+          1.54          11      1.27156e-02    1.84933e-04
+          1.65          12      1.16288e-02    2.21515e-04
+          1.76          13      1.06967e-02    2.37141e-04
+          1.86          14      9.89575e-03    2.02795e-04
+          1.97          15      9.19332e-03    2.24397e-04
+          2.08          16      8.57554e-03    2.08130e-04
+          2.19          17      8.02923e-03    2.12105e-04
+          2.30          18      7.53919e-03    1.99942e-04
+          2.41          19      7.10116e-03    2.01548e-04
+          2.51          20      6.70453e-03    1.96309e-04
+          2.62          21      6.34498e-03    1.98584e-04
+          2.73          22      6.01677e-03    1.90360e-04
+          2.84          23      5.71739e-03    1.90062e-04
+          2.95          24      5.44179e-03    1.91603e-04
+          3.05          25      5.18792e-03    1.89557e-04
+          3.16          26      4.95361e-03    1.87692e-04
+          3.27          27      4.73642e-03    1.83569e-04
+          3.38          28      4.53477e-03    1.85664e-04
+          3.48          29      4.34662e-03    1.86175e-04
+          3.59          30      4.17122e-03    1.85042e-04
+          3.70          31      4.00725e-03    1.81619e-04
+          3.81          32      3.85368e-03    1.82164e-04
+          3.92          33      3.70926e-03    1.78690e-04
+          4.02          34      3.57372e-03    1.77825e-04
+          4.13          35      3.44585e-03    1.76630e-04
+          4.24          36      3.32527e-03    1.75548e-04
+          4.35          37      3.21135e-03    1.74528e-04
+          4.45          38      3.10356e-03    1.73569e-04
+          4.56          39      3.00144e-03    1.72667e-04
+          4.67          40      2.90457e-03    1.71822e-04
+          4.78          41      2.81257e-03    1.71004e-04
+          4.88          42      2.72510e-03    1.70271e-04
+          4.99          43      2.64183e-03    1.69561e-04
+          5.10          44      2.56250e-03    1.68894e-04
+          5.21          45      2.48683e-03    1.68286e-04
+          5.31          46      2.41459e-03    1.67737e-04
+          5.42          47      2.34557e-03    1.67193e-04
+          5.53          48      2.27955e-03    1.66727e-04
+          5.64          49      2.21637e-03    1.66284e-04
+          5.74          50      2.15584e-03    1.65874e-04
+          5.85          51      2.09782e-03    1.65495e-04
+          5.96          52      2.04215e-03    1.65144e-04
+          6.07          53      1.98871e-03    1.64819e-04
+          6.17          54      1.93737e-03    1.64518e-04
+          6.28          55      1.88802e-03    1.64239e-04
+          6.39          56      1.84054e-03    1.63981e-04
+          6.50          57      1.79485e-03    1.63740e-04
+          6.60          58      1.75084e-03    1.63516e-04
+          6.71          59      1.70843e-03    1.63307e-04
+          6.82          60      1.66755e-03    1.63112e-04
+          6.92          61      1.62811e-03    1.62928e-04
+          7.03          62      1.59004e-03    1.62756e-04
+          7.14          63      1.55329e-03    1.62593e-04
+          7.25          64      1.51778e-03    1.62439e-04
+          7.35          65      1.48346e-03    1.62293e-04
+          7.46          66      1.45027e-03    1.62154e-04
+          7.57          67      1.41817e-03    1.62021e-04
+          7.68          68      1.38710e-03    1.61894e-04
+          7.78          69      1.35701e-03    1.61771e-04
+          7.89          70      1.32788e-03    1.61653e-04
+          8.00          71      1.29965e-03    1.61539e-04
+          8.10          72      1.27228e-03    1.61429e-04
+          8.21          73      1.24575e-03    1.61321e-04
+          8.32          74      1.22001e-03    1.61216e-04
+          8.43          75      1.19504e-03    1.61114e-04
+          8.53          76      1.17079e-03    1.61013e-04
+          8.64          77      1.14726e-03    1.60915e-04
+          8.75          78      1.12439e-03    1.60819e-04
+          8.86          79      1.10218e-03    1.60724e-04
+          8.96          80      1.08059e-03    1.60630e-04
+          9.07          81      1.05960e-03    1.60538e-04
+          9.18          82      1.03920e-03    1.60447e-04
+          9.29          83      1.01934e-03    1.60357e-04
+          9.39          84      1.00003e-03    1.60268e-04
+          9.50          85      9.81226e-04    1.60180e-04
+          9.61          86      9.62924e-04    1.60093e-04
+          9.72          87      9.45102e-04    1.60007e-04
+          9.82          88      9.27744e-04    1.59922e-04
+          9.93          89      9.10833e-04    1.59837e-04
+         10.04          90      8.94353e-04    1.59753e-04
+         10.15          91      8.78291e-04    1.59670e-04
+         10.25          92      8.62631e-04    1.59588e-04
+         10.36          93      8.47360e-04    1.59507e-04
+         10.47          94      8.32466e-04    1.59426e-04
+         10.58          95      8.17935e-04    1.59346e-04
+         10.68          96      8.03757e-04    1.59266e-04
+         10.79          97      7.89919e-04    1.59188e-04
+         10.90          98      7.76411e-04    1.59110e-04
+         11.01          99      7.63223e-04    1.59032e-04
+         11.11         100      7.50343e-04    1.58956e-04
+         11.22         101      7.37763e-04    1.58880e-04
+         11.33         102      7.25473e-04    1.58804e-04
+         11.44         103      7.13465e-04    1.58728e-04
+         11.56         104      7.01729e-04    1.58672e-04
+         11.66         105      6.90258e-04    1.58583e-04
+         11.77         106      6.79043e-04    1.58510e-04
+         11.88         107      6.68078e-04    1.58438e-04
+         11.99         108      6.57354e-04    1.58367e-04
+         12.09         109      6.46865e-04    1.58297e-04
+         12.20         110      6.36604e-04    1.58221e-04
+         12.31         111      6.26565e-04    1.58187e-04
+         12.42         112      6.16738e-04    1.57854e-04
+         12.52         113      6.07135e-04    1.53037e-04
+         12.63         114      5.97923e-04    1.72083e-04
+         12.74         115      5.87986e-04    1.57762e-04
+         12.85         116      5.79656e-04    1.58387e-04
+         12.95         117      5.70607e-04    1.58262e-04
+         13.06         118      5.61937e-04    1.58129e-04
+         13.17         119      5.53471e-04    1.58162e-04
+         13.27         120      5.45174e-04    1.57445e-04
+         13.38         121      5.37071e-04    1.57976e-04
+         13.49         122      5.29069e-04    1.57798e-04
+         13.60         123      5.21273e-04    1.57666e-04
+         13.70         124      5.13614e-04    1.57729e-04
+         13.81         125      5.06098e-04    1.56772e-04
+         13.92         126      4.98764e-04    1.57592e-04
+         14.03         127      4.91493e-04    1.56801e-04
+         14.14         128      4.84450e-04    1.57496e-04
+         14.24         129      4.77463e-04    1.57246e-04
+         14.35         130      4.70667e-04    1.57523e-04
+         14.46         131      4.63965e-04    1.56942e-04
+         14.57         132      4.57426e-04    1.56614e-04
+         14.67         133      4.50984e-04    1.57115e-04
+         14.78         134      4.44639e-04    1.57246e-04
+         14.89         135      4.38442e-04    1.56923e-04
+         15.00         136      4.32367e-04    1.56931e-04
+         15.10         137      4.26382e-04    1.56673e-04
+         15.21         138      4.20519e-04    1.57176e-04
+         15.32         139      4.14734e-04    1.56946e-04
+         15.43         140      4.09093e-04    1.56913e-04
+         15.54         141      4.03532e-04    1.56819e-04
+         15.65         142      3.98073e-04    1.56762e-04
+         15.75         143      3.92710e-04    1.56707e-04
+         15.86         144      3.87442e-04    1.56652e-04
+         15.97         145      3.82266e-04    1.56597e-04
+         16.08         146      3.77181e-04    1.56543e-04
+         16.18         147      3.72183e-04    1.56488e-04
+         16.29         148      3.67272e-04    1.56434e-04
+         16.40         149      3.62444e-04    1.56380e-04
+         16.51         150      3.57699e-04    1.56326e-04
+         16.61         151      3.53035e-04    1.56273e-04
+         16.72         152      3.48449e-04    1.56220e-04
+         16.83         153      3.43941e-04    1.56167e-04
+         16.94         154      3.39507e-04    1.56115e-04
+         17.04         155      3.35148e-04    1.56063e-04
+         17.16         156      3.30861e-04    1.56011e-04
+         17.26         157      3.26644e-04    1.55960e-04
+         17.36         158      3.22497e-04    1.55909e-04
+         17.47         159      3.18417e-04    1.55858e-04
+         17.57         160      3.14403e-04    1.55808e-04
+         17.68         161      3.10455e-04    1.55758e-04
+         17.78         162      3.06569e-04    1.55709e-04
+         17.89         163      3.02747e-04    1.55660e-04
+         18.00         164      2.98985e-04    1.55611e-04
+         18.10         165      2.95282e-04    1.55563e-04
+         18.20         166      2.91639e-04    1.55515e-04
+         18.31         167      2.88052e-04    1.55467e-04
+         18.41         168      2.84522e-04    1.55419e-04
+         18.52         169      2.81046e-04    1.55370e-04
+         18.62         170      2.77617e-04    1.55314e-04
+         18.73         171      2.74206e-04    1.55224e-04
+         18.83         172      2.70803e-04    1.55099e-04
+         18.94         173      2.67498e-04    1.55028e-04
+         19.04         174      2.64278e-04    1.54980e-04
+         19.15         175      2.61126e-04    1.54934e-04
+         19.25         176      2.58029e-04    1.54880e-04
+         19.36         177      2.54981e-04    1.54825e-04
+         19.46         178      2.51978e-04    1.54677e-04
+         19.57         179      2.49020e-04    1.54637e-04
+         19.67         180      2.46098e-04    1.54613e-04
+         19.78         181      2.43217e-04    1.54572e-04
+         19.88         182      2.40377e-04    1.54532e-04
+         19.98         183      2.37575e-04    1.54487e-04
+         20.09         184      2.34812e-04    1.54440e-04
+         20.20         185      2.32088e-04    1.54393e-04
+         20.30         186      2.29403e-04    1.54347e-04
+         20.40         187      2.26757e-04    1.54302e-04
+         20.51         188      2.24149e-04    1.54258e-04
+         20.61         189      2.21578e-04    1.54215e-04
+         20.72         190      2.19043e-04    1.54173e-04
+         20.83         191      2.16545e-04    1.54132e-04
+         20.93         192      2.14081e-04    1.54091e-04
+         21.03         193      2.11653e-04    1.54052e-04
+         21.14         194      2.09258e-04    1.54013e-04
+         21.24         195      2.06897e-04    1.53974e-04
+         21.35         196      2.04568e-04    1.53936e-04
+         21.45         197      2.02272e-04    1.53899e-04
+         21.55         198      2.00007e-04    1.53862e-04
+         21.66         199      1.97774e-04    1.53825e-04
+         21.76         200      1.95571e-04    1.53211e-04
+         21.87         201      1.93624e-04    1.53830e-04
+         21.97         202      1.91346e-04    1.53620e-04
+         22.07         203      1.89239e-04    1.53571e-04
+         22.18         204      1.87143e-04    1.53539e-04
+         22.28         205      1.85075e-04    1.53502e-04
+         22.39         206      1.83038e-04    1.53468e-04
+         22.50         207      1.81030e-04    1.53435e-04
+         22.61         208      1.79050e-04    1.53402e-04
+         22.71         209      1.77097e-04    1.53371e-04
+         22.82         210      1.75171e-04    1.53340e-04
+         22.93         211      1.73270e-04    1.53309e-04
+         23.03         212      1.71396e-04    1.53279e-04
+         23.14         213      1.69546e-04    1.53249e-04
+         23.25         214      1.67721e-04    1.53220e-04
+         23.36         215      1.65920e-04    1.53190e-04
+         23.46         216      1.64142e-04    1.53161e-04
+         23.57         217      1.62388e-04    1.53132e-04
+         23.68         218      1.60657e-04    1.53103e-04
+         23.79         219      1.58948e-04    1.53074e-04
+         23.89         220      1.57261e-04    1.53044e-04
+         24.00         221      1.55596e-04    1.53015e-04
+         24.11         222      1.53952e-04    1.52986e-04
+         24.22         223      1.52330e-04    1.52957e-04
+         24.32         224      1.50728e-04    1.52928e-04
+         24.43         225      1.49147e-04    1.52899e-04
+         24.54         226      1.47585e-04    1.52870e-04
+         24.64         227      1.46043e-04    1.52841e-04
+         24.75         228      1.44521e-04    1.52813e-04
+         24.86         229      1.43018e-04    1.52784e-04
+         24.97         230      1.41533e-04    1.52756e-04
+         25.07         231      1.40068e-04    1.52728e-04
+         25.18         232      1.38620e-04    1.52700e-04
+         25.29         233      1.37190e-04    1.52672e-04
+         25.39         234      1.35778e-04    1.52644e-04
+         25.50         235      1.34383e-04    1.52616e-04
+         25.61         236      1.33006e-04    1.52589e-04
+         25.71         237      1.31645e-04    1.52562e-04
+         25.82         238      1.30301e-04    1.52535e-04
+         25.93         239      1.28974e-04    1.52508e-04
+         26.03         240      1.27662e-04    1.52481e-04
+         26.14         241      1.26366e-04    1.52455e-04
+         26.25         242      1.25086e-04    1.52428e-04
+         26.36         243      1.23822e-04    1.52402e-04
+         26.46         244      1.22572e-04    1.52376e-04
+         26.57         245      1.21338e-04    1.52350e-04
+         26.68         246      1.20118e-04    1.52325e-04
+         26.78         247      1.18913e-04    1.52299e-04
+         26.89         248      1.17722e-04    1.52274e-04
+         27.00         249      1.16545e-04    1.52249e-04
+         27.11         250      1.15382e-04    1.52224e-04
+         27.21         251      1.14233e-04    1.52199e-04
+         27.32         252      1.13097e-04    1.52175e-04
+         27.43         253      1.11974e-04    1.52150e-04
+         27.53         254      1.10865e-04    1.52125e-04
+         27.64         255      1.09769e-04    1.52100e-04
+         27.75         256      1.08685e-04    1.52072e-04
+         27.85         257      1.07614e-04    1.52039e-04
+         27.96         258      1.06555e-04    1.51996e-04
+         28.07         259      1.05509e-04    1.51946e-04
+         28.17         260      1.04474e-04    1.51895e-04
+         28.28         261      1.03452e-04    1.51848e-04
+         28.39         262      1.02441e-04    1.51809e-04
+         28.50         263      1.01441e-04    1.51772e-04
+         28.60         264      1.00453e-04    1.51738e-04
+         28.71         265      9.94765e-05    1.51705e-04
+         28.71     END Iterative Stockholder Analysis
+         28.81     Writing results to workdir
+         28.82   END Defining atomic weight functions (own atomic grid)
+                 Computing multipoles: 0%.........76%..100%
+         29.33   Written gaussian.hipart/isa_multipoles.txt
+         29.33 END Atomic multipoles (up to hexadecapols)=
 
 We often experience slow convergence with the ISA method. This may be inherent
-to the method. Any suggestions to improve this are always appreciated.
+to the method. Any suggestions for improvement are always appreciated.
 
 The output is written to ``gaussian.hipart/isa_multipoles.txt`` and can also be
 read into your Python scripts with the routines in :mod:`hipart.io`. ::
 
-    toon@poony ~/hipart-example/alanine> cat gaussian.hipart/isa_multipoles.txt
+    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/isa_multipoles.txt
     number of atoms: 13
     number of fields: 25
        Multipoles   |      (0,0)           (1,0)           (1,1+)          (1,1-)          (2,0)           (2,1+)          (2,1-)          (2,2+)          (2,2-)          (3,0)           (3,1+)          (3,1-)          (3,2+)          (3,2-)          (3,3+)          (3,3-)          (4,0)           (4,1+)          (4,1-)          (4,2+)          (4,2-)          (4,3+)          (4,3-)          (4,4+)          (4,4-)
@@ -1245,70 +1250,75 @@ Net and overlap electron populations are computed with the script
 ``hi-net-overlap.py``. This example computes the net and overlap populations
 using the :ref:`becke` scheme::
 
-    toon@poony ~/hipart-example/alanine> hi-net-overlap.py gaussian.fchk becke
-    BEGIN Loading Electronic structure
-      Data read from: gaussian.fchk ()
-      Restricted: True
-      Orbitals present: True
-      Spin density present: False
-      Number of alpha electrons: 24
-      Number of beta electrons: 24
-      Number of electrons: 48
-      Total charge: 0
-      Number of atoms: 13
-      Chemical formula: O2NC3H7
-    END Loading Electronic structure
-    BEGIN Net and overlap populations
-      BEGIN Atomic grids
-        Computing/Loading atomic grids (and distances):
-         0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
-        . 47% .......... 53% .......... 59% .......... 65% .......... 71% .......... 76% .......... 82% .......... 88% .........
-        . 94% ......... 100%
-      END Atomic grids
-      BEGIN Molecular density on atomic grids
-        Computing/Loading densities:
-         0% ........... 76% ... 100%
-      END Molecular density on atomic grids
-      BEGIN Atomic charges
-        Loading charges.
-        Written gaussian.hipart/becke_charges.txt
-      END Atomic charges
-      BEGIN Atomic weights on other atoms' grids.
-        BEGIN Defining atomic weight functions (each on their own atomic grid)
-          Trying to load weight functions
-        END Defining atomic weight functions (each on their own atomic grid)
-        BEGIN Becke's Smooth Voronoi Partitioning
-          Computing/Loading cell functions:
-           0% ........... 0% .......... 1% .......... 2% .......... 3% .......... 4% .......... 5% .......... 6% .........
-          . 7% .......... 8% .......... 9% .......... 10% .......... 11% .......... 12% .......... 13% .......... 14% .........
-          . 15% .......... 16% .......... 17% .......... 18% .......... 19% .......... 20% .......... 21% .......... 22% .........
-          . 23% .......... 24% .......... 25% .......... 26% .......... 27% .......... 28% .......... 29% .......... 30% .........
-          . 31% .......... 32% .......... 33% .......... 34% .......... 35% .......... 36% .......... 37% .......... 38% .........
-          . 39% .......... 40% .......... 41% .......... 42% .......... 43% .......... 44% .......... 45% .......... 46% .........
-          . 47% .......... 48% .......... 49% .......... 50% .......... 51% .......... 52% .......... 53% .......... 54% .........
-          . 55% .......... 56% .......... 57% .......... 58% .......... 59% .......... 60% .......... 61% .......... 62% .........
-          . 63% .......... 64% .......... 65% .......... 66% .......... 67% .......... 68% .......... 69% .......... 70% .........
-          . 71% .......... 71% .......... 72% .......... 73% .......... 74% .......... 75% .......... 76% .......... 77% .........
-          . 78% .......... 79% .......... 80% .......... 81% .......... 82% .......... 83% .......... 84% .......... 85% .........
-          . 86% .......... 87% .......... 88% .......... 89% .......... 90% .......... 91% .......... 92% .......... 93% .........
-          . 94% .......... 95% .......... 96% .......... 97% .......... 98% .......... 99% .... 100%
-        END Becke's Smooth Voronoi Partitioning
-        Computing off-diagonal atom weights:
-         0% ........... 5% .......... 11% .......... 17% .......... 23% .......... 29% .......... 35% .......... 41% .........
-        . 47% .......... 53% .......... 59% .......... 65% .......... 71% .......... 76% .......... 82% .......... 88% .........
-        . 94% ......... 100%
-      END Atomic weights on other atoms' grids.
-      Integrating over products of stockholder weights:
-       0% ........... 10% .......... 21% .......... 32% .......... 43% .......... 54% .......... 65% .......... 76% .........
-      . 87% .......... 98% . 100%
-      Written gaussian.hipart/becke_net_overlap.txt
-    END Net and overlap populations
+    toon@poony ~/hipart/examples/001-usage/alanine> hi-net-overlap.py gaussian.fchk becke
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.03 BEGIN Loading Electronic structure
+          0.05   Data read from: gaussian.fchk ()
+          0.05   Restricted: True
+          0.05   Orbitals present: True
+          0.05   Spin density present: False
+          0.05   Number of alpha electrons: 24
+          0.05   Number of beta electrons: 24
+          0.05   Number of electrons: 48
+          0.05   Total charge: 0
+          0.05   Number of atoms: 13
+          0.05   Chemical formula: O2NC3H7
+          0.05 END Loading Electronic structure
+          0.05 BEGIN Net and overlap populations
+          0.05   BEGIN Atomic grids
+                   Computing/Loading atomic grids and distances: 0%.........5%......
+                   ...11%.........17%.........23%.........29%.........35%.........41
+                   %.........47%.........53%.........59%.........65%.........71%....
+                   .....76%.........82%.........88%.........94%........100%
+          0.23   END Atomic grids
+          0.23   BEGIN Molecular density on atomic grids
+                   Computing/Loading densities: 0%.........76%..100%
+          0.23   END Molecular density on atomic grids
+          0.23   BEGIN Atomic charges
+          0.23     Written gaussian.hipart/becke_charges.txt
+          0.23   END Atomic charges
+          0.23   BEGIN Atomic weights on other atoms' grids.
+          0.23     BEGIN Defining atomic weight functions (own atomic grid)
+          0.23       Trying to load weight functions
+          0.24     END Defining atomic weight functions (own atomic grid)
+          0.24     BEGIN Becke's Smooth Voronoi Partitioning
+                     Computing/Loading cell functions: 0%.........0%.........1%.....
+                     ....2%.........3%.........4%.........5%.........6%.........7%..
+                     .......8%.........9%.........10%.........11%.........12%.......
+                     ..13%.........14%.........15%.........16%.........17%.........1
+                     8%.........19%.........20%.........21%.........22%.........23%.
+                     ........24%.........25%.........26%.........27%.........28%....
+                     .....29%.........30%.........31%.........32%.........33%.......
+                     ..34%.........35%.........36%.........37%.........38%.........3
+                     9%.........40%.........41%.........42%.........43%.........44%.
+                     ........45%.........46%.........47%.........48%.........49%....
+                     .....50%.........51%.........52%.........53%.........54%.......
+                     ..55%.........56%.........57%.........58%.........59%.........6
+                     0%.........61%.........62%.........63%.........64%.........65%.
+                     ........66%.........67%.........68%.........69%.........70%....
+                     .....71%.........71%.........72%.........73%.........74%.......
+                     ..75%.........76%.........77%.........78%.........79%.........8
+                     0%.........81%.........82%.........83%.........84%.........85%.
+                     ........86%.........87%.........88%.........89%.........90%....
+                     .....91%.........92%.........93%.........94%.........95%.......
+                     ..96%.........97%.........98%.........99%...100%
+          0.26     END Becke's Smooth Voronoi Partitioning
+                   Computing off-diagonal atom weights: 0%.........5%.........11%...
+                   ......17%.........23%.........29%.........35%.........41%........
+                   .47%.........53%.........59%.........65%.........71%.........76%.
+                   ........82%.........88%.........94%........100%
+          0.28   END Atomic weights on other atoms' grids.
+                 Integrating over products of stockholder weights: 0%.........10%...
+                 ......21%.........32%.........43%.........54%.........65%.........7
+                 6%.........87%.........98%100%
+          0.39   Written gaussian.hipart/becke_net_overlap.txt
+          0.39 END Net and overlap populations
 
 The output, ``gaussian.hipart/becke_net_overlap.txt``, contains a symmetric
 matrix with net and overlap populations. The atomic net populations are put on
 the diagonal, while the overlap populations are off-diagonal elements. ::
 
-    toon@poony ~/hipart-example/alanine> cat gaussian.hipart/becke_net_overlap.txt
+    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/becke_net_overlap.txt
     number of atoms: 13
           Net       |       0  O            1  O            2  N            3  C            4  C            5  C            6  H            7  H            8  H            9  H           10  H           11  H           12  H
     ----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1335,57 +1345,56 @@ SCF computations and correlated methods, either closed or open shell. We show
 the computation on the alanine radical is it has non-zero free valences. This
 time we use the :ref:`hirshfeld` partitioning method. ::
 
-    toon@poony ~/hipart-example/alanine> cd ../alanine-radical
-    toon@poony ~/hipart-example/alanine-radical> hi-bond-orders.py gaussian.fchk hirsh ../atoms/densities.txt
-    BEGIN Loading Electronic structure
-      Data read from: gaussian.fchk ()
-      Restricted: False
-      Orbitals present: True
-      Spin density present: True
-      Number of alpha electrons: 24
-      Number of beta electrons: 23
-      Number of electrons: 47
-      Total charge: 0
-      Number of atoms: 12
-      Chemical formula: O2NC3H6
-    END Loading Electronic structure
-    BEGIN Bond orders and valences
-      BEGIN Atomic charges
-        BEGIN Atomic grids
-          Computing/Loading atomic grids (and distances):
-           0% ........... 6% .......... 13% .......... 20% .......... 27% .......... 34% .......... 41% .......... 48% .........
-          . 55% .......... 62% .......... 69% .......... 76% .......... 83% .......... 90% .......... 97% .... 100%
-        END Atomic grids
-        BEGIN Molecular density on atomic grids
-          Computing/Loading densities:
-           0% ........... 83% .. 100%
-        END Molecular density on atomic grids
-        BEGIN Defining atomic weight functions (each on their own atomic grid)
-          Trying to load weight functions
-          Could not load all weight functions from workdir. Computing them...
-          BEGIN Conventional Hirshfeld (with neutral pro-atoms)
-          END Conventional Hirshfeld (with neutral pro-atoms)
-          Writing results to workdir
-        END Defining atomic weight functions (each on their own atomic grid)
-        Computing charges:
-         0% ........... 83% .. 100%
-        Written gaussian.hipart/hirsh_charges.txt
-      END Atomic charges
-      BEGIN Atomic overlap matrices (in basis of contracted Gaussians)
-        Computing matrices:
-         0% ........... 83% .. 100%
-        Written gaussian.hipart/hirsh_overlap_matrices.txt
-      END Atomic overlap matrices (in basis of contracted Gaussians)
-      Computing bond orders:
-       0% ........... 12% .......... 25% .......... 38% .......... 51% .......... 64% .......... 76% .......... 89% ........ 100%
-      Written gaussian.hipart/hirsh_bond_orders.txt
-      Written gaussian.hipart/hirsh_valences.txt
-      Written gaussian.hipart/hirsh_free_valences.txt
-    END Bond orders and valences
+    toon@poony ~/hipart/examples/001-usage/alanine> cd ../alanine-radical
+    toon@poony ~/hipart/examples/001-usage/alanine-radical> hi-bond-orders.py gaussian.fchk hirsh ../atoms/densities.txt
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.02 BEGIN Loading Electronic structure
+          0.06   Data read from: gaussian.fchk ()
+          0.06   Restricted: False
+          0.06   Orbitals present: True
+          0.06   Spin density present: True
+          0.06   Number of alpha electrons: 24
+          0.06   Number of beta electrons: 23
+          0.06   Number of electrons: 47
+          0.06   Total charge: 0
+          0.06   Number of atoms: 12
+          0.06   Chemical formula: O2NC3H6
+          0.06 END Loading Electronic structure
+          0.06 BEGIN Bond orders and valences
+          0.06   BEGIN Atomic charges
+          0.06     BEGIN Atomic grids
+                     Computing/Loading atomic grids and distances: 0%.........6%....
+                     .....13%.........20%.........27%.........34%.........41%.......
+                     ..48%.........55%.........62%.........69%.........76%.........8
+                     3%.........90%.........97%...100%
+          0.45     END Atomic grids
+          0.45     BEGIN Molecular density on atomic grids
+                     Computing/Loading densities: 0%.........83%.100%
+          3.89     END Molecular density on atomic grids
+          3.89     BEGIN Defining atomic weight functions (own atomic grid)
+          3.89       Trying to load weight functions
+          3.89       Could not load all weight functions from workdir. Computing them.
+          3.89       BEGIN Conventional Hirshfeld (with neutral pro-atoms)
+          3.89       END Conventional Hirshfeld (with neutral pro-atoms)
+          3.98       Writing results to workdir
+          3.98     END Defining atomic weight functions (own atomic grid)
+                   Computing charges: 0%.........83%.100%
+          3.99     Written gaussian.hipart/hirsh_charges.txt
+          3.99   END Atomic charges
+          3.99   BEGIN Atomic overlap matrices (contracted Gaussians)
+                   Computing matrices: 0%.........83%.100%
+          9.91     Written gaussian.hipart/hirsh_overlap_matrices.txt
+          9.91   END Atomic overlap matrices (contracted Gaussians)
+                 Computing bond orders: 0%.........12%.........25%.........38%......
+                 ...51%.........64%.........76%.........89%.......100%
+         10.14   Written gaussian.hipart/hirsh_bond_orders.txt
+         10.14   Written gaussian.hipart/hirsh_valences.txt
+         10.14   Written gaussian.hipart/hirsh_free_valences.txt
+         10.14 END Bond orders and valences
 
 There are three output files::
 
-    toon@poony ~/hipart-example/alanine-radical> cat gaussian.hipart/hirsh_bond_orders.txt
+    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_bond_orders.txt
     number of atoms: 12
        Bond order   |       0  O            1  O            2  N            3  C            4  C            5  C            6  H            7  H            8  H            9  H           10  H           11  H
     ----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1401,7 +1410,7 @@ There are three output files::
       9   H    1    |  0.004963593822  0.001997818127  0.016771731003  0.089891027745  0.956084911932  0.013835547789  0.011788172938  0.080837681225  0.082064181450  0.000000000000  0.001392981918  0.008884055620
      10   H    1    |  0.006995364889  0.011856734820  1.047803312038  0.094871057580  0.011300539385  0.014080044170  0.014608166511  0.001457460059  0.003226333710  0.001392981918  0.000000000000  0.078776390871
      11   H    1    |  0.004537735097  0.021802632150  1.037093750023  0.092787948071  0.021182631040  0.014193869460  0.012451378912  0.002148019336  0.002247858928  0.008884055620  0.078776390871  0.000000000000
-    toon@poony ~/hipart-example/alanine-radical> cat gaussian.hipart/hirsh_valences.txt
+    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_valences.txt
     number of atoms: 12
       i        Z    Valences
     --------------------------------
@@ -1418,7 +1427,7 @@ There are three output files::
      10   H    1    1.286526859695
      11   H    1    1.296006218835
     --------------------------------
-    toon@poony ~/hipart-example/alanine-radical> cat gaussian.hipart/hirsh_free_valences.txt
+    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_free_valences.txt
     number of atoms: 12
       i        Z  Free valences
     --------------------------------
@@ -1450,40 +1459,40 @@ True`` in the beginning. If not, the reported spin charges are always zero.
 
 This example computes :ref:`hirshfeld` spin charges in the alanine radical::
 
-    toon@poony ~/hipart-example/alanine-radical> hi-spin-charges.py gaussian.fchk hirsh ../atoms/densities.txt
-    BEGIN Loading Electronic structure
-      Data read from: gaussian.fchk ()
-      Restricted: False
-      Orbitals present: True
-      Spin density present: True
-      Number of alpha electrons: 24
-      Number of beta electrons: 23
-      Number of electrons: 47
-      Total charge: 0
-      Number of atoms: 12
-      Chemical formula: O2NC3H6
-    END Loading Electronic structure
-    BEGIN Atomic spin charges
-      BEGIN Atomic grids
-        Computing/Loading atomic grids (and distances):
-         0% ........... 6% .......... 13% .......... 20% .......... 27% .......... 34% .......... 41% .......... 48% .........
-        . 55% .......... 62% .......... 69% .......... 76% .......... 83% .......... 90% .......... 97% .... 100%
-      END Atomic grids
-      BEGIN Molecular spin density on atomic grids
-        Computing/Loading spin densities:
-         0% ........... 83% .. 100%
-      END Molecular spin density on atomic grids
-      BEGIN Defining atomic weight functions (each on their own atomic grid)
-        Trying to load weight functions
-      END Defining atomic weight functions (each on their own atomic grid)
-      Computing spin charges:
-       0% ........... 83% .. 100%
-      Written gaussian.hipart/hirsh_spin_charges.txt
-    END Atomic spin charges
+    toon@poony ~/hipart/examples/001-usage/alanine-radical> hi-spin-charges.py gaussian.fchk hirsh ../atoms/densities.txt
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.02 BEGIN Loading Electronic structure
+          0.06   Data read from: gaussian.fchk ()
+          0.06   Restricted: False
+          0.06   Orbitals present: True
+          0.06   Spin density present: True
+          0.06   Number of alpha electrons: 24
+          0.06   Number of beta electrons: 23
+          0.06   Number of electrons: 47
+          0.06   Total charge: 0
+          0.06   Number of atoms: 12
+          0.06   Chemical formula: O2NC3H6
+          0.06 END Loading Electronic structure
+          0.06 BEGIN Atomic spin charges
+          0.06   BEGIN Atomic grids
+                   Computing/Loading atomic grids and distances: 0%.........6%......
+                   ...13%.........20%.........27%.........34%.........41%.........48
+                   %.........55%.........62%.........69%.........76%.........83%....
+                   .....90%.........97%...100%
+          0.22   END Atomic grids
+          0.22   BEGIN Molecular spin density on atomic grids
+                   Computing/Loading spin densities: 0%.........83%.100%
+          3.68   END Molecular spin density on atomic grids
+          3.68   BEGIN Defining atomic weight functions (own atomic grid)
+          3.68     Trying to load weight functions
+          3.68   END Defining atomic weight functions (own atomic grid)
+                 Computing spin charges: 0%.........83%.100%
+          3.68   Written gaussian.hipart/hirsh_spin_charges.txt
+          3.68 END Atomic spin charges
 
 The output looks like::
 
-    toon@poony ~/hipart-example/alanine-radical> cat gaussian.hipart/hirsh_spin_charges.txt
+    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_spin_charges.txt
     number of atoms: 12
       i        Z  Spin charge
     --------------------------------
@@ -1528,37 +1537,39 @@ them.
 The :ref:`hirshfeld` atomic overlap matrices in the original basis of the alanine
 radical are computed as follows. ::
 
-    toon@poony ~/hipart-example/alanine-radical> hi-overlap-matrices.py gaussian.fchk hirsh ../atoms/densities.txt
-    BEGIN Loading Electronic structure
-      Data read from: gaussian.fchk ()
-      Restricted: False
-      Orbitals present: True
-      Spin density present: True
-      Number of alpha electrons: 24
-      Number of beta electrons: 23
-      Number of electrons: 47
-      Total charge: 0
-      Number of atoms: 12
-      Chemical formula: O2NC3H6
-    END Loading Electronic structure
-    BEGIN Atomic overlap matrices (in basis of contracted Gaussians)
-      BEGIN Atomic grids
-        Computing/Loading atomic grids (and distances):
-         0% ........... 6% .......... 13% .......... 20% .......... 27% .......... 34% .......... 41% .......... 48% .........
-        . 55% .......... 62% .......... 69% .......... 76% .......... 83% .......... 90% .......... 97% .... 100%
-      END Atomic grids
-      BEGIN Defining atomic weight functions (each on their own atomic grid)
-        Trying to load weight functions
-      END Defining atomic weight functions (each on their own atomic grid)
-      Computing matrices:
-       0% ........... 83% .. 100%
-      Written gaussian.hipart/hirsh_overlap_matrices.txt
-    END Atomic overlap matrices (in basis of contracted Gaussians)
+    toon@poony ~/hipart/examples/001-usage/alanine-radical> hi-overlap-matrices.py gaussian.fchk hirsh ../atoms/densities.txt
+    ---TIME--- ---------------------------------LOG---------------------------------
+          0.02 BEGIN Loading Electronic structure
+          0.06   Data read from: gaussian.fchk ()
+          0.06   Restricted: False
+          0.06   Orbitals present: True
+          0.06   Spin density present: True
+          0.06   Number of alpha electrons: 24
+          0.06   Number of beta electrons: 23
+          0.06   Number of electrons: 47
+          0.06   Total charge: 0
+          0.06   Number of atoms: 12
+          0.06   Chemical formula: O2NC3H6
+          0.06 END Loading Electronic structure
+          0.06 BEGIN Atomic overlap matrices (contracted Gaussians)
+          0.06   BEGIN Atomic grids
+                   Computing/Loading atomic grids and distances: 0%.........6%......
+                   ...13%.........20%.........27%.........34%.........41%.........48
+                   %.........55%.........62%.........69%.........76%.........83%....
+                   .....90%.........97%...100%
+          0.22   END Atomic grids
+          0.22   BEGIN Defining atomic weight functions (own atomic grid)
+          0.22     Trying to load weight functions
+          0.22   END Defining atomic weight functions (own atomic grid)
+                 Computing matrices: 0%.........83%.100%
+          0.40   Written gaussian.hipart/hirsh_overlap_matrices.txt
+          0.40 END Atomic overlap matrices (contracted Gaussians)
+
 
 The output file ``gaussian.hipart/hirsh_overlap_matrices.txt`` is rather large.
 Below we only show the overlap matrix for the first atom::
 
-    toon@poony ~/hipart-example/alanine-radical> cat gaussian.hipart/hirsh_overlap_matrices.txt
+    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_overlap_matrices.txt
     number of orbitals: 102
     number of atoms:  12
     Atom   0   O    8
