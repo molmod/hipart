@@ -28,6 +28,7 @@ from hipart.schemes import scheme_classes, ParseError
 from hipart.context import Context, ContextError
 
 from optparse import OptionParser, OptionGroup
+import sys
 
 
 __all__ = ["parse_command_line"]
@@ -106,8 +107,10 @@ def parse_command_line(script_usage):
     try:
         scheme = SchemeClass.new_from_args(context, args[2:])
     except ParseError, e:
-        parser.error(str(e))
+        print str(e)
+        sys.exit(-1)
     except ContextError, e:
-        parser.error(str(e))
+        print str(e)
+        sys.exit(-1)
 
     return context, scheme

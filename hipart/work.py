@@ -26,7 +26,7 @@ __all__ = ["Work"]
 
 
 class Work(object):
-    def __init__(self, directory=None, do_clean=True):
+    def __init__(self, directory=None, do_clean=False):
         self.directory = directory
         self.do_clean = do_clean
         self.clean()

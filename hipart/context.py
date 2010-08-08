@@ -105,12 +105,12 @@ class Context(object):
                     continue
                 if check != val:
                     message = [
-                        "The existing work directory (%s) contains incompatible data." % self.work.directory,
-                        "Try using the --clean option once.",
-                        "The following mismatch was detected in the work directory:",
+                        "The existing work directory (%s) contains incompatible data.\n" % self.work.directory,
+                        "Try using the --clean option once.\n",
+                        "The following mismatch was detected in the work directory:\n",
                         "'%s' (found in work) versus '%s' (current script) for property '%s'" % (val, check, key),
                     ]
-                    raise ContextError(" ".join(message))
+                    raise ContextError("".join(message))
 
         tag = " ".join("%s=%s" % (key, val) for key, val in sorted(tag_attributes.iteritems()))
         f = file(context_fn, "w")

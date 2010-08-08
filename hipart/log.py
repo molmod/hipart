@@ -81,7 +81,7 @@ class Log(object):
     def __init__(self):
         self.stack = []
         self.verbose = True
-        self.start = time.clock()
+        self.start = time.time()
         if self.verbose:
             print "---TIME--- "+"-"*33+"LOG"+"-"*33
 
@@ -90,7 +90,7 @@ class Log(object):
     def _section(self, key, s):
         space = 69-self.level*2
         line = "%s%s%s %s" % (bright, key, reset, s)
-        prefix = "%10.2f" % (time.clock() - self.start)
+        prefix = "%10.2f" % (time.time() - self.start)
         start = 0
         rows = (len(line) - len(bright) + len(reset))/space+1
         for i in xrange(rows):
@@ -108,7 +108,7 @@ class Log(object):
 
     def __call__(self, s):
         if self.verbose:
-            now = time.clock() - self.start
+            now = time.time() - self.start
             print "%10.2f %s%s" % (now, "  "*self.level, s)
 
     def end(self):

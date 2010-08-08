@@ -175,7 +175,7 @@ def run_jobs(program, dirnames):
             failed.append(dirname)
     pb()
     if len(failed) == len(dirnames):
-        log("Could not execute any job. Giving up.")
+        log("Could not execute any job. Is %s in the PATH?" % program.executable)
         sys.exit(-1)
     if len(failed) > 0:
         log("Some jobs failed:")
@@ -272,7 +272,7 @@ def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbe
 
     counter = 0
     for number, symbol, charge, real_charge in charges:
-        log("Total charge error: %3i %2s %+2i    %10.5e" % (number, symbol, charge, -real_charge+number-charge))
+        log("Total charge error: %3i %2s %+2i    % 10.5e" % (number, symbol, charge, -real_charge+number-charge))
         counter += 1
 
 
