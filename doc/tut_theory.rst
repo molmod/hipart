@@ -222,8 +222,8 @@ densities:
 .. math:: \rho_A(\mathbf{r}) = w_A(\mathbf{r})\rho_{\text{mol}}(\mathbf{r}),
 
 where :math:`w_A(\mathbf{r})` is the atomic weight function of atom :math:`A`
-obtained with some partitioning scheme and :math:`\rho_{\text{mol}}` is the
-molecular electron density.
+obtained with some partitioning scheme and :math:`\rho_{\text{mol}}(\mathbf{r})`
+is the molecular electron density.
 
 It may be interesting to see how the molecular density is derived from the
 density matrix obtained with a quantum chemical ground state computation. First
@@ -335,12 +335,42 @@ populations.
 Atomic properties derived from the partitioned spin density
 -----------------------------------------------------------
 
-TODO
+In this section we discuss the properties derived from the atomic spin
+densities:
+
+.. math:: \rho^{\text{spin}}_A(\mathbf{r}) = w_A(\mathbf{r})\rho^{\text{spin}}_{\text{mol}}(\mathbf{r}),
+
+where :math:`w_A(\mathbf{r})` is the atomic weight function of atom :math:`A`
+obtained with some partitioning scheme and
+:math:`\rho^{\text{spin}}_{\text{mol}}(\mathbf{r})` is the molecular spin
+density.
+
+The spin density is derived from the spin density matrix in the same way as the
+conventional electron density is derived from the density matrix:
+
+.. math:: \rho^{\text{spin}}_{\text{mol}}(\mathbf{r}) = (B(\mathbf{r}))^T D^{\text{spin}} B(\mathbf{r}),
+
+where :math:`B(\mathbf{r})` is the vector with basis functions evaluated in
+point :math:`\mathbf{r}` and :math:`D^{\text{spin}}` is the spin density matrix.
+The spin density matrix and the conventional density matrix can be derived from
+the alpha spin density matrix, :math:`D^{\alpha}`, and the beta spin density
+matrix, :math:`D^{\beta}`, as follows:
+
+.. math::
+    D^{\text{spin}} = D^{\alpha} - D^{\beta}
+
+    D = D^{\alpha} + D^{\beta}
+
+
 
 Spin charges
 ^^^^^^^^^^^^
 
-TODO
+The spin charges are the atomic populations derived from the molecular spin
+density.
+
+.. math:: N^{\text{spin}}_{A} = \int w_A(\mathbf{r}) \rho^{\text{spin}}_{\text{mol}}(\mathbf{r}) d\mathbf{r}
+
 
 Atomic properties derived from the partitioned density matrix
 -------------------------------------------------------------
