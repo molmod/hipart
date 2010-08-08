@@ -101,6 +101,7 @@ class Context(object):
             for key, val in existing_attributes.iteritems():
                 check = tag_attributes.get(key)
                 if check is None:
+                    tag_attributes[key] = val
                     continue
                 if check != val:
                     message = [
