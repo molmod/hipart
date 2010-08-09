@@ -1687,20 +1687,100 @@ useful when one has to perform rather repetitive work, or when some subsequent
 analysis is necessary. A few typical examples are shown below, although the
 possibilities are endless.
 
-Tuning integration grids
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-TODO
-
-* Test various combinations of radial and angular grids.
-* Print out the Pareto front of accuracy versus computation time.
-* Use Sphinx to include source code from example directory
-
 Batch processing of many fchk files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TODO
+When a large number of Gaussian files must be processed to generate a database
+of atomic partial charges, the standard HiPart command-line scripts may not be
+suitable enough. The following custom script uses the HiPart library to compute
+:ref:`hirshfeld` charges for all molecules in the previous section. The regular
+output and work files are suppressed and all results are written to a single
+file with a custom format. The script is included in the source tree in the
+directory ``examples/002-batch``.
 
-* Demonstrate alternative output format
-* use ``--no-output`` and ``--no-work``
-* Use Sphinx to include source code from example directory
+.. literalinclude:: ../examples/002-batch/batch.py
+   :language: python
+   :linenos:
+
+The output file, ``all.txt``, reads::
+
+    XXX 13
+      8    1.6576426043    0.7442011013   -0.4898368374  -0.16996
+      8    1.1020987870   -1.0890743230    0.6977938371  -0.27558
+      7   -1.4047606065   -1.0910534617   -0.4582025482  -0.22138
+      6   -0.6553720816    0.1615235597   -0.4158397944   0.03542
+      6   -1.2048173855    1.2303344269    0.5578948140  -0.08058
+      6    0.7748161142   -0.1640203278   -0.0128938185   0.21813
+      1   -0.6275594218    0.5945217510   -1.4229395476   0.03376
+      1   -0.6096404655    2.1496824048    0.5259454633   0.03120
+      1   -2.2354634061    1.4834218989    0.2840349146   0.03120
+      1   -1.2054475774    0.8485100890    1.5853490811   0.02841
+      1   -2.4039648542   -0.8977663004   -0.4401325436   0.09646
+      1   -1.1808053082   -1.6350484044    0.3738266447   0.09148
+      1    2.5305142603    0.4860126298   -0.1372893682   0.18144
+    XXX 12
+      8   -1.5492981588    1.0659318744    0.0758484510  -0.22111
+      8   -1.4032848053   -1.0506244235   -0.2250982449  -0.14769
+      7    1.0892470147   -1.3210053537    0.0163836069  -0.16458
+      6    0.6573065841    0.0175080319    0.3899234851   0.03854
+      6    1.4014571966    1.1941383090   -0.2499169713  -0.07890
+      6   -0.8312103705    0.0584386208    0.0757614040   0.19371
+      1    0.7371478941    0.0945698786    1.4825857195   0.04989
+      1    0.9191461021    2.1375698401    0.0290968359   0.03963
+      1    2.4461106491    1.2221187655    0.0775005591   0.03058
+      1    1.3827823213    1.1176697205   -1.3435700943   0.03189
+      1    1.9071124462   -1.6446422178    0.5219844772   0.11557
+      1    1.2383147103   -1.4232178471   -0.9828918999   0.11248
+
+
+Tuning integration grids
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is not always trivial to just know a priori which combination of radial and
+angular integration grid give a good trade-off between accuracy of the output of
+interest, e.g. effective atomic charges, and the computational cost. The program
+below tests all combinations of a set of radial and angular grids on the alanine
+wavefunction from the previous section, and measures for each combination the
+error on the Hirshfeld charges and the computational cost in seconds. It
+concludes with a summary of the configurations that are Pareto-optimal with
+respect to a minimal error and a minimal computational cost. The script is
+included in the source tree in the directory ``examples/003-grid-tuning``.
+
+.. literalinclude:: ../examples/003-grid-tuning/tune.py
+   :language: python
+   :linenos:
+
+The Pareto optimal choices are printed in the end of the screen output::
+
+    ---TIME--- ---------------------------------LOG---------------------------------
+    <lots of output omitted>
+          0.00 BEGIN Pareto front
+          0.00   size = 200    lebedev = 110    error = 5.62e-05    cost = 7.76e+01
+          0.00   size = 100    lebedev = 110    error = 6.76e-05    cost = 3.87e+01
+          0.00   size = 200    lebedev =  50    error = 2.20e-04    cost = 3.75e+01
+          0.00   size = 100    lebedev =  50    error = 2.80e-04    cost = 1.87e+01
+          0.00   size = 100    lebedev =  26    error = 1.05e-03    cost = 1.08e+01
+          0.00   size =  50    lebedev =  50    error = 1.44e-03    cost = 9.46e+00
+          0.00   size =  50    lebedev =  26    error = 2.49e-03    cost = 5.49e+00
+          0.00 END Pareto front
+
+
+All configurations that are beaten both in error and computing time by some other
+configuration are not present in the Pareto front. The output also shows for
+each improvement in error (or computing time) what price one has to pay in
+computing time (or error). The (error,time) pair of each combination is included
+in the table below, and the Pareto optimal cases are printed in bold.
+
+========= ============= ============= ============= ============= ============= =============
+lebedev               l=26                        l=50                       l=110
+--------- --------------------------- --------------------------- ---------------------------
+     s=50 **2.492e-03** **5.490e+00** **1.436e-03** **9.460e+00**   6.181e-04     1.935e+01
+    s=100 **1.052e-03** **1.077e+01** **2.801e-04** **1.870e+01** **6.764e-05** **3.869e+01**
+    s=200   8.755e-04     2.140e+01   **2.200e-04** **3.751e+01** **5.622e-05** **7.763e+01**
+========= ============= ============= ============= ============= ============= =============
+
+The combination (s=100,l=110) is the default choice in HiPart, and
+results in an error of about 1e-4 for the effective partial charges. (This error
+is also used as the standard convergence criterion for the iterative
+procedures.) When too small grids are used (e.g. s=50,l=26) in the iterative
+procedures, convergence may completely fail.
