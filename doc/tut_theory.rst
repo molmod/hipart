@@ -372,15 +372,31 @@ density.
 .. math:: N^{\text{spin}}_{A} = \int w_A(\mathbf{r}) \rho^{\text{spin}}_{\text{mol}}(\mathbf{r}) d\mathbf{r}
 
 
-Atomic properties derived from the basis set
---------------------------------------------
-
-TODO
-
 Atomic overlap matrices (in the basis of contracted Gaussians)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------------------------------
 
-TODO
+The atomic overlap matrices do not depend on the density or density matrix, but
+only depend on the basis functions used to describe the wavefunction. The
+conventional overlap matrix is defined as follows:
+
+.. math:: S_{\mu\nu} = \int B_{\mu}(\mathbf{r}) B_{\nu}(\mathbf{r}) d\mathbf{r}
+
+The square root of the overlap matrix can be used to transform the
+non-orthogonal basis of contracted Gaussians into an orthonormal basis, and is
+in general a tool to work with non-orthogonal basis sets. One defines the atomic
+overlap matrix by inserting an atomic weight function into the integral:
+
+.. math:: S^{A}_{\mu\nu} = \int B_{\mu}(\mathbf{r}) w_A(\mathbf{r}) B_{\nu}(\mathbf{r}) d\mathbf{r}
+
+One can define the atomic population as the trace of the product of the density
+matrix and the corresponding atomic overlap matrix:
+
+.. math:: N_A = \mathrm{Tr} (D S^A)
+
+Similarly, one can write down the spin charges as function of the spin density
+matrix and the overlap matrix:
+
+.. math:: N^{\text{spin}}_A = \mathrm{Tr} (D^{\text{spin}} S^A)
 
 Atomic properties derived from the partitioned density matrix
 -------------------------------------------------------------
