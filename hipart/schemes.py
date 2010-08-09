@@ -49,15 +49,12 @@ from molmod.periodic import periodic
 import os, numpy
 
 
-__all__ = ["ComputeError", "ParseError", "scheme_classes"]
+__all__ = ["ParseError", "scheme_classes"]
 
 
 noble_numbers = numpy.array([0,2,10,18,36,54,86,118])
 core_sizes = dict((number, noble_numbers[noble_numbers<=number].max()) for number in periodic.iter_numbers())
 
-
-class ComputeError(Exception):
-    pass
 
 class ParseError(Exception):
     pass
