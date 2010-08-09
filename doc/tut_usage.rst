@@ -620,7 +620,6 @@ in slightly different numbers::
      12   H    1    0.323404892132
     --------------------------------
 
-
 This is due to the random rotations applied to the angular grids used for the
 atom-centered numerical integrations. These randomly rotated angular grids have
 several advantages:
@@ -629,6 +628,9 @@ several advantages:
 * It removes directionional preference in the grids and.
 * It allows simple estimates of the accuracy by simply rerunning the same
   analysis twice.
+
+Read the section :ref:`tune` for more details on numerical errors and how to
+control them.
 
 For the sake of completeness, these are the commands to compute the charges on
 the same molecule with the three other partitioning schemes::
@@ -1703,13 +1705,15 @@ The output file, ``all.txt``, reads::
       1    1.2383147103   -1.4232178471   -0.9828918999   0.11248
 
 
+.. _tune:
+
 Tuning integration grids
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-It is not always trivial to just know a priori which combination of radial and
-angular integration grid give a good trade-off between accuracy of the output of
-interest, e.g. effective atomic charges, and the computational cost. The program
-below tests all combinations of a set of radial and angular grids on the alanine
+One can not know a priori which combination of radial and angular integration
+grid give a good trade-off between accuracy of the output of interest, e.g.
+effective atomic charges, and the computational cost. The program below tests
+all combinations of a set of radial and angular grids on the alanine
 wavefunction from the previous section, and measures for each combination the
 error on the Hirshfeld charges and the computational cost in seconds. It
 concludes with a summary of the configurations that are Pareto-optimal with
@@ -1724,16 +1728,18 @@ The Pareto optimal choices are printed in the end of the screen output::
 
     ---TIME--- ---------------------------------LOG---------------------------------
     <lots of output omitted>
-          0.00 BEGIN Pareto front
-          0.00   size = 200    lebedev = 110    error = 5.62e-05    cost = 7.76e+01
-          0.00   size = 100    lebedev = 110    error = 6.76e-05    cost = 3.87e+01
-          0.00   size = 200    lebedev =  50    error = 2.20e-04    cost = 3.75e+01
-          0.00   size = 100    lebedev =  50    error = 2.80e-04    cost = 1.87e+01
-          0.00   size = 100    lebedev =  26    error = 1.05e-03    cost = 1.08e+01
-          0.00   size =  50    lebedev =  50    error = 1.44e-03    cost = 9.46e+00
-          0.00   size =  50    lebedev =  26    error = 2.49e-03    cost = 5.49e+00
-          0.00 END Pareto front
-
+       2945.01 BEGIN Pareto front
+       2945.01   size = 600    lebedev = 266    error = 6.51e-06    cost = 5.51e+02
+       2945.01   size = 400    lebedev = 266    error = 9.41e-06    cost = 3.66e+02
+       2945.01   size = 200    lebedev = 266    error = 1.23e-05    cost = 1.82e+02
+       2945.01   size = 100    lebedev = 266    error = 1.66e-05    cost = 9.05e+01
+       2945.01   size = 100    lebedev = 170    error = 4.16e-05    cost = 5.87e+01
+       2945.01   size = 100    lebedev = 110    error = 6.30e-05    cost = 3.87e+01
+       2945.01   size = 200    lebedev =  50    error = 1.96e-04    cost = 3.73e+01
+       2945.01   size = 100    lebedev =  50    error = 2.63e-04    cost = 1.87e+01
+       2945.01   size = 100    lebedev =  26    error = 1.06e-03    cost = 1.07e+01
+       2945.01   size =  50    lebedev =  26    error = 2.75e-03    cost = 5.49e+00
+       2945.01 END Pareto front
 
 All configurations that are beaten both in error and computing time by some other
 configuration are not present in the Pareto front. The output also shows for
@@ -1741,13 +1747,21 @@ each improvement in error (or computing time) what price one has to pay in
 computing time (or error). The (error,time) pair of each combination is included
 in the table below, and the Pareto optimal cases are printed in bold.
 
-========= ============= ============= ============= ============= ============= =============
-lebedev               l=26                        l=50                       l=110
---------- --------------------------- --------------------------- ---------------------------
-     s=50 **2.492e-03** **5.490e+00** **1.436e-03** **9.460e+00**   6.181e-04     1.935e+01
-    s=100 **1.052e-03** **1.077e+01** **2.801e-04** **1.870e+01** **6.764e-05** **3.869e+01**
-    s=200   8.755e-04     2.140e+01   **2.200e-04** **3.751e+01** **5.622e-05** **7.763e+01**
-========= ============= ============= ============= ============= ============= =============
+========= ============= ============= ============= ============= ============= ============= ============= ============= ============= =============
+lebedev               l=26                        l=50                       l=110                       l=170                       l=266
+--------- --------------------------- --------------------------- --------------------------- --------------------------- ---------------------------
+     s=50 **2.745e-03** **5.490e+00**   7.972e-03     9.450e+00     3.095e-04     1.934e+01     5.618e-04     2.939e+01     1.435e-03     4.531e+01
+    s=100 **1.065e-03** **1.074e+01** **2.633e-04** **1.868e+01** **6.304e-05** **3.869e+01** **4.161e-05** **5.868e+01** **1.655e-05** **9.049e+01**
+    s=200   9.624e-04     2.132e+01   **1.961e-04** **3.729e+01**   4.861e-05     7.706e+01     2.835e-05     1.177e+02   **1.232e-05** **1.818e+02**
+    s=400   4.957e-04     4.251e+01     1.422e-04     7.450e+01     3.752e-05     1.543e+02     1.781e-05     2.360e+02   **9.415e-06** **3.657e+02**
+    s=600   5.007e-04     6.375e+01     1.240e-04     1.118e+02     3.038e-05     2.318e+02     1.298e-05     3.524e+02   **6.511e-06** **5.508e+02**
+========= ============= ============= ============= ============= ============= ============= ============= ============= ============= =============
+
+The choice of the angular grid seems to be the most determinant for the accuracy
+(as soon as one uses 100 radial grid points). This is not surprising because the
+angular grids are randomly rotated, while the radial grids are always the same.
+Nevertheless, this exercise gives us at least some idea of the accuracy of the
+effective charges.
 
 The combination (s=100,l=110) is the default choice in HiPart, and
 results in an error of about 1e-4 for the effective partial charges. (This error

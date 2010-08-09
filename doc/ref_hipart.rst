@@ -80,9 +80,3 @@ code.
 
 .. automodule:: hipart.work
    :members:
-
-:mod:`hipart.output` --- Control output files
----------------------------------------------
-
-.. automodule:: hipart.output
-   :members:
