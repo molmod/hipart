@@ -1681,7 +1681,7 @@ Below we only show the overlap matrix for the first atom::
 Using HiPart as a library
 -------------------------
 
-Next to the command line scripts illustrated in the previous section, HiPart can
+Next to the command-line scripts illustrated in the previous section, HiPart can
 also be used as a library to write your own partitioning scripts. This is mostly
 useful when one has to perform rather repetitive work, or when some subsequent
 analysis is necessary. A few typical examples are shown below, although the

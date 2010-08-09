@@ -13,6 +13,9 @@ References
    'Critical analysis and extension of the Hirshfeld atoms in molecules' *J.
    Chem. Phys.* **2007**, 126, no 144111. http://dx.doi.org/10.1063/1.2715563
 
+.. [Mayer2007] Mayer, I. 'Bond order and valence indices: A personal account'
+   *J. Comput. Chem.* **2007**, 28, 204-221. http://dx.doi.org/10.1002/jcc.20494
+
 .. [Cordero2008] Cordero, B.; Gomez, V.; Platero-Prats, A. E.; Reves, M.;
    Echeverria, J.; Cremades, E.; Barragan, F.; Alvarez, S. 'Covalent radii
    revisited' *Dalton Trans.* **2008**, p 2832-2838.

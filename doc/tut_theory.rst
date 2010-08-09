@@ -6,6 +6,13 @@ Theoretical background
 The summary below is just a description of the methods implemented in HiPart. It
 is highly recommended to read the cited papers for a more extensive discussion.
 
+The first section discusses four different schemes to define fuzzy atoms: 
+:ref:`becke`, :ref:`hirshfeld`, :ref:`hirshfeld-i`, :ref:`isa`. All subsequent
+sections give an overview of the quantities that can be derived with HiPart once
+fuzzy atoms (i.e. atomic weight functions) are defined.
+
+
+
 Fuzzy atom partitioning
 -----------------------
 
@@ -401,10 +408,15 @@ matrix and the overlap matrix:
 Atomic properties derived from the partitioned density matrix
 -------------------------------------------------------------
 
+
 TODO
 
-Bond orders
-^^^^^^^^^^^
+Bond orders and atomic valences
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mayer has written a `personal account` [Mayer2007]_ about bond orders and
+valence indices. It is good introduction for those who are new to these
+concepts.
 
 TODO
 
