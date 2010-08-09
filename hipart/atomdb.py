@@ -34,7 +34,7 @@ from glob import glob
 import numpy, os, sys
 
 
-__all__ = ["main"]
+__all__ = ["Options", "run_atomdb", "main"]
 
 
 class Gaussian(object):
@@ -352,11 +352,22 @@ def parse_args(args):
         parser.error("Expecting three arguments: executable, level of theory (+ basis set) and the atom specification.")
     executable, lot, atom_str = args
     atom_numbers = parse_numbers(atom_str)
-    return options, executable, lot, atom_numbers
+    return executable, lot, atom_numbers, options
 
 
-def main(args=None):
-    options, executable, lot, atom_numbers = parse_args(args=None)
+class Options(object):
+    def __init__(self, lebedev=110, rlow=2e-5, rhigh=20.0, steps=100, max_ion=2, qc=False, do_work=True, verbose=True):
+        self.lebedev = lebedev
+        self.rlow = rlow
+        self.rhigh = rhigh
+        self.steps = steps
+        self.max_ion = max_ion
+        self.qc = qc
+        self.do_work = do_work
+        self.verbose = verbose
+
+
+def run_atomdb(executable, lot, atom_numbers, options):
     log.verbose = options.verbose
     program = Gaussian(executable, options)
     dirnames = make_inputs(program, lot, atom_numbers, options.max_ion)
@@ -367,3 +378,8 @@ def main(args=None):
         options.lebedev, options.rlow*angstrom, options.rhigh*angstrom,
         options.num_steps, atom_numbers, options.max_ion, options.do_work
     )
+
+
+def main(args=None):
+    executable, lot, atom_numbers, options = parse_args(args=None)
+    run_atomdb(executable, lot, atom_numbers, options)
