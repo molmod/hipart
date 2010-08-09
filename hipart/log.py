@@ -92,7 +92,7 @@ class Log(object):
         line = "%s%s%s %s" % (bright, key, reset, s)
         prefix = "%10.2f" % (time.time() - self.start)
         start = 0
-        rows = (len(line) - len(bright) + len(reset))/space+1
+        rows = (len(line) - len(bright) - len(reset))/space+1
         for i in xrange(rows):
             end = start + space
             if i==0:
