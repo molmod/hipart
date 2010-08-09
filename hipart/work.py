@@ -30,10 +30,13 @@ class Work(object):
         self.directory = directory
         self.do_clean = do_clean
         self.clean()
-        if self.active and not os.path.isdir(self.directory):
-            os.makedirs(self.directory)
+        self.create()
 
     active = property(lambda self: self.directory is not None)
+
+    def create(self):
+        if self.active and not os.path.isdir(self.directory):
+            os.makedirs(self.directory)
 
     def load(self, name, shape=None):
         if self.active:
