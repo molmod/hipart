@@ -356,18 +356,22 @@ def parse_args(args):
 
 
 class Options(object):
-    def __init__(self, lebedev=110, rlow=2e-5, rhigh=20.0, steps=100, max_ion=2, qc=False, do_work=True, verbose=True):
+    def __init__(self, lebedev=110, rlow=2e-5, rhigh=20.0, num_steps=100, max_ion=2, qc=False, do_work=True, verbose=True):
         self.lebedev = lebedev
         self.rlow = rlow
         self.rhigh = rhigh
-        self.steps = steps
+        self.num_steps = num_steps
         self.max_ion = max_ion
         self.qc = qc
         self.do_work = do_work
         self.verbose = verbose
 
 
-def run_atomdb(executable, lot, atom_numbers, options):
+def run_atomdb(executable, lot, atom_numbers, options, directory="."):
+    old_directory = os.getcwd()
+    if not os.path.isdir(directory):
+        os.makedirs(directory)
+    os.chdir(directory)
     log.verbose = options.verbose
     program = Gaussian(executable, options)
     dirnames = make_inputs(program, lot, atom_numbers, options.max_ion)
@@ -378,6 +382,7 @@ def run_atomdb(executable, lot, atom_numbers, options):
         options.lebedev, options.rlow*angstrom, options.rhigh*angstrom,
         options.num_steps, atom_numbers, options.max_ion, options.do_work
     )
+    os.chdir(old_directory)
 
 
 def main(args=None):
