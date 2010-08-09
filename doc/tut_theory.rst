@@ -6,7 +6,7 @@ Theoretical background
 The summary below is just a description of the methods implemented in HiPart. It
 is highly recommended to read the cited papers for a more extensive discussion.
 
-The first section discusses four different schemes to define fuzzy atoms: 
+The first section discusses four different schemes to define fuzzy atoms:
 :ref:`becke`, :ref:`hirshfeld`, :ref:`hirshfeld-i`, :ref:`isa`. All subsequent
 sections give an overview of the quantities that can be derived with HiPart once
 fuzzy atoms (i.e. atomic weight functions) are defined.
@@ -220,8 +220,8 @@ This is again repeated until the atomic populations converge. Note that this
 scheme does not depend on a database of atomic densities.
 
 
-Atomic properties derived from the partitioned density
-------------------------------------------------------
+Atomic properties derived from the density
+------------------------------------------
 
 In this section we discuss the properties derived from the atomic electron
 densities:
@@ -234,11 +234,11 @@ is the molecular electron density.
 
 It may be interesting to see how the molecular density is derived from the
 density matrix obtained with a quantum chemical ground state computation. First
-the basis functions, :math:`B_m` are evaluated in the point :math:`\mathbf{r}`,
+the basis functions, :math:`f_m` are evaluated in the point :math:`\mathbf{r}`,
 where :math:`m` runs from 1 to the number of basis functions. In matrix notation
 the molecular density is then computed as follows:
 
-.. math:: \rho_{\text{mol}}(\mathbf{r}) = (B(\mathbf{r}))^T D B(\mathbf{r}),
+.. math:: \rho_{\text{mol}}(\mathbf{r}) = (f(\mathbf{r}))^T D f(\mathbf{r}),
 
 where :math:`D` is the density matrix.
 
@@ -339,8 +339,8 @@ populations would be zero and the net charges would be the regular atomic
 populations.
 
 
-Atomic properties derived from the partitioned spin density
------------------------------------------------------------
+Atomic properties derived from the spin density
+-----------------------------------------------
 
 In this section we discuss the properties derived from the atomic spin
 densities:
@@ -355,9 +355,9 @@ density.
 The spin density is derived from the spin density matrix in the same way as the
 conventional electron density is derived from the density matrix:
 
-.. math:: \rho^{\text{spin}}_{\text{mol}}(\mathbf{r}) = (B(\mathbf{r}))^T D^{\text{spin}} B(\mathbf{r}),
+.. math:: \rho^{\text{spin}}_{\text{mol}}(\mathbf{r}) = (f(\mathbf{r}))^T D^{\text{spin}} f(\mathbf{r}),
 
-where :math:`B(\mathbf{r})` is the vector with basis functions evaluated in
+where :math:`f(\mathbf{r})` is the vector with basis functions evaluated in
 point :math:`\mathbf{r}` and :math:`D^{\text{spin}}` is the spin density matrix.
 The spin density matrix and the conventional density matrix can be derived from
 the alpha spin density matrix, :math:`D^{\alpha}`, and the beta spin density
@@ -367,7 +367,6 @@ matrix, :math:`D^{\beta}`, as follows:
     D^{\text{spin}} = D^{\alpha} - D^{\beta}
 
     D = D^{\alpha} + D^{\beta}
-
 
 
 Spin charges
@@ -386,14 +385,14 @@ The atomic overlap matrices do not depend on the density or density matrix, but
 only depend on the basis functions used to describe the wavefunction. The
 conventional overlap matrix is defined as follows:
 
-.. math:: S_{\mu\nu} = \int B_{\mu}(\mathbf{r}) B_{\nu}(\mathbf{r}) d\mathbf{r}
+.. math:: S_{\mu\nu} = \int f_{\mu}(\mathbf{r}) f_{\nu}(\mathbf{r}) d\mathbf{r}
 
 The square root of the overlap matrix can be used to transform the
 non-orthogonal basis of contracted Gaussians into an orthonormal basis, and is
 in general a tool to work with non-orthogonal basis sets. One defines the atomic
 overlap matrix by inserting an atomic weight function into the integral:
 
-.. math:: S^{A}_{\mu\nu} = \int B_{\mu}(\mathbf{r}) w_A(\mathbf{r}) B_{\nu}(\mathbf{r}) d\mathbf{r}
+.. math:: S^{A}_{\mu\nu} = \int f_{\mu}(\mathbf{r}) w_A(\mathbf{r}) f_{\nu}(\mathbf{r}) d\mathbf{r}
 
 One can define the atomic population as the trace of the product of the density
 matrix and the corresponding atomic overlap matrix:
@@ -405,30 +404,113 @@ matrix and the overlap matrix:
 
 .. math:: N^{\text{spin}}_A = \mathrm{Tr} (D^{\text{spin}} S^A)
 
-Atomic properties derived from the partitioned density matrix
--------------------------------------------------------------
 
+Atomic properties derived from the density matrix
+-------------------------------------------------
 
-TODO
+All properties discussed in the previous sections can be written as an integral
+over the electron (spin) density multiplied by a (weight) function.
+Alternatively one can also go back to the matrix :math:`(D S^A)` and manipulate
+this object before taking the trace. This allows use to derive new quantities
+that are not simple written as a function of the electron density.
+
 
 Bond orders and atomic valences
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+One defines the bond order, valence and free valence, in the fuzzy atom
+framework as follows:
+
+.. math::
+    \mathcal{B}_{AB} = 2\mathrm{Tr}\left[(D^{\alpha} S^A)(D^{\alpha} S^B)^T + (D^{\beta} S^A)(D^{\beta} S^B)^T \right]
+
+    \mathcal{V}_A = 2 N_A - \mathrm{Tr}\left[ (D S^A)(D S^A)^T \right]
+
+    \mathcal{F}_A = \mathcal{V}_A - \sum_{B \neq A} \mathcal{B}_{AB}
+
 Mayer has written a `personal account` [Mayer2007]_ about bond orders and
-valence indices. It is good introduction for those who are new to these
+valence indices. It is a good introduction for those who are new to these
 concepts.
 
-TODO
-
-Atomic properties derived from the partitioned orbitals
--------------------------------------------------------
 
 Atomic overlap matrices (in the basis of the orbitals)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------------------------
 
-TODO
+The overlap matrix can also be computed in the basis of the orbitals. Because
+the orbitals are an orthogonal basis, the conventional overlap matrix
 
-Electrostatic Potential Fitting
--------------------------------
+.. math:: S^{\text{orb}}_{\mu\nu} = \int \psi_{\mu}(\mathbf{r}) \psi_{\nu}(\mathbf{r}) d\mathbf{r},
 
-TODO
+where :math:`\psi_{\mu}` and :math:`\psi_{\nu}` are the orbitals, is simply the
+identity matrix. One can now define atomic contributions to this matrix by
+inserting the atomic weight functions into the integral:
+
+.. math:: S^{\text{orb},A}_{\mu\nu} = \int \psi_{\mu}(\mathbf{r}) w_A(\mathbf{r}) \psi_{\nu}(\mathbf{r}) d\mathbf{r}
+
+This is in principle the same quantity is introduced earlier, but just in a
+different basis.
+
+.. _esp:
+
+Electrostatic Potential (ESP) Fitting
+-------------------------------------
+
+In this section we will refer to electrostatic potential generated by the
+electron density and the nuclei as the full ESP, or :math:`V_{\text{full}}`.
+
+ESP fitting is a procedure where the amplitudes of point monopoles at the
+positions of the nuclei are fitted to reproduce the full ESP `outside` the
+molecule. Advanced schemes also include dipoles and optionally higher
+multipoles, and consider also other critical points than just the positions of
+the nuclei.
+
+The goodness of the reproduction of the potential outside the molecule is
+typically measured by a fitness (or cost) function. In the most simplistic
+approach, this fitness function is simply a sum of weighted squared errors
+between the full-blown potential, :math:`V_{\text{full}}`, and the potential
+generated by the point charges, :math:`V_{\text{model}}`:
+
+.. math::
+    X = \sum_{p=1}^P w_p \left( V_{\text{full}}(\mathbf{r}_p) - V_{\text{model}}(\mathbf{r}_p) \right)^2
+
+    V_{\text{model}}(\mathbf{r}_p) = \sum_{A=1}^N \frac{q_A}{|\mathbf{r}_p - \mathbf{r}_A|}
+
+Minimization of this fitness function with respect to the unknowns, the charges
+:math:`q_A`, yields the ESP-optimal charges.
+
+Most ESP fitting methods differ in the way the grid points are constructed. No
+matter how one selects the grid points, the cost function :math:`X` is always
+ill defined. Several attempts have been made to turn this fitness function into
+a well-behaved one, of which the RESP method [Bayly1993]_ is the most
+wide-spread. In HiPart, this rank-deficiency issue of the fitness function is less
+problematic because HiPart only uses such cost functions to measure how well
+charges (and dipoles) derived from a partitioning scheme are able to reproduce
+the ESP on a set of grid points around the molecule. HiPart does not compute
+ESP-fitted charges.
+
+The selection of grid points for the cost function used in HiPart is discussed
+in [Verstraelen2009]_. All weights are set to 1. The relevant paragraph for the
+paper is quoted below for the details:
+
+    *We do not rely on charges that are fitted to reproduce the ESP around the
+    molecule because they generally suffer from statistical inaccuracies. This
+    does not mean that the ESP around the molecule is an irrelevant quantity.
+    For the development of the electrostatic term in a FF model, one is, in
+    principle, only interested in the reproduction of the ESP generated by the
+    full electron density, not only in the gas phase but also when the electron
+    density adapts to an electrostatic perturbation. Under these conditions one
+    can reproduce the correct electrostatic interactions. We evaluated, for each
+    single point calculation, the ab initio ESP on a molecular grid to benchmark
+    the performance of each parametrization. A two-dimensional schematic picture
+    of the grid is given in Fig. 4. It is constructed as follows. First, 30
+    concentric spheres are placed around each atom. The minimum sphere radius is
+    1.5 times the radius of the noble gas core of the corresponding atom, the
+    maximum radius is 30 times the noble gas core radius. The radii of
+    intermediate spheres are equidistant on a logarithmic scale. On each sphere,
+    we used randomly rotated 50-point Lebedev–Laikov grids. The random rotation
+    avoids arbitrary preferred directions. For this study, we only retained the
+    grid points where the electron density is lower than 10e−5 a.u.*
+
+This is figure 4 from the paper:
+
+.. image:: grid.png

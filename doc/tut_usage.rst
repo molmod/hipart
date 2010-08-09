@@ -767,40 +767,10 @@ scheme.
    molecular dipole approximations are compared with the molecular dipole vector
    reported in the formatted checkpoint file.
 
-2. A second test is based on an ESP fitting cost function for the charges and
+2. A second test is based on an :ref:`esp` cost function for the charges and
    the dipoles. With this cost function the script computes how well (i) the
    charges, (ii) the dipoles, and (iii) the charges with the dipoles reproduce
-   the ESP around the molecule. The current definition of the ESP cost function
-   is discussed in [Verstraelen2009]_, and we quote the relevant paragraph below
-   for the details:
-
-    We do not rely on charges that are fitted to reproduce the
-    ESP around the molecule because they generally suffer from
-    statistical inaccuracies. This does not mean that the ESP
-    around the molecule is an irrelevant quantity. For the development
-    of the electrostatic term in a FF model, one is, in
-    principle, only interested in the reproduction of the ESP generated
-    by the full electron density, not only in the gas phase
-    but also when the electron density adapts to an electrostatic
-    perturbation. Under these conditions one can reproduce the
-    correct electrostatic interactions. We evaluated, for each
-    single point calculation, the ab initio ESP on a molecular
-    grid to benchmark the performance of each parametrization.
-    A two-dimensional schematic picture of the grid is given in
-    Fig. 4. It is constructed as follows. First, 30 concentric
-    spheres are placed around each atom. The minimum sphere
-    radius is 1.5 times the radius of the noble gas core of the
-    corresponding atom, the maximum radius is 30 times the
-    noble gas core radius. The radii of intermediate spheres are
-    equidistant on a logarithmic scale. On each sphere, we used
-    randomly rotated 50-point Lebedev–Laikov grids. The
-    random rotation avoids arbitrary preferred directions. For
-    this study, we only retained the grid points where the electron
-    density is lower than 10e−5 a.u.
-
-   This is figure 4 from the paper:
-
-   .. image:: grid.png
+   the ESP around the molecule.
 
 Again, the script is executed in the same style as all other scripts. See the
 documentation of ``hi-charges.py`` for more details. The example below tests the

@@ -9,12 +9,18 @@ References
    polyatomic molecules' *J. Chem. Phys.* **1988**,  88, p 2547-2553.
    http://dx.doi.org/10.1063/1.454033
 
+.. [Bayly1993] Bayly, C. I.; Cieplak, P.; Cornell, W.; Kollman, P. A. 'A
+   well-behaved electrostatic potential based method using charge restraints for
+   deriving atomic charges: the RESP model' *J. Phys. Chem.* **1993**, 97,
+   p 10269-10280. http://dx.doi.org/10.1021/j100142a004
+
 .. [Bultinck2007] Bultinck, P.; Van Alsenoy, C.; Ayers, P. W.; Dorca, R. C.
    'Critical analysis and extension of the Hirshfeld atoms in molecules' *J.
    Chem. Phys.* **2007**, 126, no 144111. http://dx.doi.org/10.1063/1.2715563
 
 .. [Mayer2007] Mayer, I. 'Bond order and valence indices: A personal account'
-   *J. Comput. Chem.* **2007**, 28, 204-221. http://dx.doi.org/10.1002/jcc.20494
+   *J. Comput. Chem.* **2007**, 28, p 204-221.
+   http://dx.doi.org/10.1002/jcc.20494
 
 .. [Cordero2008] Cordero, B.; Gomez, V.; Platero-Prats, A. E.; Reves, M.;
    Echeverria, J.; Cremades, E.; Barragan, F.; Alvarez, S. 'Covalent radii

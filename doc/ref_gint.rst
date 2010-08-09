@@ -1,5 +1,5 @@
-(Towards a) Gaussian integrals library
-======================================
+:mod:`hipart.gint` --- (Towards a) Gaussian integrals library
+=============================================================
 
 Gint is a part of HiPart used to evaluate functions and integrals of Gaussian
 functions. Gint is for the moment very limited in functionality and just does
@@ -12,8 +12,8 @@ scripts that use `SymPy <http://www.sympy.org>`_ as the computer algebra layer.
 Although there are still opportunities to further optmize the generated code,
 the current result is already very useful.
 
-Basis set representation
-------------------------
+:mod:`hipart.gint.basis` --- Basis set representation
+-----------------------------------------------------
 
 .. automodule:: hipart.gint.basis
    :members:
@@ -21,18 +21,24 @@ Basis set representation
 One-center routines
 -------------------
 
+TODO
 
 Two-center routines
 -------------------
 
+TODO
 
 Auxiliary function
 ------------------
 
+TODO
 
 Tools
 -----
 
+TODO
 
 Writer
 ------
+
+TODO
