@@ -1728,18 +1728,18 @@ The Pareto optimal choices are printed in the end of the screen output::
 
     ---TIME--- ---------------------------------LOG---------------------------------
     <lots of output omitted>
-       2945.01 BEGIN Pareto front
-       2945.01   size = 600    lebedev = 266    error = 6.51e-06    cost = 5.51e+02
-       2945.01   size = 400    lebedev = 266    error = 9.41e-06    cost = 3.66e+02
-       2945.01   size = 200    lebedev = 266    error = 1.23e-05    cost = 1.82e+02
-       2945.01   size = 100    lebedev = 266    error = 1.66e-05    cost = 9.05e+01
-       2945.01   size = 100    lebedev = 170    error = 4.16e-05    cost = 5.87e+01
-       2945.01   size = 100    lebedev = 110    error = 6.30e-05    cost = 3.87e+01
-       2945.01   size = 200    lebedev =  50    error = 1.96e-04    cost = 3.73e+01
-       2945.01   size = 100    lebedev =  50    error = 2.63e-04    cost = 1.87e+01
-       2945.01   size = 100    lebedev =  26    error = 1.06e-03    cost = 1.07e+01
-       2945.01   size =  50    lebedev =  26    error = 2.75e-03    cost = 5.49e+00
-       2945.01 END Pareto front
+      10938.71 BEGIN Pareto front
+      10938.71   size = 400    lebedev = 434    error = 3.65e-06    cost = 2.37e+03
+      10938.71   size = 200    lebedev = 434    error = 5.58e-06    cost = 1.18e+03
+      10938.71   size = 100    lebedev = 434    error = 8.50e-06    cost = 5.84e+02
+      10938.71   size = 100    lebedev = 266    error = 2.10e-05    cost = 3.62e+02
+      10938.71   size = 100    lebedev = 170    error = 3.72e-05    cost = 2.33e+02
+      10938.71   size = 100    lebedev = 110    error = 7.81e-05    cost = 1.54e+02
+      10938.71   size = 200    lebedev =  50    error = 2.10e-04    cost = 1.49e+02
+      10938.71   size = 100    lebedev =  50    error = 2.98e-04    cost = 7.47e+01
+      10938.71   size = 100    lebedev =  26    error = 1.26e-03    cost = 4.29e+01
+      10938.71   size =  50    lebedev =  26    error = 3.18e-03    cost = 2.19e+01
+      10938.71 END Pareto front
 
 All configurations that are beaten both in error and computing time by some other
 configuration are not present in the Pareto front. The output also shows for
@@ -1747,15 +1747,14 @@ each improvement in error (or computing time) what price one has to pay in
 computing time (or error). The (error,time) pair of each combination is included
 in the table below, and the Pareto optimal cases are printed in bold.
 
-========= ============= ============= ============= ============= ============= ============= ============= ============= ============= =============
-lebedev               l=26                        l=50                       l=110                       l=170                       l=266
---------- --------------------------- --------------------------- --------------------------- --------------------------- ---------------------------
-     s=50 **2.745e-03** **5.490e+00**   7.972e-03     9.450e+00     3.095e-04     1.934e+01     5.618e-04     2.939e+01     1.435e-03     4.531e+01
-    s=100 **1.065e-03** **1.074e+01** **2.633e-04** **1.868e+01** **6.304e-05** **3.869e+01** **4.161e-05** **5.868e+01** **1.655e-05** **9.049e+01**
-    s=200   9.624e-04     2.132e+01   **1.961e-04** **3.729e+01**   4.861e-05     7.706e+01     2.835e-05     1.177e+02   **1.232e-05** **1.818e+02**
-    s=400   4.957e-04     4.251e+01     1.422e-04     7.450e+01     3.752e-05     1.543e+02     1.781e-05     2.360e+02   **9.415e-06** **3.657e+02**
-    s=600   5.007e-04     6.375e+01     1.240e-04     1.118e+02     3.038e-05     2.318e+02     1.298e-05     3.524e+02   **6.511e-06** **5.508e+02**
-========= ============= ============= ============= ============= ============= ============= ============= ============= ============= =============
+========= ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========
+lebedev            l=26                  l=50                 l=110                 l=170                 l=266                 l=434
+--------- --------------------- --------------------- --------------------- --------------------- --------------------- ---------------------
+     s=50 **3.2e-3**  **21.9**    3.8e-3      37.8      7.1e-3      77.3      1.9e-3     117.3      3.1e-3     180.8      1.3e-3     292.1
+    s=100 **1.3e-3**  **42.9**  **3.0e-4**  **74.7**  **7.8e-5** **153.9**  **3.7e-5** **232.9**  **2.1e-5** **361.5**  **8.5e-6** **584.4**
+    s=200   9.6e-4      85.3    **2.1e-4** **149.0**    5.1e-5     307.9      2.9e-5     466.9      1.2e-5     726.5    **5.6e-6** **1177.7**
+    s=400   6.1e-4     170.0      1.5e-4     297.8      3.7e-5     616.7      2.1e-5     936.4      9.6e-6     1460.4   **3.7e-6** **2366.7**
+========= ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========
 
 The choice of the angular grid seems to be the most determinant for the accuracy
 (as soon as one uses 100 radial grid points). This is not surprising because the
