@@ -194,17 +194,21 @@ class ABaseIntGrid(object):
 
 
 class ALebedevIntGrid(ABaseIntGrid):
-    def __init__(self, num_lebedev):
+    def __init__(self, num_lebedev, do_random=True):
         self.num_lebedev = num_lebedev
+        self.do_random = do_random
         self.lebedev_xyz, self.lebedev_weights = get_lebedev_grid(num_lebedev)
 
     def generate_points(self, center, rs):
         points = numpy.zeros((self.num_lebedev*len(rs),3), float)
         start = 0
         for r in rs:
-            rot = Rotation.random()
             end = start + self.num_lebedev
-            points[start:end] = r*numpy.dot(self.lebedev_xyz,rot.r)+center
+            xyz = self.lebedev_xyz
+            if self.do_random:
+                rot = Rotation.random()
+                xyz = numpy.dot(xyz,rot.r)
+            points[start:end] = r*xyz+center
             start = end
         return points
 

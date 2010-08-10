@@ -78,8 +78,12 @@ def parse_command_line(script_usage):
         help="Do not write any screen output."
     )
     parser.add_option(
-        "-n", "--no-fix-total-charge", dest="fix_total_charge", default="True",
+        "--no-fix-total-charge", dest="fix_total_charge", default="True",
         action="store_false", help="Do not correct the total charge."
+    )
+    parser.add_option(
+        "--no-random", default=True, action='store_false', dest='do_random',
+        help="Do not randomly rotate angular grids."
     )
     group = OptionGroup(parser, "Specific options for the iterative partitioning schemes")
     group.add_option(

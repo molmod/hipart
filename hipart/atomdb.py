@@ -226,13 +226,13 @@ def select_ground_states(program, max_ion):
     f_ev.close()
 
 
-def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbers, max_ion, do_work):
+def make_density_profiles(program, num_lebedev, r_low, r_high, steps, atom_numbers, max_ion, do_work, do_random):
     # generate lebedev grid
     lebedev_xyz, lebedev_weights = get_grid(num_lebedev)
 
     # define radii
     rgrid = RLogIntGrid(r_low, r_high, steps)
-    agrid = ALebedevIntGrid(num_lebedev)
+    agrid = ALebedevIntGrid(num_lebedev, do_random)
 
     f_pro = file("densities.txt", "w")
     print >> f_pro, rgrid.get_description()
@@ -344,6 +344,10 @@ def parse_args(args):
         help="Do not save intermediate results in work directory for later reuse."
     )
     parser.add_option(
+        "--no-random", default=True, action='store_false', dest='do_random',
+        help="Do not randomly rotate angular grids."
+    )
+    parser.add_option(
         "-q", "--quiet", default=True, action='store_false', dest='verbose',
         help="Do not write any screen output."
     )
@@ -356,7 +360,7 @@ def parse_args(args):
 
 
 class Options(object):
-    def __init__(self, lebedev=110, rlow=2e-5, rhigh=20.0, num_steps=100, max_ion=2, qc=False, do_work=True, verbose=True):
+    def __init__(self, lebedev=110, rlow=2e-5, rhigh=20.0, num_steps=100, max_ion=2, qc=False, do_work=True, verbose=True, do_random=True):
         self.lebedev = lebedev
         self.rlow = rlow
         self.rhigh = rhigh
@@ -365,6 +369,7 @@ class Options(object):
         self.qc = qc
         self.do_work = do_work
         self.verbose = verbose
+        self.do_random = do_random
 
 
 def run_atomdb(executable, lot, atom_numbers, options, directory="."):
@@ -380,7 +385,8 @@ def run_atomdb(executable, lot, atom_numbers, options, directory="."):
     make_density_profiles(
         program,
         options.lebedev, options.rlow*angstrom, options.rhigh*angstrom,
-        options.num_steps, atom_numbers, options.max_ion, options.do_work
+        options.num_steps, atom_numbers, options.max_ion, options.do_work,
+        options.do_random,
     )
     os.chdir(old_directory)
 

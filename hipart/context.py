@@ -33,7 +33,7 @@ __all__ = ["ContextError", "Context", "Options"]
 
 
 class Options(object):
-    def __init__(self, lebedev=110, do_clean=False, do_work=True, do_output=True, verbose=True, threshold=1e-4, max_iter=500, fix_total_charge=True):
+    def __init__(self, lebedev=110, do_clean=False, do_work=True, do_output=True, verbose=True, threshold=1e-4, max_iter=500, fix_total_charge=True, do_random=True):
         self.lebedev = lebedev
         self.do_clean = do_clean
         self.do_work = do_work
@@ -42,6 +42,7 @@ class Options(object):
         self.threshold = threshold
         self.max_iter = max_iter
         self.fix_total_charge = fix_total_charge
+        self.do_random = do_random
 
 
 class ContextError(Exception):

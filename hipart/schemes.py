@@ -86,7 +86,7 @@ class BaseScheme(object):
 
     def __init__(self, context, rgrid, extra_tag_attributes):
         # create angular grid object
-        agrid = ALebedevIntGrid(context.options.lebedev)
+        agrid = ALebedevIntGrid(context.options.lebedev, context.options.do_random)
         # check arguments
         extra_tag_attributes["rgrid"] = rgrid.get_description()
         extra_tag_attributes["agrid"] = agrid.get_description()

@@ -22,11 +22,12 @@
 from hipart.schemes import scheme_classes
 from hipart.context import Context, Options as FakeOptions
 
-import os, tempfile, shutil
+import os, tempfile, shutil, glob
 
 
 __all__ = [
     "setup_hf_sto3g_gaussian", "iter_hf_sto3g_gaussian_schemes",
+    "iter_hf_sto3g_gaussian_schemes_opts",
     "setup_oh1_sto3g_gaussian", "iter_oh1_sto3g_gaussian_schemes",
     "setup_oh2_sto3g_gaussian", "iter_oh2_sto3g_gaussian_schemes",
     "setup_h_sto3g_gaussian", "iter_h_sto3g_gaussian_schemes",
@@ -319,6 +320,12 @@ RLogIntGrid(3.7794522678425048e-05,3.7794522678425039e+01,100)
   9 +2 2.7982674386814250e+02 2.7982672119120707e+02 2.7982669121363688e+02 2.7982665158506137e+02 2.7982659919842945e+02 2.7982652994640284e+02 2.7982643839933473e+02 2.7982631737956035e+02 2.7982615739864798e+02 2.7982594591347794e+02 2.7982566634285712e+02 2.7982529676751477e+02 2.7982480821165137e+02 2.7982416237127973e+02 2.7982330861134494e+02 2.7982217999623293e+02 2.7982068804270853e+02 2.7981871578408004e+02 2.7981610860243143e+02 2.7981266211098301e+02 2.7980810613819392e+02 2.7980208356070466e+02 2.7979412233054381e+02 2.7978359851210047e+02 2.7976968744605756e+02 2.7975129923788853e+02 2.7972699355943763e+02 2.7969486716482788e+02 2.7965240544320943e+02 2.7959628661700862e+02 2.7952212366604414e+02 2.7942412449722360e+02 2.7929464503068493e+02 2.7912360245436344e+02 2.7889770663498234e+02 2.7859945636788740e+02 2.7820583382666888e+02 2.7768661575621195e+02 2.7700220514044651e+02 2.7610087560282625e+02 2.7491531925586628e+02 2.7335840926691844e+02 2.7131815229811826e+02 2.6865194850887957e+02 2.6518055330528597e+02 2.6068262557876028e+02 2.5489155349641069e+02 2.4749746746456060e+02 2.3815899008299624e+02 2.2653106960776333e+02 2.1231631155671764e+02 1.9534558537214096e+02 1.7568601364794543e+02 1.5375707191028263e+02 1.3040849236601417e+02 1.0688886870215028e+02 8.4641510517358469e+01 6.4939309779272861e+01 4.8503585365549228e+01 3.5342012041376108e+01 2.4954513916431967e+01 1.6788266540368141e+01 1.0571541468017601e+01 6.2347735399408295e+00 3.5915193517634862e+00 2.2101384476978567e+00 1.5750113897528297e+00 1.2886031025222850e+00 1.1297716270965905e+00 9.9910823183731667e-01 8.5663059989459156e-01 6.9445179679277236e-01 5.2323190734120806e-01 3.5947232582923910e-01 2.1994717940145087e-01 1.1778094439738455e-01 5.5221901094705504e-02 2.2942185175793543e-02 8.3627189278822501e-03 2.4943497501270246e-03 5.3302797300000049e-04 6.8842723999999847e-05 4.4187820000000261e-06 1.1102300000000042e-07 8.0200000000000085e-10 9.9999999999999675e-13"""
 
 
+def clean_txt(directory):
+    if directory is not None:
+        for fn_txt in glob.glob(os.path.join(directory, "*.txt")):
+            os.remove(fn_txt)
+
+
 def setup_hf_sto3g_gaussian():
     tmpdir = tempfile.mkdtemp("hipart")
     fn_fchk = os.path.join(tmpdir, "hf.fchk")
@@ -338,27 +345,49 @@ def iter_hf_sto3g_gaussian_schemes():
     tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['hirshi'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirshi'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['isa'].new_from_args(context, ["2e-5", "20.0", "100"])
+    clean_txt(context.output.directory)
     yield scheme_classes['isa'].new_from_args(context, [])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['becke'].new_from_args(context, ["3", "2e-5", "20.0", "100"])
+    clean_txt(context.output.directory)
     yield scheme_classes['becke'].new_from_args(context, ["3"])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirshi'].new_from_args(context, [fn_densities])
+    shutil.rmtree(tmpdir)
+
+
+def iter_hf_sto3g_gaussian_schemes_opts():
+    options = FakeOptions(do_clean=True)
+
+    tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
+    for do_random in True, False:
+        for do_work in True, False:
+            for do_output in True, False:
+                options.do_random = do_random
+                options.do_work = do_work
+                options.do_output = do_output
+                context = Context(fn_fchk, options)
+                yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
+                clean_txt(context.output.directory)
     shutil.rmtree(tmpdir)
 
 
@@ -381,19 +410,23 @@ def iter_oh1_sto3g_gaussian_schemes():
     tmpdir, fn_fchk, fn_densities = setup_oh1_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_oh1_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['hirshi'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirshi'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_oh1_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['isa'].new_from_args(context, ["2e-5", "20.0", "100"])
+    clean_txt(context.output.directory)
     yield scheme_classes['isa'].new_from_args(context, [])
     shutil.rmtree(tmpdir)
 
@@ -417,19 +450,23 @@ def iter_oh2_sto3g_gaussian_schemes():
     tmpdir, fn_fchk, fn_densities = setup_oh2_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_oh2_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['hirshi'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirshi'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_oh2_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['isa'].new_from_args(context, ["2e-5", "20.0", "100"])
+    clean_txt(context.output.directory)
     yield scheme_classes['isa'].new_from_args(context, [])
     shutil.rmtree(tmpdir)
 
@@ -453,24 +490,29 @@ def iter_h_sto3g_gaussian_schemes():
     tmpdir, fn_fchk, fn_densities = setup_h_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_h_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['hirshi'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirshi'].new_from_args(context, [fn_densities])
+    clean_txt(context.output.directory)
     yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_h_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['isa'].new_from_args(context, ["2e-5", "20.0", "100"])
+    clean_txt(context.output.directory)
     yield scheme_classes['isa'].new_from_args(context, [])
     shutil.rmtree(tmpdir)
 
     tmpdir, fn_fchk, fn_densities = setup_h_sto3g_gaussian()
     context = Context(fn_fchk, options)
     yield scheme_classes['becke'].new_from_args(context, ["2e-5", "20.0", "100"])
+    clean_txt(context.output.directory)
     yield scheme_classes['becke'].new_from_args(context, [])
     shutil.rmtree(tmpdir)

@@ -157,6 +157,7 @@ The online help is as follows::
                             [default=False]
       --no-work             Do not save intermediate results in work directory for
                             later reuse.
+      --no-random           Do not randomly rotate angular grids.
       -q, --quiet           Do not write any screen output.
 
 
@@ -404,14 +405,19 @@ as follows::
                             later reuse.
       --no-output           Do not write any output to text files.
       -q, --quiet           Do not write any screen output.
-      -n, --no-fix-total-charge
+      --no-fix-total-charge
                             Do not correct the total charge.
-      -t THRESHOLD, --threshold=THRESHOLD
+      --no-random           Do not randomly rotate angular grids.
+
+      Specific options for the iterative partitioning schemes:
+        -t THRESHOLD, --threshold=THRESHOLD
                             When the maximum change in the charges drops below
                             this threshold value, the iteration stops.
                             [default=0.0001]
-      --max-iter=MAX_ITER   Maximum number of iterations in self-consistent
+        --max-iter=MAX_ITER
+                            Maximum number of iterations in self-consistent
                             procedures. [default=500]
+
 
 
 We will first compute the :ref:`becke` charges, as the :ref:`becke` scheme is
@@ -589,8 +595,8 @@ numbers depends on the choice of the radial and angular grids. The accuracy is
 also inherently limited by the choices made in the Gaussian input file and the
 precision of the numbers in the formatted checkpoint file.
 
-Even a second run of the program (after removing the work directory) will result
-in slightly different numbers::
+With the default options, even a second run of the program (after removing the
+work directory) will result in slightly different numbers::
 
     toon@poony ~/hipart/examples/001-usage> rm -r alanine.hipart
     toon@poony ~/hipart/examples/001-usage> hi-charges.py alanine.fchk becke
@@ -625,6 +631,11 @@ several advantages:
 
 Read the section :ref:`tune` for more details on numerical errors and how to
 control them.
+
+One can always disable the random rotation of the angular grids with the
+``--no-random`` option. This does not give more reproducible results because
+the charges systematically depend on the orientation of the molecule when
+``--no-random`` is used.
 
 For the sake of completeness, these are the commands to compute the charges on
 the same molecule with the three other partitioning schemes::
