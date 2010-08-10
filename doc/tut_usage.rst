@@ -1711,11 +1711,14 @@ Tuning integration grids
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 One can not know a priori which combination of radial and angular integration
-grid give a good trade-off between accuracy of the output of interest, e.g.
+grid gives a good trade-off between accuracy of the output of interest, e.g.
 effective atomic charges, and the computational cost. The program below tests
 all combinations of a set of radial and angular grids on the alanine
 wavefunction from the previous section, and measures for each combination the
-error on the Hirshfeld charges and the computational cost in seconds. It
+error on the Hirshfeld charges and the computational cost in seconds. The error
+is estimated as the standard deviation on the effective charges over 40
+runs of the same computation. Due to the random orientation in the angular
+grids, the results vary each run for purely numerical reasons. The script
 concludes with a summary of the configurations that are Pareto-optimal with
 respect to a minimal error and a minimal computational cost. The script is
 included in the source tree in the directory ``examples/003-grid-tuning``.
@@ -1724,7 +1727,7 @@ included in the source tree in the directory ``examples/003-grid-tuning``.
    :language: python
    :linenos:
 
-The Pareto optimal choices are printed in the end of the screen output::
+The Pareto-optimal choices are printed in the end of the screen output::
 
     ---TIME--- ---------------------------------LOG---------------------------------
     <lots of output omitted>
@@ -1745,7 +1748,7 @@ All configurations that are beaten both in error and computing time by some othe
 configuration are not present in the Pareto front. The output also shows for
 each improvement in error (or computing time) what price one has to pay in
 computing time (or error). The (error,time) pair of each combination is included
-in the table below, and the Pareto optimal cases are printed in bold.
+in the table below, and the Pareto-optimal cases are printed in bold.
 
 ========= ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========
 lebedev            l=26                  l=50                 l=110                 l=170                 l=266                 l=434
@@ -1765,5 +1768,6 @@ effective charges.
 The combination (s=100,l=110) is the default choice in HiPart, and
 results in an error of about 1e-4 for the effective partial charges. (This error
 is also used as the standard convergence criterion for the iterative
-procedures.) When too small grids are used (e.g. s=50,l=26) in the iterative
-procedures, convergence may completely fail.
+procedures.) When too small grids are used (e.g. s=50,l=26) the iterative
+procedures (:ref:`hirshfeld-i` and :ref:`isa`) will only converge with relaxed
+thresholds.
