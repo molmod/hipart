@@ -19,7 +19,7 @@ def run_atom_dbs():
 
 
     # array with different sizes for the radial grid
-    sizes = [50, 100, 200, 400, 600]
+    sizes = [50, 100, 200, 400]
 
     # first run with the least radial grid points
     my_run_atomdb(sizes[0])
@@ -75,11 +75,11 @@ def estimate_errors(atom_tables, fn_fchk):
     # the error over all atoms is averaged. This error is used as 'the' error on
     # the charges. The cost is the cpu time consumed for computing this error.
     for size, atom_table in sorted(atom_tables.iteritems()):
-        for lebedev in 26, 50, 110, 170, 266:
+        for lebedev in 26, 50, 110, 170, 266, 434:
             log.begin("Config size=%i lebedev=%i" % (size, lebedev))
             start = time.clock()
             all_charges = []
-            for counter in xrange(10):
+            for counter in xrange(40):
                 log.begin("Sample counter=%i" % counter)
                 # Make a new working environment for every sample
                 options = Options(lebedev=lebedev, do_work=False,
@@ -140,23 +140,23 @@ def write_table(configs):
     lebedevs = sorted(lebedevs)
     sizes = sorted(sizes)
     # 2) Write the table header
-    print "="*9, ("="*13 + " ")*(len(lebedevs)*2)
-    print "lebedev  ", " ".join(("l=%i" % l).center(27) for l in lebedevs)
-    print "-"*9, ("-"*27 + " ")*(len(lebedevs))
+    print "="*9, ("="*10 + " ")*(len(lebedevs)*2)
+    print "lebedev  ", " ".join(("l=%i" % l).center(21) for l in lebedevs)
+    print "-"*9, ("-"*21 + " ")*(len(lebedevs))
     for s in sizes:
         words = []
         for l in lebedevs:
             c = config_map[(s,l)]
             if c.optimal:
-                word = "**%8.3e**" % c.error
-                word += " **%8.3e**" % c.cost
+                word = "**%7.1e** " % c.error
+                word += ("**%.1f**" % c.cost).center(10)
             else:
-                word = "  %8.3e  " % c.error
-                word += "   %8.3e  " % c.cost
-            word.replace("e+0", "e+").replace("e-0", "e-")
+                word = "  %7.1e   " % c.error
+                word += ("%.1f" % c.cost).center(10)
+            word = word.replace("e+0", "e+").replace("e-0", "e-")
             words.append(word)
         print "%9s" % ("s=%i" % s), " ".join(words)
-    print "="*9, ("="*13 + " ")*(len(lebedevs)*2)
+    print "="*9, ("="*10 + " ")*(len(lebedevs)*2)
 
 
 if __name__ == '__main__':
