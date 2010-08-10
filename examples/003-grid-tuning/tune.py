@@ -6,6 +6,9 @@ def run_atom_dbs():
     from hipart.atomdb import run_atomdb, Options
     from molmod.periodic import periodic
 
+    # atom numbers of interest
+    atom_numbers = [1, 6, 7, 8]
+
     # auxiliary function to setup an atomic database with a given radial grid
     # size
     def my_run_atomdb(size):
@@ -13,9 +16,8 @@ def run_atom_dbs():
         if os.path.isfile(os.path.join(directory, "densities.txt")):
             return
         lot = 'B3LYP/6-31g(d)'
-        atom_numbers = [1, 6, 7, 8]
         options = Options(num_steps=size, do_work=False)
-        run_atomdb("g03", lot, atom_numbers, options, "atoms050")
+        run_atomdb("g03", lot, atom_numbers, options, directory)
 
 
     # array with different sizes for the radial grid
@@ -68,10 +70,10 @@ def estimate_errors(atom_tables, fn_fchk):
     import numpy, time
 
     configs = []
-    # The loops below run 10 jobs for each grid configuration, i.e. combination
+    # The loops below run 40 jobs for each grid configuration, i.e. combination
     # of radial and angular grid. Due to the random rotations of the angular
     # integration grids, the resulting charges will differ in each run. The
-    # standard devation on each charge over the 10 runs is computed, and then
+    # standard devation on each charge over the 40 runs is computed, and then
     # the error over all atoms is averaged. This error is used as 'the' error on
     # the charges. The cost is the cpu time consumed for computing this error.
     for size, atom_table in sorted(atom_tables.iteritems()):
