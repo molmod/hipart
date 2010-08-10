@@ -78,7 +78,7 @@
                  4-Aug-2010 
  ******************************************
  %mem=500MB
- %chk=gaussian.chk
+ %chk=alanine-rad.chk
  %nproc=1
  Will use up to    1 processors via shared memory.
  ------------------------------------------------------

@@ -55,7 +55,7 @@ wavefunction to start with. Our alanine input file looks like::
 
     toon@poony ~/hipart/examples/001-usage> cat alanine.com
     %mem=500MB
-    %chk=gaussian.chk
+    %chk=alanine.chk
     %nproc=1
     #p B3LYP/6-31G(d) sp scf(fermi,tight) density(current)
 
