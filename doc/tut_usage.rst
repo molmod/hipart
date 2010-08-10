@@ -1719,6 +1719,9 @@ The output file, ``all.txt``, reads::
 Tuning integration grids
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+Method 1
+~~~~~~~~
+
 One can not know a priori which combination of radial and angular integration
 grid gives a good trade-off between accuracy of the output of interest, e.g.
 effective atomic charges, and the computational cost. The program below tests
@@ -1739,7 +1742,7 @@ included in the source tree in the directory ``examples/003-grid-tuning``.
 The script is executed as follows::
 
     toon@poony ~/hipart/examples/002-batch> cd ../003-grid-tuning
-    toon@poony ~/hipart/examples/002-batch> ./tune.py
+    toon@poony ~/hipart/examples/003-grid-tuning> ./tune.py
 
 The Pareto-optimal choices are printed in the end of the screen output::
 
@@ -1785,3 +1788,88 @@ is also used as the standard convergence criterion for the iterative
 procedures.) When too small grids are used (e.g. s=50,l=26) the iterative
 procedures (:ref:`hirshfeld-i` and :ref:`isa`) will only converge with relaxed
 thresholds.
+
+Method 2
+~~~~~~~~
+
+An alternative method to test the quality of the charges is to compare them with
+charges obtained with larger grids. The script
+``examples/004-grid-tuning/tune.py`` performs such an analysis and is very
+similar to the script for Method 1. It computes charges for ethanol,
+formaldehyde and oxalic acid for many combinations of angular and radial grids,
+estimates the error by comparing with the best grid, and finally prints out the
+Pareto-optimal choices.
+
+The script is executed as follows::
+
+    toon@poony ~/hipart/examples/003-grid-tuning> cd ../004-grid-tuning
+    toon@poony ~/hipart/examples/004-grid-tuning> ./tune.py
+
+The Pareto-optimal choices are printed in the end of the screen output::
+
+    ---TIME--- ---------------------------------LOG---------------------------------
+    <lots of output omitted>
+      11898.77 BEGIN Pareto front
+      11898.77   size = 1600    lebedev = 2702    error = 0.00e+00    cost = 1.40e+03
+      11898.77   size = 800    lebedev = 2702    error = 2.09e-08    cost = 6.89e+02
+      11898.77   size = 400    lebedev = 2702    error = 1.12e-07    cost = 3.44e+02
+      11898.77   size = 400    lebedev = 1454    error = 1.49e-07    cost = 1.86e+02
+      11898.77   size = 400    lebedev = 770    error = 1.41e-06    cost = 9.77e+01
+      11898.77   size = 200    lebedev = 1454    error = 1.61e-06    cost = 9.22e+01
+      11898.77   size = 200    lebedev = 770    error = 2.05e-06    cost = 4.86e+01
+      11898.77   size = 200    lebedev = 434    error = 1.15e-05    cost = 2.76e+01
+      11898.77   size = 200    lebedev = 230    error = 1.56e-05    cost = 1.50e+01
+      11898.77   size = 100    lebedev = 434    error = 2.95e-05    cost = 1.37e+01
+      11898.77   size = 100    lebedev = 230    error = 3.63e-05    cost = 7.45e+00
+      11898.77   size = 100    lebedev = 110    error = 8.92e-05    cost = 3.74e+00
+      11898.77   size = 100    lebedev =  50    error = 2.96e-04    cost = 1.89e+00
+      11898.77   size =  50    lebedev = 110    error = 5.48e-04    cost = 1.88e+00
+      11898.77   size =  50    lebedev =  50    error = 6.13e-04    cost = 9.70e-01
+      11898.77   size =  50    lebedev =  26    error = 1.13e-03    cost = 5.90e-01
+      11898.77 END Pareto front
+
+The (error,time) pair of each combination is included in the table below, and
+the Pareto-optimal cases are printed in bold.
+
+========= ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========
+lebedev            l=26                  l=50                 l=110                 l=230                 l=434                 l=770                 l=1454                l=2702
+--------- --------------------- --------------------- --------------------- --------------------- --------------------- --------------------- --------------------- ---------------------
+     s=50 **1.1e-3**  **0.6**   **6.1e-4**  **1.0**   **5.5e-4**  **1.9**     1.1e-3      3.8       5.0e-4      6.9       1.1e-3      12.2      1.2e-3      22.9      3.7e-4      42.5
+    s=100   1.2e-3      1.1     **3.0e-4**  **1.9**   **8.9e-5**  **3.7**   **3.6e-5**  **7.5**   **3.0e-5**  **13.7**    2.7e-5      24.2      2.7e-5      45.8      2.7e-5      85.2
+    s=200   1.3e-3      2.3       1.9e-4      3.8       4.1e-5      7.5     **1.6e-5**  **15.0**  **1.1e-5**  **27.6**  **2.0e-6**  **48.6**  **1.6e-6**  **92.2**    1.7e-6     171.7
+    s=400   8.5e-4      4.5       2.1e-4      7.5       6.3e-5      15.0      1.2e-5      30.1      5.1e-6      55.6    **1.4e-6**  **97.7**  **1.5e-7** **185.7**  **1.1e-7** **343.8**
+    s=800   5.6e-4      9.1       2.0e-4      15.0      2.5e-5      30.1      1.3e-5      61.1      6.0e-6     111.7      3.8e-7     196.3      1.2e-7     371.3    **2.1e-8** **688.8**
+   s=1600   2.9e-4      18.2      1.1e-4      30.2      1.9e-5      60.5      5.2e-6     120.9      2.1e-6     224.2      8.1e-7     396.9      1.1e-7     745.4    **0.0e+0** **1401.3**
+========= ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========
+
+The same script can be used to estimate the errors when the ``--no-random``
+option is used. The table with (error,time) pairs becomes:
+
+========= ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========
+lebedev            l=26                  l=50                 l=110                 l=230                 l=434                 l=770                 l=1454                l=2702
+--------- --------------------- --------------------- --------------------- --------------------- --------------------- --------------------- --------------------- ---------------------
+     s=50 **2.5e-3**  **0.5**   **1.1e-3**  **0.8**   **2.8e-4**  **1.8**     6.8e-4      3.7       4.8e-4      6.9       3.1e-4      12.2      7.6e-4      23.0      4.1e-4      42.9
+    s=100   2.5e-3      0.9     **8.5e-4**  **1.6**   **1.0e-4**  **3.5**   **3.8e-5**  **7.2**   **2.8e-5**  **13.7**    3.0e-5      24.2      3.0e-5      46.2      2.7e-5      86.1
+    s=200   2.5e-3      1.7       8.2e-4      3.2       1.1e-4      7.0       3.7e-5      14.6    **8.4e-6**  **27.4**  **3.4e-6**  **48.7**  **2.1e-6**  **92.9**  **1.7e-6** **173.1**
+    s=400   2.5e-3      3.4       8.2e-4      6.4       1.1e-4      14.0      3.7e-5      29.2      8.9e-6      55.3      4.0e-6      98.0    **4.3e-7** **186.9**  **1.2e-7** **347.0**
+    s=800   2.5e-3      6.8       8.2e-4      12.8      1.1e-4      28.1      3.7e-5      58.8      9.0e-6     110.8      4.0e-6     196.7      4.2e-7     375.4    **6.8e-9** **697.6**
+   s=1600   2.5e-3      13.6      8.2e-4      25.7      1.1e-4      56.4      3.7e-5     118.0      9.0e-6     222.2      4.0e-6     399.5      4.2e-7     751.8    **0.0e+0** **1414.3**
+========= ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========
+
+The error estimates in the first table are very comparable to the numbers in
+method 1, which confirms the validity of the assumptions made in method 1.
+
+The error is apparently not always lower when randomly rotated angular grids are
+used. It is mainly advantageous when the radial grids have much more grid points
+than the angular grids (lower left of the table), but these cases are not
+Pareto-optimal. When Pareto-optimal grids configurations are used, the effect of
+random rotations is small, but sometimes still useful, e.g. for the case
+(s=200,l=230). When there are more angular grids points than radial grid points
+(upper right of the table), the randomly rotated angular grids are
+counterproductive. With very fine angular grids, the advantage of random
+rotations generally diminishes.
+
+Note that the error with randomly-rotated grids is truly random, i.e. it is
+different every time the computations are done from scratch. In case of
+non-randomly-rotated grids, the error is systematic and will be exactly the same
+when a computation is done twice.
