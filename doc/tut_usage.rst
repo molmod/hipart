@@ -42,15 +42,9 @@ the source code::
 These are the output files you should have now::
 
     toon@poony ~> cd hipart/examples/001-usage
-    toon@poony ~/hipart/examples/001-usage> find | sort
-    ./alanine
-    ./alanine/gaussian.com
-    ./alanine/gaussian.fchk
-    ./alanine/gaussian.log
-    ./alanine-radical
-    ./alanine-radical/gaussian.com
-    ./alanine-radical/gaussian.fchk
-    ./alanine-radical/gaussian.log
+    toon@poony ~/hipart/examples/001-usage> ls
+    alanine.com   alanine.log      alanine-rad.fchk
+    alanine.fchk  alanine-rad.com  alanine-rad.log
 
 
 Running proper Gaussian jobs
@@ -59,7 +53,7 @@ Running proper Gaussian jobs
 In order to run a decent analysis of the wavefunction, one first needs a decent
 wavefunction to start with. Our alanine input file looks like::
 
-    toon@poony ~/hipart/examples/001-usage> cat alanine/gaussian.com
+    toon@poony ~/hipart/examples/001-usage> cat alanine.com
     %mem=500MB
     %chk=gaussian.chk
     %nproc=1
@@ -89,7 +83,7 @@ The line ``%chk=gaussian.chk`` is mandatory to process the Gaussian output with
 HiPart. After the job is completed, one must convert the binary checkpoint file
 to a formatted checkpoint file as follows::
 
-    formchk gaussian.chk gaussian.fchk
+    formchk alanine.chk alanine.fchk
 
 The formatted checkpoint file contains the output of a Gaussian computation in a
 standard format with reasonable numerical precision. This file will be loaded by
@@ -267,6 +261,7 @@ are used.)
 Only the file ``densities.txt`` will be used later. In our example it contains
 the following data::
 
+    toon@poony ~/hipart/examples/001-usage/atoms> cat densities.txt
     RLogIntGrid(3.7794522678425048e-05,3.7794522678425039e+01,100)
       1 -2 1.4143823633854540e+00 1.4143823558521540e+00 1.4143823458935731e+00 1.4143823327289020e+00 1.4143823153259989e+00 1.4143822923203782e+00 1.4143822619083162e+00 1.4143822217053421e+00 1.4143821685593945e+00 1.4143820983035729e+00 1.4143820054295204e+00 1.4143818826555179e+00 1.4143817203555378e+00 1.4143815058045723e+00 1.4143812221808971e+00 1.4143808472472639e+00 1.4143803516073346e+00 1.4143796964009863e+00 1.4143788302575910e+00 1.4143776852684826e+00 1.4143761716628074e+00 1.4143741707696700e+00 1.4143715257145022e+00 1.4143680291209051e+00 1.4143634068538322e+00 1.4143572965304845e+00 1.4143492191155476e+00 1.4143385413757426e+00 1.4143244262547785e+00 1.4143057672845942e+00 1.4142811019039809e+00 1.4142484969104010e+00 1.4142053971037181e+00 1.4141484253233438e+00 1.4140731183212463e+00 1.4139735779720974e+00 1.4138420108406164e+00 1.4136681206466741e+00 1.4134383071130172e+00 1.4131346103329181e+00 1.4127333212955944e+00 1.4122031555628598e+00 1.4115028572428892e+00 1.4105780633929996e+00 1.4093572142725119e+00 1.4077462430316434e+00 1.4056217223560754e+00 1.4028220926795534e+00 1.3991365624275409e+00 1.3942912852697547e+00 1.3879325363192647e+00 1.3796069202319592e+00 1.3687392967959122e+00 1.3546103254307318e+00 1.3363376083650640e+00 1.3128676836714381e+00 1.2829907732045698e+00 1.2453958453984941e+00 1.1987884046751693e+00 1.1420929304417837e+00 1.0747476032877994e+00 9.9705959349788709e-01 9.1051850926034983e-01 8.1788157724819321e-01 7.2281332506545704e-01 6.2899585270542147e-01 5.3898995633071201e-01 4.5357060060082066e-01 3.7230832675937753e-01 2.9531055761567043e-01 2.2464199169476168e-01 1.6379487595041783e-01 1.1557573385930459e-01 8.0442075228479057e-02 5.6554660787928542e-02 4.1068398398227318e-02 3.1276867298832979e-02 2.4799019199622244e-02 1.9494757495560549e-02 1.4065837857584454e-02 8.6669135656273506e-03 4.3162270843275941e-03 1.6531390806556058e-03 4.5695610040091459e-04 8.3079436011078244e-05 8.7173880468681315e-06 4.4262155332295921e-07 8.6093787721969106e-09 4.7103176702608016e-11 4.8186228590891602e-14 5.3721814276498844e-18 3.1975574999064668e-23 3.9558204409997410e-30 2.9229404148632462e-39 2.4809876602580675e-51 2.7366215925662594e-67 2.2001791217421095e-88
       1 -1 3.1195446156691437e-01 3.1195446059202026e-01 3.1195445930327270e-01 3.1195445759962498e-01 3.1195445534750033e-01 3.1195445237032565e-01 3.1195444843467685e-01 3.1195444323197835e-01 3.1195443635432102e-01 3.1195442726246142e-01 3.1195441524356093e-01 3.1195439935528341e-01 3.1195437835191542e-01 3.1195435058670384e-01 3.1195431388274319e-01 3.1195426536228255e-01 3.1195420122111889e-01 3.1195411643033155e-01 3.1195400434199055e-01 3.1195385616796434e-01 3.1195366029090488e-01 3.1195340135345834e-01 3.1195305905426157e-01 3.1195260655638368e-01 3.1195200838347387e-01 3.1195121763872119e-01 3.1195017232879407e-01 3.1194879050473595e-01 3.1194696383937925e-01 3.1194454913848768e-01 3.1194135712152504e-01 3.1193713759489677e-01 3.1193155985958482e-01 3.1192418682465600e-01 3.1191444081040859e-01 3.1190155838327871e-01 3.1188453072217731e-01 3.1186202491174619e-01 3.1183228011595465e-01 3.1179297070837014e-01 3.1174102600624981e-01 3.1167239313467832e-01 3.1158172557789560e-01 3.1146197500082778e-01 3.1130385781884568e-01 3.1109516073637089e-01 3.1081984127681872e-01 3.1045687087225260e-01 3.0997876094411009e-01 3.0934970974145198e-01 3.0852331536219912e-01 3.0743982859780838e-01 3.0602298494070307e-01 3.0417658456844399e-01 3.0178121978003997e-01 2.9869192709128423e-01 2.9473810540189876e-01 2.8972778299539004e-01 2.8345908455700275e-01 2.7574209397539629e-01 2.6643327954943941e-01 2.5548074451330016e-01 2.4297031713178169e-01 2.2915044454987263e-01 2.1440420483479944e-01 1.9914421414850864e-01 1.8364844327702498e-01 1.6792878566772168e-01 1.5176987786450274e-01 1.3498739970035270e-01 1.1772877173324872e-01 1.0052868308332318e-01 8.4060635338824227e-02 6.8819695467937078e-02 5.4981155276814776e-02 4.2515835456432345e-02 3.1446946106182573e-02 2.1979296809859258e-02 1.4355956981332456e-02 8.6388422829198376e-03 4.6674498608139650e-03 2.1645514216707719e-03 8.0620277387347767e-04 2.2121489094853613e-04 4.0172103819653579e-05 4.2147808482508385e-06 2.1400289504650849e-07 4.1625444797133146e-09 2.2773892672659307e-11 2.3297536918956619e-14 2.5973934629460171e-18 1.5459855664785757e-23 1.9125977579903914e-30 1.4132110816420360e-39 1.1995315529064438e-51 1.3231278821866738e-67 1.0637635651526014e-88
@@ -317,8 +312,8 @@ Atomic charges
 Effective atomic charges are computed with ``hi-charges.py``. The online help is
 as follows::
 
-    toon@poony ~/hipart/examples/001-usage/atoms> cd ../alanine
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py --help
+    toon@poony ~/hipart/examples/001-usage/atoms> cd ..
+    toon@poony ~/hipart/examples/001-usage> hi-charges.py --help
     Usage: hi-charges.py [options] gaussian.fchk scheme [scheme parameters]
 
     hi-charges.py computes effective atomic charges.
@@ -424,10 +419,10 @@ the simplest of the four partitioning methods. The screen output gives some
 progress information of the various parts of the program. This is screen output
 in the case of the alanine molecule::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk becke
+    toon@poony ~/hipart/examples/001-usage> hi-charges.py alanine.fchk becke
     ---TIME--- ---------------------------------LOG---------------------------------
           0.02 BEGIN Loading Electronic structure
-          0.05   Data read from: gaussian.fchk ()
+          0.05   Data read from: alanine.fchk ()
           0.05   Restricted: True
           0.05   Orbitals present: True
           0.05   Spin density present: False
@@ -476,25 +471,24 @@ in the case of the alanine molecule::
           4.96     Writing results to workdir
           4.96   END Defining atomic weight functions (own atomic grid)
                  Computing charges: 0%.........76%..100%
-          4.97   Written gaussian.hipart/becke_charges.txt
+          4.97   Written alanine.hipart/becke_charges.txt
           4.97 END Atomic charges
 
 The entire screen output is conceived as a call graph that shows in which part
 of Hipart the program is currently active. The order of the routines is
 determined by an internal dependency mechanism that allows many different
 workflows through the code. The first part of the output is a summary of the
-electronic structure stored in the file ``gaussian.fchk``. From then on the
+electronic structure stored in the file ``alanine.fchk``. From then on the
 actual computation is carried out.
 
 All output is stored in a subdirectory of the current directory whose name is
 based on the filename of the formatted checkpoint file. E.g. if the formatted
-checkpoint file is ``gaussian.fchk``, then the output directory is
-``gaussian.hipart``. In this example the following output files can be found in
-``gaussian.hipart``::
+checkpoint file is ``alanine.fchk``, then the output directory is
+``alanine.hipart``. In this example the following output files can be found in
+``alanine.hipart``::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> ls gaussian.hipart/
-    becke_charges.txt
-    work
+    toon@poony ~/hipart/examples/001-usage> ls alanine.hipart/
+    becke_charges.txt  work
 
 All output that depends on the choice of the partitioning scheme is prefixed
 with the corresponding key, e.g. in this case we have ``becke_charges.txt``. The
@@ -504,7 +498,7 @@ executed afterwards. It can always be removed manually, or with the ``--clean``
 option it is automatically removed at the end of the script. In this example the
 ``work`` directory contains the following files::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> ls gaussian.hipart/work/
+    toon@poony ~/hipart/examples/001-usage> ls alanine.hipart/work/
     atom00000_becke_atweights.bin  atom00007_becke_atweights.bin
     atom00000.bin                  atom00007.bin
     atom00000_cell_functions.bin   atom00007_cell_functions.bin
@@ -540,10 +534,10 @@ in the work directory. For example, when different grids are used in a second
 run, the work directory is no longer usable. In the following example we try to
 use a different Lebedev grid, which causes an error message::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk becke -l14
+    toon@poony ~/hipart/examples/001-usage> hi-charges.py alanine.fchk becke -l14
     ---TIME--- ---------------------------------LOG---------------------------------
           0.03 BEGIN Loading Electronic structure
-          0.05   Data read from: gaussian.fchk ()
+          0.05   Data read from: alanine.fchk ()
           0.05   Restricted: True
           0.05   Orbitals present: True
           0.05   Spin density present: False
@@ -554,7 +548,7 @@ use a different Lebedev grid, which causes an error message::
           0.05   Number of atoms: 13
           0.05   Chemical formula: O2NC3H7
           0.05 END Loading Electronic structure
-    The existing work directory (gaussian.hipart/work) contains incompatible data.
+    The existing work directory (alanine.hipart/work) contains incompatible data.
     Try using the --clean option once.
     The following mismatch was detected in the work directory:
     'ALebedevIntGrid(110)' (found in work) versus 'ALebedevIntGrid(14)' (current script) for property 'agrid'
@@ -564,7 +558,7 @@ execution of a HiPart script.
 
 The output file ``becke_charges.txt`` has the following contents::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/becke_charges.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine.hipart/becke_charges.txt
     number of atoms: 13
       i        Z      Charge
     --------------------------------
@@ -598,10 +592,10 @@ precision of the numbers in the formatted checkpoint file.
 Even a second run of the program (after removing the work directory) will result
 in slightly different numbers::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> rm -r gaussian.hipart
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk becke
+    toon@poony ~/hipart/examples/001-usage> rm -r alanine.hipart
+    toon@poony ~/hipart/examples/001-usage> hi-charges.py alanine.fchk becke
     <output omitted>
-    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/becke_charges.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine.hipart/becke_charges.txt
     number of atoms: 13
       i        Z      Charge
     --------------------------------
@@ -635,9 +629,9 @@ control them.
 For the sake of completeness, these are the commands to compute the charges on
 the same molecule with the three other partitioning schemes::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk hirsh ../atoms/densities.txt
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk hirshi ../atoms/densities.txt
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-charges.py gaussian.fchk isa
+    toon@poony ~/hipart/examples/001-usage> hi-charges.py alanine.fchk hirsh atoms/densities.txt
+    toon@poony ~/hipart/examples/001-usage> hi-charges.py alanine.fchk hirshi atoms/densities.txt
+    toon@poony ~/hipart/examples/001-usage> hi-charges.py alanine.fchk isa
 
 
 Atomic dipoles
@@ -647,7 +641,7 @@ Atomic dipoles are compute with the program ``hi-dipoles.py``. Like most HiPart
 scripts it takes the same arguments and options as the script ``hi-charges.py``,
 which are discussed in the previous section. The online help starts as follows::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-dipoles.py --help
+    toon@poony ~/hipart/examples/001-usage> hi-dipoles.py --help
     Usage: hi-dipoles.py [options] gaussian.fchk scheme [scheme parameters]
 
     hi-dipoles.py computes atomic charges and dipoles.
@@ -664,10 +658,10 @@ the work directory and do not have to be computed again.
 The following example computes the atomic :ref:`hirshfeld-i` dipoles in the
 alanine molecule::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-dipoles.py gaussian.fchk hirshi ../atoms/densities.txt
+    toon@poony ~/hipart/examples/001-usage> hi-dipoles.py alanine.fchk hirshi atoms/densities.txt
     ---TIME--- ---------------------------------LOG---------------------------------
           0.02 BEGIN Loading Electronic structure
-          0.05   Data read from: gaussian.fchk ()
+          0.05   Data read from: alanine.fchk ()
           0.05   Restricted: True
           0.05   Orbitals present: True
           0.05   Spin density present: False
@@ -729,12 +723,12 @@ alanine molecule::
           3.79     Writing results to workdir
           3.79   END Defining atomic weight functions (own atomic grid)
                  Computing dipoles: 0%.........76%..100%
-          3.80   Written gaussian.hipart/hirshi_dipoles.txt
+          3.80   Written alanine.hipart/hirshi_dipoles.txt
           3.80 END Atomic dipoles
 
-The output is stored in the file ``gaussian.hipart/hirshi_dipoles.txt``. ::
+The output is stored in the file ``alanine.hipart/hirshi_dipoles.txt``. ::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/hirshi_dipoles.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine.hipart/hirshi_dipoles.txt
     number of atoms: 13
       i        Z      Dipole-X        Dipole-Y        Dipole-Z      Dipole-norm
     -------------------------------------------------------------------------------
@@ -778,10 +772,10 @@ Again, the script is executed in the same style as all other scripts. See the
 documentation of ``hi-charges.py`` for more details. The example below tests the
 charges and dipoles obtained with a :ref:`hirshfeld-i` partitioning::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-esp-test.py gaussian.fchk hirshi ../atoms/densities.txt
+    toon@poony ~/hipart/examples/001-usage> hi-esp-test.py alanine.fchk hirshi atoms/densities.txt
     ---TIME--- ---------------------------------LOG---------------------------------
           0.02 BEGIN Loading Electronic structure
-          0.05   Data read from: gaussian.fchk ()
+          0.05   Data read from: alanine.fchk ()
           0.05   Restricted: True
           0.05   Orbitals present: True
           0.05   Spin density present: False
@@ -808,10 +802,10 @@ charges and dipoles obtained with a :ref:`hirshfeld-i` partitioning::
           0.23       Trying to load weight functions
           0.24     END Defining atomic weight functions (own atomic grid)
                    Computing charges: 0%.........76%..100%
-          0.24     Written gaussian.hipart/hirshi_charges.txt
+          0.24     Written alanine.hipart/hirshi_charges.txt
           0.24   END Atomic charges
           0.24   BEGIN Atomic dipoles
-          0.24     Written gaussian.hipart/hirshi_dipoles.txt
+          0.24     Written alanine.hipart/hirshi_dipoles.txt
           0.24   END Atomic dipoles
           0.24   BEGIN Computing the ESP cost function
           0.24     BEGIN Molecular density on the molecular grid
@@ -825,10 +819,9 @@ charges and dipoles obtained with a :ref:`hirshfeld-i` partitioning::
           1.70     BEGIN Molecular potential on the molecular grid
           1.70       This may take a minute. Hang on.
          41.90     END Molecular potential on the molecular grid
-         42.11     Written gaussian.hipart/mol_esp_cost.txt
+         42.11     Written alanine.hipart/mol_esp_cost.txt
          42.11   END Computing the ESP cost function
-         42.11   Written gaussian.hipart/hirshi_esp_test.txt
-         42.11   Written gaussian.hipart/hirshi_esp_test.txt
+         42.11   Written alanine.hipart/hirshi_esp_test.txt
          42.11 END Testing charges and dipoles on ESP grid.
 
 This script computes the charges and dipoles with the given scheme if they are
@@ -836,7 +829,7 @@ not present yet. Then the matrix representation of the cost function is
 constructed and stored in the file ``mol_esp_cost.txt``. The results of the
 test are written in ``hirsh_esp_test.txt``. The output in this example is::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/hirshi_esp_test.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine.hipart/hirshi_esp_test.txt
     Reproduction of the molecular dipole
     -------------------------------------------------------------------------------
                       Dipole-X        Dipole-Y        Dipole-Z       Dipole-norm
@@ -886,10 +879,10 @@ Atomic multipole expansions
 The multipole expansion of each atom, up to the hexadecapole, is computed with
 the script ``hi-multipoles.py``. This is an example with the :ref:`isa`::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-multipoles.py gaussian.fchk isa
+    toon@poony ~/hipart/examples/001-usage> hi-multipoles.py alanine.fchk isa
     ---TIME--- ---------------------------------LOG---------------------------------
           0.02 BEGIN Loading Electronic structure
-          0.05   Data read from: gaussian.fchk ()
+          0.05   Data read from: alanine.fchk ()
           0.05   Restricted: True
           0.05   Orbitals present: True
           0.05   Spin density present: False
@@ -1186,16 +1179,16 @@ the script ``hi-multipoles.py``. This is an example with the :ref:`isa`::
          28.81     Writing results to workdir
          28.82   END Defining atomic weight functions (own atomic grid)
                  Computing multipoles: 0%.........76%..100%
-         29.33   Written gaussian.hipart/isa_multipoles.txt
+         29.33   Written alanine.hipart/isa_multipoles.txt
          29.33 END Atomic multipoles (up to hexadecapols)=
 
 We often experience slow convergence with the ISA method. This may be inherent
 to the method. Any suggestions for improvement are always appreciated.
 
-The output is written to ``gaussian.hipart/isa_multipoles.txt`` and can also be
+The output is written to ``alanine.hipart/isa_multipoles.txt`` and can also be
 read into your Python scripts with the routines in :mod:`hipart.io`. ::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/isa_multipoles.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine.hipart/isa_multipoles.txt
     number of atoms: 13
     number of fields: 25
        Multipoles   |      (0,0)           (1,0)           (1,1+)          (1,1-)          (2,0)           (2,1+)          (2,1-)          (2,2+)          (2,2-)          (3,0)           (3,1+)          (3,1-)          (3,2+)          (3,2-)          (3,3+)          (3,3-)          (4,0)           (4,1+)          (4,1-)          (4,2+)          (4,2-)          (4,3+)          (4,3-)          (4,4+)          (4,4-)
@@ -1222,10 +1215,10 @@ Net and overlap electron populations are computed with the script
 ``hi-net-overlap.py``. This example computes the net and overlap populations
 using the :ref:`becke` scheme::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> hi-net-overlap.py gaussian.fchk becke
+    toon@poony ~/hipart/examples/001-usage> hi-net-overlap.py alanine.fchk becke
     ---TIME--- ---------------------------------LOG---------------------------------
           0.03 BEGIN Loading Electronic structure
-          0.05   Data read from: gaussian.fchk ()
+          0.05   Data read from: alanine.fchk ()
           0.05   Restricted: True
           0.05   Orbitals present: True
           0.05   Spin density present: False
@@ -1247,7 +1240,7 @@ using the :ref:`becke` scheme::
                    Computing/Loading densities: 0%.........76%..100%
           0.23   END Molecular density on atomic grids
           0.23   BEGIN Atomic charges
-          0.23     Written gaussian.hipart/becke_charges.txt
+          0.23     Written alanine.hipart/becke_charges.txt
           0.23   END Atomic charges
           0.23   BEGIN Atomic weights on other atoms' grids.
           0.23     BEGIN Defining atomic weight functions (own atomic grid)
@@ -1283,14 +1276,14 @@ using the :ref:`becke` scheme::
                  Integrating over products of stockholder weights: 0%.........10%...
                  ......21%.........32%.........43%.........54%.........65%.........7
                  6%.........87%.........98%100%
-          0.39   Written gaussian.hipart/becke_net_overlap.txt
+          0.39   Written alanine.hipart/becke_net_overlap.txt
           0.39 END Net and overlap populations
 
-The output, ``gaussian.hipart/becke_net_overlap.txt``, contains a symmetric
+The output, ``alanine.hipart/becke_net_overlap.txt``, contains a symmetric
 matrix with net and overlap populations. The atomic net populations are put on
 the diagonal, while the overlap populations are off-diagonal elements. ::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> cat gaussian.hipart/becke_net_overlap.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine.hipart/becke_net_overlap.txt
     number of atoms: 13
           Net       |       0  O            1  O            2  N            3  C            4  C            5  C            6  H            7  H            8  H            9  H           10  H           11  H           12  H
     ----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1317,11 +1310,10 @@ SCF computations and correlated methods, either closed or open shell. We show
 the computation on the alanine radical is it has non-zero free valences. This
 time we use the :ref:`hirshfeld` partitioning method. ::
 
-    toon@poony ~/hipart/examples/001-usage/alanine> cd ../alanine-radical
-    toon@poony ~/hipart/examples/001-usage/alanine-radical> hi-bond-orders.py gaussian.fchk hirsh ../atoms/densities.txt
+    toon@poony ~/hipart/examples/001-usage> hi-bond-orders.py alanine-rad.fchk hirsh atoms/densities.txt
     ---TIME--- ---------------------------------LOG---------------------------------
           0.02 BEGIN Loading Electronic structure
-          0.06   Data read from: gaussian.fchk ()
+          0.06   Data read from: alanine-rad.fchk ()
           0.06   Restricted: False
           0.06   Orbitals present: True
           0.06   Spin density present: True
@@ -1351,22 +1343,22 @@ time we use the :ref:`hirshfeld` partitioning method. ::
           3.98       Writing results to workdir
           3.98     END Defining atomic weight functions (own atomic grid)
                    Computing charges: 0%.........83%.100%
-          3.99     Written gaussian.hipart/hirsh_charges.txt
+          3.99     Written alanine-rad.hipart/hirsh_charges.txt
           3.99   END Atomic charges
           3.99   BEGIN Atomic overlap matrices (contracted Gaussians)
                    Computing matrices: 0%.........83%.100%
-          9.91     Written gaussian.hipart/hirsh_overlap_matrices.txt
+          9.91     Written alanine-rad.hipart/hirsh_overlap_matrices.txt
           9.91   END Atomic overlap matrices (contracted Gaussians)
                  Computing bond orders: 0%.........12%.........25%.........38%......
                  ...51%.........64%.........76%.........89%.......100%
-         10.14   Written gaussian.hipart/hirsh_bond_orders.txt
-         10.14   Written gaussian.hipart/hirsh_valences.txt
-         10.14   Written gaussian.hipart/hirsh_free_valences.txt
+         10.14   Written alanine-rad.hipart/hirsh_bond_orders.txt
+         10.14   Written alanine-rad.hipart/hirsh_valences.txt
+         10.14   Written alanine-rad.hipart/hirsh_free_valences.txt
          10.14 END Bond orders and valences
 
 There are three output files::
 
-    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_bond_orders.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine-rad.hipart/hirsh_bond_orders.txt
     number of atoms: 12
        Bond order   |       0  O            1  O            2  N            3  C            4  C            5  C            6  H            7  H            8  H            9  H           10  H           11  H
     ----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1382,7 +1374,7 @@ There are three output files::
       9   H    1    |  0.004963593822  0.001997818127  0.016771731003  0.089891027745  0.956084911932  0.013835547789  0.011788172938  0.080837681225  0.082064181450  0.000000000000  0.001392981918  0.008884055620
      10   H    1    |  0.006995364889  0.011856734820  1.047803312038  0.094871057580  0.011300539385  0.014080044170  0.014608166511  0.001457460059  0.003226333710  0.001392981918  0.000000000000  0.078776390871
      11   H    1    |  0.004537735097  0.021802632150  1.037093750023  0.092787948071  0.021182631040  0.014193869460  0.012451378912  0.002148019336  0.002247858928  0.008884055620  0.078776390871  0.000000000000
-    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_valences.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine-rad.hipart/hirsh_valences.txt
     number of atoms: 12
       i        Z    Valences
     --------------------------------
@@ -1399,7 +1391,7 @@ There are three output files::
      10   H    1    1.286526859695
      11   H    1    1.296006218835
     --------------------------------
-    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_free_valences.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine-rad.hipart/hirsh_free_valences.txt
     number of atoms: 12
       i        Z  Free valences
     --------------------------------
@@ -1431,10 +1423,10 @@ True`` in the beginning. If not, the reported spin charges are always zero.
 
 This example computes :ref:`hirshfeld` spin charges in the alanine radical::
 
-    toon@poony ~/hipart/examples/001-usage/alanine-radical> hi-spin-charges.py gaussian.fchk hirsh ../atoms/densities.txt
+    toon@poony ~/hipart/examples/001-usage> hi-spin-charges.py alanine-rad.fchk hirsh atoms/densities.txt
     ---TIME--- ---------------------------------LOG---------------------------------
           0.02 BEGIN Loading Electronic structure
-          0.06   Data read from: gaussian.fchk ()
+          0.06   Data read from: alanine-rad.fchk ()
           0.06   Restricted: False
           0.06   Orbitals present: True
           0.06   Spin density present: True
@@ -1459,12 +1451,12 @@ This example computes :ref:`hirshfeld` spin charges in the alanine radical::
           3.68     Trying to load weight functions
           3.68   END Defining atomic weight functions (own atomic grid)
                  Computing spin charges: 0%.........83%.100%
-          3.68   Written gaussian.hipart/hirsh_spin_charges.txt
+          3.68   Written alanine-rad.hipart/hirsh_spin_charges.txt
           3.68 END Atomic spin charges
 
 The output looks like::
 
-    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_spin_charges.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine-rad.hipart/hirsh_spin_charges.txt
     number of atoms: 12
       i        Z  Spin charge
     --------------------------------
@@ -1509,10 +1501,10 @@ them.
 The :ref:`hirshfeld` atomic overlap matrices in the original basis of the alanine
 radical are computed as follows. ::
 
-    toon@poony ~/hipart/examples/001-usage/alanine-radical> hi-overlap-matrices.py gaussian.fchk hirsh ../atoms/densities.txt
+    toon@poony ~/hipart/examples/001-usage> hi-overlap-matrices.py alanine-rad.fchk hirsh atoms/densities.txt
     ---TIME--- ---------------------------------LOG---------------------------------
           0.02 BEGIN Loading Electronic structure
-          0.06   Data read from: gaussian.fchk ()
+          0.06   Data read from: alanine-rad.fchk ()
           0.06   Restricted: False
           0.06   Orbitals present: True
           0.06   Spin density present: True
@@ -1534,14 +1526,14 @@ radical are computed as follows. ::
           0.22     Trying to load weight functions
           0.22   END Defining atomic weight functions (own atomic grid)
                  Computing matrices: 0%.........83%.100%
-          0.40   Written gaussian.hipart/hirsh_overlap_matrices.txt
+          0.40   Written alanine-rad.hipart/hirsh_overlap_matrices.txt
           0.40 END Atomic overlap matrices (contracted Gaussians)
 
 
-The output file ``gaussian.hipart/hirsh_overlap_matrices.txt`` is rather large.
+The output file ``alanine-rad.hipart/hirsh_overlap_matrices.txt`` is rather large.
 Below we only show the overlap matrix for the first atom::
 
-    toon@poony ~/hipart/examples/001-usage/alanine-radical> cat gaussian.hipart/hirsh_overlap_matrices.txt
+    toon@poony ~/hipart/examples/001-usage> cat alanine-rad.hipart/hirsh_overlap_matrices.txt
     number of orbitals: 102
     number of atoms:  12
     Atom   0   O    8
@@ -1674,8 +1666,14 @@ directory ``examples/002-batch``.
    :language: python
    :linenos:
 
+The script is executed as follows::
+
+    toon@poony ~/hipart/examples/001-usage> cd ../002-batch
+    toon@poony ~/hipart/examples/002-batch> ./batch.py
+
 The output file, ``all.txt``, reads::
 
+    toon@poony ~/hipart/examples/002-batch> cat all.txt
     XXX 13
       8    1.6576426043    0.7442011013   -0.4898368374  -0.16996
       8    1.1020987870   -1.0890743230    0.6977938371  -0.27558
@@ -1726,6 +1724,11 @@ included in the source tree in the directory ``examples/003-grid-tuning``.
 .. literalinclude:: ../examples/003-grid-tuning/tune.py
    :language: python
    :linenos:
+
+The script is executed as follows::
+
+    toon@poony ~/hipart/examples/002-batch> cd ../003-grid-tuning
+    toon@poony ~/hipart/examples/002-batch> ./tune.py
 
 The Pareto-optimal choices are printed in the end of the screen output::
 

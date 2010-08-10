@@ -384,4 +384,3 @@ def dump_esp_test(filename, dipole_q, dipole_p, dipole_qp, dipole_qm, mol_esp_co
     print >> f, "total density                    % 10.5e" % mol_esp_cost.rms
     print >> f, "-------------------------------------------------------------"
     f.close()
-    log("Written %s" % filename)

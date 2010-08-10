@@ -164,7 +164,7 @@ if __name__ == '__main__':
     # different grid resolutions.
     atom_tables = run_atom_dbs()
     # 2) Use each radial grid to estimate the error on the Hirshfeld-I charges.
-    configs = estimate_errors(atom_tables, "../001-usage/alanine/gaussian.fchk")
+    configs = estimate_errors(atom_tables, "../001-usage/alanine.fchk")
     # 3) Find the pareto front
     pareto_front(configs)
     # 4) Write a table in reStructuredText.

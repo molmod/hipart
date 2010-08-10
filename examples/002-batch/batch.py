@@ -12,7 +12,7 @@ def main():
     atom_table = AtomTable("../001-usage/atoms/densities.txt")
 
     # select formatted checkpoint files from the first example
-    fns_fchk = glob.glob("../001-usage/*/gaussian.fchk")
+    fns_fchk = glob.glob("../001-usage/*.fchk")
 
     f = file("all.txt", "w")
     # loop over all formatted checkpoint files
@@ -33,6 +33,7 @@ def main():
                 scheme.charges[i]
             )
     f.close()
+
 
 if __name__ == "__main__":
     main()
