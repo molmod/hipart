@@ -427,58 +427,48 @@ in the case of the alanine molecule::
 
     toon@poony ~/hipart/examples/001-usage> hi-charges.py alanine.fchk becke
     ---TIME--- ---------------------------------LOG---------------------------------
-          0.02 BEGIN Loading Electronic structure
-          0.05   Data read from: alanine.fchk ()
-          0.05   Restricted: True
-          0.05   Orbitals present: True
-          0.05   Spin density present: False
-          0.05   Number of alpha electrons: 24
-          0.05   Number of beta electrons: 24
-          0.05   Number of electrons: 48
-          0.05   Total charge: 0
-          0.05   Number of atoms: 13
-          0.05   Chemical formula: O2NC3H7
-          0.05 END Loading Electronic structure
-          0.05 BEGIN Atomic charges
-          0.05   BEGIN Atomic grids
+          0.03 BEGIN Loading Electronic structure
+          0.04   Data read from: alanine.fchk ()
+          0.04   Restricted: True
+          0.04   Orbitals present: True
+          0.04   Spin density present: False
+          0.04   Number of alpha electrons: 24
+          0.04   Number of beta electrons: 24
+          0.04   Number of electrons: 48
+          0.04   Total charge: 0
+          0.04   Number of atoms: 13
+          0.04   Chemical formula: O2NC3H7
+          0.04 END Loading Electronic structure
+          0.04 BEGIN Net and overlap populations
+          0.04   BEGIN Atomic grids
                    Computing/Loading atomic grids and distances: 0%.........5%......
                    ...11%.........17%.........23%.........29%.........35%.........41
                    %.........47%.........53%.........59%.........65%.........71%....
                    .....76%.........82%.........88%.........94%........100%
-          0.47   END Atomic grids
-          0.47   BEGIN Molecular density on atomic grids
+          0.21   END Atomic grids
+          0.21   BEGIN Molecular density on atomic grids
                    Computing/Loading densities: 0%.........76%..100%
-          4.33   END Molecular density on atomic grids
-          4.33   BEGIN Defining atomic weight functions (own atomic grid)
-          4.33     Trying to load weight functions
-          4.33     Could not load all weight functions from workdir. Computing them.
-          4.33     BEGIN Becke's Smooth Voronoi Partitioning
-                     Computing/Loading cell functions: 0%.........0%.........1%.....
-                     ....2%.........3%.........4%.........5%.........6%.........7%..
-                     .......8%.........9%.........10%.........11%.........12%.......
-                     ..13%.........14%.........15%.........16%.........17%.........1
-                     8%.........19%.........20%.........21%.........22%.........23%.
-                     ........24%.........25%.........26%.........27%.........28%....
-                     .....29%.........30%.........31%.........32%.........33%.......
-                     ..34%.........35%.........36%.........37%.........38%.........3
-                     9%.........40%.........41%.........42%.........43%.........44%.
-                     ........45%.........46%.........47%.........48%.........49%....
-                     .....50%.........51%.........52%.........53%.........54%.......
-                     ..55%.........56%.........57%.........58%.........59%.........6
-                     0%.........61%.........62%.........63%.........64%.........65%.
-                     ........66%.........67%.........68%.........69%.........70%....
-                     .....71%.........71%.........72%.........73%.........74%.......
-                     ..75%.........76%.........77%.........78%.........79%.........8
-                     0%.........81%.........82%.........83%.........84%.........85%.
-                     ........86%.........87%.........88%.........89%.........90%....
-                     .....91%.........92%.........93%.........94%.........95%.......
-                     ..96%.........97%.........98%.........99%...100%
-          4.96     END Becke's Smooth Voronoi Partitioning
-          4.96     Writing results to workdir
-          4.96   END Defining atomic weight functions (own atomic grid)
-                 Computing charges: 0%.........76%..100%
-          4.97   Written alanine.hipart/becke_charges.txt
-          4.97 END Atomic charges
+          0.21   END Molecular density on atomic grids
+          0.21   BEGIN Atomic charges
+          0.21     Written alanine.hipart/becke_charges.txt
+          0.21   END Atomic charges
+          0.21   BEGIN Atomic weights on other atoms' grids.
+          0.21     BEGIN Defining atomic weight functions (own atomic grid)
+          0.21       Trying to load weight functions
+          0.21     END Defining atomic weight functions (own atomic grid)
+          0.21     BEGIN Becke's Smooth Voronoi Partitioning
+                     Computing/Loading cell functions: 0%.........76%..100%
+          0.24     END Becke's Smooth Voronoi Partitioning
+                   Computing off-diagonal atom weights: 0%.........5%.........11%...
+                   ......17%.........23%.........29%.........35%.........41%........
+                   .47%.........53%.........59%.........65%.........71%.........76%.
+                   ........82%.........88%.........94%........100%
+          0.25   END Atomic weights on other atoms' grids.
+                 Integrating over products of stockholder weights: 0%.........10%...
+                 ......21%.........32%.........43%.........54%.........65%.........7
+                 6%.........87%.........98%100%
+          0.33   Written alanine.hipart/becke_net_overlap.txt
+          0.33 END Net and overlap populations
 
 The entire screen output is conceived as a call graph that shows in which part
 of Hipart the program is currently active. The order of the routines is

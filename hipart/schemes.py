@@ -945,8 +945,9 @@ class BeckeScheme(BaseScheme):
         self.do_atgrids()
         radii = numpy.array([periodic[n].covalent_radius for n in self.molecule.numbers])
         N = self.molecule.size
-        pb = log.pb("Computing/Loading cell functions", (N*N*(N-1))/2)
+        pb = log.pb("Computing/Loading cell functions", N)
         for i in xrange(N):
+            pb()
             # working in the grid of atom i
             grid = self.atgrids[i]
 
@@ -958,7 +959,6 @@ class BeckeScheme(BaseScheme):
                 grid.cell_functions = numpy.ones((N, grid.size), float)
                 for j0 in xrange(N):
                     for j1 in xrange(j0):
-                        pb()
                         # working on the contribution from atom pair j0,j1
                         # determine the displacement of the cell boundary with
                         # respect to the center based on covalent radii
@@ -980,7 +980,6 @@ class BeckeScheme(BaseScheme):
                 grid.dump("cell_functions", grid.cell_functions)
             else:
                 grid.cell_functions = grid.cell_functions.reshape((N, -1))
-                pb((N*(N-1))/2)
             grid.cell_sum = sum(grid.cell_functions)
         pb()
 
