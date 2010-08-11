@@ -62,8 +62,8 @@ popular Linux distributions:
     apt-get install python python-dev python-numpy gfortran gcc python-setuptools git-core wget
     exit
 
-* Fedora 12. You first have to become root because the sudo program is not
-  configured by default. ::
+* Fedora 12 and 13. You first have to become root because the sudo program is
+  not configured by default. ::
 
     su -
     pkcon install python-devel numpy numpy-f2py gcc-gfortran gcc python-setuptools git wget
@@ -81,6 +81,25 @@ popular Linux distributions:
   symbol. Otherwise it is impossible to install Python packages in the home
   directory, as we will do below.
 
+In order to enable the installation and usage of Python packages in the home
+directory, as we will do in the next section, one must configure a few
+environment variables:
+
+* Bash users: add the following two lines to your ``~/.bashrc`` file::
+
+    export PYTHONPATH=$HOME/lib/python:$HOME/lib64/python:$PYTHONPATH
+    export PATH=$HOME/bin:$PATH
+
+* TC Shell users: add the lines to your ``~/.tcshrc`` file::
+
+    setenv PYTHONPATH $HOME/lib/python:$HOME/lib64/python:$PYTHONPATH
+    setenv PATH $HOME/bin:$PATH
+
+If you don't know which shell you are using, you are probably using Bash. Note
+that some of these lines may already be present. These settings are only loaded
+in new terminal sessions, so close your terminal and open a new one before
+proceeding.
+
 Installing the bleeding edge version of HiPart
 ----------------------------------------------
 
@@ -96,23 +115,7 @@ directory. ::
     (cd molmod/ext; ./setup.py install --home=~)
     (cd hipart; ./setup.py install --home=~)
 
-In order to activate the Python modules and the executable scripts installed
-in your home directory, the following lines need to be added to your login
-scripts:
-
-* Bash users: add the following two lines to your ``~/.bashrc`` file::
-
-    export PYTHONPATH=$HOME/lib/python:$PYTHONPATH
-    export PATH=$HOME/bin:$PATH
-
-* TC Shell users: add the lines to your ``~/.tcshrc`` file::
-
-    setenv PYTHONPATH $HOME/lib/python:$PYTHONPATH
-    setenv PATH $HOME/bin:$PATH
-
-If you don't know which shell you are using, you are probably using Bash. Note
-that some of these lines may already be present. Now log out and log in again.
-You are ready to start using HiPart!
+You are now ready to start using HiPart!
 
 
 Upgrading to the bleeding edge version of HiPart
@@ -121,8 +124,8 @@ Upgrading to the bleeding edge version of HiPart
 In case you want to upgrade HiPart to the latests development version after a
 previous install, then execute the following commands (in the same directory)::
 
-    (cd molmod; git pull; rm -r ~/lib/python/molmod*; ./setup.py install --home=~; cd ext; ./setup.py install --home=~)
-    (cd hipart; git pull; rm ~/bin/hi-*.py; rm -r ~/lib/python/HiPart*; ./setup.py install --home=~)
+    (cd molmod; git pull; rm -r ~/lib*/python/molmod*; ./setup.py install --home=~; cd ext; ./setup.py install --home=~)
+    (cd hipart; git pull; rm ~/bin/hi-*.py; rm -r ~/lib*/python/HiPart*; ./setup.py install --home=~)
 
 
 Testing your installation
@@ -151,8 +154,8 @@ other packages are installed as follows:
     apt-get install python-nose python-sphinx python-scipy
     exit
 
-* Fedora 12. You first have to become root because the sudo program is not
-  configured by default. ::
+* Fedora 12 and 13. You first have to become root because the sudo program is
+  not configured by default. ::
 
     su -
     pkcon install python-nose sphinx scipy

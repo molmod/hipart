@@ -9,6 +9,5 @@ else
   ./uninstall.sh
   python setup.py install --home=$HOME
   ./cleanfiles.sh
-  echo "Don't forget to add 'export PYTHONPATH=\$HOME/lib/python' to your .bashrc file."
 fi
 
