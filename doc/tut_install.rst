@@ -117,6 +117,42 @@ directory. ::
 
 You are now ready to start using HiPart!
 
+A few quick checks
+------------------
+
+It may be interesting to double check your installation before proceeding,
+unless you `feel lucky`. The HiPart and MolMod files are installed in the
+following directories:
+
+* Scripts: ``~/bin``
+* Modules: ``~/lib/python`` or ``~/lib64/python``
+* Data: ``~/share``
+
+There should be at least some files present in these directories.
+
+All HiPart scripts start with ``hi-``, so when you enter ``hi-`` on the command
+line and then hit the ``TAB`` key twice, you should see the following programs
+in your terminal::
+
+    hi-atomdb.py                hi-multipoles.py
+    hi-bond-orders.py           hi-net-overlap.py
+    hi-charges.py               hi-overlap-matrices-orb.py
+    hi-dipoles.py               hi-overlap-matrices.py
+    hi-esp-test.py              hi-spin-charges.py
+
+The Python modules should be accessible from any Python session. This can be
+checked by starting Python interactively and loading the modules manually. There
+should be no errors when importing the modules::
+
+    toon@poony ~> python
+    Python 2.6.5 (r265:79063, Apr 16 2010, 13:57:41)
+    [GCC 4.4.3] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import hipart
+    >>> import molmod
+    >>> quit()
+    toon@poony ~>
+
 
 Upgrading to the bleeding edge version of HiPart
 ------------------------------------------------
