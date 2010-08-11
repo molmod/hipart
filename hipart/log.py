@@ -19,10 +19,6 @@
 # --
 
 
-
-
-
-
 import sys, time
 
 
@@ -74,8 +70,13 @@ class ProgressBar(object):
         self.dump("".join(line))
 
 
-bright = '\033[1;33m'
-reset = '\033[0m'
+if sys.stdout.isatty():
+    bright = '\033[1;33m'
+    reset = '\033[0m'
+else:
+    bright = ''
+    reset = ''
+
 
 class Log(object):
     def __init__(self):
