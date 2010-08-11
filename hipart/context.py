@@ -60,7 +60,7 @@ class Context(object):
     version = 2
 
     def __init__(self, filename, options):
-        log.verbose = options.verbose
+        log.set_verbose(options.verbose)
         log.begin("Loading Electronic structure")
         self.wavefn = load_wavefunction(filename)
         self.wavefn.log()

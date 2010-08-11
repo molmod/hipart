@@ -81,10 +81,13 @@ else:
 class Log(object):
     def __init__(self):
         self.stack = []
-        self.verbose = True
+        self._verbose = False
         self.start = time.time()
-        if self.verbose:
+
+    def set_verbose(self, verbose):
+        if verbose and not self._verbose:
             print "---TIME--- "+"-"*33+"LOG"+"-"*33
+        self._verbose = verbose
 
     level = property(lambda self: len(self.stack))
 
@@ -103,23 +106,23 @@ class Log(object):
             start = end
 
     def begin(self, s):
-        if self.verbose:
+        if self._verbose:
             self._section("BEGIN", s)
         self.stack.append(s)
 
     def __call__(self, s):
-        if self.verbose:
+        if self._verbose:
             now = time.time() - self.start
             print "%10.2f %s%s" % (now, "  "*self.level, s)
 
     def end(self):
         s = self.stack.pop()
-        if self.verbose:
+        if self._verbose:
             self._section("END", s)
 
     def pb(self, s, num):
         indent = self.level*2+11
-        return ProgressBar(s, num, indent, 80-indent, self.verbose)
+        return ProgressBar(s, num, indent, 80-indent, self._verbose)
 
 
 log = Log()
