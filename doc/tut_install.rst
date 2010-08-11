@@ -40,7 +40,6 @@ The following software must be installed for HiPart:
 * Numpy 1.0 or later: http://numpy.scipy.org/
 * A Fortran and a C compiler supported by the F2PY module in Numpy, e.g.
   gfortran and gcc: http://gcc.gnu.org/
-* Setuptools for Python: http://pypi.python.org/pypi/setuptools
 * Git: http://git-scm.com/
 
 In the tutorial we also use the following:
@@ -53,25 +52,25 @@ popular Linux distributions:
 
 * Ubuntu 10.4::
 
-    sudo apt-get install python python-dev python-numpy gfortran gcc python-setuptools git-core wget
+    sudo apt-get install python python-dev python-numpy gfortran gcc git-core wget
 
 * Debian 5. You first have to become root because the sudo program is not
   configured by default. ::
 
     su -
-    apt-get install python python-dev python-numpy gfortran gcc python-setuptools git-core wget
+    apt-get install python python-dev python-numpy gfortran gcc git-core wget
     exit
 
 * Fedora 12 and 13. You first have to become root because the sudo program is
   not configured by default. ::
 
     su -
-    pkcon install python-devel numpy numpy-f2py gcc-gfortran gcc python-setuptools git wget
+    pkcon install python-devel numpy numpy-f2py gcc-gfortran gcc git wget
     exit
 
 * Suse 11.2::
 
-    sudo zypper install python-devel python-numpy gcc gcc-fortran python-setuptools git wget
+    sudo zypper install python-devel python-numpy gcc gcc-fortran git wget
 
   There seems to be something odd going on with the default Python configuration
   on Suse installations. You have to edit the file
@@ -161,7 +160,7 @@ In case you want to upgrade HiPart to the latests development version after a
 previous install, then execute the following commands (in the same directory)::
 
     (cd molmod; git pull; rm -r ~/lib*/python/molmod*; ./setup.py install --home=~; cd ext; ./setup.py install --home=~)
-    (cd hipart; git pull; rm ~/bin/hi-*.py; rm -r ~/lib*/python/HiPart*; ./setup.py install --home=~)
+    (cd hipart; git pull; rm ~/bin/hi-*.py; rm -r ~/lib*/python/hipart*; ./setup.py install --home=~)
 
 
 Testing your installation
@@ -213,7 +212,8 @@ Once these dependecies are installed, go to the directory where the HiPart
 source code was downloaded and execute the following commands::
 
     cd hipart
-    ./setup.py nosetests
+    ./setup.py build_ext -i
+    nosetests -v
 
 This will run a series of tests to check the validity of the outcomes generated
 by HiPart. If some tests fail, post the output of the tests on the `mailing list

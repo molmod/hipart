@@ -20,7 +20,7 @@
 # --
 
 
-import setuptools, glob
+import glob
 from numpy.distutils.core import setup, Extension
 
 
@@ -61,5 +61,4 @@ setup(
         'Programming Language :: Python',
         'Topic :: Science/Engineering :: Molecular Science'
     ],
-    test_suite = 'nose.collector'
 )
