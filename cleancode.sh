@@ -6,4 +6,3 @@ for file in $(find setup.py hipart scripts doc examples | egrep "(\.py$)|(\.f90$
   sed -i -e $'s/[ \t]*$//' ${file}
   sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' ${file}
 done
-

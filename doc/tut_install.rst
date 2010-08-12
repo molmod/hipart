@@ -95,9 +95,9 @@ environment variables:
     setenv PATH $HOME/bin:$PATH
 
 If you don't know which shell you are using, you are probably using Bash. Note
-that some of these lines may already be present. These settings are only loaded
-in new terminal sessions, so close your terminal and open a new one before
-proceeding.
+that some of these lines may already be present. **These settings are only
+loaded in new terminal sessions, so close your terminal and open a new one
+before proceeding.**
 
 Installing the bleeding edge version of HiPart
 ----------------------------------------------
@@ -111,7 +111,6 @@ directory. ::
     git clone git://molmod.ugent.be/git/molmod.git
     git clone git://molmod.ugent.be/git/hipart.git
     (cd molmod; ./setup.py install --home=~)
-    (cd molmod/ext; ./setup.py install --home=~)
     (cd hipart; ./setup.py install --home=~)
 
 You are now ready to start using HiPart!
@@ -159,7 +158,7 @@ Upgrading to the bleeding edge version of HiPart
 In case you want to upgrade HiPart to the latests development version after a
 previous install, then execute the following commands (in the same directory)::
 
-    (cd molmod; git pull; rm -r ~/lib*/python/molmod*; ./setup.py install --home=~; cd ext; ./setup.py install --home=~)
+    (cd molmod; git pull; rm -r ~/lib*/python/molmod*; ./setup.py install --home=~)
     (cd hipart; git pull; rm ~/bin/hi-*.py; rm -r ~/lib*/python/hipart*; ./setup.py install --home=~)
 
 
