@@ -18,8 +18,7 @@
 #
 # --
 
-from hipart.gint.tests.utils import setup_fchk, h_sto3g_fchk, hf_sto3g_fchk, \
-    o2_cc_pvtz_pure_fchk, o2_cc_pvtz_cart_fchk
+from hipart.gint.tests.utils import setup_gaussian
 
 from hipart.gint.basis import GaussianBasis, get_shell_dof
 
@@ -29,7 +28,7 @@ import shutil, numpy
 
 
 def test_hf_sto3g_num():
-    tmpdir, fn_fchk = setup_fchk(hf_sto3g_fchk)
+    tmpdir, fn_fchk = setup_gaussian("hf_sto3g")
     fchk = FCHKFile(fn_fchk)
     basis = GaussianBasis.from_fchk(fchk)
     assert(basis.num_shells==3)
@@ -37,7 +36,7 @@ def test_hf_sto3g_num():
 
 
 def test_h_sto3g_num():
-    tmpdir, fn_fchk = setup_fchk(h_sto3g_fchk)
+    tmpdir, fn_fchk = setup_gaussian("h_sto3g")
     fchk = FCHKFile(fn_fchk)
     basis = GaussianBasis.from_fchk(fchk)
     assert(basis.num_shells==1)
@@ -45,7 +44,7 @@ def test_h_sto3g_num():
 
 
 def test_o2_cc_pvtz_pure_num():
-    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_pure_fchk)
+    tmpdir, fn_fchk = setup_gaussian("o2_cc_pvtz_pure")
     fchk = FCHKFile(fn_fchk)
     basis = GaussianBasis.from_fchk(fchk)
     assert(basis.num_shells==20)
@@ -54,7 +53,7 @@ def test_o2_cc_pvtz_pure_num():
 
 
 def test_o2_cc_pvtz_cart_num():
-    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_cart_fchk)
+    tmpdir, fn_fchk = setup_gaussian("o2_cc_pvtz_cart")
     fchk = FCHKFile(fn_fchk)
     basis = GaussianBasis.from_fchk(fchk)
     assert(basis.num_shells==20)

@@ -21,7 +21,7 @@
 
 import os, sys, subprocess
 
-from hipart.tests.utils import setup_hf_sto3g_gaussian
+from hipart.tests.utils import setup_gaussian
 
 
 # These tests just run the scripts to see if they do not crash on a simple
@@ -42,7 +42,7 @@ def test_scripts():
 
 def check_script(fn_script, scheme):
     fn_script = os.path.abspath(os.path.join("scripts", fn_script))
-    tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
+    tmpdir, fn_fchk, fn_densities = setup_gaussian("hf_sto3g", "sto3g")
     if scheme in ["hirsh", "hirshi"]:
         args = (fn_script, fn_fchk, scheme, fn_densities)
     else:

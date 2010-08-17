@@ -19,7 +19,7 @@
 # --
 
 
-from utils import setup_hf_sto3g_gaussian
+from utils import setup_gaussian
 
 from hipart.atoms import AtomTable
 
@@ -27,7 +27,7 @@ import shutil, numpy
 
 
 def test_atom_table():
-    tmpdir, fn_fchk, fn_densities = setup_hf_sto3g_gaussian()
+    tmpdir, fn_fchk, fn_densities = setup_gaussian("hf_sto3g", "sto3g")
     atom_table = AtomTable(fn_densities)
     check_population(atom_table, 1, 0.0)
     check_population(atom_table, 1, 0.5)

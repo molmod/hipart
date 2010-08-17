@@ -19,8 +19,7 @@
 # --
 
 
-from hipart.gint.tests.utils import setup_fchk, h_sto3g_fchk, hf_sto3g_fchk, \
-    o2_cc_pvtz_cart_fchk, o2_cc_pvtz_pure_fchk
+from hipart.gint.tests.utils import setup_gaussian
 
 from hipart.gint import GaussianBasis, gint2_nai_dmat, gint2_nai_S_S, \
     reorder_dmat
@@ -56,7 +55,7 @@ ref_data_h_sto3g_pot = numpy.array([
 ])
 
 def test_pot_h_sto3g():
-    tmpdir, fn_fchk = setup_fchk(h_sto3g_fchk)
+    tmpdir, fn_fchk = setup_gaussian("h_sto3g")
     fchk = FCHKFile(fn_fchk)
     shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
@@ -110,7 +109,7 @@ ref_data_hf_sto3g_pot = numpy.array([
 ])
 
 def test_pot_hf_sto3g():
-    tmpdir, fn_fchk = setup_fchk(hf_sto3g_fchk)
+    tmpdir, fn_fchk = setup_gaussian("hf_sto3g")
     fchk = FCHKFile(fn_fchk)
     shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
@@ -153,7 +152,7 @@ ref_data_o2_cc_pvtz_cart_pot = numpy.array([
 ])
 
 def test_pot_o2_cc_pvtz_cart():
-    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_cart_fchk)
+    tmpdir, fn_fchk = setup_gaussian("o2_cc_pvtz_cart")
     fchk = FCHKFile(fn_fchk)
     shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
@@ -196,7 +195,7 @@ ref_data_o2_cc_pvtz_pure_pot = numpy.array([
 ])
 
 def test_pot_o2_cc_pvtz_pure():
-    tmpdir, fn_fchk = setup_fchk(o2_cc_pvtz_pure_fchk)
+    tmpdir, fn_fchk = setup_gaussian("o2_cc_pvtz_pure")
     fchk = FCHKFile(fn_fchk)
     shutil.rmtree(tmpdir)
     basis = GaussianBasis.from_fchk(fchk)
