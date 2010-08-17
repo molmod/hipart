@@ -408,6 +408,8 @@ as follows::
       --no-fix-total-charge
                             Do not correct the total charge.
       --no-random           Do not randomly rotate angular grids.
+      --save-mem            Try to be less memory hungry at the expense of a
+                            little efficiency.
 
       Specific options for the iterative partitioning schemes:
         -t THRESHOLD, --threshold=THRESHOLD

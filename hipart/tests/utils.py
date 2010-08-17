@@ -89,14 +89,16 @@ def iter_hf_sto3g_gaussian_schemes_opts():
 
     tmpdir, fn_fchk, fn_densities = setup_gaussian("hf_sto3g", "sto3g")
     for do_random in True, False:
+        options.do_random = do_random
         for do_work in True, False:
+            options.do_work = do_work
             for do_output in True, False:
-                options.do_random = do_random
-                options.do_work = do_work
                 options.do_output = do_output
-                context = Context(fn_fchk, options)
-                yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
-                clean_txt(context.output.directory)
+                for save_mem in True, False:
+                    options.save_mem = save_mem
+                    context = Context(fn_fchk, options)
+                    yield scheme_classes['hirsh'].new_from_args(context, [fn_densities])
+                    clean_txt(context.output.directory)
     shutil.rmtree(tmpdir)
 
 

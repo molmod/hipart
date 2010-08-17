@@ -77,6 +77,35 @@ class OnlyOnce(object):
         return wrapper
 
 
+class LazyDistances(object):
+    def __init__(self, centers, grid, save_mem):
+        self.centers = centers
+        self.grid = grid
+        self.save_mem = save_mem
+        if save_mem:
+            self._result = numpy.zeros(grid.size, float)
+        else:
+            self._cache = {}
+
+    def __len__(self):
+        return len(self.centers)
+
+    def __getitem__(self, index):
+        if self.save_mem:
+            # in case we want to save memory, the grid distances are always
+            # computed from scratch. For reasons of efficiency, the same result
+            # array is used to avoid repetetive memory allocation
+            grid_distances(self.centers[index], self.grid.points, self._result)
+            return self._result
+        else:
+            result = self._cache.get(index)
+            if result is None:
+                result = numpy.zeros(self.grid.size, float)
+                grid_distances(self.centers[index], self.grid.points, result)
+                self._cache[index] = result
+            return result
+
+
 class BaseScheme(object):
     prefix = None
     usage = None
@@ -111,8 +140,9 @@ class BaseScheme(object):
     @OnlyOnce("Atomic grids")
     def do_atgrids(self):
         self.atgrids = []
-        pb = log.pb("Computing/Loading atomic grids and distances", self.molecule.size**2)
+        pb = log.pb("Computing/Loading atomic grids and distances", self.molecule.size)
         for i in xrange(self.molecule.size):
+            pb()
             name = "atom%05i" % i
             atgrid = AtomicGrid.from_prefix(name, self.work)
             if atgrid is None:
@@ -122,13 +152,7 @@ class BaseScheme(object):
 
             # Compute and store all the distances from these grid points to the
             # nuclei.
-            atgrid.distances = []
-            for j in xrange(self.molecule.size):
-                pb()
-                distances = numpy.zeros(atgrid.size, float)
-                grid_distances(self.molecule.coordinates[j], atgrid.points, distances)
-                # distances from grid points of atom i to atom j.
-                atgrid.distances.append(distances)
+            atgrid.distances = LazyDistances(self.molecule.coordinates, atgrid, self.context.options.save_mem)
         pb()
 
     @OnlyOnce("Molecular density on atomic grids")
@@ -970,7 +994,9 @@ class BeckeScheme(BaseScheme):
                         if a < -0.45: a = -0.45
                         elif a > 0.45: a = 0.45
                         # construct the switching function
-                        switch = (grid.distances[j0] - grid.distances[j1])/d
+                        switch = grid.distances[j0].copy()
+                        switch -= grid.distances[j1]
+                        switch /= d
                         switch = switch + a*(1-switch**2) # hetero
                         for k in xrange(self.k):
                             switch = 0.5*(3.0 - switch**2)*switch

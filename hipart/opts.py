@@ -78,12 +78,16 @@ def parse_command_line(script_usage):
         help="Do not write any screen output."
     )
     parser.add_option(
-        "--no-fix-total-charge", dest="fix_total_charge", default="True",
+        "--no-fix-total-charge", dest="fix_total_charge", default=True,
         action="store_false", help="Do not correct the total charge."
     )
     parser.add_option(
         "--no-random", default=True, action='store_false', dest='do_random',
         help="Do not randomly rotate angular grids."
+    )
+    parser.add_option(
+        "--save-mem", action="store_true", default=False,
+        help="Try to be less memory hungry at the expense of a little efficiency."
     )
     group = OptionGroup(parser, "Specific options for the iterative partitioning schemes")
     group.add_option(
