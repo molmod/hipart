@@ -377,7 +377,7 @@ def run_atomdb(executable, lot, atom_numbers, options, directory="."):
     if not os.path.isdir(directory):
         os.makedirs(directory)
     os.chdir(directory)
-    log.verbose = options.verbose
+    log.set_verbose(options.verbose)
     program = Gaussian(executable, options)
     dirnames = make_inputs(program, lot, atom_numbers, options.max_ion)
     run_jobs(program, dirnames)
