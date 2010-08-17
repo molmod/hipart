@@ -19,7 +19,7 @@
 # --
 
 
-from hipart.csext import spline_construct, spline_eval, spline_cumul_int
+from hipart.ext import spline_construct, spline_eval, spline_cumul_int
 from hipart.spline import CubicSpline
 
 import numpy

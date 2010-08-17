@@ -19,7 +19,7 @@
 # --
 
 
-from hipart.csext import spline_construct, spline_int
+from hipart.ext import spline_construct, spline_int
 from hipart.lebedev_laikov import get_grid as get_lebedev_grid
 
 from molmod import Rotation

@@ -33,15 +33,16 @@
 # TODO: use smaller lebedev grids close to the cusps
 
 
-from hipart.log import log
+from hipart.atoms import AtomTable
+from hipart.ext import grid_distances
+from hipart.fit import ESPCostFunction
+from hipart.gint import dmat_to_full
+from hipart.grids import Grid, AtomicGrid, RLogIntGrid, ALebedevIntGrid
 from hipart.io import dump_atom_scalars, dump_atom_vectors, dump_atom_matrix, \
     dump_atom_fields, dump_overlap_matrices
-from hipart.fit import ESPCostFunction
-from hipart.atoms import AtomTable
-from hipart.grids import Grid, AtomicGrid, RLogIntGrid, ALebedevIntGrid
 from hipart.lebedev_laikov import get_grid as get_lebedev_grid
+from hipart.log import log
 from hipart.spline import CubicSpline
-from hipart.gint import dmat_to_full
 
 from molmod import Rotation, angstrom
 from molmod.periodic import periodic
@@ -124,7 +125,8 @@ class BaseScheme(object):
             atgrid.distances = []
             for j in xrange(self.molecule.size):
                 pb()
-                distances = numpy.sqrt(((atgrid.points - self.molecule.coordinates[j])**2).sum(axis=1))
+                distances = numpy.zeros(atgrid.size, float)
+                grid_distances(self.molecule.coordinates[j], atgrid.points, distances)
                 # distances from grid points of atom i to atom j.
                 atgrid.distances.append(distances)
         pb()

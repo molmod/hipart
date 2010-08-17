@@ -19,7 +19,7 @@
 # --
 
 
-from hipart.csext import spline_construct, spline_eval
+from hipart.ext import spline_construct, spline_eval
 from hipart.log import log
 
 import numpy

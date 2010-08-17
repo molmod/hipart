@@ -1,5 +1,44 @@
-python module csext
+! HiPart is a software toolkit to analyse molecular densities with the hirshfeld partitioning scheme.
+! Copyright (C) 2007 - 2010 Toon Verstraelen <Toon.Verstraelen@UGent.be>
+!
+! This file is part of HiPart.
+!
+! HiPart is free software; you can redistribute it and/or
+! modify it under the terms of the GNU General Public License
+! as published by the Free Software Foundation; either version 3
+! of the License, or (at your option) any later version.
+!
+! HiPart is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, see <http://www.gnu.org/licenses/>
+!
+! --
+
+
+python module ext
 interface
+
+!
+! utils.c
+!
+
+  subroutine grid_distances(center,points,distances,n)
+    intent(c) grid_distances
+    intent(c)
+
+    double precision intent(in) :: center(3)
+    double precision intent(in) :: points(n,3)
+    double precision intent(inout) :: distances(n)
+    integer intent(hide), depend(distances) :: n=len(distances)
+  end subroutine grid_distances
+
+!
+! cubic_spline.c
+!
 
   subroutine spline_construct(x,y,d,n)
     intent(c) spline_construct
@@ -47,4 +86,4 @@ interface
   end subroutine spline_cumul_int
 
 end interface
-end python module csext
+end python module ext

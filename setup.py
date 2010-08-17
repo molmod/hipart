@@ -41,8 +41,8 @@ setup(
             ["hipart/Lebedev-Laikov.F"]
         ),
         Extension(
-            "hipart.csext",
-            ["hipart/cubic_spline_ext.c","hipart/cubic_spline_ext.pyf"]
+            "hipart.ext",
+            ["hipart/cubic_spline.c", "hipart/utils.c", "hipart/ext.pyf"]
         ),
         Extension(
             "hipart.gint.gint_ext",
