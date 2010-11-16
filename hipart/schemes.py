@@ -282,6 +282,8 @@ class BaseScheme(object):
 
     @OnlyOnce("Defining atomic weight functions (own atomic grid)")
     def do_atgrids_atweights(self):
+        self.do_atgrids()
+
         log("Trying to load weight functions")
         success = self._load_atgrid_atweights()
         if not success:

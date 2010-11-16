@@ -219,5 +219,8 @@ class ALebedevIntGrid(ABaseIntGrid):
     def minimum(self, function):
         return function.reshape((-1,self.num_lebedev)).min(axis=1)
 
+    def maximum(self, function):
+        return function.reshape((-1,self.num_lebedev)).max(axis=1)
+
     def get_description(self):
         return "ALebedevIntGrid(%i)" % self.num_lebedev
