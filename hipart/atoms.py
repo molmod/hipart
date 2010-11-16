@@ -85,8 +85,9 @@ class AtomTable(object):
             words = line.split()
             number = int(words[0])
             charge = int(words[1])
-            population = number - charge
             atom_rhos = numpy.array([float(word) for word in words[2:]])
+            population = 4*numpy.pi*self.rgrid.integrate(atom_rhos*self.rgrid.rs[:len(atom_rhos)]**2)
+            population = int(numpy.round(population))
             nmap = records.setdefault(number, {})
             nmap[population] = atom_rhos
         f.close()

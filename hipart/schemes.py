@@ -332,7 +332,7 @@ class BaseScheme(object):
                 d = self.atgrids[i].moldens
                 center = self.molecule.coordinates[i]
                 self.populations[i] = self._spherint(d*w)
-                self.charges[i] = self.molecule.numbers[i] - self.populations[i]
+                self.charges[i] = self.wavefn.nuclear_charges[i] - self.populations[i]
             pb()
             if self.context.options.fix_total_charge:
                 self.charges -= (self.charges.sum() - self.wavefn.charge)/self.molecule.size
@@ -453,7 +453,7 @@ class BaseScheme(object):
                 for j in xrange(num_polys):
                     poly = regular_solid_harmonics[j]
                     self.multipoles[i,j] = self._spherint(-poly(cx,cy,cz)*d*w)
-                self.multipoles[i,0] += self.molecule.numbers[i]
+                self.multipoles[i,0] += self.wavefn.nuclear_charges[i]
             pb()
             self.work.dump(multipoles_name, self.multipoles)
 
@@ -805,7 +805,7 @@ class HirshfeldIScheme(TableBaseScheme):
         self.do_atgrids_moldens()
 
         counter = 0
-        old_populations = self.molecule.numbers.astype(float)
+        old_populations = self.wavefn.nuclear_charges.astype(float)
         log("Iteration   Max change   Total charge")
         while True:
             # construct the pro-atom density functions, using the densities
@@ -823,7 +823,7 @@ class HirshfeldIScheme(TableBaseScheme):
             # ordinary blablabla ...
             max_change = abs(populations-old_populations).max()
             log("%5i     % 10.5e   % 10.5e" % (
-                counter, max_change, self.molecule.numbers.sum() - populations.sum()
+                counter, max_change, self.wavefn.nuclear_charges.sum() - populations.sum()
             ))
             if max_change < self.context.options.threshold:
                 break
@@ -886,7 +886,7 @@ class ISAScheme(StockholderScheme):
             self.proatomfns.append(CubicSpline(self.rgrid.rs, profile))
 
         counter = 0
-        old_populations = self.molecule.numbers.copy()
+        old_populations = self.wavefn.nuclear_charges.copy()
         log("Iteration   Max change   Total charge")
         while True:
             new_proatomfns = []
@@ -904,7 +904,7 @@ class ISAScheme(StockholderScheme):
             # ordinary blablabla ...
             max_change = abs(populations-old_populations).max()
             log("%5i     % 10.5e   % 10.5e" % (
-                counter, max_change, self.molecule.numbers.sum() - populations.sum()
+                counter, max_change, self.wavefn.nuclear_charges.sum() - populations.sum()
             ))
             if max_change < self.context.options.threshold:
                 break

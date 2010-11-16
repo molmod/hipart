@@ -263,6 +263,7 @@ class FCHKWaveFunction(object):
         self.num_beta = fchk.fields["Number of beta electrons"]
         self.restricted = "Beta Orbital Energies" not in fchk.fields
         self.molecule = fchk.molecule
+        self.nuclear_charges = fchk.fields["Nuclear charges"]
         # for internal usage
         if density_type is None:
             if "mp2" in fchk.lot.lower():
