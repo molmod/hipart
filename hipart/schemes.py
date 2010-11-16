@@ -731,8 +731,8 @@ class StockholderScheme(BaseScheme):
         pro_mol = numpy.zeros(len(pro_atom), float)
         for j in xrange(self.molecule.size):
             pro_mol += self.proatomfns[j](grid.distances[j])
-        # multiply the density on the grid by the weight function
-        return pro_atom/pro_mol
+        # clip the wieght between zero and one
+        return numpy.clip(pro_atom/pro_mol, 0, 1)
 
 
 class TableBaseScheme(StockholderScheme):
