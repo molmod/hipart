@@ -31,7 +31,7 @@ HiPart is open source software distributed under the conditions of the `GPL v3
 license <http://molmod.ugent.be/code/wiki/GPL_License_v3>`_.
 
 If you use HiPart for your research or for the preparation of
-publications, please cite HiPart as follows: "T. Verstraelen, HiPart software,
+publications, please cite HiPart as follows: "T. Verstraelen, HiPart Program,
 `http://molmod.ugent.be/software <http://molmod.ugent.be/software>`_"
 
 Tutorial
@@ -43,6 +43,7 @@ Tutorial
 
    tut_install
    tut_support
+   tut_cite
    tut_theory
    tut_usage
 

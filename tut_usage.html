@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>4. Using HiPart &mdash; HiPart v0.0 documentation</title>
+    <title>5. Using HiPart &mdash; HiPart v0.0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="HiPart v0.0 documentation" href="index.html" />
     <link rel="next" title="hipart — Fuzzy atom partitioning" href="ref_hipart.html" />
-    <link rel="prev" title="3. Theoretical background" href="tut_theory.html" /> 
+    <link rel="prev" title="4. Theoretical background" href="tut_theory.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,7 +39,7 @@
           <a href="ref_hipart.html" title="hipart — Fuzzy atom partitioning"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="tut_theory.html" title="3. Theoretical background"
+          <a href="tut_theory.html" title="4. Theoretical background"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
       </ul>
@@ -51,7 +51,7 @@
           <div class="body">
             
   <div class="section" id="using-hipart">
-<h1>4. Using HiPart<a class="headerlink" href="#using-hipart" title="Permalink to this headline">¶</a></h1>
+<h1>5. Using HiPart<a class="headerlink" href="#using-hipart" title="Permalink to this headline">¶</a></h1>
 <p>For the terminology used in this chapter we refer to the <a class="reference external" href="tut_theory.html#theory"><em>Theoretical background</em></a>.</p>
 <p>HiPart is actually not a single program but a collection of Python scripts that
 can be used from the command line to perform population analysis on Gaussian
@@ -71,7 +71,7 @@ differently on your Linux box. You don&#8217;t have to copy it. It is always inc
 in the examples below to show in which directory each command is executed, i.e.
 right before the <tt class="docutils literal"><span class="pre">&gt;</span></tt> character, it shows the current directory.</p>
 <div class="section" id="test-molecules">
-<h2>4.1. Test molecules<a class="headerlink" href="#test-molecules" title="Permalink to this headline">¶</a></h2>
+<h2>5.1. Test molecules<a class="headerlink" href="#test-molecules" title="Permalink to this headline">¶</a></h2>
 <p>All examples below illustrate the usage of HiPart through the analysis of the
 electronic structure of the <a class="reference external" href="http://en.wikipedia.org/wiki/Alanine">alanine</a>
 and alanine radical in the gas phase. The structure and atom numbering are
@@ -91,7 +91,7 @@ alanine.fchk  alanine-rad.com  alanine-rad.log</pre>
 </div>
 </div>
 <div class="section" id="running-proper-gaussian-jobs">
-<h2>4.2. Running proper Gaussian jobs<a class="headerlink" href="#running-proper-gaussian-jobs" title="Permalink to this headline">¶</a></h2>
+<h2>5.2. Running proper Gaussian jobs<a class="headerlink" href="#running-proper-gaussian-jobs" title="Permalink to this headline">¶</a></h2>
 <p>In order to run a decent analysis of the wavefunction, one first needs a decent
 wavefunction to start with. Our alanine input file looks like:</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; cat alanine.com
@@ -144,7 +144,7 @@ checkpoint file, and not the post-HF density matrix.</li>
 </ul>
 </div>
 <div class="section" id="preparing-the-atomic-database">
-<h2>4.3. Preparing the atomic database<a class="headerlink" href="#preparing-the-atomic-database" title="Permalink to this headline">¶</a></h2>
+<h2>5.3. Preparing the atomic database<a class="headerlink" href="#preparing-the-atomic-database" title="Permalink to this headline">¶</a></h2>
 <p>Both the <a class="reference external" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> scheme and <a class="reference external" href="tut_theory.html#hirshfeld-i"><em>Iterative Hirshfeld</em></a> scheme rely on a
 database of pro-atoms. These are spherically averaged atomic densities obtained
 from single-atom computations. The program <tt class="docutils literal"><span class="pre">hi-atomdb.py</span></tt> generates such a
@@ -318,7 +318,7 @@ radial grids points. Densities with a value lower than 1e-100 bohr^-3 are
 omitted to save space and time.</p>
 </div>
 <div class="section" id="partitioning-tools">
-<h2>4.4. Partitioning tools<a class="headerlink" href="#partitioning-tools" title="Permalink to this headline">¶</a></h2>
+<h2>5.4. Partitioning tools<a class="headerlink" href="#partitioning-tools" title="Permalink to this headline">¶</a></h2>
 <p>All other scripts besides <tt class="docutils literal"><span class="pre">hi-atomdb.py</span></tt> have the same usage description:</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage/atoms&gt; hi-some-script.py --help
 Usage: hi-some-script.py [options] gaussian.fchk scheme [scheme parameters]
@@ -329,7 +329,7 @@ Usage: hi-some-script.py [options] gaussian.fchk scheme [scheme parameters]
 In every subsection, one of the possible partitioning schemes is used, but
 remind that each script works with all four partitioning schemes.</p>
 <div class="section" id="atomic-charges">
-<h3>4.4.1. Atomic charges<a class="headerlink" href="#atomic-charges" title="Permalink to this headline">¶</a></h3>
+<h3>5.4.1. Atomic charges<a class="headerlink" href="#atomic-charges" title="Permalink to this headline">¶</a></h3>
 <p>Effective atomic charges are computed with <tt class="docutils literal"><span class="pre">hi-charges.py</span></tt>. The online help is
 as follows:</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage/atoms&gt; cd ..
@@ -640,7 +640,7 @@ toon@poony ~/hipart/examples/001-usage&gt; hi-charges.py alanine.fchk isa</pre>
 </div>
 </div>
 <div class="section" id="atomic-dipoles">
-<h3>4.4.2. Atomic dipoles<a class="headerlink" href="#atomic-dipoles" title="Permalink to this headline">¶</a></h3>
+<h3>5.4.2. Atomic dipoles<a class="headerlink" href="#atomic-dipoles" title="Permalink to this headline">¶</a></h3>
 <p>Atomic dipoles are compute with the program <tt class="docutils literal"><span class="pre">hi-dipoles.py</span></tt>. Like most HiPart
 scripts it takes the same arguments and options as the script <tt class="docutils literal"><span class="pre">hi-charges.py</span></tt>,
 which are discussed in the previous section. The online help starts as follows:</p>
@@ -748,7 +748,7 @@ number of atoms: 13
 </div>
 </div>
 <div class="section" id="testing-charges-and-dipoles-on-the-esp-grid">
-<h3>4.4.3. Testing charges and dipoles on the ESP grid<a class="headerlink" href="#testing-charges-and-dipoles-on-the-esp-grid" title="Permalink to this headline">¶</a></h3>
+<h3>5.4.3. Testing charges and dipoles on the ESP grid<a class="headerlink" href="#testing-charges-and-dipoles-on-the-esp-grid" title="Permalink to this headline">¶</a></h3>
 <p>It is well known that some charge population schemes are better in reproducing
 the electrostatic potential around a molecule than others. <a class="reference external" href="references.html#bultinck2009">[Bultinck2009]</a> Since this
 often a desirable property, the script <tt class="docutils literal"><span class="pre">hi-esp-test.py</span></tt> can be used to verify
@@ -867,7 +867,7 @@ total molecular dipole, and (ii) the RMS value of the ESP contributions of the
 dipoles is relatively small.</p>
 </div>
 <div class="section" id="atomic-multipole-expansions">
-<h3>4.4.4. Atomic multipole expansions<a class="headerlink" href="#atomic-multipole-expansions" title="Permalink to this headline">¶</a></h3>
+<h3>5.4.4. Atomic multipole expansions<a class="headerlink" href="#atomic-multipole-expansions" title="Permalink to this headline">¶</a></h3>
 <p>The multipole expansion of each atom, up to the hexadecapole, is computed with
 the script <tt class="docutils literal"><span class="pre">hi-multipoles.py</span></tt>. This is an example with the <a class="reference external" href="tut_theory.html#isa"><em>Iterative Stockholder Analysis</em></a>:</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; hi-multipoles.py alanine.fchk isa
@@ -1198,7 +1198,7 @@ number of fields: 25
 </div>
 </div>
 <div class="section" id="net-and-overlap-populations">
-<h3>4.4.5. Net and overlap populations<a class="headerlink" href="#net-and-overlap-populations" title="Permalink to this headline">¶</a></h3>
+<h3>5.4.5. Net and overlap populations<a class="headerlink" href="#net-and-overlap-populations" title="Permalink to this headline">¶</a></h3>
 <p>Net and overlap electron populations are computed with the script
 <tt class="docutils literal"><span class="pre">hi-net-overlap.py</span></tt>. This example computes the net and overlap populations
 using the <a class="reference external" href="tut_theory.html#becke"><em>Becke</em></a> scheme:</p>
@@ -1289,7 +1289,7 @@ number of atoms: 13
 </div>
 </div>
 <div class="section" id="bond-orders-valences-and-free-valences">
-<h3>4.4.6. Bond orders, valences and free valences<a class="headerlink" href="#bond-orders-valences-and-free-valences" title="Permalink to this headline">¶</a></h3>
+<h3>5.4.6. Bond orders, valences and free valences<a class="headerlink" href="#bond-orders-valences-and-free-valences" title="Permalink to this headline">¶</a></h3>
 <p>The computation of bond orders, valences and free valences is supported for both
 SCF computations and correlated methods, either closed or open shell. We show
 the computation on the alanine radical is it has non-zero free valences. This
@@ -1397,7 +1397,7 @@ The diagonal elements are always zero. The atomic valence and free valence are
 written in the two following output files, respectively.</p>
 </div>
 <div class="section" id="spin-charges">
-<h3>4.4.7. Spin charges<a class="headerlink" href="#spin-charges" title="Permalink to this headline">¶</a></h3>
+<h3>5.4.7. Spin charges<a class="headerlink" href="#spin-charges" title="Permalink to this headline">¶</a></h3>
 <p>The computation of spin charges only makes sense in the case of open shell
 computations. The screen output must contain the line <tt class="docutils literal"><span class="pre">Spin</span> <span class="pre">density</span> <span class="pre">present:</span>
 <span class="pre">True</span></tt> in the beginning. If not, the reported spin charges are always zero.</p>
@@ -1456,7 +1456,7 @@ number of atoms: 12
 polarization by the rest of the molecule.</p>
 </div>
 <div class="section" id="atomic-overlap-matrices">
-<h3>4.4.8. Atomic overlap matrices<a class="headerlink" href="#atomic-overlap-matrices" title="Permalink to this headline">¶</a></h3>
+<h3>5.4.8. Atomic overlap matrices<a class="headerlink" href="#atomic-overlap-matrices" title="Permalink to this headline">¶</a></h3>
 <p>The atomic overlap matrices are used, amongst other things, for the computation
 of the bond orders. If you are just interested in these matrices, use the
 command <tt class="docutils literal"><span class="pre">hi-overlap-matrices.py</span></tt> or <tt class="docutils literal"><span class="pre">hi-overlap-matrices-orb.py</span></tt> to compute
@@ -1616,14 +1616,14 @@ Atom   1   O    8
 </div>
 </div>
 <div class="section" id="using-hipart-as-a-library">
-<h2>4.5. Using HiPart as a library<a class="headerlink" href="#using-hipart-as-a-library" title="Permalink to this headline">¶</a></h2>
+<h2>5.5. Using HiPart as a library<a class="headerlink" href="#using-hipart-as-a-library" title="Permalink to this headline">¶</a></h2>
 <p>Next to the command-line scripts illustrated in the previous section, HiPart can
 also be used as a library to write your own partitioning scripts. This is mostly
 useful when one has to perform rather repetitive work, or when some subsequent
 analysis is necessary. A few typical examples are shown below, although the
 possibilities are endless.</p>
 <div class="section" id="batch-processing-of-many-fchk-files">
-<h3>4.5.1. Batch processing of many fchk files<a class="headerlink" href="#batch-processing-of-many-fchk-files" title="Permalink to this headline">¶</a></h3>
+<h3>5.5.1. Batch processing of many fchk files<a class="headerlink" href="#batch-processing-of-many-fchk-files" title="Permalink to this headline">¶</a></h3>
 <p>When a large number of Gaussian files must be processed to generate a database
 of atomic partial charges, the standard HiPart command-line scripts may not be
 suitable enough. The following custom script uses the HiPart library to compute
@@ -1790,9 +1790,9 @@ XXX 12
 </div>
 </div>
 <div class="section" id="tuning-integration-grids">
-<span id="tune"></span><h3>4.5.2. Tuning integration grids<a class="headerlink" href="#tuning-integration-grids" title="Permalink to this headline">¶</a></h3>
+<span id="tune"></span><h3>5.5.2. Tuning integration grids<a class="headerlink" href="#tuning-integration-grids" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="method-1">
-<h4>4.5.2.1. Method 1<a class="headerlink" href="#method-1" title="Permalink to this headline">¶</a></h4>
+<h4>5.5.2.1. Method 1<a class="headerlink" href="#method-1" title="Permalink to this headline">¶</a></h4>
 <p>One can not know a priori which combination of radial and angular integration
 grid gives a good trade-off between accuracy of the output of interest, e.g.
 effective atomic charges, and the computational cost. The program below tests
@@ -2317,7 +2317,7 @@ procedures (<a class="reference external" href="tut_theory.html#hirshfeld-i"><em
 thresholds.</p>
 </div>
 <div class="section" id="method-2">
-<h4>4.5.2.2. Method 2<a class="headerlink" href="#method-2" title="Permalink to this headline">¶</a></h4>
+<h4>5.5.2.2. Method 2<a class="headerlink" href="#method-2" title="Permalink to this headline">¶</a></h4>
 <p>An alternative method to test the quality of the charges is to compare them with
 charges obtained with larger grids. The script
 <tt class="docutils literal"><span class="pre">examples/004-grid-tuning/tune.py</span></tt> performs such an analysis and is very
@@ -2665,26 +2665,26 @@ when a computation is done twice.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference external" href="#">4. Using HiPart</a><ul>
-<li><a class="reference external" href="#test-molecules">4.1. Test molecules</a></li>
-<li><a class="reference external" href="#running-proper-gaussian-jobs">4.2. Running proper Gaussian jobs</a></li>
-<li><a class="reference external" href="#preparing-the-atomic-database">4.3. Preparing the atomic database</a></li>
-<li><a class="reference external" href="#partitioning-tools">4.4. Partitioning tools</a><ul>
-<li><a class="reference external" href="#atomic-charges">4.4.1. Atomic charges</a></li>
-<li><a class="reference external" href="#atomic-dipoles">4.4.2. Atomic dipoles</a></li>
-<li><a class="reference external" href="#testing-charges-and-dipoles-on-the-esp-grid">4.4.3. Testing charges and dipoles on the ESP grid</a></li>
-<li><a class="reference external" href="#atomic-multipole-expansions">4.4.4. Atomic multipole expansions</a></li>
-<li><a class="reference external" href="#net-and-overlap-populations">4.4.5. Net and overlap populations</a></li>
-<li><a class="reference external" href="#bond-orders-valences-and-free-valences">4.4.6. Bond orders, valences and free valences</a></li>
-<li><a class="reference external" href="#spin-charges">4.4.7. Spin charges</a></li>
-<li><a class="reference external" href="#atomic-overlap-matrices">4.4.8. Atomic overlap matrices</a></li>
+<li><a class="reference external" href="#">5. Using HiPart</a><ul>
+<li><a class="reference external" href="#test-molecules">5.1. Test molecules</a></li>
+<li><a class="reference external" href="#running-proper-gaussian-jobs">5.2. Running proper Gaussian jobs</a></li>
+<li><a class="reference external" href="#preparing-the-atomic-database">5.3. Preparing the atomic database</a></li>
+<li><a class="reference external" href="#partitioning-tools">5.4. Partitioning tools</a><ul>
+<li><a class="reference external" href="#atomic-charges">5.4.1. Atomic charges</a></li>
+<li><a class="reference external" href="#atomic-dipoles">5.4.2. Atomic dipoles</a></li>
+<li><a class="reference external" href="#testing-charges-and-dipoles-on-the-esp-grid">5.4.3. Testing charges and dipoles on the ESP grid</a></li>
+<li><a class="reference external" href="#atomic-multipole-expansions">5.4.4. Atomic multipole expansions</a></li>
+<li><a class="reference external" href="#net-and-overlap-populations">5.4.5. Net and overlap populations</a></li>
+<li><a class="reference external" href="#bond-orders-valences-and-free-valences">5.4.6. Bond orders, valences and free valences</a></li>
+<li><a class="reference external" href="#spin-charges">5.4.7. Spin charges</a></li>
+<li><a class="reference external" href="#atomic-overlap-matrices">5.4.8. Atomic overlap matrices</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#using-hipart-as-a-library">4.5. Using HiPart as a library</a><ul>
-<li><a class="reference external" href="#batch-processing-of-many-fchk-files">4.5.1. Batch processing of many fchk files</a></li>
-<li><a class="reference external" href="#tuning-integration-grids">4.5.2. Tuning integration grids</a><ul>
-<li><a class="reference external" href="#method-1">4.5.2.1. Method 1</a></li>
-<li><a class="reference external" href="#method-2">4.5.2.2. Method 2</a></li>
+<li><a class="reference external" href="#using-hipart-as-a-library">5.5. Using HiPart as a library</a><ul>
+<li><a class="reference external" href="#batch-processing-of-many-fchk-files">5.5.1. Batch processing of many fchk files</a></li>
+<li><a class="reference external" href="#tuning-integration-grids">5.5.2. Tuning integration grids</a><ul>
+<li><a class="reference external" href="#method-1">5.5.2.1. Method 1</a></li>
+<li><a class="reference external" href="#method-2">5.5.2.2. Method 2</a></li>
 </ul>
 </li>
 </ul>
@@ -2695,7 +2695,7 @@ when a computation is done twice.</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="tut_theory.html"
-                        title="previous chapter">3. Theoretical background</a></p>
+                        title="previous chapter">4. Theoretical background</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="ref_hipart.html"
                         title="next chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">hipart</span></tt> &#8212; Fuzzy atom partitioning</a></p>
@@ -2734,7 +2734,7 @@ when a computation is done twice.</p>
           <a href="ref_hipart.html" title="hipart — Fuzzy atom partitioning"
              >next</a> |</li>
         <li class="right" >
-          <a href="tut_theory.html" title="3. Theoretical background"
+          <a href="tut_theory.html" title="4. Theoretical background"
              >previous</a> |</li>
         <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
       </ul>

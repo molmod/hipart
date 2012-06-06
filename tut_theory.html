@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. Theoretical background &mdash; HiPart v0.0 documentation</title>
+    <title>4. Theoretical background &mdash; HiPart v0.0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -22,8 +22,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="HiPart v0.0 documentation" href="index.html" />
-    <link rel="next" title="4. Using HiPart" href="tut_usage.html" />
-    <link rel="prev" title="2. If you encounter a problem" href="tut_support.html" /> 
+    <link rel="next" title="5. Using HiPart" href="tut_usage.html" />
+    <link rel="prev" title="3. How to cite HiPart" href="tut_cite.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,10 +36,10 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="tut_usage.html" title="4. Using HiPart"
+          <a href="tut_usage.html" title="5. Using HiPart"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="tut_support.html" title="2. If you encounter a problem"
+          <a href="tut_cite.html" title="3. How to cite HiPart"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
       </ul>
@@ -51,7 +51,7 @@
           <div class="body">
             
   <div class="section" id="theoretical-background">
-<span id="theory"></span><h1>3. Theoretical background<a class="headerlink" href="#theoretical-background" title="Permalink to this headline">¶</a></h1>
+<span id="theory"></span><h1>4. Theoretical background<a class="headerlink" href="#theoretical-background" title="Permalink to this headline">¶</a></h1>
 <p>The summary below is just a description of the methods implemented in HiPart. It
 is highly recommended to read the cited papers for a more extensive discussion.</p>
 <p>The first section discusses four different schemes to define fuzzy atoms:
@@ -59,7 +59,7 @@ is highly recommended to read the cited papers for a more extensive discussion.<
 sections give an overview of the quantities that can be derived with HiPart once
 fuzzy atoms (i.e. atomic weight functions) are defined.</p>
 <div class="section" id="fuzzy-atom-partitioning">
-<h2>3.1. Fuzzy atom partitioning<a class="headerlink" href="#fuzzy-atom-partitioning" title="Permalink to this headline">¶</a></h2>
+<h2>4.1. Fuzzy atom partitioning<a class="headerlink" href="#fuzzy-atom-partitioning" title="Permalink to this headline">¶</a></h2>
 <p>One way to partition the molecular density,
 <img class="math" src="_images/math/d559b67a20a325b6c504d48a79e8ff5163ce798c.png" alt="\rho_{\text{mol}}(\mathbf{r})"/>, into atomic contributions is to define a
 weight function, <img class="math" src="_images/math/0530170c8bf0733f7a1fd956bb4f91ad1a4aeea5.png" alt="w_A(\mathbf{r})"/>, for every atom <img class="math" src="_images/math/019e9892786e493964e145e7c5cf7b700314e53b.png" alt="A"/> in the
@@ -89,7 +89,7 @@ functions as follows:</p>
 definition of the weight function always satisfies condition <a href="#equation-completeness">(1)</a>
 for a broad class of pro-atomic functions.</p>
 <div class="section" id="becke">
-<span id="id1"></span><h3>3.1.1. Becke<a class="headerlink" href="#becke" title="Permalink to this headline">¶</a></h3>
+<span id="id1"></span><h3>4.1.1. Becke<a class="headerlink" href="#becke" title="Permalink to this headline">¶</a></h3>
 <p>Becke <a class="reference external" href="references.html#becke1988">[Becke1988]</a> proposed a partitioning scheme that was in the first place
 meant as an auxiliary tool to divide an integral over the entire molecular
 volume into a sum of atomic integrals. Each atomic integral is evaluated on a
@@ -159,7 +159,7 @@ smaller than 0.45 to suppress pristine behavior. The covalent radii for HiPart
 are taken from <a class="reference external" href="references.html#cordero2008">[Cordero2008]</a>.</p>
 </div>
 <div class="section" id="hirshfeld">
-<span id="id4"></span><h3>3.1.2. Hirshfeld<a class="headerlink" href="#hirshfeld" title="Permalink to this headline">¶</a></h3>
+<span id="id4"></span><h3>4.1.2. Hirshfeld<a class="headerlink" href="#hirshfeld" title="Permalink to this headline">¶</a></h3>
 <p>Hirshfeld <a class="reference external" href="references.html#hirshfeld1977">[Hirshfeld1977]</a> proposed a partitioning scheme where pro-atomic
 densities are derived from computations on neutral atoms by simply averaging the
 atomic density over the angular degrees of freedom,</p>
@@ -172,7 +172,7 @@ interest. For the sake of consistency, this needs to be carried out with the sam
 level of theory (and basis set) that is used for the molecular computation.</p>
 </div>
 <div class="section" id="iterative-hirshfeld">
-<span id="hirshfeld-i"></span><h3>3.1.3. Iterative Hirshfeld<a class="headerlink" href="#iterative-hirshfeld" title="Permalink to this headline">¶</a></h3>
+<span id="hirshfeld-i"></span><h3>4.1.3. Iterative Hirshfeld<a class="headerlink" href="#iterative-hirshfeld" title="Permalink to this headline">¶</a></h3>
 <p>The choice of neutral pro-atoms in the standard Hirshfeld scheme is somewhat
 arbitrary. The Iterative Hirshfeld scheme <a class="reference external" href="references.html#bultinck2007">[Bultinck2007]</a> is an extension of the
 original method, where one seeks for pro-atomic densities that have the same
@@ -202,7 +202,7 @@ scrutiny. For each element one must compute different charge states.</p>
 <p>This scheme is also referred to as <cite>Hirshfeld-I</cite>.</p>
 </div>
 <div class="section" id="iterative-stockholder-analysis">
-<span id="isa"></span><h3>3.1.4. Iterative Stockholder Analysis<a class="headerlink" href="#iterative-stockholder-analysis" title="Permalink to this headline">¶</a></h3>
+<span id="isa"></span><h3>4.1.4. Iterative Stockholder Analysis<a class="headerlink" href="#iterative-stockholder-analysis" title="Permalink to this headline">¶</a></h3>
 <p>The ISA scheme is another extension to the original Hirshfeld method where one
 tries to construct spherically symatric pro-atoms that are as similar as
 possible to the atomic partitions in the molecule. <a class="reference external" href="references.html#lillestolen2008">[Lillestolen2008]</a></p>
@@ -222,7 +222,7 @@ scheme does not depend on a database of atomic densities.</p>
 </div>
 </div>
 <div class="section" id="atomic-properties-derived-from-the-density">
-<h2>3.2. Atomic properties derived from the density<a class="headerlink" href="#atomic-properties-derived-from-the-density" title="Permalink to this headline">¶</a></h2>
+<h2>4.2. Atomic properties derived from the density<a class="headerlink" href="#atomic-properties-derived-from-the-density" title="Permalink to this headline">¶</a></h2>
 <p>In this section we discuss the properties derived from the atomic electron
 densities:</p>
 <div class="math">
@@ -239,7 +239,7 @@ the molecular density is then computed as follows:</p>
 <p><img src="_images/math/7f24bcd4fe34cf22790bc7cfd86628eb21ae90dd.png" alt="\rho_{\text{mol}}(\mathbf{r}) = (f(\mathbf{r}))^T D f(\mathbf{r})," /></p>
 </div><p>where <img class="math" src="_images/math/9ffb448918db29f2a72f8f87f421b3b3cad18f95.png" alt="D"/> is the density matrix.</p>
 <div class="section" id="charges-dipoles-multipoles">
-<h3>3.2.1. Charges, Dipoles &amp; Multipoles<a class="headerlink" href="#charges-dipoles-multipoles" title="Permalink to this headline">¶</a></h3>
+<h3>4.2.1. Charges, Dipoles &amp; Multipoles<a class="headerlink" href="#charges-dipoles-multipoles" title="Permalink to this headline">¶</a></h3>
 <p>The multipole expansion of an atomic density with respect to its nucleus is
 defined as follows:</p>
 <div class="math" id="equation-multipole">
@@ -359,7 +359,7 @@ the nuclear charge, one obtains the <cite>effective</cite> atomic charge. The su
 three rows correspond to the components of the atomic dipole, and so on.</p>
 </div>
 <div class="section" id="net-and-overlap-populations">
-<h3>3.2.2. Net and overlap populations<a class="headerlink" href="#net-and-overlap-populations" title="Permalink to this headline">¶</a></h3>
+<h3>4.2.2. Net and overlap populations<a class="headerlink" href="#net-and-overlap-populations" title="Permalink to this headline">¶</a></h3>
 <p>The net and overlap populations are obtained by inserting the weight function
 twice in the integral over the molecular density:</p>
 <div class="math">
@@ -378,7 +378,7 @@ populations.</p>
 </div>
 </div>
 <div class="section" id="atomic-properties-derived-from-the-spin-density">
-<h2>3.3. Atomic properties derived from the spin density<a class="headerlink" href="#atomic-properties-derived-from-the-spin-density" title="Permalink to this headline">¶</a></h2>
+<h2>4.3. Atomic properties derived from the spin density<a class="headerlink" href="#atomic-properties-derived-from-the-spin-density" title="Permalink to this headline">¶</a></h2>
 <p>In this section we discuss the properties derived from the atomic spin
 densities:</p>
 <div class="math">
@@ -401,7 +401,7 @@ matrix, <img class="math" src="_images/math/03ad96cf05e84e1bafe8f290361b47e6a8da
 
 D = D^{\alpha} + D^{\beta}" /></p>
 </div><div class="section" id="spin-charges">
-<h3>3.3.1. Spin charges<a class="headerlink" href="#spin-charges" title="Permalink to this headline">¶</a></h3>
+<h3>4.3.1. Spin charges<a class="headerlink" href="#spin-charges" title="Permalink to this headline">¶</a></h3>
 <p>The spin charges are the atomic populations derived from the molecular spin
 density.</p>
 <div class="math">
@@ -409,7 +409,7 @@ density.</p>
 </div></div>
 </div>
 <div class="section" id="atomic-overlap-matrices-in-the-basis-of-contracted-gaussians">
-<h2>3.4. Atomic overlap matrices (in the basis of contracted Gaussians)<a class="headerlink" href="#atomic-overlap-matrices-in-the-basis-of-contracted-gaussians" title="Permalink to this headline">¶</a></h2>
+<h2>4.4. Atomic overlap matrices (in the basis of contracted Gaussians)<a class="headerlink" href="#atomic-overlap-matrices-in-the-basis-of-contracted-gaussians" title="Permalink to this headline">¶</a></h2>
 <p>The atomic overlap matrices do not depend on the density or density matrix, but
 only depend on the basis functions used to describe the wavefunction. The
 conventional overlap matrix is defined as follows:</p>
@@ -431,14 +431,14 @@ matrix and the overlap matrix:</p>
 <p><img src="_images/math/bac31549f0cfd547ce0bd46416b64ee81d2c429a.png" alt="N^{\text{spin}}_A = \mathrm{Tr} (D^{\text{spin}} S^A)" /></p>
 </div></div>
 <div class="section" id="atomic-properties-derived-from-the-density-matrix">
-<h2>3.5. Atomic properties derived from the density matrix<a class="headerlink" href="#atomic-properties-derived-from-the-density-matrix" title="Permalink to this headline">¶</a></h2>
+<h2>4.5. Atomic properties derived from the density matrix<a class="headerlink" href="#atomic-properties-derived-from-the-density-matrix" title="Permalink to this headline">¶</a></h2>
 <p>All properties discussed in the previous sections can be written as an integral
 over the electron (spin) density multiplied by a (weight) function.
 Alternatively one can also go back to the matrix <img class="math" src="_images/math/046afa5aca7a44711ff1c91c2345c3309c069a98.png" alt="(D S^A)"/> and manipulate
 this object before taking the trace. This allows use to derive new quantities
 that are not simple written as a function of the electron density.</p>
 <div class="section" id="bond-orders-and-atomic-valences">
-<h3>3.5.1. Bond orders and atomic valences<a class="headerlink" href="#bond-orders-and-atomic-valences" title="Permalink to this headline">¶</a></h3>
+<h3>4.5.1. Bond orders and atomic valences<a class="headerlink" href="#bond-orders-and-atomic-valences" title="Permalink to this headline">¶</a></h3>
 <p>One defines the bond order, valence and free valence, in the fuzzy atom
 framework as follows:</p>
 <div class="math">
@@ -453,7 +453,7 @@ concepts.</p>
 </div>
 </div>
 <div class="section" id="atomic-overlap-matrices-in-the-basis-of-the-orbitals">
-<h2>3.6. Atomic overlap matrices (in the basis of the orbitals)<a class="headerlink" href="#atomic-overlap-matrices-in-the-basis-of-the-orbitals" title="Permalink to this headline">¶</a></h2>
+<h2>4.6. Atomic overlap matrices (in the basis of the orbitals)<a class="headerlink" href="#atomic-overlap-matrices-in-the-basis-of-the-orbitals" title="Permalink to this headline">¶</a></h2>
 <p>The overlap matrix can also be computed in the basis of the orbitals. Because
 the orbitals are an orthogonal basis, the conventional overlap matrix</p>
 <div class="math">
@@ -467,7 +467,7 @@ inserting the atomic weight functions into the integral:</p>
 different basis.</p>
 </div>
 <div class="section" id="electrostatic-potential-esp-fitting">
-<span id="esp"></span><h2>3.7. Electrostatic Potential (ESP) Fitting<a class="headerlink" href="#electrostatic-potential-esp-fitting" title="Permalink to this headline">¶</a></h2>
+<span id="esp"></span><h2>4.7. Electrostatic Potential (ESP) Fitting<a class="headerlink" href="#electrostatic-potential-esp-fitting" title="Permalink to this headline">¶</a></h2>
 <p>In this section we will refer to electrostatic potential generated by the
 electron density and the nuclei as the full ESP, or <img class="math" src="_images/math/3477a4cbf85f13bbd9cf39d531e316bd19f3ff8b.png" alt="V_{\text{full}}"/>.</p>
 <p>ESP fitting is a procedure where the amplitudes of point monopoles at the
@@ -530,40 +530,40 @@ grid points where the electron density is lower than 10e−5 a.u.</em></blockquo
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference external" href="#">3. Theoretical background</a><ul>
-<li><a class="reference external" href="#fuzzy-atom-partitioning">3.1. Fuzzy atom partitioning</a><ul>
-<li><a class="reference external" href="#becke">3.1.1. Becke</a></li>
-<li><a class="reference external" href="#hirshfeld">3.1.2. Hirshfeld</a></li>
-<li><a class="reference external" href="#iterative-hirshfeld">3.1.3. Iterative Hirshfeld</a></li>
-<li><a class="reference external" href="#iterative-stockholder-analysis">3.1.4. Iterative Stockholder Analysis</a></li>
+<li><a class="reference external" href="#">4. Theoretical background</a><ul>
+<li><a class="reference external" href="#fuzzy-atom-partitioning">4.1. Fuzzy atom partitioning</a><ul>
+<li><a class="reference external" href="#becke">4.1.1. Becke</a></li>
+<li><a class="reference external" href="#hirshfeld">4.1.2. Hirshfeld</a></li>
+<li><a class="reference external" href="#iterative-hirshfeld">4.1.3. Iterative Hirshfeld</a></li>
+<li><a class="reference external" href="#iterative-stockholder-analysis">4.1.4. Iterative Stockholder Analysis</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#atomic-properties-derived-from-the-density">3.2. Atomic properties derived from the density</a><ul>
-<li><a class="reference external" href="#charges-dipoles-multipoles">3.2.1. Charges, Dipoles &amp; Multipoles</a></li>
-<li><a class="reference external" href="#net-and-overlap-populations">3.2.2. Net and overlap populations</a></li>
+<li><a class="reference external" href="#atomic-properties-derived-from-the-density">4.2. Atomic properties derived from the density</a><ul>
+<li><a class="reference external" href="#charges-dipoles-multipoles">4.2.1. Charges, Dipoles &amp; Multipoles</a></li>
+<li><a class="reference external" href="#net-and-overlap-populations">4.2.2. Net and overlap populations</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#atomic-properties-derived-from-the-spin-density">3.3. Atomic properties derived from the spin density</a><ul>
-<li><a class="reference external" href="#spin-charges">3.3.1. Spin charges</a></li>
+<li><a class="reference external" href="#atomic-properties-derived-from-the-spin-density">4.3. Atomic properties derived from the spin density</a><ul>
+<li><a class="reference external" href="#spin-charges">4.3.1. Spin charges</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#atomic-overlap-matrices-in-the-basis-of-contracted-gaussians">3.4. Atomic overlap matrices (in the basis of contracted Gaussians)</a></li>
-<li><a class="reference external" href="#atomic-properties-derived-from-the-density-matrix">3.5. Atomic properties derived from the density matrix</a><ul>
-<li><a class="reference external" href="#bond-orders-and-atomic-valences">3.5.1. Bond orders and atomic valences</a></li>
+<li><a class="reference external" href="#atomic-overlap-matrices-in-the-basis-of-contracted-gaussians">4.4. Atomic overlap matrices (in the basis of contracted Gaussians)</a></li>
+<li><a class="reference external" href="#atomic-properties-derived-from-the-density-matrix">4.5. Atomic properties derived from the density matrix</a><ul>
+<li><a class="reference external" href="#bond-orders-and-atomic-valences">4.5.1. Bond orders and atomic valences</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#atomic-overlap-matrices-in-the-basis-of-the-orbitals">3.6. Atomic overlap matrices (in the basis of the orbitals)</a></li>
-<li><a class="reference external" href="#electrostatic-potential-esp-fitting">3.7. Electrostatic Potential (ESP) Fitting</a></li>
+<li><a class="reference external" href="#atomic-overlap-matrices-in-the-basis-of-the-orbitals">4.6. Atomic overlap matrices (in the basis of the orbitals)</a></li>
+<li><a class="reference external" href="#electrostatic-potential-esp-fitting">4.7. Electrostatic Potential (ESP) Fitting</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="tut_support.html"
-                        title="previous chapter">2. If you encounter a problem</a></p>
+  <p class="topless"><a href="tut_cite.html"
+                        title="previous chapter">3. How to cite HiPart</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="tut_usage.html"
-                        title="next chapter">4. Using HiPart</a></p>
+                        title="next chapter">5. Using HiPart</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/tut_theory.txt"
@@ -596,10 +596,10 @@ grid points where the electron density is lower than 10e−5 a.u.</em></blockquo
           <a href="modindex.html" title="Global Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tut_usage.html" title="4. Using HiPart"
+          <a href="tut_usage.html" title="5. Using HiPart"
              >next</a> |</li>
         <li class="right" >
-          <a href="tut_support.html" title="2. If you encounter a problem"
+          <a href="tut_cite.html" title="3. How to cite HiPart"
              >previous</a> |</li>
         <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
       </ul>

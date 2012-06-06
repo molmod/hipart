@@ -172,36 +172,28 @@ previous install, then execute the following commands (in the same directory):</
 </div>
 <div class="section" id="testing-your-installation">
 <h2>1.7. Testing your installation<a class="headerlink" href="#testing-your-installation" title="Permalink to this headline">¶</a></h2>
-<p>For the development and testing one needs to install three additional packages:</p>
-<blockquote>
+<p>For the development and testing one needs to install these additional packages:</p>
 <ul class="simple">
-<li>Python 2.6 or 2.7 (including the header files): <a class="reference external" href="http://www.python.org/doc/">http://www.python.org/doc/</a></li>
-<li>Nosetests: <a class="reference external" href="http://somethingaboutorange.com/mrl/projects/nose/0.11.2/">http://somethingaboutorange.com/mrl/projects/nose/0.11.2/</a></li>
-<li>Sympy, at least 0.6.7: <a class="reference external" href="http://www.sympy.org/">http://www.sympy.org/</a></li>
-<li>Sphinx: <a class="reference external" href="http://sphinx.pocoo.org/">http://sphinx.pocoo.org/</a></li>
+<li>Nosetests &gt;= 0.11: <a class="reference external" href="http://somethingaboutorange.com/mrl/projects/nose/0.11.2/">http://somethingaboutorange.com/mrl/projects/nose/0.11.2/</a></li>
+<li>Sympy &gt;= 0.7: <a class="reference external" href="http://www.sympy.org/">http://www.sympy.org/</a></li>
+<li>Sphinx &gt;= 1.0: <a class="reference external" href="http://sphinx.pocoo.org/">http://sphinx.pocoo.org/</a></li>
 <li>Scipy: <a class="reference external" href="http://www.scipy.org/">http://www.scipy.org/</a></li>
 </ul>
-</blockquote>
-<p>Most Linux distributions can install this software, except a recent version of
-Sympy, with just a single command on the command line by the administrator. The
-other packages are installed as follows:</p>
+<p>New Linux distributions can install this software with just a single terminal command:</p>
 <ul>
-<li><p class="first">Ubuntu 10.4:</p>
-<div class="highlight-python"><pre>sudo apt-get install python-nose python-sphinx python-scipy</pre>
+<li><p class="first">Ubuntu 12.4:</p>
+<div class="highlight-python"><pre>sudo apt-get install python-nose python-sphinx python-scipy python-sympy</pre>
 </div>
 </li>
 <li><p class="first">Debian 5 does not have Python 2.6. Hipart does work on Debian 5, but some of
 the development tools will not work and some tests do not run.</p>
 <div class="highlight-python"><pre>su -
-apt-get install python-nose python-sphinx python-scipy
+apt-get install python-nose python-sphinx python-scipy python-sympy
 exit</pre>
 </div>
 </li>
-<li><p class="first">Fedora 12 and 13. You first have to become root because the sudo program is
-not configured by default.</p>
-<div class="highlight-python"><pre>su -
-pkcon install python-nose sphinx scipy
-exit</pre>
+<li><p class="first">Fedora 17:</p>
+<div class="highlight-python"><pre>sudo yum install python-nose sphinx scipy sympy</pre>
 </div>
 </li>
 <li><p class="first">Suse 11.2. One needs to add a repository, but a recent Sympy is already present:</p>

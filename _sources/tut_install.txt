@@ -139,35 +139,29 @@ previous install, then execute the following commands (in the same directory)::
 Testing your installation
 =========================
 
-For the development and testing one needs to install three additional packages:
+For the development and testing one needs to install these additional packages:
 
- * Python 2.6 or 2.7 (including the header files): http://www.python.org/doc/
- * Nosetests: http://somethingaboutorange.com/mrl/projects/nose/0.11.2/
- * Sympy, at least 0.6.7: http://www.sympy.org/
- * Sphinx: http://sphinx.pocoo.org/
- * Scipy: http://www.scipy.org/
+* Nosetests >= 0.11: http://somethingaboutorange.com/mrl/projects/nose/0.11.2/
+* Sympy >= 0.7: http://www.sympy.org/
+* Sphinx >= 1.0: http://sphinx.pocoo.org/
+* Scipy: http://www.scipy.org/
 
-Most Linux distributions can install this software, except a recent version of
-Sympy, with just a single command on the command line by the administrator. The
-other packages are installed as follows:
+New Linux distributions can install this software with just a single terminal command:
 
-* Ubuntu 10.4::
+* Ubuntu 12.4::
 
-    sudo apt-get install python-nose python-sphinx python-scipy
+    sudo apt-get install python-nose python-sphinx python-scipy python-sympy
 
 * Debian 5 does not have Python 2.6. Hipart does work on Debian 5, but some of
   the development tools will not work and some tests do not run. ::
 
     su -
-    apt-get install python-nose python-sphinx python-scipy
+    apt-get install python-nose python-sphinx python-scipy python-sympy
     exit
 
-* Fedora 12 and 13. You first have to become root because the sudo program is
-  not configured by default. ::
+* Fedora 17::
 
-    su -
-    pkcon install python-nose sphinx scipy
-    exit
+    sudo yum install python-nose sphinx scipy sympy
 
 * Suse 11.2. One needs to add a repository, but a recent Sympy is already present::
 
