@@ -1,0 +1,612 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. Theoretical background &mdash; HiPart v0.0 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="HiPart v0.0 documentation" href="index.html" />
+    <link rel="next" title="3. Using HiPart" href="tut_usage.html" />
+    <link rel="prev" title="1. Installation" href="tut_install.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="tut_usage.html" title="3. Using HiPart"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tut_install.html" title="1. Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="theoretical-background">
+<span id="theory"></span><h1>2. Theoretical background<a class="headerlink" href="#theoretical-background" title="Permalink to this headline">¶</a></h1>
+<p>The summary below is just a description of the methods implemented in HiPart. It
+is highly recommended to read the cited papers for a more extensive discussion.</p>
+<p>The first section discusses four different schemes to define fuzzy atoms:
+<a class="reference internal" href="#becke"><em>Becke</em></a>, <a class="reference internal" href="#hirshfeld"><em>Hirshfeld</em></a>, <a class="reference internal" href="#hirshfeld-i"><em>Iterative Hirshfeld</em></a>, <a class="reference internal" href="#isa"><em>Iterative Stockholder Analysis</em></a>. All subsequent
+sections give an overview of the quantities that can be derived with HiPart once
+fuzzy atoms (i.e. atomic weight functions) are defined.</p>
+<div class="section" id="fuzzy-atom-partitioning">
+<h2>2.1. Fuzzy atom partitioning<a class="headerlink" href="#fuzzy-atom-partitioning" title="Permalink to this headline">¶</a></h2>
+<p>One way to partition the molecular density,
+<img class="math" src="images/math/d559b67a20a325b6c504d48a79e8ff5163ce798c.png" alt="\rho_{\text{mol}}(\mathbf{r})"/>, into atomic contributions is to define a
+weight function, <img class="math" src="images/math/0530170c8bf0733f7a1fd956bb4f91ad1a4aeea5.png" alt="w_A(\mathbf{r})"/>, for every atom <img class="math" src="images/math/019e9892786e493964e145e7c5cf7b700314e53b.png" alt="A"/> in the
+molecule. The function value is in the range <img class="math" src="images/math/e861e10e1c19918756b9c8b7717684593c63aeb8.png" alt="[0,1]"/>. The atomic denisty
+is then defined as</p>
+<div class="math">
+<p><img src="images/math/78adb8afbddc13e7f2b5fc4eb4e74355aa742758.png" alt="\rho_A(\mathbf{r}) = w_A(\mathbf{r})\rho_{\text{mol}}(\mathbf{r})" /></p>
+</div><p>The weight functions must satisfy the condition</p>
+<div class="math" id="equation-completeness">
+<p><span class="eqno">(1)</span><img src="images/math/3214fec3a5c6edcedffe0c9cfb53cb457d9d0c6b.png" alt="\sum_{A=1}^N w_A(\mathbf{r}) = 1, ~~ \forall \mathbf{r} \in \mathbb{R}^3," /></p>
+</div><p>where N is the number of atoms, to guarantee that the sum of the atomic
+densities gives back the molecular density. There are two classes of weight
+functions, one where the weight functions are binary functions with only 0 or 1
+as possible function values, and the fuzzy weight functions where all
+intermediate values are also allowed. One can think of binary weight functions
+as a means to divide the entire molecular volume into mutually exclusive atomic
+regions. The resulting atomic densities are completely non-overlapping. The
+fuzzy weights lead to atoms that have overlapping densities. All partitioning
+methods in HiPart are fuzzy-atom partitioning methods.</p>
+<p>It is common practice to introduce for each atom a so-called pro-atomic
+function, <img class="math" src="images/math/87376b74278299f6248196aaf8222ea029bc1792.png" alt="\rho_A^{\text{pro}}(\mathbf{r})"/>, as an auxiliary tool to define the
+actual weight functions. The weight functions are derived from the pro-atomic
+functions as follows:</p>
+<div class="math">
+<p><img src="images/math/4cfc07cf5562ddaaf98715259efa111372b51739.png" alt="w_A(\mathbf{r}) = \frac{\rho_A^{\text{pro}}(\mathbf{r})}{\sum_{B=1}^N \rho_B^{\text{pro}}(\mathbf{r})}" /></p>
+</div><p>The denominator in this expression is called the pro-molecular density. This
+definition of the weight function always satisfies condition <a href="#equation-completeness">(1)</a>
+for a broad class of pro-atomic functions.</p>
+<div class="section" id="becke">
+<span id="id1"></span><h3>2.1.1. Becke<a class="headerlink" href="#becke" title="Permalink to this headline">¶</a></h3>
+<p>Becke <a class="reference external" href="references.html#becke1988">[Becke1988]</a> proposed a partitioning scheme that was in the first place
+meant as an auxiliary tool to divide an integral over the entire molecular
+volume into a sum of atomic integrals. Each atomic integral is evaluated on a
+spherical grid using numerical techniques. This is far more convenient than
+constructing a global molecular integration grid.</p>
+<p>The Becke weights are designed to be mathematically as simple as possible, only
+using simple polynomials of distances between atoms and grid points. Becke
+introduces so called atomic cell functions, <img class="math" src="images/math/97e1c663c8f574ece746732b91e7a72a5a5a67fb.png" alt="P_A(\mathbf{r})"/>, which play
+exactly the same role as the pro-atomic function. The weights are derived from
+the cell functions as follows:</p>
+<div class="math">
+<p><img src="images/math/290286310037cde77a26ed1d176527aeffb59b7a.png" alt="w_A(\mathbf{r}) = \frac{P_A(\mathbf{r})}{\sum_{B=1}^N P_B(\mathbf{r})}" /></p>
+</div><p>Each cell function is the product of a series of switching functions
+<img class="math" src="images/math/c5fa71265769851a419fdcd3349ec61ad3851db9.png" alt="s_{AB}(\mathbf{r})"/>:</p>
+<div class="math">
+<p><img src="images/math/695c4c660af720fa775a891d7d9c8bdd3496c86d.png" alt="P_A(\mathbf{r}) = \prod_{B\neq A} s_{AB}(\mathbf{r})" /></p>
+</div><p>The switching function goes smoothly from 1 to 0 as one moves from atom
+<img class="math" src="images/math/019e9892786e493964e145e7c5cf7b700314e53b.png" alt="A"/> to atom <img class="math" src="images/math/ff5fb3d775862e2123b007eb4373ff6cc1a34d4e.png" alt="B"/>. The gradient of the switching function becomes zero
+in the vicinity of the nuclei. Now it is only a matter of constructing a simple
+switching function to complete the partitioning method.</p>
+<p>Becke proposed the following approach. He starts from one of the elliptical
+coordinates:</p>
+<div class="math">
+<p><img src="images/math/7f5a057912b3585b8f0f61b3f6beb18f7009317a.png" alt="\mu_{AB}(\mathbf{r}) = \frac{|\mathbf{r}_A - \mathbf{r}| - |\mathbf{r}_B - \mathbf{r}|}{|\mathbf{r}_B - \mathbf{r}_A|}," /></p>
+</div><p>where <img class="math" src="images/math/9633118ce2557302a8d664d25031feaabafa678c.png" alt="\mathbf{r}_A"/> is the position of atom <img class="math" src="images/math/019e9892786e493964e145e7c5cf7b700314e53b.png" alt="A"/> and
+<img class="math" src="images/math/d61ef88fd0d9c97576f55b99d52d8af3b6e09280.png" alt="\mathbf{r}_B"/> is the position of atom <img class="math" src="images/math/ff5fb3d775862e2123b007eb4373ff6cc1a34d4e.png" alt="B"/>. This coordinate is -1 at
+the position of atom <img class="math" src="images/math/019e9892786e493964e145e7c5cf7b700314e53b.png" alt="A"/> and +1 at the position of atom <img class="math" src="images/math/ff5fb3d775862e2123b007eb4373ff6cc1a34d4e.png" alt="B"/>. Then he
+introduces the functions <img class="math" src="images/math/03aefd25c4991f8850133c03dffd3fb1701ec1e2.png" alt="f_k"/> as follows:</p>
+<div class="math">
+<p><img src="images/math/d967aad682cee5dfc6d2f8b66cdbffe839b1b4eb.png" alt="f_1(x) = \frac{x}{2}(3-x^2)
+
+f_k(x) = f_1(f_{k-1}(x))" /></p>
+</div><p>The nice property of these functions <img class="math" src="images/math/03aefd25c4991f8850133c03dffd3fb1701ec1e2.png" alt="f_k"/> is that <img class="math" src="images/math/412d9e38a45824965c47b03fc02a306d3699e083.png" alt="f_k(\mu_{AB})"/>
+is -1 and +1 at the respective nuclei and that the gradient of this function
+becomes zero in the vicinity of the nuclei. A simple transformation of the
+function <img class="math" src="images/math/bf546afa0f53af4bfa4073696f82eef753b79edd.png" alt="f_3"/> is used to define the switching function.</p>
+<div class="math">
+<p><img src="images/math/ac749b8f25cc56d972832f138ab3011d2d22c4f4.png" alt="s_{AB}(\mathbf{r}) = \frac{1}{2}(1-f_3(\mu_{AB}(\mathbf{r})))" /></p>
+</div><p>The choice of iteration order, <img class="math" src="images/math/8c325612684d41304b9751c175df7bcc0f61f64f.png" alt="k"/>, is somewhat arbitrary, but Becke
+experienced that 3 was a good trade-off between the sphericity of the atomic
+densities (to limit the density of the integration grids) and the locality of
+the atomic densities (to limit the extent of the integration grids).</p>
+<p>The above definition of the switching functions (and hence weight functions) is
+suitable for homonuclear systems. However, for heteronuclear functions it is
+desirable to transform the elliptical coordinate, <img class="math" src="images/math/7d91e342b27322445e64b2ab96b40265a9bc7adf.png" alt="\mu_{AB}"/>, such that it
+crosses zero around the point where the density in the bond region has a
+saddle point. Becke proposes the following transformation:</p>
+<div class="math" id="equation-transform_hetero">
+<p><span class="eqno">(2)</span><img src="images/math/f66d1ee4557c43e8a38fa2fd3c3bb9a7b341eb4b.png" alt="\nu_{AB} = \mu_{AB} + a_{AB}(1 - \mu_{AB}^2)
+
+s_{AB,\text{het}}(\mu_{AB}) = s_{AB}(\nu_{AB})" /></p>
+</div><p>The parameter <img class="math" src="images/math/bbccbd22915432783663d708a004f52bb6a04aaf.png" alt="a_{AB}"/> controls the position between atoms <img class="math" src="images/math/019e9892786e493964e145e7c5cf7b700314e53b.png" alt="A"/> and
+<img class="math" src="images/math/ff5fb3d775862e2123b007eb4373ff6cc1a34d4e.png" alt="B"/> where <img class="math" src="images/math/9cbd632ff335d9cc2578b32393803cc453b4ac34.png" alt="\nu_{AB}"/> goes through zero, and can be used to tune
+the size of the basins defined by the weight functions. Based on the covalent
+bond radii, <img class="math" src="images/math/12086d73488875e993e0c46fb8b7037c77ac9423.png" alt="R_A"/> and <img class="math" src="images/math/517782adad3048607d27ff0a5e45d9fb9d3326ac.png" alt="R_B"/>, Becke defines</p>
+<div class="math">
+<p><img src="images/math/1484cd46f1882b048de6f8f3e0c78e598cc06a91.png" alt="u_{AB} = \frac{R_A-R_B}{R_A+R_B}
+
+a_{AB} = \frac{u_{AB}}{u_{AB}^2-1}" /></p>
+</div><p>This choice assigns proportionally larger basins to larger atoms in the
+molecule, which further improves the convergence of the numerical integrations
+over the atomic grids. Note that the absolute value of <img class="math" src="images/math/bbccbd22915432783663d708a004f52bb6a04aaf.png" alt="a_{AB}"/> must be
+smaller than <img class="math" src="images/math/2f960094315d60883495f9b74148e17487ee9584.png" alt="\frac{1}{2}"/> to guarantee that the transform in equation
+<a href="#equation-transform_hetero">(2)</a> is monotonous.</p>
+<p>In HiPart the parameter <img class="math" src="images/math/bbccbd22915432783663d708a004f52bb6a04aaf.png" alt="a_{AB}"/> is constrained to have an absolute value
+smaller than 0.45 to suppress pristine behavior. The covalent radii for HiPart
+are taken from <a class="reference external" href="references.html#cordero2008">[Cordero2008]</a>.</p>
+</div>
+<div class="section" id="hirshfeld">
+<span id="id4"></span><h3>2.1.2. Hirshfeld<a class="headerlink" href="#hirshfeld" title="Permalink to this headline">¶</a></h3>
+<p>Hirshfeld <a class="reference external" href="references.html#hirshfeld1977">[Hirshfeld1977]</a> proposed a partitioning scheme where pro-atomic
+densities are derived from computations on neutral atoms by simply averaging the
+atomic density over the angular degrees of freedom,</p>
+<div class="math">
+<p><img src="images/math/3b43d7e0244d955ad519158531c5efc650ed89e3.png" alt="\rho_A^{\text{pro}}(|\mathbf{r} - \mathbf{r}_A|) = \rho_A^{\text{pro}}(r) = \int d\Omega \rho_{A,N=Z}^{\text{atom}}(r,\Omega)," /></p>
+</div><p>where <img class="math" src="images/math/9e2b196e9b7e57d1ec99f6534c581ea9759d2170.png" alt="\Omega"/> represents the angular degrees of freedom. Prior to the
+application of this partitioning scheme one must setup a database of spherically
+averaged atomic densities for all elements that are present in the molecule of
+interest. For the sake of consistency, this needs to be carried out with the same
+level of theory (and basis set) that is used for the molecular computation.</p>
+</div>
+<div class="section" id="iterative-hirshfeld">
+<span id="hirshfeld-i"></span><h3>2.1.3. Iterative Hirshfeld<a class="headerlink" href="#iterative-hirshfeld" title="Permalink to this headline">¶</a></h3>
+<p>The choice of neutral pro-atoms in the standard Hirshfeld scheme is somewhat
+arbitrary. The Iterative Hirshfeld scheme <a class="reference external" href="references.html#bultinck2007">[Bultinck2007]</a> is an extension of the
+original method, where one seeks for pro-atomic densities that have the same
+number of electrons as the atomic partitions in the molecule.</p>
+<p>Bultinck et al. introduce a pro-atomic function with an additional parameter,
+<img class="math" src="images/math/05f91f30ed1f9b369d5d43b8d6d682567c18459b.png" alt="N_A"/>, ie.e the fractional number of electrons in the pro-atomic density.
+For integer values of this parameter, the pro-atomic density is just the
+spherical average of the corresponding atom in vacuum:</p>
+<div class="math">
+<p><img src="images/math/f447e4a36c270137309e8d2f16230123f3950c91.png" alt="\rho_A^{\text{pro}}(r;N_A) = \int d\Omega \rho_{A,N=N_A}^{\text{atom}}(r,\Omega)." /></p>
+</div><p>For non-integer values of the parameter <img class="math" src="images/math/05f91f30ed1f9b369d5d43b8d6d682567c18459b.png" alt="N_A"/>, the pro-atomic density is a
+linear interpolation between the two <cite>neighboring</cite> integer-charged atoms:</p>
+<div class="math">
+<p><img src="images/math/3534f7ca0924f7a0ca25489346ea5e61516c97e3.png" alt="\rho_A^{\text{pro}}(r;N_A) = (\mathrm{ceil}(N_A)-N_A)\rho_A^{\text{pro}}(r;\mathrm{floor}(N_A)) +
+(N_A-\mathrm{floor}(N_A))\rho_A^{\text{pro}}(r;\mathrm{ceil}(N_A))" /></p>
+</div><p>The values <img class="math" src="images/math/05f91f30ed1f9b369d5d43b8d6d682567c18459b.png" alt="N_A"/> are obtained in an iterative procedure. Initially, they
+are all set to zero, and one computes the populations just like in the original
+Hirshfeld scheme. In the subsequent iterations the parameters <img class="math" src="images/math/05f91f30ed1f9b369d5d43b8d6d682567c18459b.png" alt="N_A"/> are
+set to the populations from the previous iteration and one uses these pro-atoms
+to compute the population for the next iteration. This is repeated until the
+atomic populations converge, i.e. when the maximum absolute value of the
+difference in atomic populations between two iterations drops below a predefined
+threshold.</p>
+<p>Before one can use the Iterative Hirshfeld methods, one must first construct
+a database of pro-atomic densities for all the elements in the molecule under
+scrutiny. For each element one must compute different charge states.</p>
+<p>This scheme is also referred to as <cite>Hirshfeld-I</cite>.</p>
+</div>
+<div class="section" id="iterative-stockholder-analysis">
+<span id="isa"></span><h3>2.1.4. Iterative Stockholder Analysis<a class="headerlink" href="#iterative-stockholder-analysis" title="Permalink to this headline">¶</a></h3>
+<p>The ISA scheme is another extension to the original Hirshfeld method where one
+tries to construct spherically symatric pro-atoms that are as similar as
+possible to the atomic partitions in the molecule. <a class="reference external" href="references.html#lillestolen2008">[Lillestolen2008]</a></p>
+<p>The initial pro-atoms are constructed by taking the minimal molecular electron
+density as a function of the distance from the nucleus. For numerical reasons
+this minimal value constrained to be non-zero:</p>
+<div class="math">
+<p><img src="images/math/2299a08343b75df46951ffa77d2530a6c9ddefab.png" alt="\rho_A^{\text{pro},(0)}(|\mathbf{r} - \mathbf{r}_A|) = \max(\epsilon, \min_{\Omega_A} \rho_{\text{mol}}(|\mathbf{r} - \mathbf{r}_A|,\Omega_A))" /></p>
+</div><p>where <img class="math" src="images/math/c2e94a91fc16fce68da2648ace053b23a6c5d12a.png" alt="epsilon"/> is a small positive number and <img class="math" src="images/math/8deac9d6b0a7e356aa65a3b9c0ed176dd9fe6f8b.png" alt="\Omega_A"/> are the
+angular degrees of freedom of the spherical coordinate system centered at atom
+<img class="math" src="images/math/019e9892786e493964e145e7c5cf7b700314e53b.png" alt="A"/>. In each ISA iteration <img class="math" src="images/math/8c325612684d41304b9751c175df7bcc0f61f64f.png" alt="k"/>, the new pro-atoms are taken to be
+the spherical average of the atomic densities from the previous iteration.</p>
+<div class="math">
+<p><img src="images/math/e2d870cc256d130ca156b63a591580548a1f47aa.png" alt="\rho_A^{\text{pro},(k+1)}(|\mathbf{r} - \mathbf{r}_A|) = \int d \Omega_A w_A^{(k)}(|\mathbf{r} - \mathbf{r}_A|) \rho_{\text{mol}}(|\mathbf{r} - \mathbf{r}_A|,\Omega_A)" /></p>
+</div><p>This is again repeated until the atomic populations converge. Note that this
+scheme does not depend on a database of atomic densities.</p>
+</div>
+</div>
+<div class="section" id="atomic-properties-derived-from-the-density">
+<h2>2.2. Atomic properties derived from the density<a class="headerlink" href="#atomic-properties-derived-from-the-density" title="Permalink to this headline">¶</a></h2>
+<p>In this section we discuss the properties derived from the atomic electron
+densities:</p>
+<div class="math">
+<p><img src="images/math/dcce2dedf1d72e4de86c5cdb9d9a3eaa14cc3538.png" alt="\rho_A(\mathbf{r}) = w_A(\mathbf{r})\rho_{\text{mol}}(\mathbf{r})," /></p>
+</div><p>where <img class="math" src="images/math/0530170c8bf0733f7a1fd956bb4f91ad1a4aeea5.png" alt="w_A(\mathbf{r})"/> is the atomic weight function of atom <img class="math" src="images/math/019e9892786e493964e145e7c5cf7b700314e53b.png" alt="A"/>
+obtained with some partitioning scheme and <img class="math" src="images/math/d559b67a20a325b6c504d48a79e8ff5163ce798c.png" alt="\rho_{\text{mol}}(\mathbf{r})"/>
+is the molecular electron density.</p>
+<p>It may be interesting to see how the molecular density is derived from the
+density matrix obtained with a quantum chemical ground state computation. First
+the basis functions, <img class="math" src="images/math/8d787f167104b85f7c5a2b7b1e8301f9bb769b0f.png" alt="f_m"/> are evaluated in the point <img class="math" src="images/math/523765e6f77d2ff678e47c2a1ff0a59ace2e8e36.png" alt="\mathbf{r}"/>,
+where <img class="math" src="images/math/f5047d1e0cbb50ec208923a22cd517c55100fa7b.png" alt="m"/> runs from 1 to the number of basis functions. In matrix notation
+the molecular density is then computed as follows:</p>
+<div class="math">
+<p><img src="images/math/7f24bcd4fe34cf22790bc7cfd86628eb21ae90dd.png" alt="\rho_{\text{mol}}(\mathbf{r}) = (f(\mathbf{r}))^T D f(\mathbf{r})," /></p>
+</div><p>where <img class="math" src="images/math/9ffb448918db29f2a72f8f87f421b3b3cad18f95.png" alt="D"/> is the density matrix.</p>
+<div class="section" id="charges-dipoles-multipoles">
+<h3>2.2.1. Charges, Dipoles &amp; Multipoles<a class="headerlink" href="#charges-dipoles-multipoles" title="Permalink to this headline">¶</a></h3>
+<p>The multipole expansion of an atomic density with respect to its nucleus is
+defined as follows:</p>
+<div class="math" id="equation-multipole">
+<p><span class="eqno">(3)</span><img src="images/math/903832d59f62174624808dc33ea7397d88709310.png" alt="Q_l^m = \int (-\rho_A(\mathbf{r})) R_l^m(\mathbf{r}-\mathbf{r}_A) d\mathbf{r}" /></p>
+</div><p>where <img class="math" src="images/math/4532f4cfe57c07ff01d61e5e1802fa8a4bc393b5.png" alt="R_l^m"/> is the regular solid harmonic. This multipole expansion
+can be used to compute the external electrostatic potential generated by the
+atomic density. By external we mean <cite>outside</cite> the atom where the atomic electron
+density is negligible. This potential is computed as follows:</p>
+<div class="math">
+<p><img src="images/math/9cf202b3cb01f7fd11b1bdafcab6c6191238af15.png" alt="V^{\text{ext}}_A(\mathbf{r}) = \sum_{l=0}^{\infty} \sum_{m=-l}^{l} (-1)^m I_l^{-m}(\mathbf{r}-\mathbf{r}_A) Q_l^m" /></p>
+</div><p>where <img class="math" src="images/math/2f90b4294e0e74a22dab79431d0959d03e29fa70.png" alt="I_l^m"/> is the irregular solid harmonic. The regular and
+irregular solid harmonics are related to the spherical harmonics, <img class="math" src="images/math/4e809273c9d41d42c282caba1d452978ee24cf2f.png" alt="Y_l^m"/>
+as follows:</p>
+<div class="math">
+<p><img src="images/math/b5a26abac6fdcd28fe22f3b887a078c65a07ed40.png" alt="R_l^m(\mathbf{r}) = \sqrt{\frac{4\pi}{2l+1}} r^l Y_l^m(\Omega)
+
+I_l^m(\mathbf{r}) = \sqrt{\frac{4\pi}{2l+1}} r^{-l-1} Y_l^m(\Omega)" /></p>
+</div><p>In HiPart we use the real valued variants of these functions and we replace the
+integrals <a href="#equation-multipole">(3)</a> by their real counterparts:</p>
+<div class="math" id="equation-multipole-real">
+<p><span class="eqno">(4)</span><img src="images/math/136029139eeb6ed6eb11a5239f582594e3a16fcd.png" alt="\tilde{Q}_l^m = \int (-\rho_A(\mathbf{r})) \tilde{R}_l^m(\mathbf{r}-\mathbf{r}_A) d\mathbf{r}," /></p>
+</div><p>with</p>
+<div class="math">
+<p><img src="images/math/7fc98f9300a8726217d054eddccb2842137f5bda.png" alt="\tilde{R}_l^m = \left\lbrace\begin{array}{ll}
+R_l^0 &amp; \text{if  } m=0\\
+{1\over\sqrt2}\left(R_l^m+(-1)^m \, R_l^{-m}\right)  &amp; \text{if  } m&gt;0 \\
+{1\over i\sqrt2}\left(R_l^{-m}-(-1)^{m}\, R_l^{m}\right) &amp; \mbox{if  } m&lt;0.
+\end{array} \right." /></p>
+</div><p>The table below lists all regular solid harmonics implemented in HiPart, i.e. up
+to the hexadecapole, <img class="math" src="images/math/e05fa91da4cd375509300e86ed240fca28f5ed26.png" alt="(l=4)"/>. The formulae are automatically generated,
+which causes a somewhat ugly formatting.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="5%" />
+<col width="95%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>(0,0)</td>
+<td><img class="math" src="images/math/dce34f4dfb2406144304ad0d6106c5382ddd1446.png" alt="1"/></td>
+</tr>
+<tr><td>(1,0)</td>
+<td><img class="math" src="images/math/b13f21416d84e13708696f34dea81026cda583c9.png" alt="z"/></td>
+</tr>
+<tr><td>(1,1+)</td>
+<td><img class="math" src="images/math/26eeb5258ca5099acf8fe96b2a1049c48c89a5e6.png" alt="x"/></td>
+</tr>
+<tr><td>(1,1-)</td>
+<td><img class="math" src="images/math/092e364e1d9d19ad5fffb0b46ef4cc7f2da02c1c.png" alt="y"/></td>
+</tr>
+<tr><td>(2,0)</td>
+<td><img class="math" src="images/math/d4e55f3ec1a4e4b851cf44008db520c3aa732cb9.png" alt="z^{2} - \frac{1}{2} x^{2} - \frac{1}{2} y^{2}"/></td>
+</tr>
+<tr><td>(2,1+)</td>
+<td><img class="math" src="images/math/7f9136468c9f004c6bfe39682bba1eb3fae92e6a.png" alt="x z \sqrt{3}"/></td>
+</tr>
+<tr><td>(2,1-)</td>
+<td><img class="math" src="images/math/c453b2a4ad0575248856830db6421667567259be.png" alt="y z \sqrt{3}"/></td>
+</tr>
+<tr><td>(2,2+)</td>
+<td><img class="math" src="images/math/422de9cf6bd8ae3fdb025f206aca353ca01f4622.png" alt="\frac{1}{2} \sqrt{3} x^{2} - \frac{1}{2} \sqrt{3} y^{2}"/></td>
+</tr>
+<tr><td>(2,2-)</td>
+<td><img class="math" src="images/math/fe9d41c295cf5356cd644a4bb974112f1104e6f4.png" alt="x y \sqrt{3}"/></td>
+</tr>
+<tr><td>(3,0)</td>
+<td><img class="math" src="images/math/9c592ac04c3d2139a7fc0582eebf9aeb2bfd77fa.png" alt="- \frac{3}{2} z x^{2} - \frac{3}{2} z y^{2} + z^{3}"/></td>
+</tr>
+<tr><td>(3,1+)</td>
+<td><img class="math" src="images/math/5bb156e7f76e4432ba7018a3bddc9bae186aa6ba.png" alt="x \sqrt{6} z^{2} - \frac{1}{4} x \sqrt{6} y^{2} - \frac{1}{4} \sqrt{6} x^{3}"/></td>
+</tr>
+<tr><td>(3,1-)</td>
+<td><img class="math" src="images/math/172d810e34821ac8e48d6fda1f0cb7753b3ba49f.png" alt="y \sqrt{6} z^{2} - \frac{1}{4} y \sqrt{6} x^{2} - \frac{1}{4} \sqrt{6} y^{3}"/></td>
+</tr>
+<tr><td>(3,2+)</td>
+<td><img class="math" src="images/math/4f03037a2cfcecb664dd4de279329ea21df85170.png" alt="\frac{1}{2} z \sqrt{15} x^{2} - \frac{1}{2} z \sqrt{15} y^{2}"/></td>
+</tr>
+<tr><td>(3,2-)</td>
+<td><img class="math" src="images/math/077301fca36746f0a7bc474d545f2a49d53b33dc.png" alt="x y z \sqrt{15}"/></td>
+</tr>
+<tr><td>(3,3+)</td>
+<td><img class="math" src="images/math/d9d0ef81adcfcce5d0129a8c0b3d6d25b04d2653.png" alt="- \frac{3}{4} x \sqrt{10} y^{2} + \frac{1}{4} \sqrt{10} x^{3}"/></td>
+</tr>
+<tr><td>(3,3-)</td>
+<td><img class="math" src="images/math/596cc4c2e8acd35b70eaaf0f1803e1332cc90aa1.png" alt="\frac{3}{4} y \sqrt{10} x^{2} - \frac{1}{4} \sqrt{10} y^{3}"/></td>
+</tr>
+<tr><td>(4,0)</td>
+<td><img class="math" src="images/math/6ccf58acf2faebe2719a706874db9dbc5bd97ede.png" alt="- 3 x^{2} z^{2} - 3 y^{2} z^{2} + \frac{3}{4} x^{2} y^{2} + z^{4} + \frac{3}{8} x^{4} + \frac{3}{8} y^{4}"/></td>
+</tr>
+<tr><td>(4,1+)</td>
+<td><img class="math" src="images/math/6517d969e387ab9333ac0b87037cc87e9bb2d023.png" alt="- \frac{3}{4} x z \sqrt{10} y^{2} + x \sqrt{10} z^{3} - \frac{3}{4} z \sqrt{10} x^{3}"/></td>
+</tr>
+<tr><td>(4,1-)</td>
+<td><img class="math" src="images/math/2ecb91e26839b30df1999ae7fe6e00d40e9591c1.png" alt="- \frac{3}{4} y z \sqrt{10} x^{2} + y \sqrt{10} z^{3} - \frac{3}{4} z \sqrt{10} y^{3}"/></td>
+</tr>
+<tr><td>(4,2+)</td>
+<td><img class="math" src="images/math/3d4287268fa877548a8039845ffb5e113ad745af.png" alt="- \frac{3}{2} \sqrt{5} y^{2} z^{2} + \frac{3}{2} \sqrt{5} x^{2} z^{2} - \frac{1}{4} \sqrt{5} x^{4} + \frac{1}{4} \sqrt{5} y^{4}"/></td>
+</tr>
+<tr><td>(4,2-)</td>
+<td><img class="math" src="images/math/f09cad6ba3e8ab6f9cb5b13d9c9830ee4e17acc0.png" alt="3 x y \sqrt{5} z^{2} - \frac{1}{2} x \sqrt{5} y^{3} - \frac{1}{2} y \sqrt{5} x^{3}"/></td>
+</tr>
+<tr><td>(4,3+)</td>
+<td><img class="math" src="images/math/cac142f7d67e79754779b106a1105cd0c816c75d.png" alt="- \frac{3}{4} x z \sqrt{70} y^{2} + \frac{1}{4} z \sqrt{70} x^{3}"/></td>
+</tr>
+<tr><td>(4,3-)</td>
+<td><img class="math" src="images/math/0719c6a01ab2852f14bf04c4ddc893a3bcd64b9c.png" alt="\frac{3}{4} y z \sqrt{70} x^{2} - \frac{1}{4} z \sqrt{70} y^{3}"/></td>
+</tr>
+<tr><td>(4,4+)</td>
+<td><img class="math" src="images/math/0dff67c30d232bad0ebcd0d4afba67728c989a6b.png" alt="- \frac{3}{4} \sqrt{35} x^{2} y^{2} + \frac{1}{8} \sqrt{35} x^{4} + \frac{1}{8} \sqrt{35} y^{4}"/></td>
+</tr>
+<tr><td>(4,4-)</td>
+<td><img class="math" src="images/math/654a2e694a937aec3a03797d89927447bf2528aa.png" alt="\frac{1}{2} y \sqrt{35} x^{3} - \frac{1}{2} x \sqrt{35} y^{3}"/></td>
+</tr>
+</tbody>
+</table>
+<p>The first line in this table corresponds to the atomic population, after adding
+the nuclear charge, one obtains the <cite>effective</cite> atomic charge. The subsequent
+three rows correspond to the components of the atomic dipole, and so on.</p>
+</div>
+<div class="section" id="net-and-overlap-populations">
+<h3>2.2.2. Net and overlap populations<a class="headerlink" href="#net-and-overlap-populations" title="Permalink to this headline">¶</a></h3>
+<p>The net and overlap populations are obtained by inserting the weight function
+twice in the integral over the molecular density:</p>
+<div class="math">
+<p><img src="images/math/cb76289efde7ef1c35eec3b55d2fdaae5aec30bc.png" alt="N^{\text{no}}_{AB} = \int w_A(\mathbf{r}) w_B(\mathbf{r}) \rho_{\text{mol}}(\mathbf{r}) d\mathbf{r}" /></p>
+</div><p>The diagonal elements are the net populations. One can interpret the net
+population of an atom as the amount of electrons that is associated only with
+that atom. The overlap populations, i.e. off-diagonal elements, can be
+interpreted as the amount of electrons that are shared between two atoms.</p>
+<p>These quantities are certainly not convenient as measures for atomic valence and
+bond order, although one can expect that there must be some correlation between
+the overlap population and the bond order. The main issue is that these numbers
+are not even close to the integer values that one would expect for atomic
+valences and bond orders. In the case of binary weight functions, the overlap
+populations would be zero and the net charges would be the regular atomic
+populations.</p>
+</div>
+</div>
+<div class="section" id="atomic-properties-derived-from-the-spin-density">
+<h2>2.3. Atomic properties derived from the spin density<a class="headerlink" href="#atomic-properties-derived-from-the-spin-density" title="Permalink to this headline">¶</a></h2>
+<p>In this section we discuss the properties derived from the atomic spin
+densities:</p>
+<div class="math">
+<p><img src="images/math/2d9d21ce98f1093cbad7e0c447e5055c352593b0.png" alt="\rho^{\text{spin}}_A(\mathbf{r}) = w_A(\mathbf{r})\rho^{\text{spin}}_{\text{mol}}(\mathbf{r})," /></p>
+</div><p>where <img class="math" src="images/math/0530170c8bf0733f7a1fd956bb4f91ad1a4aeea5.png" alt="w_A(\mathbf{r})"/> is the atomic weight function of atom <img class="math" src="images/math/019e9892786e493964e145e7c5cf7b700314e53b.png" alt="A"/>
+obtained with some partitioning scheme and
+<img class="math" src="images/math/bcb1f8cef71c1d00d4a9db605609c6744baf1c8d.png" alt="\rho^{\text{spin}}_{\text{mol}}(\mathbf{r})"/> is the molecular spin
+density.</p>
+<p>The spin density is derived from the spin density matrix in the same way as the
+conventional electron density is derived from the density matrix:</p>
+<div class="math">
+<p><img src="images/math/b8b6d56aebfbc2c6845e3ed521cbeac58d5e0d9e.png" alt="\rho^{\text{spin}}_{\text{mol}}(\mathbf{r}) = (f(\mathbf{r}))^T D^{\text{spin}} f(\mathbf{r})," /></p>
+</div><p>where <img class="math" src="images/math/1ee5be234be56356e5129d1f9e0ff7d2815e385d.png" alt="f(\mathbf{r})"/> is the vector with basis functions evaluated in
+point <img class="math" src="images/math/523765e6f77d2ff678e47c2a1ff0a59ace2e8e36.png" alt="\mathbf{r}"/> and <img class="math" src="images/math/1cc000388657576ae434884cb3b86957c77495d7.png" alt="D^{\text{spin}}"/> is the spin density matrix.
+The spin density matrix and the conventional density matrix can be derived from
+the alpha spin density matrix, <img class="math" src="images/math/c43cf6b805757f8f0f2b7cab608a7dbcfc98c7a0.png" alt="D^{\alpha}"/>, and the beta spin density
+matrix, <img class="math" src="images/math/03ad96cf05e84e1bafe8f290361b47e6a8da138c.png" alt="D^{\beta}"/>, as follows:</p>
+<div class="math">
+<p><img src="images/math/443f50389e03c142f06bd90e301c374465e55646.png" alt="D^{\text{spin}} = D^{\alpha} - D^{\beta}
+
+D = D^{\alpha} + D^{\beta}" /></p>
+</div><div class="section" id="spin-charges">
+<h3>2.3.1. Spin charges<a class="headerlink" href="#spin-charges" title="Permalink to this headline">¶</a></h3>
+<p>The spin charges are the atomic populations derived from the molecular spin
+density.</p>
+<div class="math">
+<p><img src="images/math/16b5243d195a8421d47d91d4efa3830a488e3189.png" alt="N^{\text{spin}}_{A} = \int w_A(\mathbf{r}) \rho^{\text{spin}}_{\text{mol}}(\mathbf{r}) d\mathbf{r}" /></p>
+</div></div>
+</div>
+<div class="section" id="atomic-overlap-matrices-in-the-basis-of-contracted-gaussians">
+<h2>2.4. Atomic overlap matrices (in the basis of contracted Gaussians)<a class="headerlink" href="#atomic-overlap-matrices-in-the-basis-of-contracted-gaussians" title="Permalink to this headline">¶</a></h2>
+<p>The atomic overlap matrices do not depend on the density or density matrix, but
+only depend on the basis functions used to describe the wavefunction. The
+conventional overlap matrix is defined as follows:</p>
+<div class="math">
+<p><img src="images/math/13362709a5582295161ef8db0696a35aed672b17.png" alt="S_{\mu\nu} = \int f_{\mu}(\mathbf{r}) f_{\nu}(\mathbf{r}) d\mathbf{r}" /></p>
+</div><p>The square root of the overlap matrix can be used to transform the
+non-orthogonal basis of contracted Gaussians into an orthonormal basis, and is
+in general a tool to work with non-orthogonal basis sets. One defines the atomic
+overlap matrix by inserting an atomic weight function into the integral:</p>
+<div class="math">
+<p><img src="images/math/bef62ce8d9d4d51099cc3675c5cab96289341d2e.png" alt="S^{A}_{\mu\nu} = \int f_{\mu}(\mathbf{r}) w_A(\mathbf{r}) f_{\nu}(\mathbf{r}) d\mathbf{r}" /></p>
+</div><p>One can define the atomic population as the trace of the product of the density
+matrix and the corresponding atomic overlap matrix:</p>
+<div class="math">
+<p><img src="images/math/20cf78d2019087db68ae35c60744c822e77f7949.png" alt="N_A = \mathrm{Tr} (D S^A)" /></p>
+</div><p>Similarly, one can write down the spin charges as function of the spin density
+matrix and the overlap matrix:</p>
+<div class="math">
+<p><img src="images/math/bac31549f0cfd547ce0bd46416b64ee81d2c429a.png" alt="N^{\text{spin}}_A = \mathrm{Tr} (D^{\text{spin}} S^A)" /></p>
+</div></div>
+<div class="section" id="atomic-properties-derived-from-the-density-matrix">
+<h2>2.5. Atomic properties derived from the density matrix<a class="headerlink" href="#atomic-properties-derived-from-the-density-matrix" title="Permalink to this headline">¶</a></h2>
+<p>All properties discussed in the previous sections can be written as an integral
+over the electron (spin) density multiplied by a (weight) function.
+Alternatively one can also go back to the matrix <img class="math" src="images/math/046afa5aca7a44711ff1c91c2345c3309c069a98.png" alt="(D S^A)"/> and manipulate
+this object before taking the trace. This allows use to derive new quantities
+that are not simple written as a function of the electron density.</p>
+<div class="section" id="bond-orders-and-atomic-valences">
+<h3>2.5.1. Bond orders and atomic valences<a class="headerlink" href="#bond-orders-and-atomic-valences" title="Permalink to this headline">¶</a></h3>
+<p>One defines the bond order, valence and free valence, in the fuzzy atom
+framework as follows:</p>
+<div class="math">
+<p><img src="images/math/5138b19bceb44fa31b828e9b4a1157112ae940a8.png" alt="\mathcal{B}_{AB} = 2\mathrm{Tr}\left[(D^{\alpha} S^A)(D^{\alpha} S^B)^T + (D^{\beta} S^A)(D^{\beta} S^B)^T \right]
+
+\mathcal{V}_A = 2 N_A - \mathrm{Tr}\left[ (D S^A)(D S^A)^T \right]
+
+\mathcal{F}_A = \mathcal{V}_A - \sum_{B \neq A} \mathcal{B}_{AB}" /></p>
+</div><p>Mayer has written a <cite>personal account</cite> <a class="reference external" href="references.html#mayer2007">[Mayer2007]</a> about bond orders and
+valence indices. It is a good introduction for those who are new to these
+concepts.</p>
+</div>
+</div>
+<div class="section" id="atomic-overlap-matrices-in-the-basis-of-the-orbitals">
+<h2>2.6. Atomic overlap matrices (in the basis of the orbitals)<a class="headerlink" href="#atomic-overlap-matrices-in-the-basis-of-the-orbitals" title="Permalink to this headline">¶</a></h2>
+<p>The overlap matrix can also be computed in the basis of the orbitals. Because
+the orbitals are an orthogonal basis, the conventional overlap matrix</p>
+<div class="math">
+<p><img src="images/math/b02456da04aae2c0b6941e28851eb6f794445ec3.png" alt="S^{\text{orb}}_{\mu\nu} = \int \psi_{\mu}(\mathbf{r}) \psi_{\nu}(\mathbf{r}) d\mathbf{r}," /></p>
+</div><p>where <img class="math" src="images/math/210a2b1c593c74228285ab942941cb5dad42c629.png" alt="\psi_{\mu}"/> and <img class="math" src="images/math/006240a4c0287680daab14477949cfd0dcfb0681.png" alt="\psi_{\nu}"/> are the orbitals, is simply the
+identity matrix. One can now define atomic contributions to this matrix by
+inserting the atomic weight functions into the integral:</p>
+<div class="math">
+<p><img src="images/math/f4917f79e62ee7edc6c1689ff1d7e843ad3c3e95.png" alt="S^{\text{orb},A}_{\mu\nu} = \int \psi_{\mu}(\mathbf{r}) w_A(\mathbf{r}) \psi_{\nu}(\mathbf{r}) d\mathbf{r}" /></p>
+</div><p>This is in principle the same quantity is introduced earlier, but just in a
+different basis.</p>
+</div>
+<div class="section" id="electrostatic-potential-esp-fitting">
+<span id="esp"></span><h2>2.7. Electrostatic Potential (ESP) Fitting<a class="headerlink" href="#electrostatic-potential-esp-fitting" title="Permalink to this headline">¶</a></h2>
+<p>In this section we will refer to electrostatic potential generated by the
+electron density and the nuclei as the full ESP, or <img class="math" src="images/math/3477a4cbf85f13bbd9cf39d531e316bd19f3ff8b.png" alt="V_{\text{full}}"/>.</p>
+<p>ESP fitting is a procedure where the amplitudes of point monopoles at the
+positions of the nuclei are fitted to reproduce the full ESP <cite>outside</cite> the
+molecule. Advanced schemes also include dipoles and optionally higher
+multipoles, and consider also other critical points than just the positions of
+the nuclei.</p>
+<p>The goodness of the reproduction of the potential outside the molecule is
+typically measured by a fitness (or cost) function. In the most simplistic
+approach, this fitness function is simply a sum of weighted squared errors
+between the full-blown potential, <img class="math" src="images/math/3477a4cbf85f13bbd9cf39d531e316bd19f3ff8b.png" alt="V_{\text{full}}"/>, and the potential
+generated by the point charges, <img class="math" src="images/math/f5670d8c2d7a3af06fa66abbb03aea716a8a49b7.png" alt="V_{\text{model}}"/>:</p>
+<div class="math">
+<p><img src="images/math/116578fc80207bc3c1b5730495109935857654a6.png" alt="X = \sum_{p=1}^P w_p \left( V_{\text{full}}(\mathbf{r}_p) - V_{\text{model}}(\mathbf{r}_p) \right)^2
+
+V_{\text{model}}(\mathbf{r}_p) = \sum_{A=1}^N \frac{q_A}{|\mathbf{r}_p - \mathbf{r}_A|}" /></p>
+</div><p>Minimization of this fitness function with respect to the unknowns, the charges
+<img class="math" src="images/math/b9602edf16d7d735c72408775ace8f7d68d9336f.png" alt="q_A"/>, yields the ESP-optimal charges.</p>
+<p>Most ESP fitting methods differ in the way the grid points are constructed. No
+matter how one selects the grid points, the cost function <img class="math" src="images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/> is always
+ill defined. Several attempts have been made to turn this fitness function into
+a well-behaved one, of which the RESP method <a class="reference external" href="references.html#bayly1993">[Bayly1993]</a> is the most
+wide-spread. In HiPart, this rank-deficiency issue of the fitness function is less
+problematic because HiPart only uses such cost functions to measure how well
+charges (and dipoles) derived from a partitioning scheme are able to reproduce
+the ESP on a set of grid points around the molecule. HiPart does not compute
+ESP-fitted charges.</p>
+<p>The selection of grid points for the cost function used in HiPart is discussed
+in <a class="reference external" href="references.html#verstraelen2009">[Verstraelen2009]</a>. All weights are set to 1. The relevant paragraph for the
+paper is quoted below for the details:</p>
+<blockquote>
+<em>We do not rely on charges that are fitted to reproduce the ESP around the
+molecule because they generally suffer from statistical inaccuracies. This
+does not mean that the ESP around the molecule is an irrelevant quantity.
+For the development of the electrostatic term in a FF model, one is, in
+principle, only interested in the reproduction of the ESP generated by the
+full electron density, not only in the gas phase but also when the electron
+density adapts to an electrostatic perturbation. Under these conditions one
+can reproduce the correct electrostatic interactions. We evaluated, for each
+single point calculation, the ab initio ESP on a molecular grid to benchmark
+the performance of each parametrization. A two-dimensional schematic picture
+of the grid is given in Fig. 4. It is constructed as follows. First, 30
+concentric spheres are placed around each atom. The minimum sphere radius is
+1.5 times the radius of the noble gas core of the corresponding atom, the
+maximum radius is 30 times the noble gas core radius. The radii of
+intermediate spheres are equidistant on a logarithmic scale. On each sphere,
+we used randomly rotated 50-point Lebedev–Laikov grids. The random rotation
+avoids arbitrary preferred directions. For this study, we only retained the
+grid points where the electron density is lower than 10e−5 a.u.</em></blockquote>
+<p>This is figure 4 from the paper:</p>
+<img alt="images/grid.png" src="images/grid.png" />
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference external" href="#">2. Theoretical background</a><ul>
+<li><a class="reference external" href="#fuzzy-atom-partitioning">2.1. Fuzzy atom partitioning</a><ul>
+<li><a class="reference external" href="#becke">2.1.1. Becke</a></li>
+<li><a class="reference external" href="#hirshfeld">2.1.2. Hirshfeld</a></li>
+<li><a class="reference external" href="#iterative-hirshfeld">2.1.3. Iterative Hirshfeld</a></li>
+<li><a class="reference external" href="#iterative-stockholder-analysis">2.1.4. Iterative Stockholder Analysis</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#atomic-properties-derived-from-the-density">2.2. Atomic properties derived from the density</a><ul>
+<li><a class="reference external" href="#charges-dipoles-multipoles">2.2.1. Charges, Dipoles &amp; Multipoles</a></li>
+<li><a class="reference external" href="#net-and-overlap-populations">2.2.2. Net and overlap populations</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#atomic-properties-derived-from-the-spin-density">2.3. Atomic properties derived from the spin density</a><ul>
+<li><a class="reference external" href="#spin-charges">2.3.1. Spin charges</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#atomic-overlap-matrices-in-the-basis-of-contracted-gaussians">2.4. Atomic overlap matrices (in the basis of contracted Gaussians)</a></li>
+<li><a class="reference external" href="#atomic-properties-derived-from-the-density-matrix">2.5. Atomic properties derived from the density matrix</a><ul>
+<li><a class="reference external" href="#bond-orders-and-atomic-valences">2.5.1. Bond orders and atomic valences</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#atomic-overlap-matrices-in-the-basis-of-the-orbitals">2.6. Atomic overlap matrices (in the basis of the orbitals)</a></li>
+<li><a class="reference external" href="#electrostatic-potential-esp-fitting">2.7. Electrostatic Potential (ESP) Fitting</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tut_install.html"
+                        title="previous chapter">1. Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tut_usage.html"
+                        title="next chapter">3. Using HiPart</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/tut_theory.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tut_usage.html" title="3. Using HiPart"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tut_install.html" title="1. Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Toon Verstraelen.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.
+    </div>
+  </body>
+</html>

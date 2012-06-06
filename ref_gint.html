@@ -1,0 +1,260 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>hipart.gint — (Towards a) Gaussian integrals library &mdash; HiPart v0.0 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="HiPart v0.0 documentation" href="index.html" />
+    <link rel="next" title="References" href="references.html" />
+    <link rel="prev" title="hipart — Fuzzy atom partitioning" href="ref_hipart.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="References"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ref_hipart.html" title="hipart — Fuzzy atom partitioning"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hipart-gint-towards-a-gaussian-integrals-library">
+<h1><tt class="xref docutils literal"><span class="pre">hipart.gint</span></tt> &#8212; (Towards a) Gaussian integrals library<a class="headerlink" href="#hipart-gint-towards-a-gaussian-integrals-library" title="Permalink to this headline">¶</a></h1>
+<p>Gint is a part of HiPart used to evaluate functions and integrals of Gaussian
+functions. Gint is for the moment very limited in functionality and just does
+what is needed to make HiPart work.</p>
+<p>Gint is also an experiment to see if it is possible to let a computer program
+write efficient implementations of the Gaussian integrals. (These routines are
+not so funny to write by hand after all.) All C code is written by <cite>writer</cite>
+scripts that use <a class="reference external" href="http://www.sympy.org">SymPy</a> as the computer algebra layer.
+Although there are still opportunities to further optmize the generated code,
+the current result is already very useful.</p>
+<div class="section" id="module-hipart.gint.basis">
+<h2><a title="" class="reference external" href="#module-hipart.gint.basis"><tt class="xref docutils literal"><span class="pre">hipart.gint.basis</span></tt></a> &#8212; Basis set representation<a class="headerlink" href="#module-hipart.gint.basis" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="hipart.gint.basis.get_shell_dof">
+<tt class="descclassname">hipart.gint.basis.</tt><tt class="descname">get_shell_dof</tt><big>(</big><em>shell_type</em><big>)</big><a class="headerlink" href="#hipart.gint.basis.get_shell_dof" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="hipart.gint.basis.GaussianBasis">
+<em class="property">class </em><tt class="descclassname">hipart.gint.basis.</tt><tt class="descname">GaussianBasis</tt><big>(</big><em>molecule</em>, <em>shell_types</em>, <em>shell_map</em>, <em>num_primitives</em>, <em>ccoeffs</em>, <em>exponents</em><big>)</big><a class="headerlink" href="#hipart.gint.basis.GaussianBasis" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">molecule</span></tt>  &#8211;  a Molecule object with atomic numbers and coordinates.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">shell_types</span></tt>  &#8211;  An array with shell types: 0 = S, 1 = P,
+2 = Cartesian D, 3 = Cartesian F, ...,
+-1 = SP, -2 = pure D, -3 = pure F, ...</div>
+<div class="line"><tt class="docutils literal"><span class="pre">shell_map</span></tt>  &#8211;  An array with the atom index for each shell.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">num_primitives</span></tt>  &#8211;  The number of primitives in each shell.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">ccoeffs</span></tt>  &#8211;  The contraction coefficients of the
+primitives. For SP shells the number
+of contraction coefficients is twice
+the number of primitives, first n for
+S, second n for P.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">exponents</span></tt>  &#8211;  The exponents of the primitives.</div>
+</div>
+</dd>
+</dl>
+<p>Standard convention for basis functions associated with a shell.</p>
+<p>The order of the pure shells is based on the order of real spherical
+harmonics: <a class="reference external" href="http://en.wikipedia.org/wiki/Table_of_spherical_harmonics">http://en.wikipedia.org/wiki/Table_of_spherical_harmonics</a>
+First the +- linear combination of highest angular momentum, then
+the ++ combination of highest angular momentum, keep repeating and
+finally take angular momention zero (without making a linear
+combination). The order of the Cartesian shells is sorted
+alhpabetically. The SP shell type is S first, then P. Some examples:</p>
+<dl class="docutils">
+<dt>shell_type=0, S:</dt>
+<dd>0 -&gt; 1</dd>
+<dt>shell_type=1, P:</dt>
+<dd>0 -&gt; x
+1 -&gt; y
+2 -&gt; z</dd>
+<dt>shell_type=2, Cartesian D:</dt>
+<dd>0 -&gt; xx
+1 -&gt; xy
+2 -&gt; xz
+3 -&gt; yy
+4 -&gt; yz
+5 -&gt; zz</dd>
+<dt>shell_type=3, Cartesian F:</dt>
+<dd>0 -&gt; xxx
+1 -&gt; xxy
+2 -&gt; xxz
+3 -&gt; xyy
+4 -&gt; xyz
+5 -&gt; xzz
+6 -&gt; yyy
+7 -&gt; yyz
+8 -&gt; yzz
+9 -&gt; zzz</dd>
+<dt>shell_type=-1, SP:</dt>
+<dd>0 -&gt; 1
+1 -&gt; x
+2 -&gt; y
+3 -&gt; z</dd>
+<dt>shell_type=-2, pure D:</dt>
+<dd>0 -&gt; zz
+1 -&gt; yz
+2 -&gt; xz
+3 -&gt; xx-yy
+4 -&gt; xy</dd>
+<dt>shell_type=-3, pure F:</dt>
+<dd>6 -&gt; zzz
+5 -&gt; yzz
+4 -&gt; xzz
+3 -&gt; xxz-yyz
+2 -&gt; xyz
+1 -&gt; 3xxy-yyy
+0 -&gt; xxx-3xyy</dd>
+</dl>
+<dl class="method">
+<dt id="hipart.gint.basis.GaussianBasis.call_gint_atomic_operator">
+<tt class="descname">call_gint_atomic_operator</tt><big>(</big><em>gint_c_routine</em>, <em>points</em>, <em>weights</em><big>)</big><a class="headerlink" href="#hipart.gint.basis.GaussianBasis.call_gint_atomic_operator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.gint.basis.GaussianBasis.call_gint_grid">
+<tt class="descname">call_gint_grid</tt><big>(</big><em>gint_c_routine</em>, <em>weights</em>, <em>points</em>, <em>repeat=None</em><big>)</big><a class="headerlink" href="#hipart.gint.basis.GaussianBasis.call_gint_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="hipart.gint.basis.GaussianBasis.from_fchk">
+<em class="property">classmethod </em><tt class="descname">from_fchk</tt><big>(</big><em>fchk</em><big>)</big><a class="headerlink" href="#hipart.gint.basis.GaussianBasis.from_fchk" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hipart.gint.basis.GaussianBasis.num_shells">
+<tt class="descname">num_shells</tt><a class="headerlink" href="#hipart.gint.basis.GaussianBasis.num_shells" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="one-center-routines">
+<h2>One-center routines<a class="headerlink" href="#one-center-routines" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="two-center-routines">
+<h2>Two-center routines<a class="headerlink" href="#two-center-routines" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="auxiliary-function">
+<h2>Auxiliary function<a class="headerlink" href="#auxiliary-function" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="writer">
+<h2>Writer<a class="headerlink" href="#writer" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference external" href="#"><tt class="docutils literal"><span class="pre">hipart.gint</span></tt> &#8212; (Towards a) Gaussian integrals library</a><ul>
+<li><a class="reference external" href="#module-hipart.gint.basis"><tt class="docutils literal"><span class="pre">hipart.gint.basis</span></tt> &#8212; Basis set representation</a></li>
+<li><a class="reference external" href="#one-center-routines">One-center routines</a></li>
+<li><a class="reference external" href="#two-center-routines">Two-center routines</a></li>
+<li><a class="reference external" href="#auxiliary-function">Auxiliary function</a></li>
+<li><a class="reference external" href="#tools">Tools</a></li>
+<li><a class="reference external" href="#writer">Writer</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ref_hipart.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">hipart</span></tt> &#8212; Fuzzy atom partitioning</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="references.html"
+                        title="next chapter">References</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/ref_gint.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="References"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ref_hipart.html" title="hipart — Fuzzy atom partitioning"
+             >previous</a> |</li>
+        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Toon Verstraelen.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.
+    </div>
+  </body>
+</html>

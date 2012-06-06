@@ -1,0 +1,784 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>hipart — Fuzzy atom partitioning &mdash; HiPart v0.0 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="HiPart v0.0 documentation" href="index.html" />
+    <link rel="next" title="hipart.gint — (Towards a) Gaussian integrals library" href="ref_gint.html" />
+    <link rel="prev" title="3. Using HiPart" href="tut_usage.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="ref_gint.html" title="hipart.gint — (Towards a) Gaussian integrals library"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tut_usage.html" title="3. Using HiPart"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hipart-fuzzy-atom-partitioning">
+<h1><tt class="xref docutils literal"><span class="pre">hipart</span></tt> &#8212; Fuzzy atom partitioning<a class="headerlink" href="#hipart-fuzzy-atom-partitioning" title="Permalink to this headline">¶</a></h1>
+<p>All HiPart scripts use the modules described below to perform their analysis.
+The internals of HiPart can also be used to write your own population analysis
+code.</p>
+<div class="section" id="module-hipart.context">
+<h2><a title="" class="reference external" href="#module-hipart.context"><tt class="xref docutils literal"><span class="pre">hipart.context</span></tt></a> &#8212; Contexts instead of global variables<a class="headerlink" href="#module-hipart.context" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="hipart.context.ContextError">
+<em class="property">exception </em><tt class="descclassname">hipart.context.</tt><tt class="descname">ContextError</tt><a class="headerlink" href="#hipart.context.ContextError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="hipart.context.Context">
+<em class="property">class </em><tt class="descclassname">hipart.context.</tt><tt class="descname">Context</tt><big>(</big><em>filename</em>, <em>options</em><big>)</big><a class="headerlink" href="#hipart.context.Context" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is an extension to the concept of global variables.</p>
+<p>It ensures that an entire context of data structures, files and
+directories is present and sane. One can pass around a context variable
+instead of the individual global variables.</p>
+<dl class="method">
+<dt id="hipart.context.Context.check_tag">
+<tt class="descname">check_tag</tt><big>(</big><em>extra</em><big>)</big><a class="headerlink" href="#hipart.context.Context.check_tag" title="Permalink to this definition">¶</a></dt>
+<dd>Make sure our context is compatible with the data in the workdir.</dd></dl>
+
+<dl class="attribute">
+<dt id="hipart.context.Context.num_lebedev">
+<tt class="descname">num_lebedev</tt><a class="headerlink" href="#hipart.context.Context.num_lebedev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.context.Options">
+<em class="property">class </em><tt class="descclassname">hipart.context.</tt><tt class="descname">Options</tt><big>(</big><em>lebedev=110</em>, <em>do_clean=False</em>, <em>do_work=True</em>, <em>do_output=True</em>, <em>verbose=True</em>, <em>threshold=0.0001</em>, <em>max_iter=500</em>, <em>fix_total_charge=True</em>, <em>do_random=True</em>, <em>save_mem=False</em><big>)</big><a class="headerlink" href="#hipart.context.Options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-hipart.schemes">
+<h2><a title="" class="reference external" href="#module-hipart.schemes"><tt class="xref docutils literal"><span class="pre">hipart.schemes</span></tt></a> &#8212; Partitioning schemes and derived quantities<a class="headerlink" href="#module-hipart.schemes" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="hipart.schemes.ParseError">
+<em class="property">exception </em><tt class="descclassname">hipart.schemes.</tt><tt class="descname">ParseError</tt><a class="headerlink" href="#hipart.schemes.ParseError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-hipart.wavefn">
+<h2><a title="" class="reference external" href="#module-hipart.wavefn"><tt class="xref docutils literal"><span class="pre">hipart.wavefn</span></tt></a> &#8212; Electronic structure representation<a class="headerlink" href="#module-hipart.wavefn" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="hipart.wavefn.load_wavefunction">
+<tt class="descclassname">hipart.wavefn.</tt><tt class="descname">load_wavefunction</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#hipart.wavefn.load_wavefunction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="hipart.wavefn.FCHKWaveFunction">
+<em class="property">class </em><tt class="descclassname">hipart.wavefn.</tt><tt class="descname">FCHKWaveFunction</tt><big>(</big><em>filename</em>, <em>options</em><big>)</big><a class="headerlink" href="#hipart.wavefn.FCHKWaveFunction" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.wavefn.FCHKWaveFunction.compute_atomic_overlap">
+<tt class="descname">compute_atomic_overlap</tt><big>(</big><em>grid</em>, <em>weights</em><big>)</big><a class="headerlink" href="#hipart.wavefn.FCHKWaveFunction.compute_atomic_overlap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.wavefn.FCHKWaveFunction.compute_density">
+<tt class="descname">compute_density</tt><big>(</big><em>grid</em><big>)</big><a class="headerlink" href="#hipart.wavefn.FCHKWaveFunction.compute_density" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.wavefn.FCHKWaveFunction.compute_orbitals">
+<tt class="descname">compute_orbitals</tt><big>(</big><em>grid</em><big>)</big><a class="headerlink" href="#hipart.wavefn.FCHKWaveFunction.compute_orbitals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.wavefn.FCHKWaveFunction.compute_potential">
+<tt class="descname">compute_potential</tt><big>(</big><em>grid</em><big>)</big><a class="headerlink" href="#hipart.wavefn.FCHKWaveFunction.compute_potential" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.wavefn.FCHKWaveFunction.compute_spin_density">
+<tt class="descname">compute_spin_density</tt><big>(</big><em>grid</em><big>)</big><a class="headerlink" href="#hipart.wavefn.FCHKWaveFunction.compute_spin_density" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.wavefn.FCHKWaveFunction.init_naturals">
+<tt class="descname">init_naturals</tt><big>(</big><em>work</em><big>)</big><a class="headerlink" href="#hipart.wavefn.FCHKWaveFunction.init_naturals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.wavefn.FCHKWaveFunction.log">
+<tt class="descname">log</tt><big>(</big><big>)</big><a class="headerlink" href="#hipart.wavefn.FCHKWaveFunction.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.wavefn.get_num_filled">
+<tt class="descclassname">hipart.wavefn.</tt><tt class="descname">get_num_filled</tt><big>(</big><em>occupations</em><big>)</big><a class="headerlink" href="#hipart.wavefn.get_num_filled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="hipart.wavefn.compute_naturals">
+<tt class="descclassname">hipart.wavefn.</tt><tt class="descname">compute_naturals</tt><big>(</big><em>dmat</em>, <em>num_dof</em><big>)</big><a class="headerlink" href="#hipart.wavefn.compute_naturals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-hipart.atomdb">
+<h2><a title="" class="reference external" href="#module-hipart.atoms"><tt class="xref docutils literal"><span class="pre">hipart.atoms</span></tt></a> and <a title="" class="reference external" href="#module-hipart.atomdb"><tt class="xref docutils literal"><span class="pre">hipart.atomdb</span></tt></a> &#8212; Atomic databases<a class="headerlink" href="#module-hipart.atomdb" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="hipart.atoms.AtomProfile">
+<em class="property">class </em><tt class="descclassname">hipart.atoms.</tt><tt class="descname">AtomProfile</tt><big>(</big><em>number</em>, <em>rgrid</em>, <em>records</em><big>)</big><a class="headerlink" href="#hipart.atoms.AtomProfile" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.atoms.AtomProfile.get_atom_fn">
+<tt class="descname">get_atom_fn</tt><big>(</big><em>population=None</em><big>)</big><a class="headerlink" href="#hipart.atoms.AtomProfile.get_atom_fn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.atoms.AtomTable">
+<em class="property">class </em><tt class="descclassname">hipart.atoms.</tt><tt class="descname">AtomTable</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#hipart.atoms.AtomTable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="hipart.atomdb.Options">
+<em class="property">class </em><tt class="descclassname">hipart.atomdb.</tt><tt class="descname">Options</tt><big>(</big><em>lebedev=110</em>, <em>rlow=2e-05</em>, <em>rhigh=20.0</em>, <em>num_steps=100</em>, <em>max_ion=2</em>, <em>qc=False</em>, <em>do_work=True</em>, <em>verbose=True</em>, <em>do_random=True</em><big>)</big><a class="headerlink" href="#hipart.atomdb.Options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="hipart.atomdb.run_atomdb">
+<tt class="descclassname">hipart.atomdb.</tt><tt class="descname">run_atomdb</tt><big>(</big><em>executable</em>, <em>lot</em>, <em>atom_numbers</em>, <em>options</em>, <em>directory='.'</em><big>)</big><a class="headerlink" href="#hipart.atomdb.run_atomdb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="hipart.atomdb.main">
+<tt class="descclassname">hipart.atomdb.</tt><tt class="descname">main</tt><big>(</big><em>args=None</em><big>)</big><a class="headerlink" href="#hipart.atomdb.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-hipart.fit">
+<h2><a title="" class="reference external" href="#module-hipart.fit"><tt class="xref docutils literal"><span class="pre">hipart.fit</span></tt></a> &#8212; ESP cost functions<a class="headerlink" href="#module-hipart.fit" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="hipart.fit.ChargeDipoleCostFunction">
+<em class="property">class </em><tt class="descclassname">hipart.fit.</tt><tt class="descname">ChargeDipoleCostFunction</tt><big>(</big><em>N</em>, <em>design_matrix</em>, <em>expected_values</em>, <em>weights</em>, <em>total_charge</em><big>)</big><a class="headerlink" href="#hipart.fit.ChargeDipoleCostFunction" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.fit.ChargeDipoleCostFunction.correlation">
+<tt class="descname">correlation</tt><big>(</big><em>charges</em>, <em>dipoles=None</em><big>)</big><a class="headerlink" href="#hipart.fit.ChargeDipoleCostFunction.correlation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.fit.ChargeDipoleCostFunction.full_vector">
+<tt class="descname">full_vector</tt><big>(</big><em>charges</em>, <em>dipoles=None</em><big>)</big><a class="headerlink" href="#hipart.fit.ChargeDipoleCostFunction.full_vector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.fit.ChargeDipoleCostFunction.model_rms">
+<tt class="descname">model_rms</tt><big>(</big><em>charges</em>, <em>dipoles=None</em><big>)</big><a class="headerlink" href="#hipart.fit.ChargeDipoleCostFunction.model_rms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.fit.ChargeDipoleCostFunction.rmsd">
+<tt class="descname">rmsd</tt><big>(</big><em>charges</em>, <em>dipoles=None</em><big>)</big><a class="headerlink" href="#hipart.fit.ChargeDipoleCostFunction.rmsd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.fit.ChargeDipoleCostFunction.write_to_file">
+<tt class="descname">write_to_file</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#hipart.fit.ChargeDipoleCostFunction.write_to_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.fit.ESPCostFunction">
+<em class="property">class </em><tt class="descclassname">hipart.fit.</tt><tt class="descname">ESPCostFunction</tt><big>(</big><em>coordinates</em>, <em>grid_points</em>, <em>grid_weights</em>, <em>densities</em>, <em>potentials</em>, <em>total_charge</em><big>)</big><a class="headerlink" href="#hipart.fit.ESPCostFunction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-hipart.grids">
+<h2><a title="" class="reference external" href="#module-hipart.grids"><tt class="xref docutils literal"><span class="pre">hipart.grids</span></tt></a> &#8212; Numerical integration grids<a class="headerlink" href="#module-hipart.grids" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="hipart.grids.Grid">
+<em class="property">class </em><tt class="descclassname">hipart.grids.</tt><tt class="descname">Grid</tt><big>(</big><em>prefix</em>, <em>work</em>, <em>points</em>, <em>dump=True</em><big>)</big><a class="headerlink" href="#hipart.grids.Grid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.grids.Grid.dump">
+<tt class="descname">dump</tt><big>(</big><em>suffix</em>, <em>array</em>, <em>ignore=False</em><big>)</big><a class="headerlink" href="#hipart.grids.Grid.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="hipart.grids.Grid.from_prefix">
+<em class="property">classmethod </em><tt class="descname">from_prefix</tt><big>(</big><em>prefix</em>, <em>work</em><big>)</big><a class="headerlink" href="#hipart.grids.Grid.from_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.Grid.load">
+<tt class="descname">load</tt><big>(</big><em>suffix</em>, <em>shape=None</em><big>)</big><a class="headerlink" href="#hipart.grids.Grid.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hipart.grids.Grid.size">
+<tt class="descname">size</tt><a class="headerlink" href="#hipart.grids.Grid.size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.grids.AtomicGrid">
+<em class="property">class </em><tt class="descclassname">hipart.grids.</tt><tt class="descname">AtomicGrid</tt><big>(</big><em>prefix</em>, <em>work</em>, <em>points</em>, <em>dump=True</em><big>)</big><a class="headerlink" href="#hipart.grids.AtomicGrid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="classmethod">
+<dt id="hipart.grids.AtomicGrid.from_parameters">
+<em class="property">classmethod </em><tt class="descname">from_parameters</tt><big>(</big><em>prefix</em>, <em>work</em>, <em>center</em>, <em>rgrid</em>, <em>agrid</em><big>)</big><a class="headerlink" href="#hipart.grids.AtomicGrid.from_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.grids.RBaseIntGrid">
+<em class="property">class </em><tt class="descclassname">hipart.grids.</tt><tt class="descname">RBaseIntGrid</tt><big>(</big><em>rs</em><big>)</big><a class="headerlink" href="#hipart.grids.RBaseIntGrid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.grids.RBaseIntGrid.get_description">
+<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="headerlink" href="#hipart.grids.RBaseIntGrid.get_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.RBaseIntGrid.get_weights">
+<tt class="descname">get_weights</tt><big>(</big><em>size=None</em><big>)</big><a class="headerlink" href="#hipart.grids.RBaseIntGrid.get_weights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.RBaseIntGrid.integrate">
+<tt class="descname">integrate</tt><big>(</big><em>integrand</em><big>)</big><a class="headerlink" href="#hipart.grids.RBaseIntGrid.integrate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.RBaseIntGrid.integrate_cumul">
+<tt class="descname">integrate_cumul</tt><big>(</big><em>integrand</em><big>)</big><a class="headerlink" href="#hipart.grids.RBaseIntGrid.integrate_cumul" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.grids.RLogIntGrid">
+<em class="property">class </em><tt class="descclassname">hipart.grids.</tt><tt class="descname">RLogIntGrid</tt><big>(</big><em>r_low</em>, <em>r_high</em>, <em>steps</em><big>)</big><a class="headerlink" href="#hipart.grids.RLogIntGrid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.grids.RLogIntGrid.get_description">
+<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="headerlink" href="#hipart.grids.RLogIntGrid.get_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.grids.REquiIntGrid">
+<em class="property">class </em><tt class="descclassname">hipart.grids.</tt><tt class="descname">REquiIntGrid</tt><big>(</big><em>r_low</em>, <em>r_high</em>, <em>steps</em><big>)</big><a class="headerlink" href="#hipart.grids.REquiIntGrid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.grids.REquiIntGrid.get_description">
+<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="headerlink" href="#hipart.grids.REquiIntGrid.get_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.grids.get_rgrid_from_description">
+<tt class="descclassname">hipart.grids.</tt><tt class="descname">get_rgrid_from_description</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#hipart.grids.get_rgrid_from_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="hipart.grids.ABaseIntGrid">
+<em class="property">class </em><tt class="descclassname">hipart.grids.</tt><tt class="descname">ABaseIntGrid</tt><a class="headerlink" href="#hipart.grids.ABaseIntGrid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.grids.ABaseIntGrid.generate_points">
+<tt class="descname">generate_points</tt><big>(</big><em>center</em>, <em>rs</em><big>)</big><a class="headerlink" href="#hipart.grids.ABaseIntGrid.generate_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.ABaseIntGrid.get_description">
+<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="headerlink" href="#hipart.grids.ABaseIntGrid.get_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.ABaseIntGrid.integrate">
+<tt class="descname">integrate</tt><big>(</big><em>integrand</em><big>)</big><a class="headerlink" href="#hipart.grids.ABaseIntGrid.integrate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.ABaseIntGrid.minimum">
+<tt class="descname">minimum</tt><big>(</big><em>function</em><big>)</big><a class="headerlink" href="#hipart.grids.ABaseIntGrid.minimum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.grids.ALebedevIntGrid">
+<em class="property">class </em><tt class="descclassname">hipart.grids.</tt><tt class="descname">ALebedevIntGrid</tt><big>(</big><em>num_lebedev</em>, <em>do_random=True</em><big>)</big><a class="headerlink" href="#hipart.grids.ALebedevIntGrid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.grids.ALebedevIntGrid.generate_points">
+<tt class="descname">generate_points</tt><big>(</big><em>center</em>, <em>rs</em><big>)</big><a class="headerlink" href="#hipart.grids.ALebedevIntGrid.generate_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.ALebedevIntGrid.get_description">
+<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="headerlink" href="#hipart.grids.ALebedevIntGrid.get_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.ALebedevIntGrid.integrate">
+<tt class="descname">integrate</tt><big>(</big><em>integrand</em><big>)</big><a class="headerlink" href="#hipart.grids.ALebedevIntGrid.integrate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.ALebedevIntGrid.maximum">
+<tt class="descname">maximum</tt><big>(</big><em>function</em><big>)</big><a class="headerlink" href="#hipart.grids.ALebedevIntGrid.maximum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.grids.ALebedevIntGrid.minimum">
+<tt class="descname">minimum</tt><big>(</big><em>function</em><big>)</big><a class="headerlink" href="#hipart.grids.ALebedevIntGrid.minimum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-hipart.lebedev_laikov">
+<h2><a title="" class="reference external" href="#module-hipart.lebedev_laikov"><tt class="xref docutils literal"><span class="pre">hipart.lebedev_laikov</span></tt></a> &#8212; Lebedev Laikov angular grid data<a class="headerlink" href="#module-hipart.lebedev_laikov" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="hipart.lebedev_laikov.get_grid">
+<tt class="descclassname">hipart.lebedev_laikov.</tt><tt class="descname">get_grid</tt><big>(</big><em>number</em><big>)</big><a class="headerlink" href="#hipart.lebedev_laikov.get_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-hipart.spline">
+<h2><a title="" class="reference external" href="#module-hipart.spline"><tt class="xref docutils literal"><span class="pre">hipart.spline</span></tt></a> &#8212; Cubic spline interpolation<a class="headerlink" href="#module-hipart.spline" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="hipart.spline.LinearSpline">
+<em class="property">class </em><tt class="descclassname">hipart.spline.</tt><tt class="descname">LinearSpline</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#hipart.spline.LinearSpline" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.spline.LinearSpline.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>x</em><big>)</big><a class="headerlink" href="#hipart.spline.LinearSpline.__call__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.spline.CubicSpline">
+<em class="property">class </em><tt class="descclassname">hipart.spline.</tt><tt class="descname">CubicSpline</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#hipart.spline.CubicSpline" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.spline.CubicSpline.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>x</em><big>)</big><a class="headerlink" href="#hipart.spline.CubicSpline.__call__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-hipart.io">
+<h2><a title="" class="reference external" href="#module-hipart.io"><tt class="xref docutils literal"><span class="pre">hipart.io</span></tt></a> &#8212; IO for Hipart file formats<a class="headerlink" href="#module-hipart.io" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="hipart.io.Output">
+<em class="property">class </em><tt class="descclassname">hipart.io.</tt><tt class="descname">Output</tt><big>(</big><em>directory=None</em>, <em>numbers=None</em><big>)</big><a class="headerlink" href="#hipart.io.Output" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="hipart.io.Output.active">
+<tt class="descname">active</tt><a class="headerlink" href="#hipart.io.Output.active" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.io.Output.dump_atom_fields">
+<tt class="descname">dump_atom_fields</tt><big>(</big><em>filename</em>, <em>table</em>, <em>labels</em>, <em>name</em><big>)</big><a class="headerlink" href="#hipart.io.Output.dump_atom_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.io.Output.dump_atom_matrix">
+<tt class="descname">dump_atom_matrix</tt><big>(</big><em>filename</em>, <em>matrix</em>, <em>name</em><big>)</big><a class="headerlink" href="#hipart.io.Output.dump_atom_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.io.Output.dump_atom_scalars">
+<tt class="descname">dump_atom_scalars</tt><big>(</big><em>filename</em>, <em>scalars</em>, <em>name</em><big>)</big><a class="headerlink" href="#hipart.io.Output.dump_atom_scalars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.io.Output.dump_atom_vectors">
+<tt class="descname">dump_atom_vectors</tt><big>(</big><em>filename</em>, <em>vectors</em>, <em>name</em><big>)</big><a class="headerlink" href="#hipart.io.Output.dump_atom_vectors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.io.Output.dump_esp_cost">
+<tt class="descname">dump_esp_cost</tt><big>(</big><em>filename</em>, <em>esp_cost</em><big>)</big><a class="headerlink" href="#hipart.io.Output.dump_esp_cost" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.io.Output.dump_esp_test">
+<tt class="descname">dump_esp_test</tt><big>(</big><em>filename</em>, <em>dipole_q</em>, <em>dipole_p</em>, <em>dipole_qp</em>, <em>dipole_qm</em>, <em>mol_esp_cost</em>, <em>charges</em>, <em>dipoles</em><big>)</big><a class="headerlink" href="#hipart.io.Output.dump_esp_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.io.Output.dump_overlap_matrices">
+<tt class="descname">dump_overlap_matrices</tt><big>(</big><em>filename</em>, <em>overlap_matrices</em><big>)</big><a class="headerlink" href="#hipart.io.Output.dump_overlap_matrices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.io.dump_atom_scalars">
+<tt class="descclassname">hipart.io.</tt><tt class="descname">dump_atom_scalars</tt><big>(</big><em>filename</em>, <em>scalars</em>, <em>name</em>, <em>numbers=None</em><big>)</big><a class="headerlink" href="#hipart.io.dump_atom_scalars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump an array of scalar atomic quantities into a text file.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">filename</span></tt>  &#8211;  The file to dump in.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">scalars</span></tt>  &#8211;  An array of scalars, e.g. atomic charges.</div>
+</div>
+</dd>
+<dt>Optional arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">numbers</span></tt>  &#8211;  An array with atomic numbers to decorate the file</div>
+<div class="line"><tt class="docutils literal"><span class="pre">name</span></tt>  &#8211;  the name of the quantity to decorate the file</div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.io.load_atom_scalars">
+<tt class="descclassname">hipart.io.</tt><tt class="descname">load_atom_scalars</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#hipart.io.load_atom_scalars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load atomic scalars written with <a title="hipart.io.dump_atom_scalars" class="reference internal" href="#hipart.io.dump_atom_scalars"><tt class="xref docutils literal"><span class="pre">dump_atom_scalars()</span></tt></a>.</p>
+<dl class="docutils">
+<dt>Argument:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">filename</span></tt>  &#8211;  The file to load from.</div>
+</div>
+</dd>
+</dl>
+<p>Returns the array with scalars.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.io.dump_atom_vectors">
+<tt class="descclassname">hipart.io.</tt><tt class="descname">dump_atom_vectors</tt><big>(</big><em>filename</em>, <em>vectors</em>, <em>name</em>, <em>numbers=None</em><big>)</big><a class="headerlink" href="#hipart.io.dump_atom_vectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump an array of atomic 3D-vector quantities into a text file.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">filename</span></tt>  &#8211;  The file to dump in.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">vectors</span></tt>  &#8211;  An array of 3D-vectors, e.g. atomic dipoles.</div>
+</div>
+</dd>
+<dt>Optional arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">numbers</span></tt>  &#8211;  An array with atomic numbers to decorate the file</div>
+<div class="line"><tt class="docutils literal"><span class="pre">name</span></tt>  &#8211;  the name of the quantity to decorate the file</div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.io.load_atom_vectors">
+<tt class="descclassname">hipart.io.</tt><tt class="descname">load_atom_vectors</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#hipart.io.load_atom_vectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load atomic vectors written with <a title="hipart.io.dump_atom_vectors" class="reference internal" href="#hipart.io.dump_atom_vectors"><tt class="xref docutils literal"><span class="pre">dump_atom_vectors()</span></tt></a>.</p>
+<dl class="docutils">
+<dt>Argument:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">filename</span></tt>  &#8211;  The file to load from.</div>
+</div>
+</dd>
+</dl>
+<p>Returns the array with vectors.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.io.dump_atom_matrix">
+<tt class="descclassname">hipart.io.</tt><tt class="descname">dump_atom_matrix</tt><big>(</big><em>filename</em>, <em>matrix</em>, <em>name</em>, <em>numbers=None</em><big>)</big><a class="headerlink" href="#hipart.io.dump_atom_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump a 2D-array of atomic pair quantities into a text file.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">filename</span></tt>  &#8211;  The file to dump in.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">matrix</span></tt>  &#8211;  A 2D-array of atomic pair quantities, e.g. bond
+orders.</div>
+</div>
+</dd>
+<dt>Optional arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">numbers</span></tt>  &#8211;  An array with atomic numbers to decorate the file</div>
+<div class="line"><tt class="docutils literal"><span class="pre">name</span></tt>  &#8211;  the name of the quantity to decorate the file</div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.io.load_atom_matrix">
+<tt class="descclassname">hipart.io.</tt><tt class="descname">load_atom_matrix</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#hipart.io.load_atom_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load atomic pair quantities written with <a title="hipart.io.dump_atom_matrix" class="reference internal" href="#hipart.io.dump_atom_matrix"><tt class="xref docutils literal"><span class="pre">dump_atom_matrix()</span></tt></a>.</p>
+<dl class="docutils">
+<dt>Argument:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">filename</span></tt>  &#8211;  The file to load from.</div>
+</div>
+</dd>
+</dl>
+<p>Returns the square array with pair quantities.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.io.dump_atom_fields">
+<tt class="descclassname">hipart.io.</tt><tt class="descname">dump_atom_fields</tt><big>(</big><em>filename</em>, <em>table</em>, <em>labels</em>, <em>name</em>, <em>numbers=None</em><big>)</big><a class="headerlink" href="#hipart.io.dump_atom_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump a table with multiple scalar atomic quantities into a text file.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">filename</span></tt>  &#8211;  The file to dump in.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">table</span></tt>  &#8211;  A 2D-array of atomic scalar quantities, e.g. the atomic
+multipole expansions. Each column corresponds to a
+quantity and each row corresponds to an atom.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">labels</span></tt>  &#8211;  The labels of the atomic quantities. The number of
+labels and the number of columns in the table must be
+the same.</div>
+</div>
+</dd>
+<dt>Optional arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">numbers</span></tt>  &#8211;  An array with atomic numbers to decorate the file</div>
+<div class="line"><tt class="docutils literal"><span class="pre">name</span></tt>  &#8211;  the name of the quantity to decorate the file</div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.io.load_atom_fields">
+<tt class="descclassname">hipart.io.</tt><tt class="descname">load_atom_fields</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#hipart.io.load_atom_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load multiple atomic quantities written with <a title="hipart.io.dump_atom_fields" class="reference internal" href="#hipart.io.dump_atom_fields"><tt class="xref docutils literal"><span class="pre">dump_atom_fields()</span></tt></a>.</p>
+<dl class="docutils">
+<dt>Argument:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">filename</span></tt>  &#8211;  The file to load from.</div>
+</div>
+</dd>
+</dl>
+<p>Returns a tuple with two results: (i) the table with atomic scalar
+quantities and (ii) the labels from the table header.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hipart.io.dump_overlap_matrices">
+<tt class="descclassname">hipart.io.</tt><tt class="descname">dump_overlap_matrices</tt><big>(</big><em>filename</em>, <em>overlap_matrices</em>, <em>numbers=None</em><big>)</big><a class="headerlink" href="#hipart.io.dump_overlap_matrices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump a the atomic overlap matrices into a text file.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">filename</span></tt>  &#8211;  The file to dump in.</div>
+<div class="line"><tt class="docutils literal"><span class="pre">overlap_matrices</span></tt>  &#8211;  A list with (square) atomic overlap
+matrices.</div>
+</div>
+</dd>
+<dt>Optional arguments:</dt>
+<dd><div class="first last line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">numbers</span></tt>  &#8211;  An array with atomic numbers to decorate the file</div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-hipart.opts">
+<h2><a title="" class="reference external" href="#module-hipart.opts"><tt class="xref docutils literal"><span class="pre">hipart.opts</span></tt></a> &#8212; Command line parsion for <tt class="docutils literal"><span class="pre">hi-*.py</span></tt> scripts<a class="headerlink" href="#module-hipart.opts" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="hipart.opts.parse_command_line">
+<tt class="descclassname">hipart.opts.</tt><tt class="descname">parse_command_line</tt><big>(</big><em>script_usage</em><big>)</big><a class="headerlink" href="#hipart.opts.parse_command_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-hipart.log">
+<h2><a title="" class="reference external" href="#module-hipart.log"><tt class="xref docutils literal"><span class="pre">hipart.log</span></tt></a> &#8212; Screen output<a class="headerlink" href="#module-hipart.log" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="hipart.log.ProgressBar">
+<em class="property">class </em><tt class="descclassname">hipart.log.</tt><tt class="descname">ProgressBar</tt><big>(</big><em>label</em>, <em>n</em>, <em>indent=0</em>, <em>width=80</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#hipart.log.ProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.log.ProgressBar.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>inc=1</em><big>)</big><a class="headerlink" href="#hipart.log.ProgressBar.__call__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.log.ProgressBar.dump">
+<tt class="descname">dump</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#hipart.log.ProgressBar.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hipart.log.Log">
+<em class="property">class </em><tt class="descclassname">hipart.log.</tt><tt class="descname">Log</tt><a class="headerlink" href="#hipart.log.Log" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hipart.log.Log.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#hipart.log.Log.__call__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.log.Log.begin">
+<tt class="descname">begin</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#hipart.log.Log.begin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.log.Log.end">
+<tt class="descname">end</tt><big>(</big><big>)</big><a class="headerlink" href="#hipart.log.Log.end" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hipart.log.Log.level">
+<tt class="descname">level</tt><a class="headerlink" href="#hipart.log.Log.level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.log.Log.pb">
+<tt class="descname">pb</tt><big>(</big><em>s</em>, <em>num</em><big>)</big><a class="headerlink" href="#hipart.log.Log.pb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.log.Log.set_verbose">
+<tt class="descname">set_verbose</tt><big>(</big><em>verbose</em><big>)</big><a class="headerlink" href="#hipart.log.Log.set_verbose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-hipart.work">
+<h2><a title="" class="reference external" href="#module-hipart.work"><tt class="xref docutils literal"><span class="pre">hipart.work</span></tt></a> &#8212; Control temporary work files<a class="headerlink" href="#module-hipart.work" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="hipart.work.Work">
+<em class="property">class </em><tt class="descclassname">hipart.work.</tt><tt class="descname">Work</tt><big>(</big><em>directory=None</em>, <em>do_clean=False</em><big>)</big><a class="headerlink" href="#hipart.work.Work" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="hipart.work.Work.active">
+<tt class="descname">active</tt><a class="headerlink" href="#hipart.work.Work.active" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.work.Work.clean">
+<tt class="descname">clean</tt><big>(</big><big>)</big><a class="headerlink" href="#hipart.work.Work.clean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.work.Work.create">
+<tt class="descname">create</tt><big>(</big><big>)</big><a class="headerlink" href="#hipart.work.Work.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.work.Work.dump">
+<tt class="descname">dump</tt><big>(</big><em>name</em>, <em>array</em>, <em>ignore=False</em><big>)</big><a class="headerlink" href="#hipart.work.Work.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hipart.work.Work.load">
+<tt class="descname">load</tt><big>(</big><em>name</em>, <em>shape=None</em><big>)</big><a class="headerlink" href="#hipart.work.Work.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference external" href="#"><tt class="docutils literal"><span class="pre">hipart</span></tt> &#8212; Fuzzy atom partitioning</a><ul>
+<li><a class="reference external" href="#module-hipart.context"><tt class="docutils literal"><span class="pre">hipart.context</span></tt> &#8212; Contexts instead of global variables</a></li>
+<li><a class="reference external" href="#module-hipart.schemes"><tt class="docutils literal"><span class="pre">hipart.schemes</span></tt> &#8212; Partitioning schemes and derived quantities</a></li>
+<li><a class="reference external" href="#module-hipart.wavefn"><tt class="docutils literal"><span class="pre">hipart.wavefn</span></tt> &#8212; Electronic structure representation</a></li>
+<li><a class="reference external" href="#module-hipart.atomdb"><tt class="docutils literal"><span class="pre">hipart.atoms</span></tt> and <tt class="docutils literal"><span class="pre">hipart.atomdb</span></tt> &#8212; Atomic databases</a></li>
+<li><a class="reference external" href="#module-hipart.fit"><tt class="docutils literal"><span class="pre">hipart.fit</span></tt> &#8212; ESP cost functions</a></li>
+<li><a class="reference external" href="#module-hipart.grids"><tt class="docutils literal"><span class="pre">hipart.grids</span></tt> &#8212; Numerical integration grids</a></li>
+<li><a class="reference external" href="#module-hipart.lebedev_laikov"><tt class="docutils literal"><span class="pre">hipart.lebedev_laikov</span></tt> &#8212; Lebedev Laikov angular grid data</a></li>
+<li><a class="reference external" href="#module-hipart.spline"><tt class="docutils literal"><span class="pre">hipart.spline</span></tt> &#8212; Cubic spline interpolation</a></li>
+<li><a class="reference external" href="#module-hipart.io"><tt class="docutils literal"><span class="pre">hipart.io</span></tt> &#8212; IO for Hipart file formats</a></li>
+<li><a class="reference external" href="#module-hipart.opts"><tt class="docutils literal"><span class="pre">hipart.opts</span></tt> &#8212; Command line parsion for <tt class="docutils literal"><span class="pre">hi-*.py</span></tt> scripts</a></li>
+<li><a class="reference external" href="#module-hipart.log"><tt class="docutils literal"><span class="pre">hipart.log</span></tt> &#8212; Screen output</a></li>
+<li><a class="reference external" href="#module-hipart.work"><tt class="docutils literal"><span class="pre">hipart.work</span></tt> &#8212; Control temporary work files</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tut_usage.html"
+                        title="previous chapter">3. Using HiPart</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ref_gint.html"
+                        title="next chapter"><tt class="docutils literal docutils literal"><span class="pre">hipart.gint</span></tt> &#8212; (Towards a) Gaussian integrals library</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/ref_hipart.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ref_gint.html" title="hipart.gint — (Towards a) Gaussian integrals library"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tut_usage.html" title="3. Using HiPart"
+             >previous</a> |</li>
+        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Toon Verstraelen.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.
+    </div>
+  </body>
+</html>
