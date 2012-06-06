@@ -1,114 +1,15 @@
-HiPart 0.004 README
-===================
-
-Contents of this README File:
- * Short description
- * Software dependencies
- * How to install
- * How to get technical support
- * How to use
- * Become a registered user
- * Contact information
+HiPart is a program to analyze the electronic structure of molecules with
+fuzzy-atom partitioning methods. It now supports four schemes to define atomic
+partitions: the Becke scheme, The Hirshfeld scheme, the Iterative Hirshfeld
+scheme, and the Iterative Stockholder Analysis. Within each scheme the following
+quantities can be computed: atomic charges, atomic dipoles, quality of charges
+and dipoles with respect to the ESP, the atomic multipole expansion, net and
+overlap populations, bond orders and spin charges.
 
 
-Short description
------------------
+More information about Zeobuilder can be found on the CMM Software website:
+http://molmod.ugent.be/software/
 
-HiPart is a software toolkit to analyse molecular densities with the fuzzy atom 
-partitioning schemes. 
-
-License
--------
-
-HiPart is distributed as open source software under the conditions of the GPL
+Zeobuilder is distributed as open source software under the conditions of the GPL
 license version 3.  Read the file COPYING for more details, or visit
 http://www.gnu.org/licenses/
-
-The file hipart/Lebedev-Laikov.F is not covered by the GPL license. 
-Lebedev-Laikov.F is public domain and can be downloaded from ccl.net:
-
-http://www.ccl.net/cca/software/SOURCES/FORTRAN/Lebedev-Laikov-Grids/index.shtml
-
-We thank the authors for publicly releasing this file.
-
-
-Software dependencies
----------------------
-
-The following software has to be installed on your system before you can use
-Tracks:
- 1) Python (>=2.4, <3.0): see http://www.python.org/
- 2) Numpy (>=1.0.1): see http://www.scipy.org/
- 3) MolMod (>= 0.004): see http://molmod.ugent.be/code/
-
-
-How to install
---------------
-
-There are several ways to install HiPart, which are all documented
-at the homepage: http://molmod.ugent.be/code/
-
-
-How to get technical support
-----------------------------
-
-Technical support is availlable for all registered CMM Code users. All
-information can be found at: http://molmod.ugent.be/code/
-
-
-How to use
-----------
-
-See the file HOWTO for step-by-step instructions to get started.
-
-
-Become a registered user
-------------------------
-
-There are 5 good reasons to become a registered user:
-
- 1.  Through your registration, we can prove that people are really using
- softwarde developed at the Center for Molecular Modeling for their 
- scientific work. This facilitates the fund-raising process and guarantees 
- the continuity of these projects.
-
- 2. It blocks spammers from unauthorized access to all online CMM Code
- services.
- 
- 3. A registered user can subscribe to the CMM Code mailing lists.
- 
- 4. A registered user is allowed to edit the wiki pages to increase the
- visibility of his/her related work.
- 
- 5. Registered users are allowed to submit bugs. If time permits, we will fix
- your problems in the next bug-fix release of Tracks.
-
-
-If you think this software is useful, consider to register as a CMM Code user:
-https://molmod.ugent.be/code/registration/
-
-
-Contact information
--------------------
-
-Supervisors:
-
-Prof. Dr. Michel Waroquier and Prof. Dr. Ir. Veronique Van Speybroeck
-
-Center for Molecular Modeling
-Ghent University
-Proeftuinstraat 86, B-9000 GENT - BELGIUM
-Tel: +32 9 264 65 59
-Fax: +32 9 264 65 60
-Email: Michel.Waroquier@UGent.be
-Email: Veronique.VanSpeybroeck@UGent.be 
-
-Author:
-
-Toon Verstraelen <Toon.Verstraelen@UGent.be>
-Center for Molecular Modeling
-Ghent University
-Proeftuinstraat 86
-9000 Gent, Belgium
-Tel: +32 (0)9 264 65 56
-
