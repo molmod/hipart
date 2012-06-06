@@ -42,6 +42,7 @@ Tutorial
    :numbered:
 
    tut_install
+   tut_support
    tut_theory
    tut_usage
 
