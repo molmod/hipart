@@ -98,7 +98,6 @@ following directories:
 
 * Scripts: ``~/bin``
 * Modules: ``~/lib/python`` or ``~/lib64/python``
-* Data: ``~/share``
 
 There should be at least some files present in these directories.
 
