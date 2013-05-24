@@ -2,18 +2,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. Using HiPart &mdash; HiPart v0.0 documentation</title>
+    <title>5. Using HiPart &mdash; HiPart 0.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '#',
+        URL_ROOT:    '',
         VERSION:     '0.0',
-        COLLAPSE_MODINDEX: false,
+        COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
@@ -21,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="HiPart v0.0 documentation" href="index.html" />
+    <link rel="top" title="HiPart 0.0 documentation" href="index.html" />
     <link rel="next" title="hipart — Fuzzy atom partitioning" href="ref_hipart.html" />
     <link rel="prev" title="4. Theoretical background" href="tut_theory.html" /> 
   </head>
@@ -33,15 +36,15 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="ref_hipart.html" title="hipart — Fuzzy atom partitioning"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="tut_theory.html" title="4. Theoretical background"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">HiPart 0.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -52,7 +55,7 @@
             
   <div class="section" id="using-hipart">
 <h1>5. Using HiPart<a class="headerlink" href="#using-hipart" title="Permalink to this headline">¶</a></h1>
-<p>For the terminology used in this chapter we refer to the <a class="reference external" href="tut_theory.html#theory"><em>Theoretical background</em></a>.</p>
+<p>For the terminology used in this chapter we refer to the <a class="reference internal" href="tut_theory.html#theory"><em>Theoretical background</em></a>.</p>
 <p>HiPart is actually not a single program but a collection of Python scripts that
 can be used from the command line to perform population analysis on Gaussian
 computations as a post-processing step. All scripts start with <tt class="docutils literal"><span class="pre">hi-</span></tt>, which
@@ -145,7 +148,7 @@ checkpoint file, and not the post-HF density matrix.</li>
 </div>
 <div class="section" id="preparing-the-atomic-database">
 <h2>5.3. Preparing the atomic database<a class="headerlink" href="#preparing-the-atomic-database" title="Permalink to this headline">¶</a></h2>
-<p>Both the <a class="reference external" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> scheme and <a class="reference external" href="tut_theory.html#hirshfeld-i"><em>Iterative Hirshfeld</em></a> scheme rely on a
+<p>Both the <a class="reference internal" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> scheme and <a class="reference internal" href="tut_theory.html#hirshfeld-i"><em>Iterative Hirshfeld</em></a> scheme rely on a
 database of pro-atoms. These are spherically averaged atomic densities obtained
 from single-atom computations. The program <tt class="docutils literal"><span class="pre">hi-atomdb.py</span></tt> generates such a
 database using the Gaussian program. Make sure the <tt class="docutils literal"><span class="pre">g03</span></tt> or <tt class="docutils literal"><span class="pre">g09</span></tt> binary is
@@ -439,7 +442,7 @@ Options:
                         Maximum number of iterations in self-consistent
                         procedures. [default=500]</pre>
 </div>
-<p>We will first compute the <a class="reference external" href="tut_theory.html#becke"><em>Becke</em></a> charges, as the <a class="reference external" href="tut_theory.html#becke"><em>Becke</em></a> scheme is
+<p>We will first compute the <a class="reference internal" href="tut_theory.html#becke"><em>Becke</em></a> charges, as the <a class="reference internal" href="tut_theory.html#becke"><em>Becke</em></a> scheme is
 the simplest of the four partitioning methods. The screen output gives some
 progress information of the various parts of the program. This is screen output
 in the case of the alanine molecule:</p>
@@ -586,7 +589,7 @@ number of atoms: 13
 </div>
 <p>It is easily processed with other programs in a follow-up analysis. Note that
 the same data are also present in binary format in the file
-<tt class="docutils literal"><span class="pre">work/becke_charges.bin.</span></tt> The module <a title="" class="reference external" href="ref_hipart.html#module-hipart.io"><tt class="xref docutils literal"><span class="pre">hipart.io</span></tt></a> contains Python routines
+<tt class="docutils literal"><span class="pre">work/becke_charges.bin.</span></tt> The module <a class="reference internal" href="ref_hipart.html#module-hipart.io" title="hipart.io"><tt class="xref py py-mod docutils literal"><span class="pre">hipart.io</span></tt></a> contains Python routines
 to read and write most HiPart output files in your own Python scripts.</p>
 <p>Although the numbers in the output file are printed with 13 decimals, one must
 realize that precision is not the same as accuracy. The accuracy of these
@@ -657,7 +660,7 @@ densities are obtained from the 'scheme' specified at the command line.
 <p>The screen output is also very similar. Depending on the previously executed
 scripts, e.g. <tt class="docutils literal"><span class="pre">hi-charges.py</span></tt>, some intermediate results can be loaded from
 the work directory and do not have to be computed again.</p>
-<p>The following example computes the atomic <a class="reference external" href="tut_theory.html#hirshfeld-i"><em>Iterative Hirshfeld</em></a> dipoles in the
+<p>The following example computes the atomic <a class="reference internal" href="tut_theory.html#hirshfeld-i"><em>Iterative Hirshfeld</em></a> dipoles in the
 alanine molecule:</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; hi-dipoles.py alanine.fchk hirshi atoms/densities.txt
 ---TIME--- ---------------------------------LOG---------------------------------
@@ -750,7 +753,7 @@ number of atoms: 13
 <div class="section" id="testing-charges-and-dipoles-on-the-esp-grid">
 <h3>5.4.3. Testing charges and dipoles on the ESP grid<a class="headerlink" href="#testing-charges-and-dipoles-on-the-esp-grid" title="Permalink to this headline">¶</a></h3>
 <p>It is well known that some charge population schemes are better in reproducing
-the electrostatic potential around a molecule than others. <a class="reference external" href="references.html#bultinck2009">[Bultinck2009]</a> Since this
+the electrostatic potential around a molecule than others. <a class="reference internal" href="references.html#bultinck2009">[Bultinck2009]</a> Since this
 often a desirable property, the script <tt class="docutils literal"><span class="pre">hi-esp-test.py</span></tt> can be used to verify
 the quality of the atomic charges and/or dipoles obtained with a partitioning
 scheme.</p>
@@ -760,14 +763,14 @@ scheme.</p>
 and (iii) charges with dipoles derived from the population analysis. These
 molecular dipole approximations are compared with the molecular dipole vector
 reported in the formatted checkpoint file.</li>
-<li>A second test is based on an <a class="reference external" href="tut_theory.html#esp"><em>Electrostatic Potential (ESP) Fitting</em></a> cost function for the charges and
+<li>A second test is based on an <a class="reference internal" href="tut_theory.html#esp"><em>Electrostatic Potential (ESP) Fitting</em></a> cost function for the charges and
 the dipoles. With this cost function the script computes how well (i) the
 charges, (ii) the dipoles, and (iii) the charges with the dipoles reproduce
 the ESP around the molecule.</li>
 </ol>
 <p>Again, the script is executed in the same style as all other scripts. See the
 documentation of <tt class="docutils literal"><span class="pre">hi-charges.py</span></tt> for more details. The example below tests the
-charges and dipoles obtained with a <a class="reference external" href="tut_theory.html#hirshfeld-i"><em>Iterative Hirshfeld</em></a> partitioning:</p>
+charges and dipoles obtained with a <a class="reference internal" href="tut_theory.html#hirshfeld-i"><em>Iterative Hirshfeld</em></a> partitioning:</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; hi-esp-test.py alanine.fchk hirshi atoms/densities.txt
 ---TIME--- ---------------------------------LOG---------------------------------
       0.02 BEGIN Loading Electronic structure
@@ -869,7 +872,7 @@ dipoles is relatively small.</p>
 <div class="section" id="atomic-multipole-expansions">
 <h3>5.4.4. Atomic multipole expansions<a class="headerlink" href="#atomic-multipole-expansions" title="Permalink to this headline">¶</a></h3>
 <p>The multipole expansion of each atom, up to the hexadecapole, is computed with
-the script <tt class="docutils literal"><span class="pre">hi-multipoles.py</span></tt>. This is an example with the <a class="reference external" href="tut_theory.html#isa"><em>Iterative Stockholder Analysis</em></a>:</p>
+the script <tt class="docutils literal"><span class="pre">hi-multipoles.py</span></tt>. This is an example with the <a class="reference internal" href="tut_theory.html#isa"><em>Iterative Stockholder Analysis</em></a>:</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; hi-multipoles.py alanine.fchk isa
 ---TIME--- ---------------------------------LOG---------------------------------
       0.02 BEGIN Loading Electronic structure
@@ -1176,7 +1179,7 @@ the script <tt class="docutils literal"><span class="pre">hi-multipoles.py</span
 <p>We often experience slow convergence with the ISA method. This may be inherent
 to the method. Any suggestions for improvement are always appreciated.</p>
 <p>The output is written to <tt class="docutils literal"><span class="pre">alanine.hipart/isa_multipoles.txt</span></tt> and can also be
-read into your Python scripts with the routines in <a title="" class="reference external" href="ref_hipart.html#module-hipart.io"><tt class="xref docutils literal"><span class="pre">hipart.io</span></tt></a>.</p>
+read into your Python scripts with the routines in <a class="reference internal" href="ref_hipart.html#module-hipart.io" title="hipart.io"><tt class="xref py py-mod docutils literal"><span class="pre">hipart.io</span></tt></a>.</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; cat alanine.hipart/isa_multipoles.txt
 number of atoms: 13
 number of fields: 25
@@ -1201,7 +1204,7 @@ number of fields: 25
 <h3>5.4.5. Net and overlap populations<a class="headerlink" href="#net-and-overlap-populations" title="Permalink to this headline">¶</a></h3>
 <p>Net and overlap electron populations are computed with the script
 <tt class="docutils literal"><span class="pre">hi-net-overlap.py</span></tt>. This example computes the net and overlap populations
-using the <a class="reference external" href="tut_theory.html#becke"><em>Becke</em></a> scheme:</p>
+using the <a class="reference internal" href="tut_theory.html#becke"><em>Becke</em></a> scheme:</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; hi-net-overlap.py alanine.fchk becke
 ---TIME--- ---------------------------------LOG---------------------------------
       0.03 BEGIN Loading Electronic structure
@@ -1293,7 +1296,7 @@ number of atoms: 13
 <p>The computation of bond orders, valences and free valences is supported for both
 SCF computations and correlated methods, either closed or open shell. We show
 the computation on the alanine radical is it has non-zero free valences. This
-time we use the <a class="reference external" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> partitioning method.</p>
+time we use the <a class="reference internal" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> partitioning method.</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; hi-bond-orders.py alanine-rad.fchk hirsh atoms/densities.txt
 ---TIME--- ---------------------------------LOG---------------------------------
       0.02 BEGIN Loading Electronic structure
@@ -1401,7 +1404,7 @@ written in the two following output files, respectively.</p>
 <p>The computation of spin charges only makes sense in the case of open shell
 computations. The screen output must contain the line <tt class="docutils literal"><span class="pre">Spin</span> <span class="pre">density</span> <span class="pre">present:</span>
 <span class="pre">True</span></tt> in the beginning. If not, the reported spin charges are always zero.</p>
-<p>This example computes <a class="reference external" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> spin charges in the alanine radical:</p>
+<p>This example computes <a class="reference internal" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> spin charges in the alanine radical:</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; hi-spin-charges.py alanine-rad.fchk hirsh atoms/densities.txt
 ---TIME--- ---------------------------------LOG---------------------------------
       0.02 BEGIN Loading Electronic structure
@@ -1472,7 +1475,7 @@ case there are two additional outputs:
 <tt class="docutils literal"><span class="pre">&lt;name&gt;.hipart/&lt;scheme&gt;_beta_overlap_matrices.txt</span></tt> and
 <tt class="docutils literal"><span class="pre">&lt;name&gt;.hipart/&lt;scheme&gt;_natural_overlap_matrices.txt</span></tt>.</li>
 </ul>
-<p>The <a class="reference external" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> atomic overlap matrices in the original basis of the alanine
+<p>The <a class="reference internal" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> atomic overlap matrices in the original basis of the alanine
 radical are computed as follows.</p>
 <div class="highlight-python"><pre>toon@poony ~/hipart/examples/001-usage&gt; hi-overlap-matrices.py alanine-rad.fchk hirsh atoms/densities.txt
 ---TIME--- ---------------------------------LOG---------------------------------
@@ -1627,11 +1630,11 @@ possibilities are endless.</p>
 <p>When a large number of Gaussian files must be processed to generate a database
 of atomic partial charges, the standard HiPart command-line scripts may not be
 suitable enough. The following custom script uses the HiPart library to compute
-<a class="reference external" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> charges for all molecules in the previous section. The regular
+<a class="reference internal" href="tut_theory.html#hirshfeld"><em>Hirshfeld</em></a> charges for all molecules in the previous section. The regular
 output and work files are suppressed and all results are written to a single
 file with a custom format. The script is included in the source tree in the
 directory <tt class="docutils literal"><span class="pre">examples/002-batch</span></tt>.</p>
-<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><pre> 1
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -1691,7 +1694,7 @@ directory <tt class="docutils literal"><span class="pre">examples/002-batch</spa
 58
 59
 60
-61</pre></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+61</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
 <span class="c"># -*- coding: utf-8 -*-</span>
 <span class="c"># HiPart is a program to analyze the electronic structure of molecules with</span>
 <span class="c"># fuzzy-atom partitioning methods.</span>
@@ -1733,7 +1736,7 @@ directory <tt class="docutils literal"><span class="pre">examples/002-batch</spa
     <span class="c"># loop over all formatted checkpoint files</span>
     <span class="k">for</span> <span class="n">fn_fchk</span> <span class="ow">in</span> <span class="n">fns_fchk</span><span class="p">:</span>
         <span class="c"># setup a HiPart computation</span>
-        <span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span><span class="n">lebedev</span><span class="o">=</span><span class="mf">266</span><span class="p">,</span> <span class="n">do_work</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">do_output</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span><span class="n">lebedev</span><span class="o">=</span><span class="mi">266</span><span class="p">,</span> <span class="n">do_work</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">do_output</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
         <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">fn_fchk</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
         <span class="n">scheme</span> <span class="o">=</span> <span class="n">HirshfeldScheme</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">atom_table</span><span class="p">)</span>
         <span class="c"># the following line does the computation</span>
@@ -1743,8 +1746,8 @@ directory <tt class="docutils literal"><span class="pre">examples/002-batch</spa
         <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">f</span><span class="p">,</span> <span class="s">&quot;XXX&quot;</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">size</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
             <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">f</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%3i</span><span class="s"> </span><span class="si">% 15.10f</span><span class="s"> </span><span class="si">% 15.10f</span><span class="s"> </span><span class="si">% 15.10f</span><span class="s"> </span><span class="si">% 9.5f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                <span class="n">m</span><span class="o">.</span><span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">m</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mf">0</span><span class="p">]</span><span class="o">/</span><span class="n">angstrom</span><span class="p">,</span>
-                <span class="n">m</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mf">1</span><span class="p">]</span><span class="o">/</span><span class="n">angstrom</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mf">2</span><span class="p">]</span><span class="o">/</span><span class="n">angstrom</span><span class="p">,</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">m</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">angstrom</span><span class="p">,</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">angstrom</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">angstrom</span><span class="p">,</span>
                 <span class="n">scheme</span><span class="o">.</span><span class="n">charges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -1805,7 +1808,7 @@ grids, the results vary each run for purely numerical reasons. The script
 concludes with a summary of the configurations that are Pareto-optimal with
 respect to a minimal error and a minimal computational cost. The script is
 included in the source tree in the directory <tt class="docutils literal"><span class="pre">examples/003-grid-tuning</span></tt>.</p>
-<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><pre>  1
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
   2
   3
   4
@@ -1999,7 +2002,7 @@ included in the source tree in the directory <tt class="docutils literal"><span 
 192
 193
 194
-195</pre></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+195</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
 <span class="c"># -*- coding: utf-8 -*-</span>
 <span class="c"># HiPart is a program to analyze the electronic structure of molecules with</span>
 <span class="c"># fuzzy-atom partitioning methods.</span>
@@ -2030,7 +2033,7 @@ included in the source tree in the directory <tt class="docutils literal"><span 
     <span class="kn">from</span> <span class="nn">molmod.periodic</span> <span class="kn">import</span> <span class="n">periodic</span>
 
     <span class="c"># atom numbers of interest</span>
-    <span class="n">atom_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1</span><span class="p">,</span> <span class="mf">6</span><span class="p">,</span> <span class="mf">7</span><span class="p">,</span> <span class="mf">8</span><span class="p">]</span>
+    <span class="n">atom_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
 
     <span class="c"># auxiliary function to setup an atomic database with a given radial grid</span>
     <span class="c"># size</span>
@@ -2044,13 +2047,13 @@ included in the source tree in the directory <tt class="docutils literal"><span 
 
 
     <span class="c"># array with different sizes for the radial grid</span>
-    <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="mf">50</span><span class="p">,</span> <span class="mf">100</span><span class="p">,</span> <span class="mf">200</span><span class="p">,</span> <span class="mf">400</span><span class="p">]</span>
+    <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">]</span>
 
     <span class="c"># first run with the least radial grid points</span>
-    <span class="n">my_run_atomdb</span><span class="p">(</span><span class="n">sizes</span><span class="p">[</span><span class="mf">0</span><span class="p">])</span>
+    <span class="n">my_run_atomdb</span><span class="p">(</span><span class="n">sizes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c"># then make symlinks to reuse the atomic computations</span>
-    <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">[</span><span class="mf">1</span><span class="p">:]:</span>
+    <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="n">directory</span> <span class="o">=</span> <span class="s">&quot;atoms</span><span class="si">%03i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">size</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
@@ -2061,7 +2064,7 @@ included in the source tree in the directory <tt class="docutils literal"><span 
                 <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">link_name</span><span class="p">)</span>
 
     <span class="c"># run atomdb in other directories</span>
-    <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">[</span><span class="mf">1</span><span class="p">:]:</span>
+    <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="n">my_run_atomdb</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
 
     <span class="c"># load the tables with atomic density profiles</span>
@@ -2099,12 +2102,12 @@ included in the source tree in the directory <tt class="docutils literal"><span 
     <span class="c"># standard devation on each charge over the 40 runs is computed, and then</span>
     <span class="c"># the error over all atoms is averaged. This error is used as &#39;the&#39; error on</span>
     <span class="c"># the charges. The cost is the cpu time consumed for computing this error.</span>
-    <span class="k">for</span> <span class="n">size</span><span class="p">,</span> <span class="n">atom_table</span> <span class="ow">in</span> <span class="n">sorted</span><span class="p">(</span><span class="n">atom_tables</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()):</span>
-        <span class="k">for</span> <span class="n">lebedev</span> <span class="ow">in</span> <span class="mf">26</span><span class="p">,</span> <span class="mf">50</span><span class="p">,</span> <span class="mf">110</span><span class="p">,</span> <span class="mf">170</span><span class="p">,</span> <span class="mf">266</span><span class="p">,</span> <span class="mf">434</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">size</span><span class="p">,</span> <span class="n">atom_table</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">atom_tables</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()):</span>
+        <span class="k">for</span> <span class="n">lebedev</span> <span class="ow">in</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">170</span><span class="p">,</span> <span class="mi">266</span><span class="p">,</span> <span class="mi">434</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">begin</span><span class="p">(</span><span class="s">&quot;Config size=</span><span class="si">%i</span><span class="s"> lebedev=</span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">lebedev</span><span class="p">))</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
             <span class="n">all_charges</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">counter</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mf">40</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">counter</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">begin</span><span class="p">(</span><span class="s">&quot;Sample counter=</span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">counter</span><span class="p">)</span>
                 <span class="c"># Make a new working environment for every sample</span>
                 <span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span><span class="n">lebedev</span><span class="o">=</span><span class="n">lebedev</span><span class="p">,</span> <span class="n">do_work</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
@@ -2116,7 +2119,7 @@ included in the source tree in the directory <tt class="docutils literal"><span 
                 <span class="k">del</span> <span class="n">scheme</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
             <span class="n">all_charges</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_charges</span><span class="p">)</span>
-            <span class="n">error</span> <span class="o">=</span> <span class="n">all_charges</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mf">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">all_charges</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
             <span class="n">cost</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
             <span class="n">log</span><span class="p">(</span><span class="s">&quot;error=</span><span class="si">%.2e</span><span class="s"> cost=</span><span class="si">%.2e</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">cost</span><span class="p">))</span>
             <span class="n">configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Config</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">lebedev</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">cost</span><span class="p">))</span>
@@ -2134,15 +2137,15 @@ included in the source tree in the directory <tt class="docutils literal"><span 
     <span class="n">configs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span>
     <span class="c"># eliminate all configs that are not pareto-optimal</span>
     <span class="n">configs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">error</span><span class="p">))</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">):</span>
         <span class="n">ref_cost</span> <span class="o">=</span> <span class="n">configs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cost</span>
-        <span class="n">j</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span> <span class="o">-</span><span class="mf">1</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">while</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">configs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">cost</span> <span class="o">&gt;=</span> <span class="n">configs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cost</span><span class="p">:</span>
                 <span class="k">del</span> <span class="n">configs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-            <span class="n">j</span> <span class="o">-=</span> <span class="mf">1</span>
-        <span class="n">i</span> <span class="o">+=</span> <span class="mf">1</span>
+            <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="c"># print the pareto front.</span>
     <span class="n">log</span><span class="o">.</span><span class="n">begin</span><span class="p">(</span><span class="s">&quot;Pareto front&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">:</span>
@@ -2156,32 +2159,32 @@ included in the source tree in the directory <tt class="docutils literal"><span 
     <span class="c"># using HiPart as a library. It is usefull to write documentation though.</span>
     <span class="c"># 1) Arrange everything in a convenient data format for making a table</span>
     <span class="n">config_map</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">lebedevs</span> <span class="o">=</span> <span class="n">set</span><span class="p">([])</span>
-    <span class="n">sizes</span> <span class="o">=</span> <span class="n">set</span><span class="p">([])</span>
+    <span class="n">lebedevs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+    <span class="n">sizes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
     <span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">:</span>
         <span class="n">config_map</span><span class="p">[(</span><span class="n">config</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">lebedev</span><span class="p">)]</span> <span class="o">=</span> <span class="n">config</span>
         <span class="n">lebedevs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">lebedev</span><span class="p">)</span>
         <span class="n">sizes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-    <span class="n">lebedevs</span> <span class="o">=</span> <span class="n">sorted</span><span class="p">(</span><span class="n">lebedevs</span><span class="p">)</span>
-    <span class="n">sizes</span> <span class="o">=</span> <span class="n">sorted</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span>
+    <span class="n">lebedevs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">lebedevs</span><span class="p">)</span>
+    <span class="n">sizes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span>
     <span class="c"># 2) Write the table header</span>
-    <span class="k">print</span> <span class="s">&quot;=&quot;</span><span class="o">*</span><span class="mf">9</span><span class="p">,</span> <span class="p">(</span><span class="s">&quot;=&quot;</span><span class="o">*</span><span class="mf">10</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lebedevs</span><span class="p">)</span><span class="o">*</span><span class="mf">2</span><span class="p">)</span>
-    <span class="k">print</span> <span class="s">&quot;lebedev  &quot;</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s">&quot;l=</span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mf">21</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lebedevs</span><span class="p">)</span>
-    <span class="k">print</span> <span class="s">&quot;-&quot;</span><span class="o">*</span><span class="mf">9</span><span class="p">,</span> <span class="p">(</span><span class="s">&quot;-&quot;</span><span class="o">*</span><span class="mf">21</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lebedevs</span><span class="p">))</span>
+    <span class="k">print</span> <span class="s">&quot;=&quot;</span><span class="o">*</span><span class="mi">9</span><span class="p">,</span> <span class="p">(</span><span class="s">&quot;=&quot;</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lebedevs</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;lebedev  &quot;</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s">&quot;l=</span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lebedevs</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;-&quot;</span><span class="o">*</span><span class="mi">9</span><span class="p">,</span> <span class="p">(</span><span class="s">&quot;-&quot;</span><span class="o">*</span><span class="mi">21</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lebedevs</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
         <span class="n">words</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lebedevs</span><span class="p">:</span>
             <span class="n">c</span> <span class="o">=</span> <span class="n">config_map</span><span class="p">[(</span><span class="n">s</span><span class="p">,</span><span class="n">l</span><span class="p">)]</span>
             <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">optimal</span><span class="p">:</span>
                 <span class="n">word</span> <span class="o">=</span> <span class="s">&quot;**</span><span class="si">%7.1e</span><span class="s">** &quot;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">error</span>
-                <span class="n">word</span> <span class="o">+=</span> <span class="p">(</span><span class="s">&quot;**</span><span class="si">%.1f</span><span class="s">**&quot;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mf">10</span><span class="p">)</span>
+                <span class="n">word</span> <span class="o">+=</span> <span class="p">(</span><span class="s">&quot;**</span><span class="si">%.1f</span><span class="s">**&quot;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">word</span> <span class="o">=</span> <span class="s">&quot;  </span><span class="si">%7.1e</span><span class="s">   &quot;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">error</span>
-                <span class="n">word</span> <span class="o">+=</span> <span class="p">(</span><span class="s">&quot;</span><span class="si">%.1f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mf">10</span><span class="p">)</span>
+                <span class="n">word</span> <span class="o">+=</span> <span class="p">(</span><span class="s">&quot;</span><span class="si">%.1f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">cost</span><span class="p">)</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
             <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;e+0&quot;</span><span class="p">,</span> <span class="s">&quot;e+&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;e-0&quot;</span><span class="p">,</span> <span class="s">&quot;e-&quot;</span><span class="p">)</span>
             <span class="n">words</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
         <span class="k">print</span> <span class="s">&quot;</span><span class="si">%9s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;s=</span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">s</span><span class="p">),</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
-    <span class="k">print</span> <span class="s">&quot;=&quot;</span><span class="o">*</span><span class="mf">9</span><span class="p">,</span> <span class="p">(</span><span class="s">&quot;=&quot;</span><span class="o">*</span><span class="mf">10</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lebedevs</span><span class="p">)</span><span class="o">*</span><span class="mf">2</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;=&quot;</span><span class="o">*</span><span class="mi">9</span><span class="p">,</span> <span class="p">(</span><span class="s">&quot;=&quot;</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lebedevs</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
@@ -2238,7 +2241,7 @@ in the table below, and the Pareto-optimal cases are printed in bold.</p>
 <col width="8%" />
 </colgroup>
 <tbody valign="top">
-<tr><td>lebedev</td>
+<tr class="row-odd"><td>lebedev</td>
 <td colspan="2">l=26</td>
 <td colspan="2">l=50</td>
 <td colspan="2">l=110</td>
@@ -2246,7 +2249,7 @@ in the table below, and the Pareto-optimal cases are printed in bold.</p>
 <td colspan="2">l=266</td>
 <td colspan="2">l=434</td>
 </tr>
-<tr><td>s=50</td>
+<tr class="row-even"><td>s=50</td>
 <td><strong>3.2e-3</strong></td>
 <td><strong>21.9</strong></td>
 <td>3.8e-3</td>
@@ -2260,7 +2263,7 @@ in the table below, and the Pareto-optimal cases are printed in bold.</p>
 <td>1.3e-3</td>
 <td>292.1</td>
 </tr>
-<tr><td>s=100</td>
+<tr class="row-odd"><td>s=100</td>
 <td><strong>1.3e-3</strong></td>
 <td><strong>42.9</strong></td>
 <td><strong>3.0e-4</strong></td>
@@ -2274,7 +2277,7 @@ in the table below, and the Pareto-optimal cases are printed in bold.</p>
 <td><strong>8.5e-6</strong></td>
 <td><strong>584.4</strong></td>
 </tr>
-<tr><td>s=200</td>
+<tr class="row-even"><td>s=200</td>
 <td>9.6e-4</td>
 <td>85.3</td>
 <td><strong>2.1e-4</strong></td>
@@ -2288,7 +2291,7 @@ in the table below, and the Pareto-optimal cases are printed in bold.</p>
 <td><strong>5.6e-6</strong></td>
 <td><strong>1177.7</strong></td>
 </tr>
-<tr><td>s=400</td>
+<tr class="row-odd"><td>s=400</td>
 <td>6.1e-4</td>
 <td>170.0</td>
 <td>1.5e-4</td>
@@ -2313,7 +2316,7 @@ effective charges.</p>
 results in an error of about 1e-4 for the effective partial charges. (This error
 is also used as the standard convergence criterion for the iterative
 procedures.) When too small grids are used (e.g. s=50,l=26) the iterative
-procedures (<a class="reference external" href="tut_theory.html#hirshfeld-i"><em>Iterative Hirshfeld</em></a> and <a class="reference external" href="tut_theory.html#isa"><em>Iterative Stockholder Analysis</em></a>) will only converge with relaxed
+procedures (<a class="reference internal" href="tut_theory.html#hirshfeld-i"><em>Iterative Hirshfeld</em></a> and <a class="reference internal" href="tut_theory.html#isa"><em>Iterative Stockholder Analysis</em></a>) will only converge with relaxed
 thresholds.</p>
 </div>
 <div class="section" id="method-2">
@@ -2374,7 +2377,7 @@ the Pareto-optimal cases are printed in bold.</p>
 <col width="6%" />
 </colgroup>
 <tbody valign="top">
-<tr><td>lebedev</td>
+<tr class="row-odd"><td>lebedev</td>
 <td colspan="2">l=26</td>
 <td colspan="2">l=50</td>
 <td colspan="2">l=110</td>
@@ -2384,7 +2387,7 @@ the Pareto-optimal cases are printed in bold.</p>
 <td colspan="2">l=1454</td>
 <td colspan="2">l=2702</td>
 </tr>
-<tr><td>s=50</td>
+<tr class="row-even"><td>s=50</td>
 <td><strong>1.1e-3</strong></td>
 <td><strong>0.6</strong></td>
 <td><strong>6.1e-4</strong></td>
@@ -2402,7 +2405,7 @@ the Pareto-optimal cases are printed in bold.</p>
 <td>3.7e-4</td>
 <td>42.5</td>
 </tr>
-<tr><td>s=100</td>
+<tr class="row-odd"><td>s=100</td>
 <td>1.2e-3</td>
 <td>1.1</td>
 <td><strong>3.0e-4</strong></td>
@@ -2420,7 +2423,7 @@ the Pareto-optimal cases are printed in bold.</p>
 <td>2.7e-5</td>
 <td>85.2</td>
 </tr>
-<tr><td>s=200</td>
+<tr class="row-even"><td>s=200</td>
 <td>1.3e-3</td>
 <td>2.3</td>
 <td>1.9e-4</td>
@@ -2438,7 +2441,7 @@ the Pareto-optimal cases are printed in bold.</p>
 <td>1.7e-6</td>
 <td>171.7</td>
 </tr>
-<tr><td>s=400</td>
+<tr class="row-odd"><td>s=400</td>
 <td>8.5e-4</td>
 <td>4.5</td>
 <td>2.1e-4</td>
@@ -2456,7 +2459,7 @@ the Pareto-optimal cases are printed in bold.</p>
 <td><strong>1.1e-7</strong></td>
 <td><strong>343.8</strong></td>
 </tr>
-<tr><td>s=800</td>
+<tr class="row-even"><td>s=800</td>
 <td>5.6e-4</td>
 <td>9.1</td>
 <td>2.0e-4</td>
@@ -2474,7 +2477,7 @@ the Pareto-optimal cases are printed in bold.</p>
 <td><strong>2.1e-8</strong></td>
 <td><strong>688.8</strong></td>
 </tr>
-<tr><td>s=1600</td>
+<tr class="row-odd"><td>s=1600</td>
 <td>2.9e-4</td>
 <td>18.2</td>
 <td>1.1e-4</td>
@@ -2517,7 +2520,7 @@ option is used. The table with (error,time) pairs becomes:</p>
 <col width="6%" />
 </colgroup>
 <tbody valign="top">
-<tr><td>lebedev</td>
+<tr class="row-odd"><td>lebedev</td>
 <td colspan="2">l=26</td>
 <td colspan="2">l=50</td>
 <td colspan="2">l=110</td>
@@ -2527,7 +2530,7 @@ option is used. The table with (error,time) pairs becomes:</p>
 <td colspan="2">l=1454</td>
 <td colspan="2">l=2702</td>
 </tr>
-<tr><td>s=50</td>
+<tr class="row-even"><td>s=50</td>
 <td><strong>2.5e-3</strong></td>
 <td><strong>0.5</strong></td>
 <td><strong>1.1e-3</strong></td>
@@ -2545,7 +2548,7 @@ option is used. The table with (error,time) pairs becomes:</p>
 <td>4.1e-4</td>
 <td>42.9</td>
 </tr>
-<tr><td>s=100</td>
+<tr class="row-odd"><td>s=100</td>
 <td>2.5e-3</td>
 <td>0.9</td>
 <td><strong>8.5e-4</strong></td>
@@ -2563,7 +2566,7 @@ option is used. The table with (error,time) pairs becomes:</p>
 <td>2.7e-5</td>
 <td>86.1</td>
 </tr>
-<tr><td>s=200</td>
+<tr class="row-even"><td>s=200</td>
 <td>2.5e-3</td>
 <td>1.7</td>
 <td>8.2e-4</td>
@@ -2581,7 +2584,7 @@ option is used. The table with (error,time) pairs becomes:</p>
 <td><strong>1.7e-6</strong></td>
 <td><strong>173.1</strong></td>
 </tr>
-<tr><td>s=400</td>
+<tr class="row-odd"><td>s=400</td>
 <td>2.5e-3</td>
 <td>3.4</td>
 <td>8.2e-4</td>
@@ -2599,7 +2602,7 @@ option is used. The table with (error,time) pairs becomes:</p>
 <td><strong>1.2e-7</strong></td>
 <td><strong>347.0</strong></td>
 </tr>
-<tr><td>s=800</td>
+<tr class="row-even"><td>s=800</td>
 <td>2.5e-3</td>
 <td>6.8</td>
 <td>8.2e-4</td>
@@ -2617,7 +2620,7 @@ option is used. The table with (error,time) pairs becomes:</p>
 <td><strong>6.8e-9</strong></td>
 <td><strong>697.6</strong></td>
 </tr>
-<tr><td>s=1600</td>
+<tr class="row-odd"><td>s=1600</td>
 <td>2.5e-3</td>
 <td>13.6</td>
 <td>8.2e-4</td>
@@ -2668,26 +2671,26 @@ when a computation is done twice.</p>
             </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference external" href="#">5. Using HiPart</a><ul>
-<li><a class="reference external" href="#test-molecules">5.1. Test molecules</a></li>
-<li><a class="reference external" href="#running-proper-gaussian-jobs">5.2. Running proper Gaussian jobs</a></li>
-<li><a class="reference external" href="#preparing-the-atomic-database">5.3. Preparing the atomic database</a></li>
-<li><a class="reference external" href="#partitioning-tools">5.4. Partitioning tools</a><ul>
-<li><a class="reference external" href="#atomic-charges">5.4.1. Atomic charges</a></li>
-<li><a class="reference external" href="#atomic-dipoles">5.4.2. Atomic dipoles</a></li>
-<li><a class="reference external" href="#testing-charges-and-dipoles-on-the-esp-grid">5.4.3. Testing charges and dipoles on the ESP grid</a></li>
-<li><a class="reference external" href="#atomic-multipole-expansions">5.4.4. Atomic multipole expansions</a></li>
-<li><a class="reference external" href="#net-and-overlap-populations">5.4.5. Net and overlap populations</a></li>
-<li><a class="reference external" href="#bond-orders-valences-and-free-valences">5.4.6. Bond orders, valences and free valences</a></li>
-<li><a class="reference external" href="#spin-charges">5.4.7. Spin charges</a></li>
-<li><a class="reference external" href="#atomic-overlap-matrices">5.4.8. Atomic overlap matrices</a></li>
+<li><a class="reference internal" href="#">5. Using HiPart</a><ul>
+<li><a class="reference internal" href="#test-molecules">5.1. Test molecules</a></li>
+<li><a class="reference internal" href="#running-proper-gaussian-jobs">5.2. Running proper Gaussian jobs</a></li>
+<li><a class="reference internal" href="#preparing-the-atomic-database">5.3. Preparing the atomic database</a></li>
+<li><a class="reference internal" href="#partitioning-tools">5.4. Partitioning tools</a><ul>
+<li><a class="reference internal" href="#atomic-charges">5.4.1. Atomic charges</a></li>
+<li><a class="reference internal" href="#atomic-dipoles">5.4.2. Atomic dipoles</a></li>
+<li><a class="reference internal" href="#testing-charges-and-dipoles-on-the-esp-grid">5.4.3. Testing charges and dipoles on the ESP grid</a></li>
+<li><a class="reference internal" href="#atomic-multipole-expansions">5.4.4. Atomic multipole expansions</a></li>
+<li><a class="reference internal" href="#net-and-overlap-populations">5.4.5. Net and overlap populations</a></li>
+<li><a class="reference internal" href="#bond-orders-valences-and-free-valences">5.4.6. Bond orders, valences and free valences</a></li>
+<li><a class="reference internal" href="#spin-charges">5.4.7. Spin charges</a></li>
+<li><a class="reference internal" href="#atomic-overlap-matrices">5.4.8. Atomic overlap matrices</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#using-hipart-as-a-library">5.5. Using HiPart as a library</a><ul>
-<li><a class="reference external" href="#batch-processing-of-many-fchk-files">5.5.1. Batch processing of many fchk files</a></li>
-<li><a class="reference external" href="#tuning-integration-grids">5.5.2. Tuning integration grids</a><ul>
-<li><a class="reference external" href="#method-1">5.5.2.1. Method 1</a></li>
-<li><a class="reference external" href="#method-2">5.5.2.2. Method 2</a></li>
+<li><a class="reference internal" href="#using-hipart-as-a-library">5.5. Using HiPart as a library</a><ul>
+<li><a class="reference internal" href="#batch-processing-of-many-fchk-files">5.5.1. Batch processing of many fchk files</a></li>
+<li><a class="reference internal" href="#tuning-integration-grids">5.5.2. Tuning integration grids</a><ul>
+<li><a class="reference internal" href="#method-1">5.5.2.1. Method 1</a></li>
+<li><a class="reference internal" href="#method-2">5.5.2.2. Method 2</a></li>
 </ul>
 </li>
 </ul>
@@ -2710,7 +2713,7 @@ when a computation is done twice.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -2731,7 +2734,7 @@ when a computation is done twice.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
+          <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
           <a href="ref_hipart.html" title="hipart — Fuzzy atom partitioning"
@@ -2739,12 +2742,12 @@ when a computation is done twice.</p>
         <li class="right" >
           <a href="tut_theory.html" title="4. Theoretical background"
              >previous</a> |</li>
-        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">HiPart 0.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Toon Verstraelen.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

@@ -2,18 +2,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>HiPart documentation &mdash; HiPart v0.0 documentation</title>
+    <title>HiPart documentation &mdash; HiPart 0.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '#',
+        URL_ROOT:    '',
         VERSION:     '0.0',
-        COLLAPSE_MODINDEX: false,
+        COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
@@ -21,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="HiPart v0.0 documentation" href="#" />
+    <link rel="top" title="HiPart 0.0 documentation" href="#" />
     <link rel="next" title="1. Installation" href="tut_install.html" /> 
   </head>
   <body>
@@ -32,12 +35,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="tut_install.html" title="1. Installation"
              accesskey="N">next</a> |</li>
-        <li><a href="#">HiPart v0.0 documentation</a> &raquo;</li> 
+        <li><a href="#">HiPart 0.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -48,13 +51,19 @@
             
   <div class="section" id="hipart-documentation">
 <h1>HiPart documentation<a class="headerlink" href="#hipart-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">HiPart is now deprecated but will remain available. All our new developments
+will implemented in <a class="reference external" href="http://theochem.github.com/horton">Horton</a> and we
+encourage everyone to switch to the new code.</p>
+</div>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>HiPart is a program to analyze the electronic structure of molecules with
 fuzzy-atom partitioning methods. It now supports four schemes to define atomic
-partitions: the Becke scheme <a class="reference external" href="references.html#becke1988">[Becke1988]</a>, The Hirshfeld scheme
-<a class="reference external" href="references.html#hirshfeld1977">[Hirshfeld1977]</a>, the Iterative Hirshfeld scheme <a class="reference external" href="references.html#bultinck2007">[Bultinck2007]</a>, and the
-Iterative Stockholder Analysis <a class="reference external" href="references.html#lillestolen2008">[Lillestolen2008]</a>.</p>
+partitions: the Becke scheme <a class="reference internal" href="references.html#becke1988">[Becke1988]</a>, The Hirshfeld scheme
+<a class="reference internal" href="references.html#hirshfeld1977">[Hirshfeld1977]</a>, the Iterative Hirshfeld scheme <a class="reference internal" href="references.html#bultinck2007">[Bultinck2007]</a>, and the
+Iterative Stockholder Analysis <a class="reference internal" href="references.html#lillestolen2008">[Lillestolen2008]</a>.</p>
 <p>Within each scheme the following quantities can be computed: atomic charges,
 atomic dipoles, quality of charges and dipoles with respect to the ESP, the
 atomic multipole expansion, net and overlap populations, bond orders, spin
@@ -64,11 +73,9 @@ contracted Gaussians.</p>
 Toon Verstraelen. It was originally conceived as an autodidactic project to get
 familiar with fuzzy atom partitioning in general, and it was used to generate
 Iterative Hirshfeld charges for a benchmark study of the EEM and SQE model.
-<a class="reference external" href="references.html#verstraelen2009">[Verstraelen2009]</a>. Over the past two years, the program evolved into a more
+<a class="reference internal" href="references.html#verstraelen2009">[Verstraelen2009]</a>. Over two years, the program evolved into a more
 efficient and more user-friendly toolkit. As of August 2010 HiPart is publicly
-available as Open Source software. To date their is no official stable release
-of HiPart and it is recommend to upgrade regularly to the latest development
-release.</p>
+available as Open Source software.</p>
 <p>HiPart is open source software distributed under the conditions of the <a class="reference external" href="http://molmod.ugent.be/code/wiki/GPL_License_v3">GPL v3
 license</a>.</p>
 <p>If you use HiPart for your research or for the preparation of
@@ -79,62 +86,62 @@ publications, please cite HiPart as follows: &#8220;T. Verstraelen, HiPart Progr
 <h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference external" href="tut_install.html">1. Installation</a><ul>
-<li class="toctree-l2"><a class="reference external" href="tut_install.html#disclaimer">1.1. Disclaimer</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_install.html#molmod-dependency">1.2. MolMod dependency</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_install.html#external-dependencies">1.3. External dependencies</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_install.html#installing-the-latest-version-of-hipart">1.4. Installing the latest version of HiPart</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_install.html#a-few-quick-checks">1.5. A few quick checks</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_install.html#upgrading-to-the-latest-version-of-hipart-and-molmod">1.6. Upgrading to the latest version of HiPart and MolMod</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_install.html#testing-your-installation">1.7. Testing your installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tut_install.html">1. Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tut_install.html#disclaimer">1.1. Disclaimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_install.html#molmod-dependency">1.2. MolMod dependency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_install.html#external-dependencies">1.3. External dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_install.html#installing-the-latest-version-of-hipart">1.4. Installing the latest version of HiPart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_install.html#a-few-quick-checks">1.5. A few quick checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_install.html#upgrading-to-the-latest-version-of-hipart-and-molmod">1.6. Upgrading to the latest version of HiPart and MolMod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_install.html#testing-your-installation">1.7. Testing your installation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="tut_support.html">2. If you encounter a problem</a></li>
-<li class="toctree-l1"><a class="reference external" href="tut_cite.html">3. How to cite HiPart</a></li>
-<li class="toctree-l1"><a class="reference external" href="tut_theory.html">4. Theoretical background</a><ul>
-<li class="toctree-l2"><a class="reference external" href="tut_theory.html#fuzzy-atom-partitioning">4.1. Fuzzy atom partitioning</a><ul>
-<li class="toctree-l3"><a class="reference external" href="tut_theory.html#becke">4.1.1. Becke</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_theory.html#hirshfeld">4.1.2. Hirshfeld</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_theory.html#iterative-hirshfeld">4.1.3. Iterative Hirshfeld</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_theory.html#iterative-stockholder-analysis">4.1.4. Iterative Stockholder Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tut_support.html">2. If you encounter a problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tut_cite.html">3. How to cite HiPart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tut_theory.html">4. Theoretical background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tut_theory.html#fuzzy-atom-partitioning">4.1. Fuzzy atom partitioning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tut_theory.html#becke">4.1.1. Becke</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_theory.html#hirshfeld">4.1.2. Hirshfeld</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_theory.html#iterative-hirshfeld">4.1.3. Iterative Hirshfeld</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_theory.html#iterative-stockholder-analysis">4.1.4. Iterative Stockholder Analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference external" href="tut_theory.html#atomic-properties-derived-from-the-density">4.2. Atomic properties derived from the density</a><ul>
-<li class="toctree-l3"><a class="reference external" href="tut_theory.html#charges-dipoles-multipoles">4.2.1. Charges, Dipoles &amp; Multipoles</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_theory.html#net-and-overlap-populations">4.2.2. Net and overlap populations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_theory.html#atomic-properties-derived-from-the-density">4.2. Atomic properties derived from the density</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tut_theory.html#charges-dipoles-multipoles">4.2.1. Charges, Dipoles &amp; Multipoles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_theory.html#net-and-overlap-populations">4.2.2. Net and overlap populations</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference external" href="tut_theory.html#atomic-properties-derived-from-the-spin-density">4.3. Atomic properties derived from the spin density</a><ul>
-<li class="toctree-l3"><a class="reference external" href="tut_theory.html#spin-charges">4.3.1. Spin charges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_theory.html#atomic-properties-derived-from-the-spin-density">4.3. Atomic properties derived from the spin density</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tut_theory.html#spin-charges">4.3.1. Spin charges</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference external" href="tut_theory.html#atomic-overlap-matrices-in-the-basis-of-contracted-gaussians">4.4. Atomic overlap matrices (in the basis of contracted Gaussians)</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_theory.html#atomic-properties-derived-from-the-density-matrix">4.5. Atomic properties derived from the density matrix</a><ul>
-<li class="toctree-l3"><a class="reference external" href="tut_theory.html#bond-orders-and-atomic-valences">4.5.1. Bond orders and atomic valences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_theory.html#atomic-overlap-matrices-in-the-basis-of-contracted-gaussians">4.4. Atomic overlap matrices (in the basis of contracted Gaussians)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_theory.html#atomic-properties-derived-from-the-density-matrix">4.5. Atomic properties derived from the density matrix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tut_theory.html#bond-orders-and-atomic-valences">4.5.1. Bond orders and atomic valences</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference external" href="tut_theory.html#atomic-overlap-matrices-in-the-basis-of-the-orbitals">4.6. Atomic overlap matrices (in the basis of the orbitals)</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_theory.html#electrostatic-potential-esp-fitting">4.7. Electrostatic Potential (ESP) Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_theory.html#atomic-overlap-matrices-in-the-basis-of-the-orbitals">4.6. Atomic overlap matrices (in the basis of the orbitals)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_theory.html#electrostatic-potential-esp-fitting">4.7. Electrostatic Potential (ESP) Fitting</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="tut_usage.html">5. Using HiPart</a><ul>
-<li class="toctree-l2"><a class="reference external" href="tut_usage.html#test-molecules">5.1. Test molecules</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_usage.html#running-proper-gaussian-jobs">5.2. Running proper Gaussian jobs</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_usage.html#preparing-the-atomic-database">5.3. Preparing the atomic database</a></li>
-<li class="toctree-l2"><a class="reference external" href="tut_usage.html#partitioning-tools">5.4. Partitioning tools</a><ul>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#atomic-charges">5.4.1. Atomic charges</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#atomic-dipoles">5.4.2. Atomic dipoles</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#testing-charges-and-dipoles-on-the-esp-grid">5.4.3. Testing charges and dipoles on the ESP grid</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#atomic-multipole-expansions">5.4.4. Atomic multipole expansions</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#net-and-overlap-populations">5.4.5. Net and overlap populations</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#bond-orders-valences-and-free-valences">5.4.6. Bond orders, valences and free valences</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#spin-charges">5.4.7. Spin charges</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#atomic-overlap-matrices">5.4.8. Atomic overlap matrices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tut_usage.html">5. Using HiPart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tut_usage.html#test-molecules">5.1. Test molecules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_usage.html#running-proper-gaussian-jobs">5.2. Running proper Gaussian jobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_usage.html#preparing-the-atomic-database">5.3. Preparing the atomic database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_usage.html#partitioning-tools">5.4. Partitioning tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#atomic-charges">5.4.1. Atomic charges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#atomic-dipoles">5.4.2. Atomic dipoles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#testing-charges-and-dipoles-on-the-esp-grid">5.4.3. Testing charges and dipoles on the ESP grid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#atomic-multipole-expansions">5.4.4. Atomic multipole expansions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#net-and-overlap-populations">5.4.5. Net and overlap populations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#bond-orders-valences-and-free-valences">5.4.6. Bond orders, valences and free valences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#spin-charges">5.4.7. Spin charges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#atomic-overlap-matrices">5.4.8. Atomic overlap matrices</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference external" href="tut_usage.html#using-hipart-as-a-library">5.5. Using HiPart as a library</a><ul>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#batch-processing-of-many-fchk-files">5.5.1. Batch processing of many fchk files</a></li>
-<li class="toctree-l3"><a class="reference external" href="tut_usage.html#tuning-integration-grids">5.5.2. Tuning integration grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_usage.html#using-hipart-as-a-library">5.5. Using HiPart as a library</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#batch-processing-of-many-fchk-files">5.5.1. Batch processing of many fchk files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tut_usage.html#tuning-integration-grids">5.5.2. Tuning integration grids</a></li>
 </ul>
 </li>
 </ul>
@@ -149,28 +156,28 @@ docstrings in the source code get more and more complete, this part will become
 more and more useful.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference external" href="ref_hipart.html"><tt class="docutils literal"><span class="pre">hipart</span></tt> &#8212; Fuzzy atom partitioning</a><ul>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#module-hipart.context"><tt class="docutils literal"><span class="pre">hipart.context</span></tt> &#8212; Contexts instead of global variables</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#module-hipart.schemes"><tt class="docutils literal"><span class="pre">hipart.schemes</span></tt> &#8212; Partitioning schemes and derived quantities</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#module-hipart.wavefn"><tt class="docutils literal"><span class="pre">hipart.wavefn</span></tt> &#8212; Electronic structure representation</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#module-hipart.atomdb"><tt class="docutils literal"><span class="pre">hipart.atoms</span></tt> and <tt class="docutils literal"><span class="pre">hipart.atomdb</span></tt> &#8212; Atomic databases</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#hipart-fit-esp-cost-functions"><tt class="docutils literal"><span class="pre">hipart.fit</span></tt> &#8212; ESP cost functions</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#module-hipart.grids"><tt class="docutils literal"><span class="pre">hipart.grids</span></tt> &#8212; Numerical integration grids</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#module-hipart.lebedev_laikov"><tt class="docutils literal"><span class="pre">hipart.lebedev_laikov</span></tt> &#8212; Lebedev Laikov angular grid data</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#hipart-spline-cubic-spline-interpolation"><tt class="docutils literal"><span class="pre">hipart.spline</span></tt> &#8212; Cubic spline interpolation</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#module-hipart.io"><tt class="docutils literal"><span class="pre">hipart.io</span></tt> &#8212; IO for Hipart file formats</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#hipart-opts-command-line-parsion-for-hi-py-scripts"><tt class="docutils literal"><span class="pre">hipart.opts</span></tt> &#8212; Command line parsion for <tt class="docutils literal"><span class="pre">hi-*.py</span></tt> scripts</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#module-hipart.log"><tt class="docutils literal"><span class="pre">hipart.log</span></tt> &#8212; Screen output</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_hipart.html#module-hipart.work"><tt class="docutils literal"><span class="pre">hipart.work</span></tt> &#8212; Control temporary work files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ref_hipart.html"><tt class="docutils literal"><span class="pre">hipart</span></tt> &#8212; Fuzzy atom partitioning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.context"><tt class="docutils literal"><span class="pre">hipart.context</span></tt> &#8212; Contexts instead of global variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.schemes"><tt class="docutils literal"><span class="pre">hipart.schemes</span></tt> &#8212; Partitioning schemes and derived quantities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.wavefn"><tt class="docutils literal"><span class="pre">hipart.wavefn</span></tt> &#8212; Electronic structure representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.atoms"><tt class="docutils literal"><span class="pre">hipart.atoms</span></tt> and <tt class="docutils literal"><span class="pre">hipart.atomdb</span></tt> &#8212; Atomic databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.fit"><tt class="docutils literal"><span class="pre">hipart.fit</span></tt> &#8212; ESP cost functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.grids"><tt class="docutils literal"><span class="pre">hipart.grids</span></tt> &#8212; Numerical integration grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.lebedev_laikov"><tt class="docutils literal"><span class="pre">hipart.lebedev_laikov</span></tt> &#8212; Lebedev Laikov angular grid data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.spline"><tt class="docutils literal"><span class="pre">hipart.spline</span></tt> &#8212; Cubic spline interpolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.io"><tt class="docutils literal"><span class="pre">hipart.io</span></tt> &#8212; IO for Hipart file formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.opts"><tt class="docutils literal"><span class="pre">hipart.opts</span></tt> &#8212; Command line parsion for <tt class="docutils literal"><span class="pre">hi-*.py</span></tt> scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.log"><tt class="docutils literal"><span class="pre">hipart.log</span></tt> &#8212; Screen output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_hipart.html#module-hipart.work"><tt class="docutils literal"><span class="pre">hipart.work</span></tt> &#8212; Control temporary work files</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="ref_gint.html"><tt class="docutils literal"><span class="pre">hipart.gint</span></tt> &#8212; (Towards a) Gaussian integrals library</a><ul>
-<li class="toctree-l2"><a class="reference external" href="ref_gint.html#module-hipart.gint.basis"><tt class="docutils literal"><span class="pre">hipart.gint.basis</span></tt> &#8212; Basis set representation</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_gint.html#one-center-routines">One-center routines</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_gint.html#two-center-routines">Two-center routines</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_gint.html#auxiliary-function">Auxiliary function</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_gint.html#tools">Tools</a></li>
-<li class="toctree-l2"><a class="reference external" href="ref_gint.html#writer">Writer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ref_gint.html"><tt class="docutils literal"><span class="pre">hipart.gint</span></tt> &#8212; (Towards a) Gaussian integrals library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ref_gint.html#module-hipart.gint.basis"><tt class="docutils literal"><span class="pre">hipart.gint.basis</span></tt> &#8212; Basis set representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_gint.html#one-center-routines">One-center routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_gint.html#two-center-routines">Two-center routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_gint.html#auxiliary-function">Auxiliary function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_gint.html#tools">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_gint.html#writer">Writer</a></li>
 </ul>
 </li>
 </ul>
@@ -180,16 +187,16 @@ more and more useful.</p>
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference external" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
 <h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference external" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference external" href="modindex.html"><em>Module Index</em></a></li>
-<li><a class="reference external" href="search.html"><em>Search Page</em></a></li>
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
 </ul>
 </div>
 </div>
@@ -205,18 +212,18 @@ more and more useful.</p>
             </a></p>
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference external" href="#">HiPart documentation</a><ul>
-<li><a class="reference external" href="#introduction">Introduction</a></li>
-<li><a class="reference external" href="#tutorial">Tutorial</a><ul>
+<li><a class="reference internal" href="#">HiPart documentation</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#tutorial">Tutorial</a><ul>
 </ul>
 </li>
-<li><a class="reference external" href="#library-reference">Library reference</a><ul>
+<li><a class="reference internal" href="#library-reference">Library reference</a><ul>
 </ul>
 </li>
-<li><a class="reference external" href="#references">References</a><ul>
+<li><a class="reference internal" href="#references">References</a><ul>
 </ul>
 </li>
-<li><a class="reference external" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
 </ul>
@@ -232,7 +239,7 @@ more and more useful.</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -253,17 +260,17 @@ more and more useful.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
+          <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
           <a href="tut_install.html" title="1. Installation"
              >next</a> |</li>
-        <li><a href="#">HiPart v0.0 documentation</a> &raquo;</li> 
+        <li><a href="#">HiPart 0.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Toon Verstraelen.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

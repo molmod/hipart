@@ -2,6 +2,14 @@
 HiPart documentation
 ====================
 
+
+.. warning::
+
+   HiPart is now deprecated but will remain available. All our new developments
+   will implemented in `Horton <http://theochem.github.com/horton>`_ and we
+   encourage everyone to switch to the new code.
+
+
 Introduction
 ------------
 
@@ -21,11 +29,9 @@ HiPart is developed at the Center for Molecular Modeling since October 2008 by
 Toon Verstraelen. It was originally conceived as an autodidactic project to get
 familiar with fuzzy atom partitioning in general, and it was used to generate
 Iterative Hirshfeld charges for a benchmark study of the EEM and SQE model.
-[Verstraelen2009]_. Over the past two years, the program evolved into a more
+[Verstraelen2009]_. Over two years, the program evolved into a more
 efficient and more user-friendly toolkit. As of August 2010 HiPart is publicly
-available as Open Source software. To date their is no official stable release
-of HiPart and it is recommend to upgrade regularly to the latest development
-release.
+available as Open Source software.
 
 HiPart is open source software distributed under the conditions of the `GPL v3
 license <http://molmod.ugent.be/code/wiki/GPL_License_v3>`_.

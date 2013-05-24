@@ -2,18 +2,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>hipart.gint — (Towards a) Gaussian integrals library &mdash; HiPart v0.0 documentation</title>
+    <title>hipart.gint — (Towards a) Gaussian integrals library &mdash; HiPart 0.0 documentation</title>
+    
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '#',
+        URL_ROOT:    '',
         VERSION:     '0.0',
-        COLLAPSE_MODINDEX: false,
+        COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
@@ -21,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="HiPart v0.0 documentation" href="index.html" />
+    <link rel="top" title="HiPart 0.0 documentation" href="index.html" />
     <link rel="next" title="References" href="references.html" />
     <link rel="prev" title="hipart — Fuzzy atom partitioning" href="ref_hipart.html" /> 
   </head>
@@ -33,15 +36,15 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
-             accesskey="M">modules</a> |</li>
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="references.html" title="References"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="ref_hipart.html" title="hipart — Fuzzy atom partitioning"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">HiPart 0.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,7 +54,7 @@
           <div class="body">
             
   <div class="section" id="hipart-gint-towards-a-gaussian-integrals-library">
-<h1><tt class="xref docutils literal"><span class="pre">hipart.gint</span></tt> &#8212; (Towards a) Gaussian integrals library<a class="headerlink" href="#hipart-gint-towards-a-gaussian-integrals-library" title="Permalink to this headline">¶</a></h1>
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">hipart.gint</span></tt> &#8212; (Towards a) Gaussian integrals library<a class="headerlink" href="#hipart-gint-towards-a-gaussian-integrals-library" title="Permalink to this headline">¶</a></h1>
 <p>Gint is a part of HiPart used to evaluate functions and integrals of Gaussian
 functions. Gint is for the moment very limited in functionality and just does
 what is needed to make HiPart work.</p>
@@ -62,7 +65,7 @@ scripts that use <a class="reference external" href="http://www.sympy.org">SymPy
 Although there are still opportunities to further optmize the generated code,
 the current result is already very useful.</p>
 <div class="section" id="module-hipart.gint.basis">
-<h2><a title="" class="reference external" href="#module-hipart.gint.basis"><tt class="xref docutils literal"><span class="pre">hipart.gint.basis</span></tt></a> &#8212; Basis set representation<a class="headerlink" href="#module-hipart.gint.basis" title="Permalink to this headline">¶</a></h2>
+<span id="hipart-gint-basis-basis-set-representation"></span><h2><a class="reference internal" href="#module-hipart.gint.basis" title="hipart.gint.basis"><tt class="xref py py-mod docutils literal"><span class="pre">hipart.gint.basis</span></tt></a> &#8212; Basis set representation<a class="headerlink" href="#module-hipart.gint.basis" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="hipart.gint.basis.get_shell_dof">
 <tt class="descclassname">hipart.gint.basis.</tt><tt class="descname">get_shell_dof</tt><big>(</big><em>shell_type</em><big>)</big><a class="headerlink" href="#hipart.gint.basis.get_shell_dof" title="Permalink to this definition">¶</a></dt>
@@ -198,13 +201,13 @@ alhpabetically. The SP shell type is S first, then P. Some examples:</p>
             </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference external" href="#"><tt class="docutils literal"><span class="pre">hipart.gint</span></tt> &#8212; (Towards a) Gaussian integrals library</a><ul>
-<li><a class="reference external" href="#module-hipart.gint.basis"><tt class="docutils literal"><span class="pre">hipart.gint.basis</span></tt> &#8212; Basis set representation</a></li>
-<li><a class="reference external" href="#one-center-routines">One-center routines</a></li>
-<li><a class="reference external" href="#two-center-routines">Two-center routines</a></li>
-<li><a class="reference external" href="#auxiliary-function">Auxiliary function</a></li>
-<li><a class="reference external" href="#tools">Tools</a></li>
-<li><a class="reference external" href="#writer">Writer</a></li>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">hipart.gint</span></tt> &#8212; (Towards a) Gaussian integrals library</a><ul>
+<li><a class="reference internal" href="#module-hipart.gint.basis"><tt class="docutils literal"><span class="pre">hipart.gint.basis</span></tt> &#8212; Basis set representation</a></li>
+<li><a class="reference internal" href="#one-center-routines">One-center routines</a></li>
+<li><a class="reference internal" href="#two-center-routines">Two-center routines</a></li>
+<li><a class="reference internal" href="#auxiliary-function">Auxiliary function</a></li>
+<li><a class="reference internal" href="#tools">Tools</a></li>
+<li><a class="reference internal" href="#writer">Writer</a></li>
 </ul>
 </li>
 </ul>
@@ -223,7 +226,7 @@ alhpabetically. The SP shell type is S first, then P. Some examples:</p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -244,7 +247,7 @@ alhpabetically. The SP shell type is S first, then P. Some examples:</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
+          <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
           <a href="references.html" title="References"
@@ -252,12 +255,12 @@ alhpabetically. The SP shell type is S first, then P. Some examples:</p>
         <li class="right" >
           <a href="ref_hipart.html" title="hipart — Fuzzy atom partitioning"
              >previous</a> |</li>
-        <li><a href="index.html">HiPart v0.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">HiPart 0.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Toon Verstraelen.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
