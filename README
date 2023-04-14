@@ -1,3 +1,7 @@
+This repository is archived. For a more up-to-date implementation, see https://github.com/theochem/denspart
+
+-----------
+
 HiPart is a program to analyze the electronic structure of molecules with
 fuzzy-atom partitioning methods. It now supports four schemes to define atomic
 partitions: the Becke scheme, The Hirshfeld scheme, the Iterative Hirshfeld
